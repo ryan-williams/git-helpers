@@ -45,13 +45,14 @@ try:
     added_files_basename = 'added_files'
     deleted_files_basename = 'deleted_files'
 
-    remote_script_basename = 'git-unpack-and-apply-diffs'
-    remote_script = \
+    local_script_basename = 'git-unpack-and-apply-diffs'
+    remote_script_basename = 'tmp.git-unpack-and-apply-diffs'
+    local_script = \
         subprocess.Popen(
-            [ 'which', remote_script_basename ], stdout=subprocess.PIPE
+            [ 'which', local_script_basename ], stdout=subprocess.PIPE
         ).communicate()[0].strip()
 
-    print "script to run remotely: %s" % remote_script
+    print "script to run remotely: %s" % local_script
 
     unstaged_diff_file_path = os.path.join(
         tempdir, unstaged_diff_file_basename)
@@ -151,10 +152,18 @@ try:
         'scp',
         #'-v',
         tar.name,
-        remote_script,
         '%s:%s' % (remote.group('host'), remote.group('path'))
     ]
     print "scp'ing tar file: %s" % ' '.join(cmd)
+    subprocess.call(cmd)
+
+    cmd = [
+        'scp',
+        #'-v',
+        local_script,
+        '%s:%s/%s' % (remote.group('host'), remote.group('path'), remote_script_basename)
+    ]
+    print "scp'ing remote script: %s" % ' '.join(cmd)
     subprocess.call(cmd)
 
     remote_cmd = 'cd %s && ./%s "%s"' % (remote.group('path'), remote_script_basename, cur_branch_name)

@@ -7,7 +7,7 @@ tar="diffs.tar.gz"
 tar_files_file="tar_files"
 added_files="added_files"
 deleted_files="deleted_files"
-remote_script="git-unpack-and-apply-diffs"
+remote_script="tmp.git-unpack-and-apply-diffs"
 
 if [ $# -eq 0 ]; then
   cur_branch_name="master"
@@ -84,11 +84,18 @@ echo "Verifying unstaged diff..."
 diff "$unstaged" <(git diff)
 
 set +e
-echo "Removing untracked git files:"
-git ls-files --other --exclude-standard
-rm -rf $(git ls-files --other --exclude-standard)
-echo ""
 
-echo "Removing tarred transit files:"
-cat "$tar_files_file"
-rm -rf $(cat "$tar_files_file")
+if [ -s "$tar_files_file" ]; then
+  echo "Removing tarred transit files:"
+  cat "$tar_files_file"
+  rm -rf "$(cat "$tar_files_file")"
+fi
+
+echo "Removing untracked git files:"
+OLD_IFS="$IFS"
+IFS=$'\n'
+for f in $(git ls-files --other --exclude-standard); do
+  echo -e "\tremoving $f"
+  rm -rf "$f"
+done
+echo ""
