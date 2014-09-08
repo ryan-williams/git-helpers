@@ -177,6 +177,7 @@ finally:
 
     try:
         if (tempdir):
+            print "Removing %s" % tempdir
             shutil.rmtree(tempdir)
     except OSError as exc:
         if exc.errno != errno.ENOENT:  # ENOENT - no such file or directory

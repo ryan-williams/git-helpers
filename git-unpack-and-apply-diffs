@@ -83,4 +83,12 @@ diff "$staged" <(git diff --cached)
 echo "Verifying unstaged diff..."
 diff "$unstaged" <(git diff)
 
-rm -rf $(git ls-files --other --exclude-standard) $(cat "$tar_files_file")
+set +e
+echo "Removing untracked git files:"
+git ls-files --other --exclude-standard
+rm -rf $(git ls-files --other --exclude-standard)
+echo ""
+
+echo "Removing tarred transit files:"
+cat "$tar_files_file"
+rm -rf $(cat "$tar_files_file")
