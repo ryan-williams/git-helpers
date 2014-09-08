@@ -8,8 +8,9 @@ These were written alongside other bash and python helpers that I may not have p
 ### Setup:
 * `source .git-rc` from your `.bashrc`. This will give you lots of helpful aliases!
     * You might want to make sure it's not clobbering ones you already have/use.
-* put the root of this repo, as well as the `aliases/` subdirectory, on your `$PATH`
-* put the `util/` subdir of this repo on your `$PYTHONPATH`
+    * It will also:
+        * put the root of this repo, as well as the `aliases/` subdirectory, on your `$PATH`
+        * put the `util/` subdir of this repo on your `$PYTHONPATH`
 
 ### "git branches" (`git b`) ###
 

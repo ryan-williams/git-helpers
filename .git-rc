@@ -2,12 +2,23 @@
 
 # Git aliases. source me from .bashrc!
 
+dir="$(dirname "${BASH_SOURCE[0]}")"
+
+try_source() {
+  for arg in "$@"; do
+    if [ -f "$arg" ]; then
+      source "$arg"
+    fi
+  done
+}
+try_source "$dir/.gitcomplete" "$dir/.git-completion.bash"
+
+export PATH="$PATH:$dir:$dir/aliases"
+export PYTHONPATH="$PYTHONPATH:$dir/util"
+
 alias gcd="g cd"
 alias gf="git fetch"
 alias gfo="git fetch origin"
-
-#try_source "$HOME/.gitcomplete"
-#try_source "$HOME/.git-completion.bash"
 
 alias gbd="git branch -d"
 alias gbD="git branch -D"
@@ -40,7 +51,7 @@ alias grt=". ~/s/git-root"
 alias gr="git remote -vv"
 alias gsh="gn sh"  # git-show-short
 alias rmu="git ls-files --other --exclude-standard | xargs rm -f"
-alias snippets='git log --since "8days" --oneline --author ryan'
+alias snippets='git log --since "8days" --oneline --author $USER'
 
 alias gss="git stash save"
 alias gsa="git stash apply"
