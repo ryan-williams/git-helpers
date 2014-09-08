@@ -14,7 +14,7 @@ try_source() {
 try_source "$dir/.gitcomplete" "$dir/.git-completion.bash"
 
 export PATH="$PATH:$dir:$dir/aliases"
-export PYTHONPATH="$PYTHONPATH:$dir/util"
+export PYTHONPATH="$PYTHONPATH:$dir:$dir/util"
 
 alias gcd="g cd"
 alias gf="git fetch"

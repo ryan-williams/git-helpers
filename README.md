@@ -10,7 +10,7 @@ These were written alongside other bash and python helpers that I may not have p
     * You might want to make sure it's not clobbering ones you already have/use.
     * It will also:
         * put the root of this repo, as well as the `aliases/` subdirectory, on your `$PATH`
-        * put the `util/` subdir of this repo on your `$PYTHONPATH`
+        * put the root of this repo, as well as the `util/` subdirectory, on your `$PYTHONPATH`
 
 ### "git branches" (`git b`) ###
 
