@@ -1,0 +1,2 @@
+#!/bin/bash
+open $(git remote -v | grep push | cut -f2 | sed 's/.git .*/\/issues/')
