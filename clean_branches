@@ -8,6 +8,10 @@ branches=$(sorted_branches)
 num_branches=$(count $branches)
 idx=
 
+export clear="\033[0m"           # Text Reset
+export Red="\033[0;31m"          # Red
+export Green="\033[0;32m"        # Green
+
 if [ "$1" == "-n" ]; then
     echo "${Green}Dry run..${clear}"
     dry_run=1
@@ -18,21 +22,21 @@ else
 fi
 
 
-for b in $(sorted_branches); do
+for b in "$(sorted_branches)"; do
     let idx=$idx+1
 
-    lastdate=$(git log -n 1 $b --format="%ad" --)
-    relativedate=$(git log -n 1 $b --format="%ar" --)
+    lastdate=$(git log -n 1 "$b" --format="%ad" --)
+    relativedate=$(git log -n 1 "$b" --format="%ar" --)
 
     echo "Branch $idx of $num_branches: $b"
     echo "Last modified $relativedate: $lastdate"
-    echo "\t\c"; git branch --list -vv $b
+    echo "\t\c"; git branch --list -vv "$b"
 
     if prompt "$prompt $b? [Y/n]: "; then
-        if [ ! $dry_run ]; then
-            git branch -D $b
+        if [ ! "$dry_run" ]; then
+            git branch -D "$b"
         fi
-        echo "$Red""Deleted""$clear"
+        echo "${Red}Deleted${clear}"
     fi
     echo ''
 done
