@@ -4,14 +4,8 @@
 
 dir="$(dirname "${BASH_SOURCE[0]}")"
 
-try_source() {
-  for arg in "$@"; do
-    if [ -f "$arg" ]; then
-      source "$arg"
-    fi
-  done
-}
-try_source "$dir/.gitcomplete" "$dir/.git-completion.bash"
+[ -s "$dir/.gitcomplete" ] && source "$dir/.gitcomplete"
+[ -s "$dir/.git-completion.bash" ] && source "$dir/.git-completion.bash"
 
 export PATH="$PATH:$dir:$dir/aliases"
 export PYTHONPATH="$PYTHONPATH:$dir:$dir/util"
