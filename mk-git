@@ -5,7 +5,9 @@ if [ $# -ne 2 ]; then
   exit 1
 fi
 
-cd "$s/git"
+dir="$(dirname "${BASH_SOURCE[0]}")"
+
+cd "$dir"
 full="git-$1"
 short="git-$2"
 
