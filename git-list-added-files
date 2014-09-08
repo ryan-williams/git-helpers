@@ -1,0 +1,4 @@
+#!/bin/bash
+
+git diff --cached --name-only --diff-filter=A
+

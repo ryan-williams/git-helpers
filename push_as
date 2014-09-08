@@ -1,0 +1,7 @@
+#!/bin/sh
+
+my_real_email=$(git config user.email)
+git config user.email $1
+#git commit -a -m "nothing to see here, move along"
+#git push origin master
+git config user.email $my_real_email

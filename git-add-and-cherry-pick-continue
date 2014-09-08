@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ $# -gt 0 ]; then
+	args="$@"
+else
+	args=.
+fi
+
+git add "$args" && git cherry-pick --continue

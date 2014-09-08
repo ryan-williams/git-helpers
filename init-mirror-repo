@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd $1
+git config receive.denyNonFastForwards false
+git config receive.denyCurrentBranch false

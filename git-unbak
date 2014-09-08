@@ -1,0 +1,15 @@
+#!/bin/sh
+
+for arg in $@; do
+	for expanded_arg in $(git ls-files $arg); do
+		if [ "$(basename $expanded_arg)" == "BUILD" ]; then
+			continue
+		fi
+		extension=${expanded_arg##*.}
+		if [ "$extension" == "bak" ]; then
+			echo "Moving $expanded_arg -> ${expanded_arg%.bak}"
+			git mv $expanded_arg ${expanded_arg%.bak}
+		fi
+	done
+done
+

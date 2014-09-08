@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Git aliases. source me from .bashrc!
+
+alias gcd="g cd"
+alias gf="git fetch"
+alias gfo="git fetch origin"
+
+#try_source "$HOME/.gitcomplete"
+#try_source "$HOME/.git-completion.bash"
+
+alias gbd="git branch -d"
+alias gbD="git branch -D"
+alias gbdf="git branch -D"
+alias gd="git diff"
+alias gdc="gd --cached"
+alias gln="git lg"
+alias gs="git status"
+alias gb="g b"
+alias gbu="g bu"
+alias gbr="g br"
+alias gh="g h"
+alias grb="g rb"
+alias gl="git lg"
+alias gls="git ls-files"
+alias gac="g ac '%h'"
+alias gng="git --no-pager grep"
+alias gg="git grep"
+
+alias gc="git commit"
+alias gcm="git commit -m"
+alias gca="git commit -a"
+alias gcam="git commit -a -m"
+
+alias garc='git arc'
+alias gaurc='git aurc'
+alias guu='git conflicting'
+
+alias grt=". ~/s/git-root"
+alias gr="git remote -vv"
+alias gsh="gn sh"  # git-show-short
+alias rmu="git ls-files --other --exclude-standard | xargs rm -f"
+alias snippets='git log --since "8days" --oneline --author ryan'
+
+alias gss="git stash save"
+alias gsa="git stash apply"
+alias gsp="git stash pop"
+alias gsl="gn sl"
+alias gss="g ss"
+

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+git ls-remote "$1" &> /dev/null

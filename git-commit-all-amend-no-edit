@@ -1,0 +1,10 @@
+#!/bin/sh
+
+git diff --exit-code
+if [ $? -gt 0 ]; then
+	echo "**** Committing changes ****"
+	git commit -a --amend --no-edit
+else
+	echo "**** No changes found ****"
+fi
+

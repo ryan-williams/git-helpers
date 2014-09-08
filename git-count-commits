@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ $# -eq 2 ]; then
+  refspec="$1..$2"
+  shift
+  shift
+elif [ $# -eq 1 ]; then
+  refspec="$1"
+  shift
+else
+  err "Usage:"
+  err -e "\t$0 <refspec>"
+  err -e "\t$0 <sha1> <sha2>"
+  exit 1
+fi
+
+git rev-list --count "$refspec" "$@"
+

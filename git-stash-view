@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ $# -gt 0 ]; then
+  num=$1
+else
+  num=0
+fi
+
+git stash show -p stash@{$num}

@@ -1,0 +1,4 @@
+def foo(x: Option[Any]) = x map {
+  case n: Int => n%2
+  case s: String => s.reverse
+}

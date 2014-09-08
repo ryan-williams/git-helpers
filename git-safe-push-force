@@ -1,0 +1,75 @@
+#!/bin/bash
+
+is_remote() {
+  git remote | grep -q ^"$1"\$
+}
+
+is_local_branch() {
+  git rev-parse --verify "$1"
+}
+
+if [ $# -eq 3 ]; then
+  remote="$1"
+  local_branch="$2"
+  remote_branch="$3"
+  refspec="$local_branch:$remote_branch"
+elif [ $# -eq 2 ]; then
+  if is_remote "$1"; then
+    remote="$1"
+    refspec="$2"
+    local_branch="${refspec%%:*}"
+    remote_branch="${refspec##*:}"
+  else
+    remote="origin"
+    local_branch="$1"
+    remote_branch="$2"
+    refspec="$local_branch:$remote_branch"
+  fi
+elif [ $# -eq 1 ]; then
+  remote="origin"
+  refspec="$1"
+  local_branch="${refspec%%:*}"
+  remote_branch="${refspec##*:}"
+else
+  err "Usage: $0 [remote] <refspec>"
+  exit 1
+fi
+
+if ! is_local_branch "$local_branch" &> /dev/null; then
+  err "Invalid local branch: $local_branch"
+  exit 1
+fi
+
+if ! is_remote "$remote"; then
+  err "Invalid remote: $remote"
+  exit 1
+fi
+
+remote_refspec="$remote/$remote_branch"
+
+echo "Safe-pushing $local_branch to $remote_refspec ($remote $refspec)"
+
+non_force_cmd="git push '$remote' '$refspec' 2> /dev/null"
+if eval "$non_force_cmd"; then
+  exit 0
+fi
+
+dry_run_cmd="git push -f -n '$remote' '$refspec'"
+echo "Non-fast-forward push? Dry-running -f: $dry_run_cmd"
+eval "$dry_run_cmd"
+
+merge_base="$(git merge-base "$remote_refspec" "$local_branch")"
+pretty_merge_base="$(git show -s --format="%h%d" "$merge_base")"
+local_branch_ahead="$(git rev-list --count "$merge_base".."$local_branch")"
+remote_branch_ahead="$(git rev-list --count "$merge_base".."$remote_refspec")"
+echo ""
+echo -e "\tMerge base: $pretty_merge_base"
+echo -e "\t$local_branch: +$local_branch_ahead commits"
+echo -e "\t$remote_refspec: +$remote_branch_ahead commits"
+echo ""
+
+if prompt "Continue? [Y/n]: "; then
+  cmd="git push -f '$remote' '$refspec'"
+  echo "$cmd"
+  eval "$cmd"
+fi

@@ -1,0 +1,183 @@
+#!/usr/bin/python
+
+import errno
+import os
+import shutil
+import subprocess
+import sys
+import tarfile
+from tempfile import mkdtemp
+from util.remotes import get_remotes
+
+remote = None
+
+remote_names = []
+if len(sys.argv) > 1:
+    remote_names = [sys.argv[1]]
+elif os.environ.get('MIRROR_REMOTES'):
+    remote_names = os.environ.get('MIRROR_REMOTES').split(',')
+else:
+    raise Exception(
+        'Pass remote name as an argument, or set MIRROR_REMOTES environment variable with a comma-separated list of eligible remotes'
+    )
+
+remotes = get_remotes()
+found_remotes = [remotes[remote]
+                 for remote in remote_names if remote in remotes]
+if len(found_remotes) > 1:
+    raise Exception('Found multiple eligible remotes: %s' % ','.join(
+        map(lambda remote: remote.group('name'), found_remotes)))
+if not found_remotes:
+    raise Exception('Found no eligible remotes: %s' % ','.join(remote_names))
+
+remote = found_remotes[0]
+
+print "Got remote %s at host %s. Pushing.." % (remote.group('name'), remote.group('host'))
+subprocess.check_output(['git', 'push', remote.group('name')])
+print 'Pushed!'
+
+tempdir = None
+try:
+    tempdir = mkdtemp()
+
+    unstaged_diff_file_basename = 'unstaged_diff_file'
+    staged_diff_file_basename = 'staged_diff_file'
+    added_files_basename = 'added_files'
+    deleted_files_basename = 'deleted_files'
+
+    remote_script_basename = 'git-unpack-and-apply-diffs'
+    remote_script = \
+        subprocess.Popen(
+            [ 'which', remote_script_basename ], stdout=subprocess.PIPE
+        ).communicate()[0].strip()
+
+    print "script to run remotely: %s" % remote_script
+
+    unstaged_diff_file_path = os.path.join(
+        tempdir, unstaged_diff_file_basename)
+    staged_diff_file_path = os.path.join(tempdir, staged_diff_file_basename)
+    added_files_path = os.path.join(tempdir, added_files_basename)
+    deleted_files_path = os.path.join(tempdir, deleted_files_basename)
+
+    tar_file_path = os.path.join(tempdir, 'diffs.tar.gz')
+
+    cur_branch_name = subprocess.check_output(
+        ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])[:-1]
+    print 'Got current branch: %s' % cur_branch_name
+
+    with open(unstaged_diff_file_path, 'w') as unstaged_diff_file, \
+            open(staged_diff_file_path, 'w') as staged_diff_file, \
+            open(added_files_path, 'w') as added_files_file, \
+            open(deleted_files_path, 'w') as deleted_files_file, \
+            tarfile.open(tar_file_path, 'w:gz') as tar:
+
+        subprocess.Popen(
+            ['git', 'diff'],
+            stdout=unstaged_diff_file
+        ).wait()
+        unstaged_diff_file.flush()
+
+        subprocess.Popen(
+            ['git', 'diff', '--cached'],
+            stdout=staged_diff_file
+        ).wait()
+        staged_diff_file.flush()
+
+        subprocess.Popen(
+            ['git', 'diff', '--cached', '--name-only', '--diff-filter=A'],
+            stdout=added_files_file
+        ).wait()
+        added_files_file.flush()
+
+        subprocess.Popen(
+            ['git', 'diff', '--cached', '--name-only', '--diff-filter=D'],
+            stdout=deleted_files_file
+        ).wait()
+        deleted_files_file.flush()
+
+        tar.add(staged_diff_file_path, arcname=staged_diff_file_basename)
+        tar.add(unstaged_diff_file_path, arcname=unstaged_diff_file_basename)
+        tar.add(added_files_path, arcname=added_files_basename)
+        tar.add(deleted_files_path, arcname=deleted_files_basename)
+
+    tar_basename = os.path.basename(tar_file_path)
+
+    basenames_obj = {
+        'staged': staged_diff_file_basename,
+        'unstaged': unstaged_diff_file_basename,
+        'tar': tar_basename,
+        'user': (remote.group('user') + '@') if remote.group('user') else '',
+        'host': remote.group('host'),
+        'path': remote.group('path'),
+    }
+
+    cmd = [
+        'ssh',
+        #'-v',
+        remote.group('host'),
+        "; ".join(
+            ["cd %(path)s" % basenames_obj] +
+            # TODO(ryan): use test here
+            [
+                "ls %s 2> /dev/null" % filename for filename in [
+                    staged_diff_file_basename,
+                    unstaged_diff_file_basename,
+                    added_files_basename,
+                    deleted_files_basename,
+                    remote_script_basename,
+                    tar_basename
+                ]
+            ]
+        )
+    ]
+    found_files = filter(
+        lambda x: x,
+        subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE
+        ).communicate()[0].split('\n')
+    )
+
+    if found_files and len(found_files):
+        inp = raw_input(
+            'Found existing files: %s. Overwrite? [Y/n]: ' % ','.join(found_files)
+        )
+        if inp and inp[0].lower() != 'y':
+            print 'Exiting'
+            sys.exit(1)
+
+    cmd = [
+        'scp',
+        #'-v',
+        tar.name,
+        remote_script,
+        '%s:%s' % (remote.group('host'), remote.group('path'))
+    ]
+    print "scp'ing tar file: %s" % ' '.join(cmd)
+    subprocess.call(cmd)
+
+    remote_cmd = 'cd %s && ./%s "%s"' % (remote.group('path'), remote_script_basename, cur_branch_name)
+
+    print 'remote_cmd: %s' % remote_cmd
+
+    ssh_cmd = [
+        'ssh',
+        #'-v',
+        remote.group('host'),
+        remote_cmd
+    ]
+
+    print 'ssh cmd:'
+    print ' '.join(ssh_cmd)
+    print ''
+    subprocess.check_call(ssh_cmd)
+
+finally:
+
+    try:
+        if (tempdir):
+            shutil.rmtree(tempdir)
+    except OSError as exc:
+        if exc.errno != errno.ENOENT:  # ENOENT - no such file or directory
+            raise  # re-raise exception

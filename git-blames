@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo $1
+files="$(find . -name "$1")"
+for f in "$files"; do echo "Blaming $f"; done
+git blame "$files"

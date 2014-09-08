@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Put this script at .git/hooks/post-receive in a git repo where you want to receive mirrored pushes.
+# Upon receiving a push, this will reset --hard to HEAD.
+
+echo "post receive.."
+test "${PWD%/.git}" != "$PWD" && cd ..
+unset GIT_DIR GIT_WORK_TREE
+
+git reset --hard
+
+echo 'done!'

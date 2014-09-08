@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ $# -eq 0 ]; then
+    num=1
+else
+    num=$1
+fi
+
+first=$(git log -n $num | grep '^commit' | tail -n 1 | cut -d' ' -f 2)
+last=$(git log -n $num | grep '^commit' | head -n 1 | cut -d' ' -f 2)
+
+echo "$first^..$last"
+

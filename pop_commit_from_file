@@ -1,0 +1,22 @@
+#!/bin/sh
+
+commit=$(head -n 1 $1)
+if [ "$commit" == "" ]; then
+    echo "No commit found"
+    exit 1
+fi
+echo "Cherry-picking commit $commit: \c"
+
+git cherry-pick $commit
+success=$?
+
+tail -n +2 $1 > /tmp/r
+cp /tmp/r $1
+
+if [ $success -ne 0 ]; then
+    echo "Failed!"
+    exit 1
+else
+    echo "Success!"
+    exit 0
+fi

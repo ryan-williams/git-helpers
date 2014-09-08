@@ -1,0 +1,40 @@
+#!/usr/bin/python
+
+"""Adds a mirrored git remote suitable for pushing local, uncommitted changes to"""
+
+__author__ = "Ryan Williams"
+
+import subprocess
+import sys
+from util.remotes import get_remotes
+
+if len(sys.argv) < 3:
+    print 'Usage: git add-mirror-remote <remote_name> <remote_url>'
+    sys.exit(1)
+
+remote_name = sys.argv[1]
+remote_url = sys.argv[2]
+
+subprocess.check_output(
+    ['git', 'remote', 'add', '--mirror=push', remote_name, remote_url])
+
+remotes = get_remotes()
+
+if remote_name not in remotes:
+    raise Exception('Failed to add remote %s' % remote_name)
+
+remote = remotes[remote_name]
+
+remote_cmd = ' && '.join([
+    'mkdir -p %s' % (remote.group('path') or '~'),
+    'cd %s' % (remote.group('path') or '~'),
+    'git init',
+    'git config receive.denyCurrentBranch false',
+    'git config receive.denyNonFastForwards false'
+])
+
+print 'Running remote cmd: %s' % remote_cmd
+
+subprocess.check_output(['ssh', remote.group('host'), remote_cmd])
+
+print 'Done!'

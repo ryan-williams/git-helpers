@@ -1,0 +1,5 @@
+#!/bin/bash
+
+git --no-pager grep -n '<<<<<<<'
+git --no-pager grep -n '>>>>>>>'
+#git --no-pager grep -n '======='

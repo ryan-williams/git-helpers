@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ $# -eq 1 ]; then
+  arg="$1"
+elif [ $# -eq 2 ]; then
+  arg="$1^..$2"
+else
+  echo "Usage: \`git graph <start range> <end range>\`, or \`git graph <start range>..<end range>\`"
+  exit 1
+fi
+
+git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' $arg

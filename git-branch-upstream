@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+  upstream="origin/master"
+else
+  upstream="$1"
+  shift
+fi
+git branch --set-upstream-to "$upstream" "$@"
+

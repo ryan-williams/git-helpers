@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#git log -n 1 $@
+git log --format="%h %d (%ar) - %s" "$@"

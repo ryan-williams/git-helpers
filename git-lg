@@ -1,0 +1,98 @@
+#!/usr/bin/python
+
+import re
+import sys
+import subprocess
+from color import clen
+from util.piece import Pieces
+
+
+def fixed(width, s):
+    return (' ' * (width - clen(s))) + str(s)
+
+if len(sys.argv) > 3:
+    raise Exception('Maximum 2 args')
+
+
+def isNum(arg):
+    try:
+        int(arg)
+        return True
+    except ValueError:
+        return False
+
+numbers = filter(isNum, sys.argv[1:])
+non_numbers = filter(lambda arg: not isNum(arg), sys.argv[1:])
+
+if len(numbers) > 1:
+    raise Exception('Not sure which args are numbers: %s' % str(sys.argv))
+
+number = '10'
+if len(numbers) == 1:
+    number = str(numbers[0])
+
+if len(non_numbers) > 1:
+    raise Exception('Not sure which args are refs: %s' % str(sys.argv))
+
+branch = non_numbers[0] if len(non_numbers) else 'HEAD'
+
+
+class CommitInfos:
+
+    def __init__(self):
+
+        delimiter = '|||'
+
+        pieces = map(
+            lambda name: Pieces[name],
+            [ 'refnames', 'hash', 'reldate', 'author', 'date', 'description' ]
+        )
+
+        cmd = [
+            'git',
+            'log',
+            '--format=%s' % delimiter.join(
+                map(lambda piece: piece.git_format, pieces)),
+            '-n',
+            number,
+            branch
+        ]
+
+        out, err = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
+        if err:
+            raise Exception(err)
+
+        lines = out.splitlines()
+
+        self.cis = []
+
+        for line in lines:
+            segments = line.strip().split(delimiter)
+            if len(segments) != len(pieces):
+                raise Exception('Invalid line %s' % line)
+
+            values = {}
+            for piece, segment in zip(pieces, segments):
+                values[piece.name] = piece(segment)
+            self.cis.append(values)
+
+        def compute_max_width_for_piece(piece):
+            piece.max_width = max(
+                map(lambda values: clen(values[piece.name]), self.cis))
+
+        map(
+            compute_max_width_for_piece,
+            filter(lambda piece: piece.fix_width, pieces)
+        )
+
+        print ''
+        for values in self.cis:
+            for piece in pieces:
+                if piece.fix_width:
+                    print fixed(piece.max_width, values[piece.name]),
+                else:
+                    print values[piece.name],
+            print ''
+        print ''
+
+CommitInfos()

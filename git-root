@@ -1,0 +1,11 @@
+#!/bin/sh
+
+root=$(git rev-parse --show-cdup)
+if [ -z "$root" ]; then
+    root='./'
+fi
+if [ $# -gt 0 -a "$1" == "-v" ]; then
+    echo $root
+fi
+cd $root
+
