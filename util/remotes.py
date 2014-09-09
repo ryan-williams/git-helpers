@@ -3,7 +3,15 @@
 import re
 import subprocess
 
-push_remote_re = '(?P<name>[^\s]+)\s+((?P<user>[^@]+)@)?(?P<host>[^:]+)(?::(?P<path>[^\s]+))?\s\\(push\\)'
+# e.g. 'origin	git@github.com:danvk/expandable-image-grid.git (push)'
+ssh_push_re = re.compile('(?P<name>[^\s]+)\s+((?P<user>[^@]+)@)?(?P<host>[^:]+)(?::(?P<path>[^\s]+))?\s\(push\)')
+
+# e.g. 'origin	https://github.com/danvk/git-helpers.git (push)'
+https_push_re = re.compile(r'(?P<name>[^\s]+)\s+https?://(?P<host>[^/]+)/(?P<path>[^\s]+)\s\(push\)')
+
+
+def _parse_remote(remote):
+    return re.match(https_push_re, remote) or re.match(ssh_push_re, remote)
 
 
 def get_remotes():
@@ -14,10 +22,7 @@ def get_remotes():
         lambda remote: remotes.update({remote.group('name'): remote}),
         filter(
             lambda x: x,
-            map(
-                lambda line: re.match(push_remote_re, line),
-                remote_lines
-            )
+            map(_parse_remote, remote_lines)
         )
     )
     return remotes

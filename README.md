@@ -12,6 +12,15 @@ These were written alongside other bash and python helpers that I may not have p
         * put the root of this repo, as well as the `aliases/` subdirectory, on your `$PATH`
         * put the root of this repo, as well as the `util/` subdirectory, on your `$PYTHONPATH`
 
+To run the tests for this repo, you'll need to do some additional configuration. This is not necessary if you just want to use the scripts!
+
+```bash
+virtualenv env
+source env/bin/activate
+pip -r requirements.dev.txt
+nosetests
+```
+
 ### "git branches" (`git b`) ###
 
 I have this aliased to `gb` and it is one of my most commonly typed commands. It is basically a prettier and more useful version of `git branch -vv`.
