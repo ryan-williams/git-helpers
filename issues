@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-import re
-import subprocess
 import sys
 import webbrowser
+
+from util.remotes import get_remotes
 
 
 def make_issues_url(remote):
@@ -17,16 +17,10 @@ def open_issues_url(remote):
     sys.exit(0)
 
 
-output = subprocess.check_output(['git', 'remote', '-v'])
-remotes = output.split('\n')
-for remote in remotes:
-    m = re.search(r'\thttps?://github.com/([^ ]+) \(push\)$', remote)
-    if m: open_issues_url(m.group(1))
-
-    # Try an SSH remote
-    m = re.search(r'@github.com:([^ ]+) \(push\)$', remote)
-    if m: open_issues_url(m.group(1))
-
+for remote in get_remotes().values():
+    print remote.group()
+    if remote.group('host') == 'github.com':
+        open_issues_url(remote.group('path'))
 
 sys.stderr.write('Unable to find a github.com remote!\n')
 sys.exit(1)
