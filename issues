@@ -1,2 +1,18 @@
-#!/bin/bash
-open $(git remote -v | grep push | cut -f2 | sed 's/.git .*/\/issues/')
+#!/usr/bin/env python
+import re
+import subprocess
+import sys
+import webbrowser
+
+output = subprocess.check_output(['git', 'remote', '-v'])
+remotes = output.split('\n')
+for remote in remotes:
+  m = re.search(r'\t(https://github.com/[^ ]+) \(push\)$', remote)
+  if m:
+    git_url = m.group(1)
+    issues_url = git_url.replace('.git', '/issues')
+    webbrowser.open_new_tab(issues_url)
+    sys.exit(0)
+
+sys.stderr.write('Unable to find a github.com remote!\n')
+sys.exit(1)
