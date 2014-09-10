@@ -18,7 +18,6 @@ def open_issues_url(remote):
 
 
 for remote in get_remotes().values():
-    print remote.group()
     if remote.group('host') == 'github.com':
         open_issues_url(remote.group('path'))
 
