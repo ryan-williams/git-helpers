@@ -30,4 +30,5 @@ chmod 755 "$full"
 
 cd "aliases"
 ln -s ../"$full" "$short"
+git add "$short"
 
