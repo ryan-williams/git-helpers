@@ -10,7 +10,7 @@ if len(sys.argv) == 0:
 
 input_segments = map(int, sys.argv[1].split('.'))
 
-version_regex = 'git version ((?:([0-9]+)\.)*[0-9]+)'
+version_regex = r'git version ((?:(\d+)\.)*\d+)'
 version_output = subprocess.Popen(['git', '--version'], stdout=subprocess.PIPE).communicate()[0]
 m = re.match(version_regex, version_output)
 if not m:
