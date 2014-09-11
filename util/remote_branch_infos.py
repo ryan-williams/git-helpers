@@ -6,6 +6,7 @@ from branch_infos import BranchInfos
 from remote_branch_info import RemoteBranchInfo
 import fileinput
 
+
 class RemoteBranchInfos(BranchInfos):
 
     def branchInfoClass(self):
@@ -24,4 +25,3 @@ class RemoteBranchInfos(BranchInfos):
 
 if __name__ == "__main__":
     RemoteBranchInfos(fileinput.input())
-

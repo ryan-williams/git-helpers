@@ -4,10 +4,12 @@ import re
 import subprocess
 
 # e.g. 'origin	git@github.com:danvk/expandable-image-grid.git (push)'
-ssh_push_re = re.compile('(?P<name>[^\s]+)\s+((?P<user>[^@]+)@)?(?P<host>[^:]+)(?::(?P<path>[^\s]+))?\s\(push\)')
+ssh_push_re = re.compile(
+    '(?P<name>[^\s]+)\s+((?P<user>[^@]+)@)?(?P<host>[^:]+)(?::(?P<path>[^\s]+))?\s\(push\)')
 
 # e.g. 'origin	https://github.com/danvk/git-helpers.git (push)'
-https_push_re = re.compile(r'(?P<name>[^\s]+)\s+https?://(?P<host>[^/]+)/(?P<path>[^\s]+)\s\(push\)')
+https_push_re = re.compile(
+    r'(?P<name>[^\s]+)\s+https?://(?P<host>[^/]+)/(?P<path>[^\s]+)\s\(push\)')
 
 
 def _parse_remote(remote):

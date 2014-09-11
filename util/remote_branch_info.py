@@ -9,7 +9,8 @@ class RemoteBranchInfo(BranchInfo):
     regex_pieces = [
         " \((?P<names>[^)]+)\) ",
         "%s " % hash_regex,
-        "%s " % named("date", "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"),
+        "%s " % named(
+            "date", "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"),
         "[\-+][0-9]{4} ",
         "\(%s\) " % named("reldate", "[^)]+"),
         named("description", ".*")

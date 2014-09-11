@@ -9,6 +9,7 @@ from util import remotes
 
 from nose.tools import *
 
+
 def test_regex_https():
     remote = 'origin	https://github.com/danvk/git-helpers.git (push)'
     m = remotes._parse_remote(remote)
@@ -17,7 +18,7 @@ def test_regex_https():
         'name': 'origin',
         'host': 'github.com',
         'path': 'danvk/git-helpers.git',
-        }, m.groupdict())
+    }, m.groupdict())
 
 
 def test_regex_ssh():
@@ -29,4 +30,4 @@ def test_regex_ssh():
         'host': 'github.com',
         'path': 'danvk/expandable-image-grid.git',
         'user': 'git'
-        }, m.groupdict())
+    }, m.groupdict())

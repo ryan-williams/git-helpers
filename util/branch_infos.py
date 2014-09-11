@@ -11,7 +11,8 @@ class BranchInfos:
         prop_name, left_justify = prop if len(prop) == 2 else (prop, False)
         self.maxs[prop_name] = (
             max(
-                map(lambda bi: clen(getattr(bi, prop_name) if hasattr(bi, prop_name) else ''), self.branches)
+                map(lambda bi: clen(
+                    getattr(bi, prop_name) if hasattr(bi, prop_name) else ''), self.branches)
             ),
             left_justify
         )
@@ -23,7 +24,8 @@ class BranchInfos:
         return BranchInfo
 
     def get_lines(self):
-        out, err = subprocess.Popen(self.cmd(), stdout=subprocess.PIPE).communicate()
+        out, err = subprocess.Popen(
+            self.cmd(), stdout=subprocess.PIPE).communicate()
         return out.splitlines()
 
     def run_secondary_cmd(self):
@@ -47,10 +49,10 @@ class BranchInfos:
             map(lambda bi: bi.set_dates(date, reldate),
                 self.branches_by_hash[hsh])
 
-
     def maxed_fields(self):
         return [
-            ('name', True), 'remote', 'ahead_str', 'behind_str', 'reldate', 'hash'
+            ('name',
+             True), 'remote', 'ahead_str', 'behind_str', 'reldate', 'hash'
         ]
 
     def __init__(self, lines=None):
@@ -80,4 +82,3 @@ class BranchInfos:
         for bi in self.branches:
             print bi.to_string(self.maxs)
         print ''
-

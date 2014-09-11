@@ -65,7 +65,8 @@ class BranchInfo(object):
         if (match):
             pass
         else:
-            raise Exception("Invalid branch line:\n%s\nregex:\n%s" % (line, '\n'.join(self.regex_pieces)))
+            raise Exception(
+                "Invalid branch line:\n%s\nregex:\n%s" % (line, '\n'.join(self.regex_pieces)))
 
         self.dict = match.groupdict()
 
@@ -95,7 +96,8 @@ class BranchInfo(object):
 
     def field_string(self, prop_name, fixed_width_map):
         fixed_width, left_justify = \
-            fixed_width_map[prop_name] if fixed_width_map and prop_name in fixed_width_map else (0, False)
+            fixed_width_map[
+                prop_name] if fixed_width_map and prop_name in fixed_width_map else (0, False)
         return fixed(fixed_width, self.colored_field(prop_name), left_justified=left_justify)
 
     def fields(self):
@@ -131,4 +133,3 @@ class BranchInfo(object):
 
         self.date = datetime.strftime(self.datetime, '%Y-%m-%d %H:%M:%S')
         self.reldate = shorten_reldate(reldate)
-
