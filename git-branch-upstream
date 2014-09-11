@@ -6,5 +6,15 @@ else
   upstream="$1"
   shift
 fi
-git branch --set-upstream-to "$upstream" "$@"
+
+if g vgte "1.8"; then
+  git branch --set-upstream-to "$upstream" "$@"
+else
+  if [ $# -eq 0 ]; then
+    target="$(git current-branch)"
+  else
+    target="$1"
+  fi
+  git branch --set-upstream "$target" "$upstream"
+fi
 
