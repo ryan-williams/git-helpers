@@ -24,7 +24,10 @@ git checkout "$cur_branch_name"
 rm -rf "$(git ls-files --other --exclude-standard)"
 
 tar tf "$tar" > "$tar_files_file"
-echo "$tar" "$remote_script" "$tar_files_file" >> "$tar_files_file"
+echo "$tar" >> "$tar_files_file"
+echo "$remote_script" >> "$tar_files_file"
+echo "$tar_files_file" >> "$tar_files_file"
+
 tar mxf "$tar"
 
 if [ -s "$staged" ]; then
@@ -85,17 +88,21 @@ diff "$unstaged" <(git diff)
 
 set +e
 
-if [ -s "$tar_files_file" ]; then
-  echo "Removing tarred transit files:"
-  cat "$tar_files_file"
-  rm -rf "$(cat "$tar_files_file")"
-fi
-
-echo "Removing untracked git files:"
 OLD_IFS="$IFS"
 IFS=$'\n'
+if [ -s "$tar_files_file" ]; then
+  echo "Removing tarred transit files..."
+  for f in $(cat "$tar_files_file"); do
+    rm -rf "$f"
+  done
+fi
+
+# TODO(ryan): provide options for transferring/preserving untracked git files.
+echo "Removing untracked git files..."
 for f in $(git ls-files --other --exclude-standard); do
   echo -e "\tremoving $f"
   rm -rf "$f"
 done
+
+IFS="$OLD_IFS"
 echo ""
