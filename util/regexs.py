@@ -1,5 +1,6 @@
 
 normal_refname_regex = "[a-zA-Z0-9-_/\.]+"
+refname_or_tag_regex = "(?:%s|tag: %s)" % (normal_refname_regex, normal_refname_regex)
 detached_refname_regex = "\(detached from %s\)" % normal_refname_regex
 no_branch_regex = "\(no branch, rebasing %s\)" % normal_refname_regex
 combined_refname_regex = "%s|%s|%s" % (
