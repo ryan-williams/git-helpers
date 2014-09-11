@@ -49,7 +49,7 @@ try:
     remote_script_basename = 'tmp.git-unpack-and-apply-diffs'
     local_script = \
         subprocess.Popen(
-            [ 'which', local_script_basename ], stdout=subprocess.PIPE
+            ['which', local_script_basename], stdout=subprocess.PIPE
         ).communicate()[0].strip()
 
     print "script to run remotely: %s" % local_script
@@ -142,7 +142,8 @@ try:
 
     if found_files and len(found_files):
         inp = raw_input(
-            'Found existing files: %s. Overwrite? [Y/n]: ' % ','.join(found_files)
+            'Found existing files: %s. Overwrite? [Y/n]: ' % ','.join(
+                found_files)
         )
         if inp and inp[0].lower() != 'y':
             print 'Exiting'
@@ -161,12 +162,14 @@ try:
         'scp',
         #'-v',
         local_script,
-        '%s:%s/%s' % (remote.group('host'), remote.group('path'), remote_script_basename)
+        '%s:%s/%s' % (remote.group('host'), remote.group('path'),
+                      remote_script_basename)
     ]
     print "scp'ing remote script: %s" % ' '.join(cmd)
     subprocess.call(cmd)
 
-    remote_cmd = 'cd %s && ./%s "%s"' % (remote.group('path'), remote_script_basename, cur_branch_name)
+    remote_cmd = 'cd %s && ./%s "%s"' % (
+        remote.group('path'), remote_script_basename, cur_branch_name)
 
     print 'remote_cmd: %s' % remote_cmd
 

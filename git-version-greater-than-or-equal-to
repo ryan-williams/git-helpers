@@ -5,16 +5,18 @@ import subprocess
 import sys
 
 if len(sys.argv) == 0:
-  print "Usage: %s <version>" % sys.argv[0]
-  sys.exit(255)
+    print "Usage: %s <version>" % sys.argv[0]
+    sys.exit(255)
 
 input_segments = map(int, sys.argv[1].split('.'))
 
 version_regex = r'git version ((?:(\d+)\.)*\d+)'
-version_output = subprocess.Popen(['git', '--version'], stdout=subprocess.PIPE).communicate()[0]
+version_output = subprocess.Popen(
+    ['git', '--version'], stdout=subprocess.PIPE).communicate()[0]
 m = re.match(version_regex, version_output)
 if not m:
-  raise Exception("Error parsing `git --version` output: %s" % version_output)
+    raise Exception("Error parsing `git --version` output: %s" %
+                    version_output)
 
 version_segments = map(int, m.group(1).split('.'))
 

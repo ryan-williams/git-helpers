@@ -45,7 +45,7 @@ class CommitInfos:
 
         pieces = map(
             lambda name: Pieces[name],
-            [ 'refnames', 'hash', 'reldate', 'author', 'date', 'description' ]
+            ['refnames', 'hash', 'reldate', 'author', 'date', 'description']
         )
 
         cmd = [
