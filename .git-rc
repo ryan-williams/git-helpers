@@ -2,7 +2,11 @@
 
 # Git aliases. source me from .bashrc!
 
-dir="$(dirname "${BASH_SOURCE[0]}")"
+if [ -n "$ZSH_VERSION" ]; then
+  dir="$(dirname $0)"
+else
+  dir="$(dirname "${BASH_SOURCE[0]}")"
+fi
 
 [ -s "$dir/.gitcomplete" ] && source "$dir/.gitcomplete"
 [ -s "$dir/.git-completion.bash" ] && source "$dir/.git-completion.bash"
