@@ -18,6 +18,7 @@ alias gcd="g cd"
 alias gf="git fetch"
 alias gfo="git fetch origin"
 
+alias gacpc="g acpc"
 alias gbd="git branch -d"
 alias gbD="git branch -D"
 alias gbdf="git branch -D"
