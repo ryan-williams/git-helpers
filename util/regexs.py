@@ -2,9 +2,10 @@
 normal_refname_regex = "[a-zA-Z0-9-_/\.]+"
 refname_or_tag_regex = "(?:%s|tag: %s)" % (normal_refname_regex, normal_refname_regex)
 detached_refname_regex = "\(detached from %s\)" % normal_refname_regex
-no_branch_regex = "\(no branch, rebasing %s\)" % normal_refname_regex
-combined_refname_regex = "%s|%s|%s" % (
-    normal_refname_regex, detached_refname_regex, no_branch_regex)
+no_branch_rebase_regex = "\(no branch, rebasing %s\)" % normal_refname_regex
+no_branch_bisect_regex = "\(no branch, bisect started on %s\)" % normal_refname_regex
+combined_refname_regex = "%s|%s|%s|%s" % (
+    normal_refname_regex, detached_refname_regex, no_branch_rebase_regex, no_branch_bisect_regex)
 
 
 def named(name, regex):
