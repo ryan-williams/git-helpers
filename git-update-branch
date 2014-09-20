@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Moves to a branch, rebases it against its upstream, and moves back to the branch where you started.
+
+target="$1"
+shift
+
+set -e
+current_branch="$(git current-branch)"
+git checkout "$target"
+git rebase "$@"
+git checkout "$current_branch"
+
