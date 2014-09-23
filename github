@@ -50,7 +50,8 @@ if __name__ == '__main__':
 
     remote = remotes[0].group('path')
     if len(remotes) > 1:
-        sys.stderr.write('Found multiple remotes. Using %s\n' % remotes)
+        chosen_remote = remotes[0].groupdict()['path']
+        sys.stderr.write('Found multiple remotes. Using %s\n' % chosen_remote)
 
     webbrowser.open_new_tab(make_github_url(remote) + '/' + page)
     sys.exit(0)
