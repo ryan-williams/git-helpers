@@ -1,0 +1,15 @@
+#!/bin/sh
+
+echo $1
+files=$(git ls-files | grep --color=never "$1")
+if [ $(count $files) -eq 1 ]; then
+    git log -p --follow -- $files
+else
+    select filename in $files; do
+        echo $filename
+        set -v
+        git log -p --follow -- "$filename"
+        set +v
+        break
+    done
+fi
