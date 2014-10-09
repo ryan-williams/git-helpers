@@ -25,7 +25,7 @@ def _parse_remotes(remote_lines):
 def get_remotes():
     remote_lines = subprocess.Popen(
         ['git', 'remote', '-v'], stdout=subprocess.PIPE).communicate()[0].split('\n')
-    return _parse_remote(remote_lines)
+    return _parse_remotes(remote_lines)
 
 
 if __name__ == '__main__':
