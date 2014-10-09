@@ -16,18 +16,17 @@ def _parse_remote(remote):
     return re.match(https_push_re, remote) or re.match(ssh_push_re, remote)
 
 
+def _parse_remotes(remote_lines):
+    return {remote.group('name'): remote
+            for remote in map(_parse_remote, remote_lines)
+            if remote}
+
+
 def get_remotes():
     remote_lines = subprocess.Popen(
         ['git', 'remote', '-v'], stdout=subprocess.PIPE).communicate()[0].split('\n')
-    remotes = {}
-    map(
-        lambda remote: remotes.update({remote.group('name'): remote}),
-        filter(
-            lambda x: x,
-            map(_parse_remote, remote_lines)
-        )
-    )
-    return remotes
+    return _parse_remotes(remote_lines)
+
 
 if __name__ == '__main__':
     print get_remotes()
