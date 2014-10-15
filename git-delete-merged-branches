@@ -1,0 +1,8 @@
+#!/bin/bash
+# Delete branches which have been merged into the current one.
+if [[ $(git current-branch) != "master" ]]; then
+  >&2 echo "You should only run this command from the master branch."
+  exit 1
+fi
+
+git branch --merged | grep -v "\*" | xargs -n 1 git branch -d
