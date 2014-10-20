@@ -1,5 +1,11 @@
 #!/bin/bash
 
+link_only=
+if [ "$1" == "-s" ]; then
+  link_only=1
+  shift
+fi
+
 if [ $# -ne 2 ]; then
   err "Usage: $0 <full git extension> <git alias>"
   exit 1
@@ -19,7 +25,10 @@ verify_commands_dont_exist() {
     fi
   done
 }
-verify_commands_dont_exist "$full" "$short"
+
+if [ ! $link_only ]; then
+  verify_commands_dont_exist "$full" "$short"
+fi
 
 if [ ! -e "$full" ]; then
   err "Can't find $PWD/$full"
