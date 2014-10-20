@@ -1,15 +1,15 @@
 #!/bin/sh
 
-cwd=$(pwd)
+cwd="$(pwd)"
 . git-cd-to-root
-root=$(pwd)
+root="$(pwd)"
 
 if [ "${cwd:${#cwd}-1}" != '/' ]; then
-   cwd=$cwd/
+   cwd="$cwd/"
 fi
 
 if [ "${root:${#root}-1}" != '/' ]; then
-   root=$root/
+   root="$root/"
 fi
 
 if [ "${cwd:0:${#root}}" != "$root" ]; then
@@ -17,8 +17,8 @@ if [ "${cwd:0:${#root}}" != "$root" ]; then
     exit 1
 fi
 
-remnant=${cwd:${#root}}
+remnant="${cwd:${#root}}"
 if [ -z "$remnant" ]; then
     remnant="./"
 fi
-echo $remnant
+echo "$remnant"
