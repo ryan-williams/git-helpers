@@ -22,6 +22,7 @@
 # TODO: make this work for multiple input files/directories.
 # TODO: possibly just `cp` each commit's version of the file(s) to the destination repo, rather than generating and
 #       applying patches; this may make the multiple files/directories story much simpler as well.
+# TODO: preserve commits' original metadata: timestamp, author, etc.
 
 
 if [ $# -lt 2 ]; then
