@@ -1,0 +1,4 @@
+#!/bin/bash
+
+git count-commits $(git bisect-latest-good)..HEAD
+
