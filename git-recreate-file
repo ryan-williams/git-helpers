@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# Replay all commits that affect a given file in a new git repository, effectively reconstructing that file's history
+# divorced from its original repository. Example:
+#
+#    $ git recreate-file some/foo /path/to/new/repo path/in/new/repo
+#
+# Run this from the root of the "source" git repo.
+#
+# Args:
+#
+#    - relative path in "source" repo to the path to be moved
+#    - path to root of "destination" repo; if directory / git repo at this location doesn't exist yet, it will be
+#      created, free of charge.
+#    - relative path to destination within "destination" repo to put the file at; defaults to the same relative path
+#      that the file was taken from in the "source" repo.
+
+
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 <relative 'from' path> <path to dest repo root> [<relative 'to' path in dest repo>]" 1>&2
+  exit 1
+fi
+
+f="$1"
+shift
+dest_git_repo="$1"
+shift
+
+if [ $# -gt 0 ]; then
+  dest_path="$1"
+else
+  dest_path="$f"
+fi
+
+msg_file="$(tmpfile)"
+patch_file="$(tmpfile)"
+
+hashes="$(git --no-pager log --format="%h" -- "$f" | reverse)"
+if [ ! "$hashes" ]; then
+  echo "No commits found touching $f" 1>&2
+  exit 1
+fi
+
+set -e
+
+first_hash=1
+for hash in $hashes; do
+  echo "Replaying $hash..."
+
+  git log -n 1 --format="%B" $hash > "$msg_file"
+
+  if [ "$first_hash" ]; then
+    git --no-pager show $hash:"$f" > "$patch_file"
+  else
+    set +e
+    diff <(git --no-pager show $hash^:"$f") <(git --no-pager show $hash:"$f") > "$patch_file"
+    set -e
+  fi
+
+  if [ ! -e "$dest_git_repo" ]; then
+    echo "Creating directory: $dest_git_repo"
+    mkdir -p "$dest_git_repo"
+  fi
+
+  pushd "$dest_git_repo" &> /dev/null
+
+  if [ ! -d ".git" ]; then
+    git init
+  fi
+
+  if [ "$first_hash" ]; then
+    if [ -e "$dest_path" ]; then
+      echo "Error: $dest_path already exists in $dest_git_repo" 1>&2
+      exit 1
+    fi
+    mkdir -p "$(dirname "$dest_path")"
+    mv "$patch_file" "$dest_path"
+  else
+    patch "$dest_path" "$patch_file"
+  fi
+
+  git add "$dest_path"
+
+  echo "Committing with msg:"
+  cat "$msg_file"
+  echo ''
+
+  git commit -F "$msg_file"
+  echo ''
+
+  popd &> /dev/null
+  first_hash=
+done
+
+rm -f "$msg_file" "$patch_file"
