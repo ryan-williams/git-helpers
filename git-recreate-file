@@ -50,7 +50,12 @@ for hash in $hashes; do
   git log -n 1 --format="%B" $hash > "$msg_file"
 
   if [ "$first_hash" ]; then
-    git --no-pager show $hash:"$f" > "$patch_file"
+    # The first hash that modified the source file presumably created it; naively patching this diff onto, say, an
+    # empty file would not pick up the right permissions. Instead, we check out this initial version and `cp -p` it,
+    # first to a tmp file, then to the destination location, to preserve permissions.
+    git checkout "$hash" -- "$f"
+    cp -p "$f" "$patch_file"
+    git checkout HEAD -- "$f"
   else
     set +e
     diff <(git --no-pager show $hash^:"$f") <(git --no-pager show $hash:"$f") > "$patch_file"
