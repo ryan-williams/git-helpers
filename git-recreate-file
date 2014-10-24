@@ -14,6 +14,14 @@
 #      created, free of charge.
 #    - relative path to destination within "destination" repo to put the file at; defaults to the same relative path
 #      that the file was taken from in the "source" repo.
+#
+# TODO: clean up unnecessary copy indirection involved in porting initial commit / file creation; currently we copy
+#       to a temporary location, then lazily create the destination repo, then cp the initial version of the file over.
+# TODO: make this work for file "renames" / moves, at least as much as `git log --follow` is able to handle.
+# TODO: make this work for directories.
+# TODO: make this work for multiple input files/directories.
+# TODO: possibly just `cp` each commit's version of the file(s) to the destination repo, rather than generating and
+#       applying patches; this may make the multiple files/directories story much simpler as well.
 
 
 if [ $# -lt 2 ]; then
