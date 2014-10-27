@@ -15,13 +15,8 @@
 #    - relative path to destination within "destination" repo to put the file at; defaults to the same relative path
 #      that the file was taken from in the "source" repo.
 #
-# TODO: clean up unnecessary copy indirection involved in porting initial commit / file creation; currently we copy
-#       to a temporary location, then lazily create the destination repo, then cp the initial version of the file over.
-# TODO: make this work for file "renames" / moves, at least as much as `git log --follow` is able to handle.
 # TODO: make this work for directories.
 # TODO: make this work for multiple input files/directories.
-# TODO: possibly just `cp` each commit's version of the file(s) to the destination repo, rather than generating and
-#       applying patches; this may make the multiple files/directories story much simpler as well.
 # TODO: preserve commits' original metadata: timestamp, author, etc.
 
 
@@ -44,66 +39,55 @@ fi
 msg_file="$(tmpfile)"
 patch_file="$(tmpfile)"
 
-hashes="$(git --no-pager log --format="%h" -- "$f" | reverse)"
-if [ ! "$hashes" ]; then
-  echo "No commits found touching $f" 1>&2
-  exit 1
-fi
-
 set -e
 
-first_hash=1
-for hash in $hashes; do
-  echo "Replaying $hash..."
+idx=0
+while read -d $'\0' hash && read -d $'\0' filename; do
+  echo "$hash:$filename"
+  git log -n 1 --format="%B" $hash > "${msg_file}.$idx"
+  git show $hash:"$filename" > "${patch_file}.$idx"
+  echo -e "\twrote to ${msg_file}.$idx and ${patch_file}.$idx"
 
-  git log -n 1 --format="%B" $hash > "$msg_file"
+  let idx=$idx+1
+  export idx
+  echo -e "\tidx now: $idx"
+done < <(git --no-pager log --format="%h" --name-only --follow -z -- "$f")
 
-  if [ "$first_hash" ]; then
-    # The first hash that modified the source file presumably created it; naively patching this diff onto, say, an
-    # empty file would not pick up the right permissions. Instead, we check out this initial version and `cp -p` it,
-    # first to a tmp file, then to the destination location, to preserve permissions.
-    git checkout "$hash" -- "$f"
-    cp -p "$f" "$patch_file"
-    git checkout HEAD -- "$f"
-  else
-    set +e
-    diff <(git --no-pager show $hash^:"$f") <(git --no-pager show $hash:"$f") > "$patch_file"
-    set -e
-  fi
+echo "Stored $idx commits"
 
-  if [ ! -e "$dest_git_repo" ]; then
-    echo "Creating directory: $dest_git_repo"
-    mkdir -p "$dest_git_repo"
-  fi
+if [ ! -e "$dest_git_repo" ]; then
+  echo "Creating directory: $dest_git_repo"
+  mkdir -p "$dest_git_repo"
+fi
 
-  pushd "$dest_git_repo" &> /dev/null
+cd "$dest_git_repo" &> /dev/null
 
-  if [ ! -d ".git" ]; then
-    git init
-  fi
+if [ ! -d ".git" ]; then
+  git init
+fi
 
-  if [ "$first_hash" ]; then
-    if [ -e "$dest_path" ]; then
-      echo "Error: $dest_path already exists in $dest_git_repo" 1>&2
-      exit 1
-    fi
-    mkdir -p "$(dirname "$dest_path")"
-    mv "$patch_file" "$dest_path"
-  else
-    patch "$dest_path" "$patch_file"
-  fi
+if [ -e "$dest_path" ]; then
+  echo "Error: $dest_path already exists in $dest_git_repo" 1>&2
+  exit 1
+fi
+mkdir -p "$(dirname "$dest_path")"
 
+set +e
+while [ $idx -gt 0 ]; do
+  let idx=$idx-1
+  set -e
+
+  mv "${patch_file}.$idx" "$dest_path"
   git add "$dest_path"
 
   echo "Committing with msg:"
-  cat "$msg_file"
+  cat "$msg_file.$idx"
   echo ''
 
-  git commit -F "$msg_file"
-  echo ''
+  set +e
+  git commit -F "$msg_file.$idx"
 
-  popd &> /dev/null
-  first_hash=
+  echo ''
 done
 
-rm -f "$msg_file" "$patch_file"
+rm -f "$msg_file"* "$patch_file"*
