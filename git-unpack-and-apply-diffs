@@ -19,7 +19,7 @@ echo "remote.. git-unpack-and-apply-diffs!"
 
 set -e
 
-git reset --hard HEAD
+git reset --hard "$cur_branch_name"
 git checkout "$cur_branch_name"
 rm -rf "$(git ls-files --other --exclude-standard)"
 
