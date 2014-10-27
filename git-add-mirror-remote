@@ -30,7 +30,8 @@ remote_cmd = ' && '.join([
     'cd %s' % (remote.group('path') or '~'),
     'git init',
     'git config receive.denyCurrentBranch false',
-    'git config receive.denyNonFastForwards false'
+    'git config receive.denyNonFastForwards false',
+    'git config receive.denyDeleteCurrent false',
 ])
 
 print 'Running remote cmd: %s' % remote_cmd
