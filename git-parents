@@ -1,0 +1,3 @@
+#!/bin/bash
+
+git rev-list --parents -n 1 "$1" | sed "s/^[^ ]* //"
