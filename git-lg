@@ -3,7 +3,10 @@
 import re
 import sys
 import subprocess
-from color import clen
+
+if __name__ == '__main__':
+    sys.path.append('.')
+from util.color import clen
 from util.piece import Pieces
 
 
