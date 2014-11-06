@@ -1,0 +1,20 @@
+#!/bin/bash
+
+from=
+if [ $# -lt 1 ]; then
+  from=origin/HEAD
+else
+  from="$1"
+  shift
+fi
+
+to=
+if [ $# -lt 1 ]; then
+  to=HEAD
+else
+  to="$1"
+  shift
+fi
+
+git log --graph --color --oneline --decorate --no-walk "$from" "$to" "$@" $(g mbp "$from" "$to" "$@" | splt ' ' | prepend ^)
+
