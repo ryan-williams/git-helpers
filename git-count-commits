@@ -1,18 +1,30 @@
 #!/bin/bash
 
+from=
+to=
 if [ $# -eq 2 ]; then
-  refspec="$1..$2"
+  from="$1"
+  to="$2"
+  #refspec="$1..$2"
   shift
   shift
 elif [ $# -eq 1 ]; then
-  refspec="$1"
+  if [[ "$1" =~ ^[0-9a-fA-F]*..[0-9a-fA-F]*$ ]]; then
+    from="${1%%..*}"
+    to="${1##*..}"
+  else
+    from="HEAD"
+    to="$1"
+  fi
   shift
 else
   err "Usage:"
-  err -e "\t$0 <refspec>"
-  err -e "\t$0 <sha1> <sha2>"
+  err -e "\t$0 <sha1>..<sha2>"
+  err -e "\t$0 <sha1> <sha2=HEAD>"
   exit 1
 fi
 
-git rev-list --count "$refspec" "$@"
+echo -"$(git rev-list --count "$@" "$to".."$from")"
+echo +"$(git rev-list --count "$@" "$from".."$to")"
+
 
