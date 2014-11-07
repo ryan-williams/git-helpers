@@ -14,6 +14,9 @@ fi
 export PATH="$PATH:$dir:$dir/aliases"
 export PYTHONPATH="$PYTHONPATH:$dir:$dir/util"
 
+export oh="origin/HEAD"
+export h="HEAD"
+
 alias gcd="g cd"
 alias gf="git fetch"
 alias gfo="git fetch origin"
