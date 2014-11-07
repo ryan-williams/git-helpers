@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Output commit messages from a range of commits (default: origin/HEAD..HEAD).
+#
+# Each message is formatted as follows:
+#
+# - <subject>
+#
+#   <body, indented two spaces>
+#
+# - <subject>
+#
+#   <body, indented two spaces>
+#
+# etc.
+#
+# TODO(ryan): do smart wrapping on the body at 70-chars, per official guidance!
+
+if [ $# -eq 0 ]; then
+  args="origin/HEAD..HEAD"
+else
+  args="$@"
+fi
+
+for sha in $(g rev-list --reverse $args); do
+  echo -n '- '
+  gn log --format="%s" -n 1 $sha
+  body="$(gn log --format=%b -n 1 $sha | indent | trim)"
+  echo ''
+  if [ ! -z "$body" ]; then
+    gn log --format=%b -n 1 $sha | indent
+  fi
+done
