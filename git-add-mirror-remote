@@ -6,6 +6,9 @@ __author__ = "Ryan Williams"
 
 import subprocess
 import sys
+
+if __name__ == '__main__':
+    sys.path.append('.')
 from util.remotes import get_remotes
 
 if len(sys.argv) < 3:

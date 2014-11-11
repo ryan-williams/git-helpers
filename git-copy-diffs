@@ -7,6 +7,9 @@ import subprocess
 import sys
 import tarfile
 from tempfile import mkdtemp
+
+if __name__ == '__main__':
+    sys.path.append('.')
 from util.remotes import get_remotes
 
 remote = None
