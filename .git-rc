@@ -12,7 +12,6 @@ fi
 [ -s "$dir/.git-completion.bash" ] && source "$dir/.git-completion.bash"
 
 export PATH="$PATH:$dir:$dir/aliases"
-export PYTHONPATH="$PYTHONPATH:$dir:$dir/util"
 
 export oh="origin/HEAD"
 export h="HEAD"

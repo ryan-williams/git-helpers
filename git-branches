@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+if __name__ == '__main__':
+    sys.path.append('.')
 from util.branch_infos import BranchInfos
 
 BranchInfos()

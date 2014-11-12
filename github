@@ -2,8 +2,9 @@
 import sys
 import webbrowser
 
+if __name__ == '__main__':
+    sys.path.append('.')
 from util import github
-
 
 
 PAGES = ['', 'issues', 'pulls', 'commits', 'wiki', 'pulse', 'graphs']
