@@ -1,7 +1,10 @@
 #!/usr/bin/python
 
+import sys
+
 if __name__ == '__main__':
     sys.path.append('.')
+
 from util.branch_infos import BranchInfos
 
 BranchInfos()
