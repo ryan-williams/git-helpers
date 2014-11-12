@@ -1,0 +1,48 @@
+#!/usr/bin/python
+
+from subprocess import check_output, Popen, PIPE
+import sys
+from util.remotes import get_remotes
+
+def die(msg, exit_code=1):
+  sys.stderr.write(msg + '\n')
+  sys.exit(exit_code)
+
+if len(sys.argv) < 2:
+  remote_name='origin'
+else:
+  remote_name=sys.argv[1]
+
+remotes = get_remotes()
+
+if remote_name not in remotes:
+  die("Remote '%s' doesn't exist" % remote_name)
+
+remote = remotes[remote_name]
+if remote.group('user') != 'git' or remote.group('host') != 'github.com':
+  die("Remote '%s' doesn't appear to be a github remote: %s@%s" % (remote_name, remote.group('user'), remote.group('host')))
+
+remote_fetch_config_key = 'remote.%s.fetch' % remote_name
+remote_fetch_config_pr_mapping = 'refs/remotes/%s/pr/*' % remote_name
+remote_fetch_config_value = '+refs/pull/*/head:%s' % remote_fetch_config_pr_mapping
+
+def remote_configured_to_fetch_pr_tags():
+  return bool(
+    [
+      line
+      for line in check_output(['git', 'config', '--get-all', remote_fetch_config_key]).split('\n')
+      if line.endswith(remote_fetch_config_value)
+    ]
+  )
+
+
+if remote_configured_to_fetch_pr_tags():
+  print 'Remote "%s" is already configured to fetch github "pr" tags' % remote_name
+else:
+  check_output(['git', 'config', '--add', remote_fetch_config_key, remote_fetch_config_value])
+  if not remote_configured_to_fetch_pr_tags():
+    raise Exception(
+      'Failed to add fetch mapping "%s" to git config key "%s"' % (remote_fetch_config_value, remote_fetch_config_key)
+    )
+
+print check_output(['git', 'fetch', remote_name])
