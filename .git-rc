@@ -15,6 +15,7 @@ export PATH="$PATH:$dir:$dir/aliases"
 
 export oh="origin/HEAD"
 export h="HEAD"
+export pr="origin/pr"
 
 alias gcd="g cd"
 alias gf="git fetch"
@@ -42,7 +43,6 @@ alias ggp="git graph-pretty"
 alias ggn="git graph -n"
 #alias gln="gn graph -n"
 alias gln="g lg"
-alias gp="g gp"
 
 alias gc="git commit"
 alias gcm="git commit -m"
