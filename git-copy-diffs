@@ -145,7 +145,7 @@ try:
 
     if found_files and len(found_files):
         inp = raw_input(
-            'Found existing files: %s. Overwrite? [Y/n]: ' % ','.join(
+            'Found existing files:\n\t%s\nOverwrite? [Y/n]: ' % '\n\t'.join(
                 found_files)
         )
         if inp and inp[0].lower() != 'y':
@@ -192,7 +192,7 @@ finally:
 
     try:
         if (tempdir):
-            print "Removing %s" % tempdir
+            print "\tRemoving tmp dir: %s" % tempdir
             shutil.rmtree(tempdir)
     except OSError as exc:
         if exc.errno != errno.ENOENT:  # ENOENT - no such file or directory
