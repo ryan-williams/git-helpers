@@ -8,6 +8,8 @@ tar_files_file="tar_files"
 added_files="added_files"
 deleted_files="deleted_files"
 untracked_files_to_preserve='untracked_files_to_preserve'
+
+# This script runs remotely from within an scp'd copy with this name.
 remote_script="tmp.git-unpack-and-apply-diffs"
 
 if [ $# -eq 0 ]; then
@@ -16,7 +18,7 @@ else
   cur_branch_name="$1"
 fi
 
-echo "remote.. git-unpack-and-apply-diffs!"
+echo "remote: git-unpack-and-apply-diffs!"
 
 set -e
 
@@ -37,20 +39,17 @@ if [ -s "$staged" ]; then
   echo "Looking for $(wc -l "$added_files") files..."
   for f in $(cat "$added_files"); do
     if [ -f "$f" ]; then
-      echo -en "\tWarning: added file already exists and is not tracked: '$f'.. "
-      if [ ! -z "$PROMPT_FOR_REMOVALS" ]; then
+      echo -en "\tWARNING: added file already exists and is not tracked: '$f'.. "
+      if [ -n "$PROMPT_FOR_REMOVALS" ]; then
         echo "Remove? [Y/n]"
         read input
-        echo "Input: $input"
         if [ -z "$input" -o "$(echo "${input:0:1}" | tr "[:lower:]" "[:upper:]")" == "Y" ]; then
-          echo -e "\tyay!"
           rm -f "$f"
         else
           exit 1
         fi
       else
-        echo "Removed."
-        rm -f "$f"
+        rm -f "$f" && echo "Removed."
       fi
     fi
   done

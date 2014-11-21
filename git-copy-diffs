@@ -199,14 +199,13 @@ try:
 
     print 'ssh cmd:'
     print ' '.join(ssh_cmd)
-    print ''
     subprocess.check_call(ssh_cmd)
 
 finally:
 
     try:
         if (tempdir):
-            print "\tRemoving tmp dir: %s" % tempdir
+            print "Done. Removing tmp dir: %s" % tempdir
             shutil.rmtree(tempdir)
     except OSError as exc:
         if exc.errno != errno.ENOENT:  # ENOENT - no such file or directory
