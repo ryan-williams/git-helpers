@@ -50,7 +50,7 @@ Before:
 
 After:
 
-![git remote-branches](http://f.cl.ly/items/2z1l0M1R3m2I2C3k1l2e/Screen%20Shot%202014-09-08%20at%2010.40.23%20AM.png)  
+![git remote-branches](http://f.cl.ly/items/2z1l0M1R3m2I2C3k1l2e/Screen%20Shot%202014-09-08%20at%2010.40.23%20AM.png)
 
 
 ### Push Repository State to Remote: `git copy-diffs` (`git cd`) ###
@@ -64,7 +64,7 @@ I have this aliased to `gcd` and for some workflows use it very frequently.
 
 I've been shocked to not find support for this in `git` itself, or in any other tools people have written that solve versions of this problem. Common approaches (none of which do exactly what I want, or have undesired side-effects) are:
 * commit all uncommitted changes, then push to remote.
-    * optionally be amending the top commit and continually `push -f` that.
+    * optionally repeatedly amend the top commit and `push -f` that.
     * I want to preserve what is committed vs. not.
 * use `rsync`
     * You really want to only push git-tracked files, not the entire `git` directory (including e.g. `.git/`).
@@ -88,6 +88,10 @@ As a shortcut, you can set environment variable `$MIRROR_REMOTES` to a comma-sep
 
     $ export MIRROR_REMOTES=dev-box
     $ git copy-diffs
+
+Finally, you may want to preserve certain git-untracked files in the remote repo; you can do this by setting the environment variable `$GIT_COPY_DIFFS_PRESERVE_UNTRACKED`.
+Alternatively, you can put multiple patterns in a file and set the environment variable `$GIT_COPY_DIFFS_PRESERVE_UNTRACKED_FILE` to the path to that file. Either way, `git-copy-diffs`
+will ship those patterns to the remote and leave those files alone.
 
 ### "g" wrapper for `git`
 

@@ -7,6 +7,7 @@ tar="diffs.tar.gz"
 tar_files_file="tar_files"
 added_files="added_files"
 deleted_files="deleted_files"
+untracked_files_to_preserve='untracked_files_to_preserve'
 remote_script="tmp.git-unpack-and-apply-diffs"
 
 if [ $# -eq 0 ]; then
@@ -89,19 +90,36 @@ set +e
 
 OLD_IFS="$IFS"
 IFS=$'\n'
+
+if [ ! -f "$untracked_files_to_preserve" ]; then
+  touch "$untracked_files_to_preserve"
+fi
+if [ -s "$untracked_files_to_preserve" -a -n "$DEBUG" ]; then
+  echo "Preserving untracked files:"
+  cat "$untracked_files_to_preserve" | sed "s/^/    /"
+  echo
+fi
+
+# The file that lists the files that we copied up to the remote is exempt from our removal of all
+# untracked git files, because we want to use it to (usually redundantly) explicitly remove those
+# files, in case they slip through the first pass via being .gitignore'd, for example.
+echo "$tar_files_file" >> "$untracked_files_to_preserve"
+
+# TODO(ryan): provide options for transferring/preserving untracked git files.
+echo "Removing untracked git files..."
+for f in $(git ls-files --other --exclude-standard --directory --exclude-from="$untracked_files_to_preserve"); do
+  rm -rf "$f"
+done
+
+# It's good to explicitly remove the files that we know we brought up to the remote; the loop
+# above will take care of it, except in cases where the repo .gitignores these files (or all files
+# besides a whitelist).
 if [ -s "$tar_files_file" ]; then
   echo "Removing tarred transit files..."
   for f in $(cat "$tar_files_file"); do
     rm -rf "$f"
   done
 fi
-
-# TODO(ryan): provide options for transferring/preserving untracked git files.
-echo "Removing untracked git files..."
-for f in $(git ls-files --other --exclude-standard); do
-  echo -e "\tremoving $f"
-  rm -rf "$f"
-done
 
 IFS="$OLD_IFS"
 echo ""

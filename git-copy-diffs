@@ -47,6 +47,7 @@ try:
     staged_diff_file_basename = 'staged_diff_file'
     added_files_basename = 'added_files'
     deleted_files_basename = 'deleted_files'
+    untracked_files_to_preserve_basename = 'untracked_files_to_preserve'
 
     local_script_basename = 'git-unpack-and-apply-diffs'
     remote_script_basename = 'tmp.git-unpack-and-apply-diffs'
@@ -62,6 +63,7 @@ try:
     staged_diff_file_path = os.path.join(tempdir, staged_diff_file_basename)
     added_files_path = os.path.join(tempdir, added_files_basename)
     deleted_files_path = os.path.join(tempdir, deleted_files_basename)
+    untracked_files_to_preserve_path = os.path.join(tempdir, untracked_files_to_preserve_basename)
 
     tar_file_path = os.path.join(tempdir, 'diffs.tar.gz')
 
@@ -73,6 +75,7 @@ try:
             open(staged_diff_file_path, 'w') as staged_diff_file, \
             open(added_files_path, 'w') as added_files_file, \
             open(deleted_files_path, 'w') as deleted_files_file, \
+            open(untracked_files_to_preserve_path, 'w') as untracked_files_to_preserve_file, \
             tarfile.open(tar_file_path, 'w:gz') as tar:
 
         subprocess.Popen(
@@ -99,10 +102,20 @@ try:
         ).wait()
         deleted_files_file.flush()
 
+        untracked_files_to_preserve_env_var=os.environ.get('GIT_COPY_DIFFS_PRESERVE_UNTRACKED')
+        if untracked_files_to_preserve_env_var:
+            untracked_files_to_preserve_file.write(untracked_files_to_preserve_env_var + '\n')
+        untracked_files_to_preserve_file_env_var=os.environ.get('GIT_COPY_DIFFS_PRESERVE_UNTRACKED_FILE')
+        if untracked_files_to_preserve_file_env_var:
+            with open(untracked_files_to_preserve_file_env_var, 'r') as untracked_files_to_preserve_env_var_file:
+                untracked_files_to_preserve_file.write(untracked_files_to_preserve_env_var_file.readall())
+        untracked_files_to_preserve_file.flush()
+
         tar.add(staged_diff_file_path, arcname=staged_diff_file_basename)
         tar.add(unstaged_diff_file_path, arcname=unstaged_diff_file_basename)
         tar.add(added_files_path, arcname=added_files_basename)
         tar.add(deleted_files_path, arcname=deleted_files_basename)
+        tar.add(untracked_files_to_preserve_path, arcname=untracked_files_to_preserve_basename)
 
     tar_basename = os.path.basename(tar_file_path)
 
@@ -128,6 +141,7 @@ try:
                     unstaged_diff_file_basename,
                     added_files_basename,
                     deleted_files_basename,
+                    untracked_files_to_preserve_basename,
                     remote_script_basename,
                     tar_basename
                 ]
