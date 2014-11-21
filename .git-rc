@@ -13,6 +13,9 @@ fi
 
 export PATH="$PATH:$dir:$dir/aliases"
 
+# Don't try to remove NFS bookkeeping files when running git-copy-diffs
+export GIT_COPY_DIFFS_PRESERVE_UNTRACKED='.nfs000*'
+
 export oh="origin/HEAD"
 export h="HEAD"
 export pr="origin/pr"
