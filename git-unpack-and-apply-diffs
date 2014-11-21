@@ -21,7 +21,6 @@ set -e
 
 git reset --hard "$cur_branch_name"
 git checkout "$cur_branch_name"
-rm -rf "$(git ls-files --other --exclude-standard)"
 
 tar tf "$tar" > "$tar_files_file"
 echo "$tar" >> "$tar_files_file"
