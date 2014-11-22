@@ -131,7 +131,7 @@ try:
     cmd = [
         'ssh',
         #'-v',
-        remote.group('host'),
+        '%s%s' % ('%s@' % remote.group('user') if remote.group('user') else '', remote.group('host')),
         "; ".join(
             ["cd %(path)s" % basenames_obj] +
             # TODO(ryan): use test here
