@@ -4,6 +4,7 @@
 
 __author__ = "Ryan Williams"
 
+import os
 import subprocess
 import sys
 
@@ -28,17 +29,28 @@ if remote_name not in remotes:
 
 remote = remotes[remote_name]
 
-remote_cmd = ' && '.join([
-    'mkdir -p %s' % (remote.group('path') or '~'),
-    'cd %s' % (remote.group('path') or '~'),
-    'git init',
-    'git config receive.denyCurrentBranch false',
-    'git config receive.denyNonFastForwards false',
-    'git config receive.denyDeleteCurrent false',
-])
+repo_init_commands = [
+    ['git', 'init'],
+    ['git', 'config', 'receive.denyCurrentBranch', 'false'],
+    ['git', 'config', 'receive.denyNonFastForwards', 'false'],
+    ['git', 'config', 'receive.denyDeleteCurrent', 'false'],
+]
 
-print 'Running remote cmd: %s' % remote_cmd
+if remote.group('host'):
+    remote_cmd = ' && '.join([
+        'mkdir -p %s' % (remote.group('path') or '~'),
+        'cd %s' % (remote.group('path') or '~'),
+        ] + map(lambda cmd: cmd.join(' '), repo_init_commands)
+    )
 
-subprocess.check_output(['ssh', remote.group('host'), remote_cmd])
+    print 'Running remote cmd: %s' % remote_cmd
 
-print 'Done!'
+    subprocess.check_output(['ssh', remote.group('host'), remote_cmd])
+
+    print 'Done!'
+else:
+    print 'Initializing local repo'
+    subprocess.check_output(['mkdir', '-p', remote.group('path')])
+    os.chdir(remote.group('path'))
+    map(subprocess.check_output, repo_init_commands)
+    print 'Done!'

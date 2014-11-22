@@ -18,6 +18,7 @@ ssh_push_re = re.compile(
 https_push_re = re.compile(
     r'%s\s+https?://%s/%s\s%s' % (name_regex, domain_regex, path_regex, push_label_regex))
 
+local_remote_re = re.compile(r'%s\s+%s\s%s' % (name_regex, path_regex, push_label_regex))
 
 def _parse_remote(remote):
     return re.match(https_push_re, remote) or re.match(ssh_push_re, remote)
