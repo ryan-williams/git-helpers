@@ -3,13 +3,20 @@
 import re
 import subprocess
 
+name_regex = '(?P<name>[^\s]+)'
+opt_user_regex = '((?P<user>[^@]+)@)?'
+opt_host_regex = '(?:(?P<host>[^:]+):)?'
+domain_regex = '(?P<host>[^/]+)'
+path_regex = '(?P<path>[^\s]+)'
+push_label_regex = '\(push\)'
+
 # e.g. 'origin	git@github.com:danvk/expandable-image-grid.git (push)'
 ssh_push_re = re.compile(
-    '(?P<name>[^\s]+)\s+((?P<user>[^@]+)@)?(?P<host>[^:]+)(?::(?P<path>[^\s]+))?\s\(push\)')
+    r'%s\s+%s%s%s?\s%s' % (name_regex, opt_user_regex, opt_host_regex, path_regex, push_label_regex))
 
 # e.g. 'origin	https://github.com/danvk/git-helpers.git (push)'
 https_push_re = re.compile(
-    r'(?P<name>[^\s]+)\s+https?://(?P<host>[^/]+)/(?P<path>[^\s]+)\s\(push\)')
+    r'%s\s+https?://%s/%s\s%s' % (name_regex, domain_regex, path_regex, push_label_regex))
 
 
 def _parse_remote(remote):
