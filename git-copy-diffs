@@ -21,7 +21,8 @@ elif os.environ.get('MIRROR_REMOTES'):
     remote_names = os.environ.get('MIRROR_REMOTES').split(',')
 else:
     raise Exception(
-        'Pass remote name as an argument, or set MIRROR_REMOTES environment variable with a comma-separated list of eligible remotes'
+        "Pass remote name as an argument, or set MIRROR_REMOTES environment variable "
+        "with a comma-separated list of eligible remotes"
     )
 
 remotes = get_remotes()
@@ -29,18 +30,17 @@ found_remotes = [remotes[remote]
                  for remote in remote_names if remote in remotes]
 if len(found_remotes) > 1:
     raise Exception('Found multiple eligible remotes: %s' % ','.join(
-        map(lambda remote: remote.group('name'), found_remotes)))
+        map(lambda remote: remote.name, found_remotes)))
 if not found_remotes:
     raise Exception('Found no eligible remotes: %s' % ','.join(remote_names))
 
 remote = found_remotes[0]
 
-print "Got remote %s at %s%s. Pushing.." % (
-    remote.group('name'),
-    '%s:' % remote.group('host') if remote.group('host') else '',
-    remote.group('path')
+print "Got remote %s at %s. Pushing.." % (
+    remote.name,
+    remote.host_path_str,
 )
-subprocess.check_output(['git', 'push', remote.group('name')])
+subprocess.check_output(['git', 'push', remote.name])
 print 'Pushed!'
 
 class FileToCopy(object):
@@ -124,13 +124,13 @@ try:
     cmd = [
         'ssh',
         #'-v',
-        '%s%s' % ('%s@' % remote.group('user') if remote.group('user') else '', remote.group('host')),
+        '%s%s' % (remote.opt_user_str, remote.host),
         "; ".join(
-            ["cd %s" % remote.group('path')] +
+            ["cd %s" % remote.path] +
             # TODO(ryan): use test here
             [ "ls %s 2> /dev/null" % filename for filename in paths_to_look_for ]
         )
-    ] if remote.group('host') else (["ls"] + [ os.path.join(remote.group('path'), path) for path in paths_to_look_for])
+    ] if remote.is_remote else (["ls"] + [ os.path.join(remote.path, path) for path in paths_to_look_for])
     found_files = filter(
         lambda x: x,
         subprocess.Popen(
@@ -150,17 +150,13 @@ try:
             print 'Exiting'
             sys.exit(1)
 
-    cp = 'scp' if remote.group('host') else 'cp'
+    cp = 'scp' if remote.is_remote else 'cp'
 
     cmd = [
         cp,
         #'-v',
         tar.name,
-        '%s%s/%s' % (
-            '%s:' % remote.group('host') if remote.group('host') else '',
-            remote.group('path'),
-            tar_basename
-        )
+        os.path.join(remote.host_path_str, tar_basename)
     ]
     print "%s'ing tar file: %s" % (cp, ' '.join(cmd))
     subprocess.call(cmd)
@@ -169,26 +165,22 @@ try:
         cp,
         #'-v',
         local_script,
-        '%s%s/%s' % (
-            '%s:' % remote.group('host') if remote.group('host') else '',
-            remote.group('path'),
-            remote_script_basename
-        )
+        os.path.join(remote.host_path_str, remote_script_basename)
     ]
     print "%s'ing remote script: %s" % (cp, ' '.join(cmd))
     subprocess.call(cmd)
 
     cmd = [ './%s' % remote_script_basename, cur_branch_name ]
 
-    if remote.group('host'):
-        remote_cmd = ' && '.join('cd %s' % remote.group('path'), ' '.join(cmd))
+    if remote.is_remote:
+        remote_cmd = ' && '.join('cd %s' % remote.path, ' '.join(cmd))
 
         print 'remote_cmd: %s' % remote_cmd
 
         ssh_cmd = [
             'ssh',
             #'-v',
-            remote.group('host'),
+            remote.host,
             remote_cmd
         ]
 
@@ -197,7 +189,7 @@ try:
         subprocess.check_call(ssh_cmd)
 
     else:
-        os.chdir(remote.group('path'))
+        os.chdir(remote.path)
         print 'Local cmd: %s' % ' '.join(cmd)
         subprocess.check_call(cmd)
 

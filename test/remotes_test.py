@@ -5,32 +5,28 @@ Run via:
     nosetests
 '''
 
-from util import remotes
+from util.remotes import Remote
 
 from nose.tools import *
 
 
 def test_regex_https():
-    remote = 'origin	https://github.com/danvk/git-helpers.git (push)'
-    m = remotes._parse_remote(remote)
-    assert m
-    eq_({
-        'name': 'origin',
-        'host': 'github.com',
-        'path': 'danvk/git-helpers.git',
-    }, m.groupdict())
+    line ='origin	https://github.com/danvk/git-helpers.git (push)'
+    remote = Remote.parse(line)
+    assert remote
+    assert remote.name == 'origin'
+    assert remote.host == 'github.com'
+    assert remote.path == 'danvk/git-helpers.git'
 
 
 def test_regex_ssh():
-    remote = 'origin	git@github.com:danvk/expandable-image-grid.git (push)'
-    m = remotes._parse_remote(remote)
-    assert m
-    eq_({
-        'name': 'origin',
-        'host': 'github.com',
-        'path': 'danvk/expandable-image-grid.git',
-        'user': 'git'
-    }, m.groupdict())
+    line ='origin	git@github.com:danvk/expandable-image-grid.git (push)'
+    remote = Remote.parse(line)
+    assert remote
+    assert remote.name == 'origin'
+    assert remote.host == 'github.com'
+    assert remote.path == 'danvk/expandable-image-grid.git'
+    assert remote.user == 'git'
 
 
 def test_parse_remote_lines():
@@ -40,15 +36,13 @@ def test_parse_remote_lines():
         'upstream\thttps://github.com/ryan-williams/git-helpers.git (fetch)',
         'upstream\thttps://github.com/ryan-williams/git-helpers.git (push)'
     ]
-    rs = remotes._parse_remotes(lines)
-    eq_(['origin', 'upstream'], sorted(rs.keys()))
-    eq_({
-        'name': 'origin',
-        'host': 'github.com',
-        'path': 'danvk/git-helpers.git',
-    }, rs['origin'].groupdict())
-    eq_({
-        'name': 'upstream',
-        'host': 'github.com',
-        'path': 'ryan-williams/git-helpers.git',
-    }, rs['upstream'].groupdict())
+    remotes = Remote.parse(lines)
+    eq_(['origin', 'upstream'], sorted(remotes.keys()))
+
+    assert remotes['origin'].name == 'origin'
+    assert remotes['origin'].host == 'github.com'
+    assert remotes['origin'].path == 'danvk/git-helpers.git'
+
+    assert remotes['upstream'].name == 'upstream'
+    assert remotes['upstream'].host == 'github.com'
+    assert remotes['upstream'].path == 'ryan-williams/git-helpers.git'

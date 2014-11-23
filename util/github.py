@@ -13,7 +13,7 @@ def _uniqueify(iterable):
 def get_github_remotes():
     '''Returns a list of github remotes for the current repo.'''
     return _uniqueify([remote for remote in get_remotes().values()
-                              if remote.group('host') == 'github.com'])
+                              if remote.host == 'github.com'])
 
 
 def make_github_url(remote):

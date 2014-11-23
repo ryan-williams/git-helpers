@@ -19,8 +19,8 @@ if remote_name not in remotes:
   die("Remote '%s' doesn't exist" % remote_name)
 
 remote = remotes[remote_name]
-if remote.group('user') != 'git' or remote.group('host') != 'github.com':
-  die("Remote '%s' doesn't appear to be a github remote: %s@%s" % (remote_name, remote.group('user'), remote.group('host')))
+if remote.user != 'git' or remote.host != 'github.com':
+  die("Remote '%s' doesn't appear to be a github remote: %s@%s" % (remote_name, remote.user, remote.host))
 
 remote_fetch_config_key = 'remote.%s.fetch' % remote_name
 remote_fetch_config_pr_mapping = 'refs/remotes/%s/pr/*' % remote_name

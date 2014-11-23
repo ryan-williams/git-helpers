@@ -20,14 +20,35 @@ https_push_re = re.compile(
 
 local_remote_re = re.compile(r'%s\s+%s\s%s' % (name_regex, path_regex, push_label_regex))
 
-def _parse_remote(remote):
-    return re.match(https_push_re, remote) or re.match(ssh_push_re, remote)
 
+class Remote(object):
 
-def _parse_remotes(remote_lines):
-    return {remote.group('name'): remote
-            for remote in map(_parse_remote, remote_lines)
-            if remote}
+    @classmethod
+    def parse(cls, input):
+        if isinstance(input, list):
+            return {remote.name: remote
+                    for remote in map(cls.parse, input)
+                    if remote}
+
+        match = re.match(https_push_re, input) or re.match(ssh_push_re, input)
+        if match:
+            return Remote(match)
+        return None
+
+    def __init__(self, match):
+        self.match = match
+        self.name = match.group('name')
+        self.host = match.group('host')
+        self.opt_host_str = '%s:' % self.host if self.host else ''
+
+        self.user = match.group('user') if 'user' in match.groupdict() else None
+        self.opt_user_str = '%s@' % self.user if self.user else ''
+
+        self.path = match.group('path')
+        self.host_path_str = '%s%s' % (self.opt_host_str, self.path)
+
+        self.is_local = not self.host
+        self.is_remote = not self.is_local
 
 
 def get_remotes():

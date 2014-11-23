@@ -32,9 +32,9 @@ if __name__ == '__main__':
                          "or perhaps you're not in a git repo.\n")
         sys.exit(1)
 
-    remote = remotes[0].group('path')
+    remote = remotes[0].path
     if len(remotes) > 1:
-        chosen_remote = remotes[0].groupdict()['path']
+        chosen_remote = remotes[0].path
         sys.stderr.write('Found multiple remotes. Using %s\n' % chosen_remote)
 
     webbrowser.open_new_tab(github.make_github_url(remote) + '/' + page)
