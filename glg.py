@@ -28,7 +28,7 @@ def getChoice(choices):
             print "\t%d)\t%s" % (i, choices[i])
         choice = input("Choose one: ")
         try:
-            choiceNum = num(choice)
+            choiceNum = int(choice)
             if 0 <= choiceNum and choiceNum < len(choices):
                 break
         except:

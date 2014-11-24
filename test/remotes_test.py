@@ -9,10 +9,13 @@ from util.remotes import Remote
 
 from nose.tools import *
 
+import mock
+import sys
+
 
 def test_regex_https():
     line ='origin	https://github.com/danvk/git-helpers.git (push)'
-    remote = Remote.parse(line)
+    remote = Remote.parse_line(line)
     assert remote
     assert remote.name == 'origin'
     assert remote.host == 'github.com'
@@ -21,7 +24,7 @@ def test_regex_https():
 
 def test_regex_ssh():
     line ='origin	git@github.com:danvk/expandable-image-grid.git (push)'
-    remote = Remote.parse(line)
+    remote = Remote.parse_line(line)
     assert remote
     assert remote.name == 'origin'
     assert remote.host == 'github.com'
