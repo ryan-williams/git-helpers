@@ -25,12 +25,13 @@ class Remote(object):
 
     @classmethod
     def parse(cls, input):
-        if isinstance(input, list):
-            return {remote.name: remote
-                    for remote in map(cls.parse, input)
-                    if remote}
+        return {remote.name: remote
+                for remote in map(cls.parse_line, input)
+                if remote}
 
-        match = re.match(https_push_re, input) or re.match(ssh_push_re, input)
+    @classmethod
+    def parse_line(cls, line):
+        match = re.match(https_push_re, line) or re.match(ssh_push_re, line)
         if match:
             return Remote(match)
         return None
@@ -54,7 +55,7 @@ class Remote(object):
 def get_remotes():
     remote_lines = subprocess.Popen(
         ['git', 'remote', '-v'], stdout=subprocess.PIPE).communicate()[0].split('\n')
-    return _parse_remotes(remote_lines)
+    return Remote.parse(remote_lines)
 
 
 if __name__ == '__main__':
