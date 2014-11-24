@@ -54,7 +54,7 @@ class Remote(object):
 def get_remotes():
     remote_lines = subprocess.Popen(
         ['git', 'remote', '-v'], stdout=subprocess.PIPE).communicate()[0].split('\n')
-    return _parse_remotes(remote_lines)
+    return Remote.parse(remote_lines)
 
 
 if __name__ == '__main__':
