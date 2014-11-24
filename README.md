@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ryan-williams/git-helpers.svg)](https://travis-ci.org/ryan-williams/git-helpers)
+
 git-helpers
 ===========
 
