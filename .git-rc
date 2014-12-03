@@ -57,7 +57,7 @@ alias garc='git arc'
 alias gaurc='git aurc'
 alias guu='git conflicting'
 
-alias grt=". ~/s/git-root"
+alias grt="cd $(git root)"
 alias gr="git remote -vv"
 alias gsh="gn sh"  # git-show-short
 alias rmu="git ls-files --other --exclude-standard | xargs rm -f"
