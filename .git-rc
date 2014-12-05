@@ -11,7 +11,15 @@ fi
 [ -s "$dir/.gitcomplete" ] && source "$dir/.gitcomplete"
 [ -s "$dir/.git-completion.bash" ] && source "$dir/.git-completion.bash"
 
-export PATH="$PATH:$dir:$dir/aliases"
+append_to_path() {
+  for arg in "$@"; do
+    if [ -d "$arg" ]; then
+      export PATH="$PATH:$arg"
+    fi
+  done
+}
+
+append_to_path "$dir" "$dir/aliases"
 
 # Don't try to remove NFS bookkeeping files when running git-copy-diffs
 export GIT_COPY_DIFFS_PRESERVE_UNTRACKED='.nfs000*'
