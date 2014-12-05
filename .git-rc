@@ -19,7 +19,14 @@ append_to_path() {
   done
 }
 
+append_subdir_to_path() {
+  append_to_path "$dir/$1" "$dir/$1/aliases"
+}
+
 append_to_path "$dir" "$dir/aliases"
+
+append_subdir_to_path bisect
+
 
 # Don't try to remove NFS bookkeeping files when running git-copy-diffs
 export GIT_COPY_DIFFS_PRESERVE_UNTRACKED='.nfs000*'
