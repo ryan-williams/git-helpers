@@ -1,11 +1,10 @@
 #!/bin/sh
 
-root=$(git rev-parse --show-cdup)
-if [ -z "$root" ]; then
-    root='./'
-fi
-if [ $# -gt 0 -a "$1" == "-v" ]; then
-    echo $root
-fi
-cd $root
+# Change to the top level of this git repository.
+#
+# Typically you'll want to `source` this for it to actually change the directory of the shell you
+# are calling from.
+
+cd "$(git root)"
+
 

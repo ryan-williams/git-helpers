@@ -59,7 +59,7 @@ alias guu='git conflicting'
 
 alias grt='cd $(git root)'
 alias gr="git remote -vv"
-alias gsh="gn sh"  # git-show-short
+alias gsh="gn sh"  # git-show-short, no pager
 alias rmu="git ls-files --other --exclude-standard | xargs rm -f"
 alias snippets='git log --since "8days" --oneline --author $USER'
 
