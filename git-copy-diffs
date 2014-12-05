@@ -173,7 +173,7 @@ try:
     cmd = [ './%s' % remote_script_basename, cur_branch_name ]
 
     if remote.is_remote:
-        remote_cmd = ' && '.join('cd %s' % remote.path, ' '.join(cmd))
+        remote_cmd = ' && '.join(['cd %s' % remote.path, ' '.join(cmd)])
 
         print 'remote_cmd: %s' % remote_cmd
 
