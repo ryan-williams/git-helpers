@@ -22,7 +22,8 @@ echo "remote: git-unpack-and-apply-diffs!"
 
 set -e
 
-git reset --hard "$cur_branch_name"
+# Kill any uncommitted changes laying around before switching to the branch we should be on.
+git reset --hard HEAD
 git checkout "$cur_branch_name"
 
 tar tf "$tar" > "$tar_files_file"
