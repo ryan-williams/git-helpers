@@ -1,0 +1,3 @@
+#!/bin/sh
+
+git conflicting-checkout-ours && git arc $(git conflicting)
