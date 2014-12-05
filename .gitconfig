@@ -1,0 +1,51 @@
+# .git-rc sources this file from your global `.gitconfig`
+
+
+[color]
+        diff    = auto
+        status  = auto
+        branch  = auto
+        grep = auto
+
+[color "diff"]
+       meta = yellow bold
+
+[alias]
+        a       = add
+        bm      = branch -m
+        c       = commit
+        co      = checkout
+        cp      = cherry-pick
+        cpc     = cherry-pick --continue
+        cpa     = cherry-pick --abort
+        ct      = !$SRCDIR/git-conflicting-checkout-theirs.sh
+        cur     = log -1 --oneline
+        d       = diff
+        dc      = diff --cached
+        df      = diff
+        files   = diff-tree --no-commit-id --name-only -r
+        h       = help
+        history = log --full-diff -p
+        L       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset%n%n%B' --date=relative
+        ls      = ls-files
+        lso     = ls-files --other --exclude-standard
+        lsc     = diff-tree --no-commit-id --name-only -r
+        m       = merge
+        mt      = mergetool -t meld -y
+        pr      = pull --rebase
+        r       = remote
+        ra      = rebase --abort
+        rb      = rebase
+        rc      = rebase --continue
+        rem     = rebase master
+        ri      = rebase -i
+        rl      = rev-list
+        rs      = rebase --skip
+        rsh     = reset HEAD^
+        rv      = remote -v
+        s       = stash
+        sl      = stash list
+        ss      = stash save
+        sa      = stash apply
+        sp      = stash pop
+        sm      = submodule

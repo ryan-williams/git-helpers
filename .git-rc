@@ -69,3 +69,5 @@ alias gsp="git stash pop"
 alias gsl="gn sl"
 alias gss="g ss"
 
+# Source this repository's `.gitconfig` file from your global `.gitconfig`.
+git config --global include.path "$dir"/.gitconfig
