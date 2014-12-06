@@ -46,6 +46,7 @@ append_subdir_to_path rebase
 append_subdir_to_path remote
 append_subdir_to_path rev-list
 append_subdir_to_path rm
+append_subdir_to_path show
 append_subdir_to_path stash
 append_subdir_to_path status
 
