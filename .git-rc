@@ -36,6 +36,7 @@ append_subdir_to_path graph
 append_subdir_to_path help
 append_subdir_to_path log
 append_subdir_to_path merge-base
+append_subdir_to_path mv
 append_subdir_to_path rebase
 append_subdir_to_path remote
 append_subdir_to_path rev-list
@@ -68,6 +69,7 @@ alias gh="g h"
 alias grb="g rb"
 alias gl="git lg"
 alias gls="git ls-files"
+alias gmv="g mv"
 alias gac="g ac '%h'"
 alias gng="git --no-pager grep"
 alias gg="git graph"
