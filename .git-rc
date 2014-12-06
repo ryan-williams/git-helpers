@@ -26,8 +26,9 @@ append_subdir_to_path() {
   fi
 }
 
-append_to_path "$dir" "$dir/aliases" "$dir"/github "$dir"/admin
+append_to_path "$dir" "$dir/aliases" "$dir"/github
 
+append_subdir_to_path admin
 append_subdir_to_path apply
 append_subdir_to_path bisect
 append_subdir_to_path blame

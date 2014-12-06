@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for f in $(g links "$@"); do
+  pushd "$(dirname "$f")" > /dev/null
+  dest="$(readlink "$(basename "$f")")"
+  if [ ! -s "$dest" ]; then
+    echo "$f: $dest"
+  fi
+  popd > /dev/null
+done
