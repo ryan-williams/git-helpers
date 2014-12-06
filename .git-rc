@@ -36,6 +36,7 @@ append_subdir_to_path github
 append_subdir_to_path graph
 append_subdir_to_path help
 append_subdir_to_path log
+append_subdir_to_path merge
 append_subdir_to_path merge-base
 append_subdir_to_path mv
 append_subdir_to_path push
