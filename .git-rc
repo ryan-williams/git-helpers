@@ -27,6 +27,7 @@ append_to_path "$dir" "$dir/aliases"
 
 append_subdir_to_path bisect
 append_subdir_to_path commit
+append_subdir_to_path rebase
 
 
 # Don't try to remove NFS bookkeeping files when running git-copy-diffs
