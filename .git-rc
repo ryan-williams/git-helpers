@@ -23,7 +23,7 @@ append_subdir_to_path() {
   append_to_path "$dir/$1" "$dir/$1/aliases"
 }
 
-append_to_path "$dir" "$dir/aliases" "$dir"/github
+append_to_path "$dir" "$dir/aliases" "$dir"/github "$dir"/admin
 
 append_subdir_to_path apply
 append_subdir_to_path bisect
