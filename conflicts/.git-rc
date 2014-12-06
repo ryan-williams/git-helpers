@@ -1,0 +1,4 @@
+#!/bin/sh
+
+alias guu='git conflicting'
+

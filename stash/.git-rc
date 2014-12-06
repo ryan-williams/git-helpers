@@ -1,0 +1,8 @@
+#!/bin/sh
+
+alias gss="git stash save"
+alias gsa="git stash apply"
+alias gsp="git stash pop"
+alias gsl="gn sl"
+alias gss="g ss"
+

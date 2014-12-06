@@ -18,6 +18,6 @@ else
 	remote_branch="$local_branch"
 fi
 
-cmd="git push ${force}origin $local_branch:ryan-$remote_branch"
+cmd="git push ${force}origin $local_branch:$USER-$remote_branch"
 echo "Running: $cmd"
 $cmd

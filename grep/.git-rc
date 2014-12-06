@@ -1,0 +1,4 @@
+#!/bin/sh
+
+alias gng="git --no-pager grep"
+

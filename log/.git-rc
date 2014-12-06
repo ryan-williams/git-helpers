@@ -1,0 +1,4 @@
+#!/bin/sh
+
+alias gl="git lg"
+alias gln="g lg"

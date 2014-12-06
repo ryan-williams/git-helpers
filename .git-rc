@@ -21,6 +21,9 @@ append_to_path() {
 
 append_subdir_to_path() {
   append_to_path "$dir/$1" "$dir/$1/aliases"
+  if [ -s "$dir/$1/.git-rc" ]; then
+    source "$dir/$1/.git-rc"
+  fi
 }
 
 append_to_path "$dir" "$dir/aliases" "$dir"/github "$dir"/admin
@@ -34,6 +37,7 @@ append_subdir_to_path clone
 append_subdir_to_path commit
 append_subdir_to_path conflicts
 append_subdir_to_path diff
+append_subdir_to_path fetch
 append_subdir_to_path github
 append_subdir_to_path graph
 append_subdir_to_path help
@@ -54,62 +58,11 @@ append_subdir_to_path stash
 append_subdir_to_path status
 append_subdir_to_path version
 
-# Don't try to remove NFS bookkeeping files when running git-copy-diffs
-export GIT_COPY_DIFFS_PRESERVE_UNTRACKED='.nfs000*'
-
 export oh="origin/HEAD"
 export h="HEAD"
 export pr="origin/pr"
 
-alias gcd="g cd"
-alias gf="git fetch"
-alias gfo="git fetch origin"
-
-alias gacpc="g acpc"
-alias gbd="git branch -d"
-alias gbD="git branch -D"
-alias gbdf="git branch -D"
-alias gd="git diff"
-alias gdc="gd --cached"
-alias gdh="git diff HEAD"
-alias gs="git status"
-alias gb="g b"
-alias gbu="g bu"
-alias gbr="g br"
-alias gh="g h"
-alias grb="g rb"
-alias gl="git lg"
-alias gls="git ls-files"
-alias gmv="g mv"
-alias gac="g ac '%h'"
-alias gng="git --no-pager grep"
-alias gg="git graph"
-alias ggc="git graph-commits"
-alias ggp="git graph-pretty"
-alias ggn="git graph -n"
-#alias gln="gn graph -n"
-alias gln="g lg"
-
-alias gc="git commit"
-alias gcm="git commit -m"
-alias gca="git commit -a"
-alias gcam="git commit -a -m"
-
-alias garc='git arc'
-alias gaurc='git aurc'
-alias guu='git conflicting'
-
-alias grt='cd $(git root)'
-alias gr="git remote -vv"
-alias gsh="gn sh"  # git-show-short, no pager
-alias rmu="git ls-files --other --exclude-standard | xargs rm -f"
 alias snippets='git log --since "8days" --oneline --author $USER'
-
-alias gss="git stash save"
-alias gsa="git stash apply"
-alias gsp="git stash pop"
-alias gsl="gn sl"
-alias gss="g ss"
 
 # Source this repository's `.gitconfig` file from your global `.gitconfig`.
 git config --global include.path "$dir"/.gitconfig
