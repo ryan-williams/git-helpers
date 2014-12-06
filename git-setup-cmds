@@ -1,4 +1,0 @@
-
-# Some commands for setting up a new git repository.
-
-git config merge.tool meld
