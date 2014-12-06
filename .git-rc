@@ -28,6 +28,7 @@ append_to_path "$dir" "$dir/aliases"
 append_subdir_to_path bisect
 append_subdir_to_path cherry-pick
 append_subdir_to_path commit
+append_subdir_to_path conflicts
 append_subdir_to_path rebase
 
 
