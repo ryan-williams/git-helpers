@@ -49,6 +49,7 @@ append_subdir_to_path rm
 append_subdir_to_path show
 append_subdir_to_path stash
 append_subdir_to_path status
+append_subdir_to_path version
 
 # Don't try to remove NFS bookkeeping files when running git-copy-diffs
 export GIT_COPY_DIFFS_PRESERVE_UNTRACKED='.nfs000*'
