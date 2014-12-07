@@ -4,4 +4,8 @@ python:
 
 install: pip install -r requirements.dev.txt
 
-script: ./run-tests
+before_script:
+  - source .git-rc
+
+script:
+  - ./run-tests
