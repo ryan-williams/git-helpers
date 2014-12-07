@@ -1,4 +1,9 @@
 #!/bin/bash
 
-([ -d tmp1 ] && git rm -rf tmp1 2> /dev/null; rm -rf tmp1)
-([ -d tmp2 ] && git rm -rf tmp2 2> /dev/null; rm -rf tmp2)
+kill_dir() {
+  for arg in "$@"; do
+    ([ -d "$arg" ] && git rm -rf "$arg" 2> /dev/null; rm -rf "$arg")
+  done
+}
+
+kill_dir tmp tmp1 tmp2

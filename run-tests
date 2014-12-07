@@ -7,5 +7,6 @@ nosetests
 
 git find-broken-links
 
+test/admin/find-broken-links-test
 test/admin/mk-git-test
 test/nav/relpath-test
