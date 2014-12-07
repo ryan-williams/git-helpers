@@ -5,4 +5,5 @@ set -e
 pylint -E --disable=print-statement **/*.py
 nosetests
 
+test/admin/mk-git-test
 test/nav/relpath-test
