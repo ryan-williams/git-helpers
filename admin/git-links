@@ -1,0 +1,10 @@
+#!/bin/bash
+
+OLD_IFS="$IFS"
+IFS=$'\n'
+for f in $(g ls); do
+  if [ -L "$f" ]; then
+    echo "$f"
+  fi
+done
+IFS="$OLD_IFS"
