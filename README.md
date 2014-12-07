@@ -7,21 +7,10 @@ A few helpers for augmenting and prettifying existing git functionality.
 
 These were written alongside other bash and python helpers that I may not have ported; let me know if you see anything missing or broken.
 
-### Setup:
+### Setup
 * `source .git-rc` from your `.bashrc`. This will give you lots of helpful aliases!
     * You might want to make sure it's not clobbering ones you already have/use.
-    * It will also:
-        * put the root of this repo, as well as the `aliases/` subdirectory, on your `$PATH`
-        * put the root of this repo, as well as the `util/` subdirectory, on your `$PYTHONPATH`
-
-To run the tests for this repo, you'll need to do some additional configuration. This is not necessary if you just want to use the scripts!
-
-```bash
-virtualenv env
-source env/bin/activate
-pip -r requirements.dev.txt
-nosetests
-```
+    * It will also put several relevant directories from this repo on your `$PATH`
 
 ### "git branches" (`git b`) ###
 
@@ -36,10 +25,10 @@ After:
 ![gb](http://f.cl.ly/items/1w310Q0S3n0a3f1K1u29/Screen%20Shot%202014-09-08%20at%2010.29.46%20AM.png)
 
 Things to note:
-* sorts branches in reverse-chron order of last modification, instead of alphabetically
-* nice colors for each field
-* quick, at-a-glance "# commits ahead" and "# commits behind"
-* abbreviated "time since last commit"
+* It sorts branches in reverse-chron order of last modification, instead of alphabetically
+* It has nice colors for each field
+* It has quick, at-a-glance "# commits ahead" and "# commits behind"
+* It shows abbreviated "time since last commit"
 
 
 #### Related: "git remote-branches" (`git br`) ####
@@ -103,7 +92,7 @@ Self-explanatory! Who has time for that extra "it" all the time?
 
 Usage:
 
-    $ rb <n>
+    $ rb 10  # interactive rebase over the last 10 commits
 
 Short for `git rebase -i HEAD~<n>..HEAD`, or interactive rebase over the last `n` commits.
 
@@ -111,6 +100,16 @@ Short for `git rebase -i HEAD~<n>..HEAD`, or interactive rebase over the last `n
 
 Typing `git push -f` is terrifying (rightly so)! Even when you *know* you're just force-pushing a feature branch that is ok to clobber, you are mere characters away from disaster.
 
+`git safe-push` (a.k.a. `g spf`) will:
+* try a non-force push
+* if that fails, it will:
+    * dry-run a force-push so that you can see what you're about to do,
+    * tell you how many commits [what you're about to push] and [what you're about to overwrite] are away from one another,
+    * ask whether you want to proceed,
+    * if "Y" (default), then it will execute the `push -f` you've requested.
+
+Sample output:
+```
     # Inspect local branches; I have rearranged the order of the top two commits on `master`, and want to force-push that.
     $ gb
     * master 62a4888 origin/master +2 -2 18s 2014-09-08 15:03:57 some maven compile helpers
@@ -136,14 +135,7 @@ Typing `git push -f` is terrifying (rightly so)! Even when you *know* you're jus
     Total 4 (delta 2), reused 0 (delta 0)
     To git@github.com:ryan-williams/bootstrap.git
      + 62f6ac4...62a4888 master -> master (forced update)
-
-`git safe-push` (a.k.a. `g spf`) will:
-* try a non-force push
-* if that fails, it will:
-    * dry-run a force-push so that you can see what you're about to do,
-    * tell you how many commits [what you're about to push] and [what you're about to overwrite] are away from one another,
-    * ask whether you want to proceed,
-    * if "Y" (default), then it will execute the `push -f` you've requested.
+```
 
 It also has some handy refspec parsing, so all of the following are equivalent:
     $ g spf feature-branch ryan-feature-branch
@@ -165,8 +157,19 @@ After:
 
 ![gln 4](http://f.cl.ly/items/0v3X241T1i2O2f070D0h/Screen%20Shot%202014-09-08%20at%2011.15.24%20AM.png)
 
+### Testing
+`./run-tests` will run the bash and python tests in this repository, and is what Travis runs.
 
+The python tests require some configuration to run locally:
 
+```bash
+virtualenv env
+source env/bin/activate
+pip -r requirements.dev.txt
+nosetests
+```
+
+This is not necessary if you just want to use the scripts!
 
 
 
