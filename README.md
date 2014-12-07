@@ -49,40 +49,45 @@ After:
 I have this aliased to `gcd` and for some workflows use it very frequently.
 
 `git-cd` pushes the state of your local repository to a "mirror" remote, preserving:
-* existing branches / `HEAD` pointer
+* existing branches / `HEAD` pointer, upstreams
 * staged changes
 * unstaged changes
+* untracked (but not `.gitignore`d) files
 
 I've been shocked to not find support for this in `git` itself, or in any other tools people have written that solve versions of this problem. Common approaches (none of which do exactly what I want, or have undesired side-effects) are:
 * commit all uncommitted changes, then push to remote.
     * optionally repeatedly amend the top commit and `push -f` that.
-    * I want to preserve what is committed vs. not.
-* use `rsync`
-    * You really want to only push git-tracked files, not the entire `git` directory (including e.g. `.git/`).
-    * Seems pretty non-trivial to pipe e.g. the output of `git ls-files` to `rsync` in a way that `rsync` can digest.
-        * `rsync`'s `--include*` options need entries for mid-level directories, which `git ls-files` does not print for you.
-    * Fundamentally, feels like we should be using the fact that `git` is already a tracker of what you've changed / what files are under version-control.
+    * I want to preserve what is committed vs. staged vs. unstaged.
+* `rsync` the entire directory
+    * It's important to not push `.gitignore`d files, as this will frequently contain compilation outputs and the like.
+    * One approach would be to pipe e.g. the output of `git ls-files` to `rsync` in a way that `rsync` can digest.
+        * This leaves out all the other state that `git` tracks; what branch you're on, what commits all branches are on, etc. I want these things copied too. 
+
+I've implemented it here in 3 steps:
+1. `rsync` the entire `.git` directory
+    * this gets you all branches, index state, commits, upstream info, etc.
+1. `git reset --hard HEAD`
+    * the first time you do step 1, you only have a `.git` directory and none of the files that `git` thinks should be there based on the contents of `.git`; this puts everything there, but blows away the uncommitted staged changes that were stored in `.git/index`.
+1. `rsync` any unstaged, staged, and untracked (but not `.gitignore`d) files, as well as `.git/index`
+    * at this point all files in the "mirror" repository are equal to their counterparts in the source repo, and all `.git` state is equal as well.
 
 #### Usage
 
-Before using `git cd`, you'll want to set up a "mirrored" remote repository to push to. Luckily, `git add-mirror-remote` is here to help you!
+Simply create a remote as you usually would (or use an existing one):
 
-    $ git add-mirror-remote dev-box ryan@dev-box:path/to/repo
+    $ git remote add dev-box ryan@dev-box:path/to/repo
 
 Then you can say:
 
     $ git copy-diffs dev-box
+    $ gcd dev-box  # for short
 
-And all of your state will be pushed to your remote, clobbering whatever was there previously.
+And all of your state will be pushed to your remote, **clobbering whatever was there previously**.
 
 As a shortcut, you can set environment variable `$MIRROR_REMOTES` to a comma-seperated list of remote names for `git copy-diffs` to look for by default:
 
-    $ export MIRROR_REMOTES=dev-box
-    $ git copy-diffs
-
-Finally, you may want to preserve certain git-untracked files in the remote repo; you can do this by setting the environment variable `$GIT_COPY_DIFFS_PRESERVE_UNTRACKED`.
-Alternatively, you can put multiple patterns in a file and set the environment variable `$GIT_COPY_DIFFS_PRESERVE_UNTRACKED_FILE` to the path to that file. Either way, `git-copy-diffs`
-will ship those patterns to the remote and leave those files alone.
+    $ export MIRROR_REMOTES=dev-box1,dev-box2
+    $ git copy-diffs  # will push to the first remote named dev-box1 or dev-box2 found in your "remotes" list
 
 ### "g" wrapper for `git`
 
@@ -170,6 +175,4 @@ nosetests
 ```
 
 This is not necessary if you just want to use the scripts!
-
-
 
