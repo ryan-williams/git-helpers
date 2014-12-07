@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
+import os
 import re
 import subprocess
+import sys
 
 name_regex = '(?P<name>[^\s]+)'
 opt_user_regex = '((?P<user>[^@]+)@)?'
@@ -56,6 +58,32 @@ def get_remotes():
     remote_lines = subprocess.Popen(
         ['git', 'remote', '-v'], stdout=subprocess.PIPE).communicate()[0].split('\n')
     return Remote.parse(remote_lines)
+
+
+def get_mirror_remote():
+
+    remote_names = []
+    if len(sys.argv) > 1:
+        remote_names = [sys.argv[1]]
+    elif os.environ.get('MIRROR_REMOTES'):
+        remote_names = os.environ.get('MIRROR_REMOTES').split(',')
+    else:
+        raise Exception(
+            "Pass remote name as an argument, or set MIRROR_REMOTES environment variable "
+            "with a comma-separated list of eligible remotes"
+        )
+
+    remotes = get_remotes()
+    found_remotes = [remotes[remote]
+                     for remote in remote_names if remote in remotes]
+    if len(found_remotes) > 1:
+        raise Exception('Found multiple eligible remotes: %s' % ','.join(
+            map(lambda remote: remote.name, found_remotes)))
+    if not found_remotes:
+        raise Exception('Found no eligible remotes: %s' % ','.join(remote_names))
+
+    return found_remotes[0]
+
 
 
 if __name__ == '__main__':
