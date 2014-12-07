@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# For each argument, output all files in the repo that are symlinks to it.
+#
+# Not implemented very robustly at the moment; does an O(N*M) traversal of args x git-tracked-files,
+# and only verifies that the link destination contains the argument path via a `grep`.
+
+for arg in "$@"; do
+  name="$(basename "$arg")"
+  for f in $(g ls); do
+    if readlink "$f" | grep -q "$name"; then
+      echo $f
+    fi
+  done
+done | sort | uniq
