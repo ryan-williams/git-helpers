@@ -1,0 +1,29 @@
+#!/bin/bash
+
+source test/.helpers-rc
+
+touch tmp1/git-foo
+mkdir tmp1/aaa
+touch tmp1/aaa/git-foos
+git add tmp1
+
+ln -s git-foo tmp2/git-bar
+mkdir tmp2/bbb
+ln -s ../git-foos tmp2/bbb/git-bars
+git add tmp2
+
+cat >tmp/expected <<EOF
+tmp2/bbb/git-bars: ../git-foos
+tmp2/git-bar: git-foo
+EOF
+
+! git find-broken-links | sort > tmp/actual
+
+diff tmp/expected tmp/actual
+
+echo 2 | git fix-broken-links
+
+check_link tmp2/git-bar ../tmp1/git-foo
+check_link tmp2/bbb/git-bars ../../tmp1/aaa/git-foos
+
+test/clean-test-files
