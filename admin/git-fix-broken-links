@@ -1,0 +1,30 @@
+#!/bin/bash
+
+cd "$(git root)"
+
+OLD_IFS="$IFS"
+IFS=$'\n'
+for line in $(git find-broken-links "$@"); do
+  link="${line%%: *}"
+  dest="$(basename "${line##*: }")"
+  echo "Found broken link: $link -> $dest"
+
+  candidates=$(git find "$dest")
+  num_candidates="$(count $candidates)"
+
+  if [ "$num_candidates" -eq 1 ]; then
+    candidate="$candidates"
+  else
+    echo "Found $num_candidates possible intended destinations for $link; choose one:"
+    select candidate in $candidates; do
+      break
+    done
+  fi
+
+  new_dest="$(git relpath "$link" "$candidate")"
+  echo "Redirecting link $link to $new_dest (was: $dest)"
+  ln -sf "$new_dest" "$link"
+  echo ''
+
+done
+IFS="$OLD_IFS"
