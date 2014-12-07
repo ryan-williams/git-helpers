@@ -1,20 +1,7 @@
 #!/bin/bash
 
 cd "$(git root)"
-source config/.helpers-rc
-
-set -ex
-
-check_link() {
-  link="$1"
-  expected="$2"
-
-  [ -L "$link" ] || err "$link not a link"
-
-  actual="$(readlink "$link")"
-
-  [ "$expected" == "$actual" ] || err "Expected link $link to point to $expected; actually $actual"
-}
+source test/.helpers-rc
 
 mkdir -p tmp1 tmp2
 export PATH="$PATH:$PWD/tmp1:$PWD/tmp1/aliases:$PWD/tmp2:$PWD/tmp2/aliases"
