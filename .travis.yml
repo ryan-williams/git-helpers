@@ -4,4 +4,4 @@ python:
 
 install: pip install -r requirements.dev.txt
 
-script: pylint -E --disable=print-statement **/*.py && nosetests
+script: ./run-tests

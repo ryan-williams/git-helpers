@@ -1,0 +1,28 @@
+#!/bin/bash
+
+cd "$(git root)"
+
+test() {
+
+  expected="${@: -1}"
+  args="${@:1:(${#@}-1)}"
+
+  actual="$(git relpath $args)"
+
+  if [ "$actual" != "$expected" ]; then
+    echo "Failed: \`git relpath $args\`: expected $expected, actual $actual" 1>&2
+    exit 1
+  fi
+}
+
+test log/aliases log/aliases
+test log/aliases/ log/aliases/
+test log/aliases/git-l1 log/aliases/git-l1
+
+test diff/ log/aliases/git-l1 ../log/aliases/git-l1
+test diff log/aliases/git-l1 ../log/aliases/git-l1
+
+test diff/aliases/ log/aliases/git-l1 ../../log/aliases/git-l1
+test diff/aliases log/aliases/git-l1 ../../log/aliases/git-l1
+
+test diff/aliases/git-d1 log/aliases/git-l1 ../../log/aliases/git-l1

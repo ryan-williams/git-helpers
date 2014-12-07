@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+pylint -E --disable=print-statement **/*.py
+nosetests
+
+test/nav/relpath-test
