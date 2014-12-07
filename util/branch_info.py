@@ -1,5 +1,7 @@
 __author__ = 'ryan'
 
+"""Encapsulates info about one git branch."""
+
 from color import clen, color
 from datetime import datetime
 from dateutil.parser import parse

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Run `git blame` over multiple files, searching the repo for them by name.
+
 echo $1
 files="$(find . -name "$1")"
 for f in "$files"; do echo "Blaming $f"; done

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Print out all symlinks in the repo.
+
 OLD_IFS="$IFS"
 IFS=$'\n'
 for f in $(g ls); do

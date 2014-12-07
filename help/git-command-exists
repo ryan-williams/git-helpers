@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Determine whether a git command exists.
+
 usage() {
   err "Usage: $0 [-v] <cmd>"
   exit 1

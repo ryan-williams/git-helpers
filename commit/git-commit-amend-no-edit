@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Amend the previous commit with all staged changes.
+
 git diff --cached --exit-code
 if [ $? -gt 0 ]; then
 	echo "**** Committing changes ****"

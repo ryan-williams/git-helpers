@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Clone a repo from your github. Requires $GITHUBUSER to be set.
+
 if [ -z "$GITHUBUSER" ]; then
   echo "Set \$GITHUBUSER to run $0" 1>&2
   exit 1

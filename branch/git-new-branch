@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Checkout a new branch and set its upstream (default to origin/master).
+
 if [ $# -eq 0 ]; then
 	echo "Usage: git new-branch <new branch name> [<tracking branch name=origin/master>]"
 	exit 1

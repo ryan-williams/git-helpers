@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+"""Mirror-push changes to a remote, forcing its local state to be identical."""
+
 import errno
 import os
 import shutil

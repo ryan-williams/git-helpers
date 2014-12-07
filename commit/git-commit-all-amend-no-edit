@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Amend the last commit with all local staged and unstaged changes.
+
 git diff --exit-code
 if [ $? -gt 0 ]; then
 	echo "**** Committing changes ****"

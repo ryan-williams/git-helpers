@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# When done resolving conflicts while cherry-picking, call `g acpc` to confirm your commit message
+# and continue.
+
 if [ $# -gt 0 ]; then
 	args="$@"
 else

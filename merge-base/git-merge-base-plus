@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Find octopus merge-base for inputs.
+
 from=
 if [ $# -lt 1 ]; then
   from=origin/HEAD

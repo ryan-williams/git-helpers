@@ -1,3 +1,5 @@
 #!/bin/sh
 
+# git diff-stat, one SHA
+
 git diff --stat $1^..$1

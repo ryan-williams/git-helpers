@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Shorthand to view stashes by index.
+
 if [ $# -gt 0 ]; then
   num=$1
 else

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Pretty-print remote branch info.
+
 git branch -rvv | \
 awk -F' ' '{print $1}' | \
 xargs git --no-pager show -s --format="%d %h %ci (%cr) %s" | \

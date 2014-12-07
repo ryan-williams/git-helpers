@@ -1,3 +1,5 @@
 #!/bin/bash
 
+# Output the number of commits behind the earliest "bad" commit that HEAD is.
+
 git count-commits HEAD..bisect/bad

@@ -1,3 +1,5 @@
 #!/bin/sh
 
+# Forcibly me-push.
+
 git me-push -f $@

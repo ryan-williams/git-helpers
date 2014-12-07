@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+"""Info about remote branches."""
+
 __author__ = 'ryan'
 
 import sys

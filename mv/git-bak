@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# "bak" up a git-tracked file.
+
 for arg in "$@"; do
 	for expanded_arg in "$(git ls-files "$arg")"; do
 		if [ "$(basename $expanded_arg)" == "BUILD" ]; then

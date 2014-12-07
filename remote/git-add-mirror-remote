@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""Adds a mirrored git remote suitable for pushing local, uncommitted changes to"""
+"""Adds a mirrored git remote suitable for pushing to using `git copy-diffs`"""
 
 __author__ = "Ryan Williams"
 

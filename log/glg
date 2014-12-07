@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Display history of files, lookup by partial/grep matches, prompt to disambiguate if multiple.
+
 echo $1
 files=$(git ls-files | grep --color=never "$1")
 if [ $(count $files) -eq 1 ]; then

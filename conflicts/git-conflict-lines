@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Greps for finding merge conflicts that may not have been resolved.
+
 git --no-pager grep -n '<<<<<<<'
 git --no-pager grep -n '>>>>>>>'
+
+# Removed due to occasional false positives.
 #git --no-pager grep -n '======='

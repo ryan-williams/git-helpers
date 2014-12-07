@@ -1,3 +1,5 @@
 #!/bin/sh
 
+# Print conflicting file paths.
+
 git status -s | sed -n "s/^UU //p"

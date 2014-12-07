@@ -1,3 +1,5 @@
 #!/bin/bash
 
+# Checkout "ours" version of all conflicting files.
+
 git checkout --ours $(git conflicting)

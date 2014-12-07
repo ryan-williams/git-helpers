@@ -2,6 +2,8 @@
 
 import sys
 
+# Pretty-print all local branches.
+
 if __name__ == '__main__':
     sys.path.append('.')
 

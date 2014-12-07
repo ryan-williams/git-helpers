@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Show "number of commits ahead/behind" relationship between two refs.
+
 from=
 to=
 if [ $# -eq 2 ]; then
