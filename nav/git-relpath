@@ -2,6 +2,8 @@
 
 # Output the current directory's relative path from the root of the current git repository.
 
+source "$(git root)"/config/.helpers-rc
+
 if [ $# -eq 0 ]; then
   "$0" "$PWD" "$(git root)"
   exit $?

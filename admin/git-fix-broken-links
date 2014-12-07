@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd "$(git root)"
+source config/.helpers-rc
 
 OLD_IFS="$IFS"
 IFS=$'\n'

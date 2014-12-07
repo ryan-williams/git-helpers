@@ -11,13 +11,6 @@ fi
 [ -s "$dir/.gitcomplete" ] && source "$dir/.gitcomplete"
 [ -s "$dir/.git-completion.bash" ] && source "$dir/.git-completion.bash"
 
-# Function to get the absolute path of a file:
-abspath () { case "$1" in /*)printf "%s\n" "$1";; *)printf "%s\n" "$PWD/$1";; esac; }
-
-count() {
-  echo $#
-}
-
 append_to_path() {
   for arg in "$@"; do
     if [ -d "$arg" ]; then
