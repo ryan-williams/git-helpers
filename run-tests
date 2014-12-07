@@ -5,5 +5,7 @@ set -e
 pylint -E --disable=print-statement **/*.py
 nosetests
 
+git find-broken-links
+
 test/admin/mk-git-test
 test/nav/relpath-test
