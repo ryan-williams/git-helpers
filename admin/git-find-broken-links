@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Print all broken symlinks in the repo.
+
 for f in $(g links "$@"); do
   pushd "$(dirname "$f")" > /dev/null
   dest="$(readlink "$(basename "$f")")"

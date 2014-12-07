@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# For all broken symlinks in the repo:
+#
+#   - look at the basename of the (nonexistent) path they are pointing to
+#   - look for files in the repo matching that
+#   - if there's more than one, prompt the user to select one
+#   - fix the broken symlink by pointing it at the found/selected file.
+
 cd "$(git root)"
 source config/.helpers-rc
 
