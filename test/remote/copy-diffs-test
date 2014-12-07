@@ -1,0 +1,81 @@
+#!/bin/bash
+
+cd "$(git root)"
+source test/.helpers-rc
+
+check_cmd() {
+  # Verify that a command yields the same output in tmp1 and in its mirror/clone tmp2.
+  "$@" > /dev/null
+  diff <("$@") <(cd ../tmp2 && "$@")
+}
+
+# Set up a temporary "from" repo.
+git clone .git tmp1
+cd tmp1
+
+# Initialize a temporary "to" repo to mirror to; perform an initial sync.
+git add-mirror-remote tmp2 ../tmp2
+git copy-diffs tmp2
+
+# After an initial copy-diffs, various vital stats should be identical across the two repos.
+check_cmd git status
+check_cmd git current-branch
+check_cmd git local-branches
+check_cmd g b
+
+# Create a local branch `test`, verify that we have two local branches, `master` and `test`, and
+# that tmp2 doesn't have `test` yet.
+g nb test
+[ "$(g current-branch)" == "test" ]
+
+cat >expected <<EOF
+master
+test
+EOF
+diff <(git local-branches) expected
+rm -f expected
+
+# `git local-branches` returns different things between the two repos, because `test` branch hasn't
+# been copied yet.
+! check_cmd git local-branches
+
+git copy-diffs tmp2
+check_cmd git status
+check_cmd git current-branch
+check_cmd git local-branches
+check_cmd g b
+
+# Switch back to `master` branch, verify that copy-diffs pushs that change to tmp2.
+g co master
+[ "$(g current-branch)" == "master" ]
+[ "$(cd ../tmp2 && g current-branch)" == "test" ]
+g cd tmp2
+check_cmd git current-branch
+
+# Initialize an untracked file `foo`; verify that tmp1 has it and tmp2 doesn't.
+echo a > foo
+[ "$(g lso)" == "foo" ]
+[ "$(cd ../tmp2 && g lso)" == "" ]
+
+g cd tmp2
+check_cmd git status
+check_cmd g lso
+
+git add foo
+g cd tmp2
+check_cmd git status
+
+echo b >> foo
+g cd tmp2
+check_cmd git status
+check_cmd git diff
+check_cmd git diff --cached
+
+git commit -m "foo"
+g cd tmp2
+check_cmd git status
+check_cmd git diff
+check_cmd git diff --cached
+
+cd ..
+test/clean-test-files
