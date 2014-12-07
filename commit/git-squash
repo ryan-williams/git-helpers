@@ -11,10 +11,6 @@ to="${args##*..}"
 
 hashes="$(git rev-list --reverse $args)"
 
-count() {
-  echo $#
-}
-
 echo "Operating from $from to $to; $(count $hashes) commits:"
 echo ''
 git --no-pager log --color=always --pretty --oneline --decorate --no-walk $args | awk '{ print "\t",$0 }'
