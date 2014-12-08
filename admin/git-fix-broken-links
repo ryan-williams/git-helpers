@@ -17,7 +17,7 @@ for line in $(git find-broken-links "$@"); do
   dest="$(basename "${line##*: }")"
   echo "Found broken link: $link -> $dest"
 
-  candidates=$(git find "$dest")
+  candidates=$(git find "$dest" | sort)
   num_candidates="$(count $candidates)"
 
   if [ "$num_candidates" -eq 1 ]; then
