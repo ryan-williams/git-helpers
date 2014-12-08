@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Don't try to remove NFS bookkeeping files when running git-copy-diffs
-export GIT_COPY_DIFFS_PRESERVE_UNTRACKED='.nfs000*'
-
 alias gcd="g cd"
 
 alias gr="git remote -vv"

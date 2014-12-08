@@ -6,5 +6,5 @@ git branch -rvv | \
 awk -F' ' '{print $1}' | \
 xargs git --no-pager show -s --format="%d %h %ci (%cr) %s" | \
 sed -n "s/\(.\)/\1/p" | \
-"$(git root)"/util/remote_branch_infos.py
+"$(dirname "${BASH_SOURCE[0]}")"/../../util/remote_branch_infos.py
 

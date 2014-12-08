@@ -4,6 +4,8 @@ set -ex
 
 source config/.helpers-rc
 
+test/clean-test-files
+
 mkdir -p tmp tmp1 tmp2
 
 check_link() {

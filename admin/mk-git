@@ -32,7 +32,7 @@ verify_commands_dont_exist "$alias"
 full=$(find . -name "$base" | sed "s_^\./__" | sort)
 num_hits="$(count $full)"
 if [ "$num_hits" -eq 0 ]; then
-  err "Can't find git script named 'git-$1'"
+  err "Can't find git script named $base below $PWD"
 elif [ "$num_hits" -gt 1 ]; then
   echo "Found $num_hits candidates; choose one:"
   select f in $full; do

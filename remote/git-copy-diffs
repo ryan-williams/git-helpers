@@ -2,214 +2,53 @@
 
 """Mirror-push changes to a remote, forcing its local state to be identical."""
 
-import errno
 import os
-import shutil
-import subprocess
+from subprocess import check_call, PIPE, Popen
 import sys
-import tarfile
 from tempfile import mktemp
 
 if __name__ == '__main__':
-    sys.path.append('.')
-from util.remotes import get_remotes
+    file_path = os.path.realpath(__file__)
+    branches_dir = os.path.dirname(file_path)
+    root_dir = os.path.dirname(branches_dir)
+    sys.path.append(root_dir)
 
-remote = None
+from util.remotes import get_mirror_remote
 
-remote_names = []
-if len(sys.argv) > 1:
-    remote_names = [sys.argv[1]]
-elif os.environ.get('MIRROR_REMOTES'):
-    remote_names = os.environ.get('MIRROR_REMOTES').split(',')
-else:
-    raise Exception(
-        "Pass remote name as an argument, or set MIRROR_REMOTES environment variable "
-        "with a comma-separated list of eligible remotes"
-    )
+remote = get_mirror_remote()
 
-remotes = get_remotes()
-found_remotes = [remotes[remote]
-                 for remote in remote_names if remote in remotes]
-if len(found_remotes) > 1:
-    raise Exception('Found multiple eligible remotes: %s' % ','.join(
-        map(lambda remote: remote.name, found_remotes)))
-if not found_remotes:
-    raise Exception('Found no eligible remotes: %s' % ','.join(remote_names))
-
-remote = found_remotes[0]
-
-print "Got remote %s at %s. Pushing.." % (
+print "Got remote %s at %s. Copying .git directory to %s" % (
     remote.name,
     remote.host_path_str,
+    remote.path
 )
-subprocess.check_output(['git', 'push', remote.name])
-print 'Pushed!'
+print '\t' + '\n\t'.join(Popen(['rsync', '-avz', '.git', remote.path ], stdout=PIPE).communicate()[0].split('\n')[:20])
+print 'Copied!'
 
-class FileToCopy(object):
-    def __init__(self, basename):
-        self.basename = basename
-        self.path = mktemp()
+if remote.is_local:
+    curdir = os.getcwd()
+    os.chdir(remote.path)
+    check_call(['git', 'reset', '--hard', 'HEAD'])
+    os.chdir(curdir)
+else:
+    remote_cmd='cd "%s" && git reset --hard HEAD' % remote.path
+    check_call(['ssh', remote.host, remote_cmd])
 
-    def rm_tmpfile(self):
-        try:
-            shutil.rmtree(self.path)
-        except OSError as exc:
-            if exc.errno != errno.ENOENT:  # ENOENT - no such file or directory
-                raise  # re-raise exception
-
-
-class CmdFileToCopy(FileToCopy):
-    def __init__(self, basename, cmd):
-        super(CmdFileToCopy, self).__init__(basename)
-        self.cmd = cmd
-
-    def write(self):
-        with open(self.path, 'w') as fd:
-            subprocess.Popen(
-                self.cmd.split(' '),
-                stdout=fd
-            ).wait()
-            fd.flush()
-
-
-
-class EnvFileToCopy(FileToCopy):
-    def __init__(self, basename, env_var, env_var_file):
-        super(EnvFileToCopy, self).__init__(basename)
-        self.env_var = env_var
-        self.env_var_file = env_var_file
-
-    def write(self):
-        with open(self.path, 'w') as fd:
-            env_var = os.environ.get(self.env_var)
-            if env_var:
-                fd.write(env_var + '\n')
-            env_var_file = os.environ.get(self.env_var_file)
-            if env_var_file:
-                with open(env_var_file, 'r') as env_var_file_fd:
-                    fd.write(env_var_file_fd.readall())
-            fd.flush()
-
-
-files_to_copy = [
-    CmdFileToCopy('unstaged_diff_file', 'git diff'),
-    CmdFileToCopy('staged_diff_file', 'git diff --cached'),
-    CmdFileToCopy('added_files', 'git diff --cached --name-only --diff-filter=A'),
-    CmdFileToCopy('deleted_files', 'git diff --cached --name-only --diff-filter=D'),
-    EnvFileToCopy('untracked_files_to_preserve', 'GIT_COPY_DIFFS_PRESERVE_UNTRACKED', 'GIT_COPY_DIFFS_PRESERVE_UNTRACKED_FILE'),
-]
-
-tar_file_path = mktemp()
+names_file_path = mktemp()
 try:
+    with open(names_file_path, 'w') as names_file:
+        print 'Getting staged and unstaged file names..'
+        Popen(['git', 'diff', '--name-only', 'HEAD'], stdout=names_file).wait()
+        Popen(['git', 'lso'], stdout=names_file).wait()
+        names_file.flush()
+        names_file.write('.git/index\n')
 
-    local_script_basename = 'git-unpack-and-apply-diffs'
-    remote_script_basename = 'tmp.git-unpack-and-apply-diffs'
-    local_script = \
-        subprocess.Popen(
-            ['which', local_script_basename], stdout=subprocess.PIPE
-        ).communicate()[0].strip()
-
-    print "script to run remotely: %s" % local_script
-
-    cur_branch_name = subprocess.check_output(
-        ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])[:-1]
-    print 'Got current branch: %s' % cur_branch_name
-
-    with tarfile.open(tar_file_path, 'w:gz') as tar:
-        [ file.write() for file in files_to_copy ]
-        [ tar.add(file.path, arcname=file.basename) for file in files_to_copy ]
-
-    tar_basename = 'diffs.tar.gz'
-
-    paths_to_look_for = [ file.basename for file in files_to_copy ] + [ remote_script_basename, tar_basename ]
-
-    cmd = [
-        'ssh',
-        #'-v',
-        '%s%s' % (remote.opt_user_str, remote.host),
-        "; ".join(
-            ["cd %s" % remote.path] +
-            # TODO(ryan): use test here
-            [ "ls %s 2> /dev/null" % filename for filename in paths_to_look_for ]
-        )
-    ] if remote.is_remote else (["ls"] + [ os.path.join(remote.path, path) for path in paths_to_look_for])
-    found_files = filter(
-        lambda x: x,
-        subprocess.Popen(
-            cmd,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        ).communicate()[0].split('\n')
+    print '\t' + '\n\t'.join(
+        Popen(
+            ['rsync', '-avz', '--files-from=%s' % names_file_path, './', remote.path],
+            stdout=PIPE
+        ).communicate()[0].split('\n')[:20]
     )
 
-    if found_files and len(found_files):
-        inp = raw_input(
-            'Found existing files:\n\t%s\nOverwrite? [Y/n]: ' % '\n\t'.join(
-                found_files)
-        )
-        if inp and inp[0].lower() != 'y':
-            print 'Exiting'
-            sys.exit(1)
-
-    cp = 'scp' if remote.is_remote else 'cp'
-
-    cmd = [
-        cp,
-        #'-v',
-        tar.name,
-        os.path.join(remote.host_path_str, tar_basename)
-    ]
-    print "%s'ing tar file: %s" % (cp, ' '.join(cmd))
-    subprocess.call(cmd)
-
-    cmd = [
-        cp,
-        #'-v',
-        local_script,
-        os.path.join(remote.host_path_str, remote_script_basename)
-    ]
-    print "%s'ing remote script: %s" % (cp, ' '.join(cmd))
-    subprocess.call(cmd)
-
-    cmd = [ './%s' % remote_script_basename, cur_branch_name ]
-
-    if remote.is_remote:
-        remote_cmd = ' && '.join(['cd %s' % remote.path, ' '.join(cmd)])
-
-        print 'remote_cmd: %s' % remote_cmd
-
-        ssh_cmd = [
-            'ssh',
-            #'-v',
-            remote.host,
-            remote_cmd
-        ]
-
-        print 'ssh cmd:'
-        print ' '.join(ssh_cmd)
-        subprocess.check_call(ssh_cmd)
-
-    else:
-        os.chdir(remote.path)
-        print 'Local cmd: %s' % ' '.join(cmd)
-        subprocess.check_call(cmd)
-
 finally:
-
-    exc = None
-
-    def try_remove(file):
-        global exc
-        try:
-            os.remove(file)
-        except OSError as e:
-            if e.errno != errno.ENOENT:  # ENOENT - no such file or directory
-                print 'Failed to remove: %s' % file
-                exc = e
-
-    try_remove(tar_file_path)
-    [ try_remove(file.path) for file in files_to_copy ]
-
-    if exc:
-        raise exc
+    os.remove(names_file_path)
