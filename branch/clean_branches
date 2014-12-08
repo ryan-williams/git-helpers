@@ -4,6 +4,9 @@
 # recently modified, display information about the branch, and prompt for
 # deletion of the branch.
 
+set -e
+source "$GIT_HELPERS_HOME"/config/.helpers-rc
+
 branches=$(git local-branches)
 num_branches=$(count $branches)
 idx=
