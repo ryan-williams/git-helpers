@@ -12,7 +12,10 @@ check_link() {
   link="$1"
   expected="$2"
 
-  [ -L "$link" ] || err "$link not a link"
+  if [ ! -L "$link" ]; then
+    [ -e "$link" ] || err "$link doesn't exist, therefore is not a link"
+    err "$link exists but is not a link"
+  fi
 
   actual="$(readlink "$link")"
 
