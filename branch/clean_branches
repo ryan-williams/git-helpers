@@ -4,7 +4,7 @@
 # recently modified, display information about the branch, and prompt for
 # deletion of the branch.
 
-branches=$(sorted_branches)
+branches=$(git local-branches)
 num_branches=$(count $branches)
 idx=
 
@@ -21,8 +21,9 @@ else
     prompt="${Red}Delete${clear}"
 fi
 
-
-for b in "$(sorted_branches)"; do
+OLD_IFS="$IFS"
+IFS=$'\n'
+for b in $(git local-branches -t); do
     let idx=$idx+1
 
     lastdate=$(git log -n 1 "$b" --format="%ad" --)
@@ -40,3 +41,4 @@ for b in "$(sorted_branches)"; do
     fi
     echo ''
 done
+IFS="$OLD_IFS"
