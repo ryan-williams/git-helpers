@@ -3,7 +3,6 @@
 cd "$(git root)"
 source test/.helpers-rc
 
-mkdir -p tmp1 tmp2
 export PATH="$PATH:$PWD/tmp1:$PWD/tmp1/aliases:$PWD/tmp2:$PWD/tmp2/aliases"
 
 touch tmp1/git-foo
