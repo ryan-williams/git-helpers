@@ -11,3 +11,37 @@ err() {
   echo $@ 1>&2
   exit 1
 }
+
+
+# Prompt a user for a y/n response until they give you a satisfactory answer.
+# Usage: `prompt <prompt> <default=y>`
+# Example: $ prompt "Are you sure? [Y/n] "
+# Example:
+#
+#   if [ $(prompt "Are you sure? [Y/n] ") ]; then
+#       echo "they're sure"
+#   else
+#       echo "they're just not sure"
+#   fi
+prompt() {
+  while true; do
+      echo -en "$1" 1>&2
+      read line
+      if [ "$line" == "" ]; then
+          if [ "$2" == "" ]; then
+              line="y"
+          else
+              line=$2
+          fi
+      fi
+      if [ "$line" == "n" -o "$line" == "N" ]; then
+          return 1
+      fi
+
+      if [ "$line" == "y" -o "$line" == "Y" ]; then
+          return 0
+      fi
+
+      echo "Invalid response"
+  done
+}
