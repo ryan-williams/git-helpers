@@ -1,3 +1,5 @@
 #!/bin/bash
 
+# List parent commits of an argument.
+
 git rev-list --parents -n 1 "$1" | sed "s/^[^ ]* //"

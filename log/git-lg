@@ -1,11 +1,20 @@
 #!/usr/bin/python
 
-import re
-import sys
+"""Pretty, table-aligned display of recent commits.
+
+First argument can be an integer, and that number of commits will be displayed.
+"""
+
+import os
 import subprocess
+import sys
 
 if __name__ == '__main__':
-    sys.path.append('.')
+    file_path = os.path.realpath(__file__)
+    log_dir = os.path.dirname(file_path)
+    root_dir = os.path.dirname(log_dir)
+    sys.path.append(root_dir)
+
 from util.color import clen
 from util.piece import Pieces
 

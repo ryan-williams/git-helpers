@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# List all commits, optionally with a format.
+
 if [ $# -eq 0 ]; then
   format="%h %d (%ar) - %s"
 else

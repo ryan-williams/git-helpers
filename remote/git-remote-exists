@@ -1,3 +1,5 @@
 #!/bin/sh
 
+# Check whether a remote exists.
+
 git ls-remote "$1" &> /dev/null

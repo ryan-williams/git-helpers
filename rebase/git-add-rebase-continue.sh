@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# `git add` files whose conflicts have been resolved, and continue rebasing.
+
 if [ $# -eq 0 ]; then
 	args=.
 else

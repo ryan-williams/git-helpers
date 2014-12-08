@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Graph commits up to the nearest common ancestor of the arguments (default HEAD and origin/HEAD).
+
 from=
 if [ $# -lt 1 ]; then
   from=origin/HEAD

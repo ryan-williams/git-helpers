@@ -1,5 +1,7 @@
 __author__ = 'ryan'
 
+"""Functionality for parsing and manipulating data about git branches."""
+
 from branch_info import BranchInfo
 from color import clen
 import subprocess

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+cd "$(git root)"
+source test/.helpers-rc
+
+export PATH="$PATH:$PWD/tmp1:$PWD/tmp1/aliases:$PWD/tmp2:$PWD/tmp2/aliases"
+
+touch tmp1/git-foo
+
+# Set up an alias from `git-bar` to `tmp1/git-foo`
+mk-git foo bar
+check_link tmp1/aliases/git-bar ../git-foo
+
+git command-exists foo
+git command-exists bar
+
+# Calling it a second time fails, because `git-bar` already exists.
+! mk-git foo bar
+
+touch tmp2/git-foo
+# Set up a second alias, from `git-bar2` to `tmp2/git-foo`; pass a '2' as stdin to disambiguate
+# between the two choices.
+echo 2 | mk-git foo bar2
+check_link tmp2/aliases/git-bar2 ../git-foo
+check_link tmp1/aliases/git-bar ../git-foo
+
+# Clean up
+test/clean-test-files

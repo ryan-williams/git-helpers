@@ -31,6 +31,7 @@
         lso     = ls-files --other --exclude-standard
         lsc     = diff-tree --no-commit-id --name-only -r
         m       = merge
+        ma      = merge --abort
         mt      = mergetool -t meld -y
         pr      = pull --rebase
         r       = remote

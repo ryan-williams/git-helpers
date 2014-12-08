@@ -1,3 +1,5 @@
 #!/bin/bash
 
-(git status -s && gn log --graph --decorate --color --oneline --all) | less -R
+# `git graph` with a status on top.
+
+(git status -s && gn graph "$@") | less -R

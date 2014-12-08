@@ -1,3 +1,5 @@
 #!/bin/bash
 
+# Print the short SHAs of recent commits.
+
 git log --format="%h" "$@"

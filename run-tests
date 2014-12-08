@@ -1,8 +1,12 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 pylint -E --disable=print-statement **/*.py
 nosetests
 
+git find-broken-links
+
+test/admin/find-broken-links-test
+test/admin/mk-git-test
 test/nav/relpath-test

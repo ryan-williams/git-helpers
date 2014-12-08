@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Commit staged changes, with a message.
+
 if [ $# -eq 0 ]; then
 	echo "Usage: git cam [-a] <commit message> [auditor1,auditor2,...]"
 	exit 1

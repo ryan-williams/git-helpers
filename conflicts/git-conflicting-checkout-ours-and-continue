@@ -1,3 +1,5 @@
 #!/bin/sh
 
+# Checkout "ours" version of conflicting files and continue a rebase.
+
 git conflicting-checkout-ours && git arc $(git conflicting)

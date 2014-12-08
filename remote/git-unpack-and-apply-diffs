@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Script that `git copy-diffs` copies to and runs on a remote.
+# Makes the remote's local state identical to the local/pusher's.
+
 # TODO: arg-ify these
 staged="staged_diff_file"
 unstaged="unstaged_diff_file"

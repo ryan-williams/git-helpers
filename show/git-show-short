@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Show short version of commit(s), default to "%h" format.
+
 if [ $# -eq 0 ]; then
   format="%h"
 else

@@ -1,10 +1,9 @@
 #!/bin/bash
 
-link_only=
-if [ "$1" == "-s" ]; then
-  link_only=1
-  shift
-fi
+# This script takes care of some common steps involved in adding new scripts to this repo:
+#
+#   - mark the script as executable
+#   - create an alias to it
 
 if [ $# -ne 2 ]; then
   err "Usage: $0 <full git extension> <git alias>"
@@ -12,32 +11,48 @@ if [ $# -ne 2 ]; then
 fi
 
 dir="$(dirname "${BASH_SOURCE[0]}")"
-
 cd "$dir"
-full="git-$1"
-short="git-$2"
+cd "$(git root)"
+
+source config/.helpers-rc
+
+base="git-$1"
+alias="git-$2"
 
 verify_commands_dont_exist() {
   for arg in "$@"; do
     if git command-exists "$arg"; then
       err "Found existing git command: $arg"
-      exit 1
     fi
   done
 }
 
-if [ ! $link_only ]; then
-  verify_commands_dont_exist "$full" "$short"
-fi
+verify_commands_dont_exist "$alias"
 
-if [ ! -e "$full" ]; then
-  err "Can't find $PWD/$full"
-  exit 1
+full=$(find . -name "$base" | sed "s_^\./__" | sort)
+num_hits="$(count $full)"
+if [ "$num_hits" -eq 0 ]; then
+  err "Can't find git script named $base below $PWD"
+elif [ "$num_hits" -gt 1 ]; then
+  echo "Found $num_hits candidates; choose one:"
+  select f in $full; do
+    full="$f"
+    break
+  done
 fi
 
 chmod 755 "$full"
+cd "$(dirname "$(abspath "$full")")"
 
-cd "aliases"
-ln -s ../"$full" "$short"
-git add "$short"
+mkdir -p aliases
+cd aliases
+if [ -e "$alias" -o -L "$alias" ]; then
+  echo -n "$PWD/$alias already exists; overwrite? [Y/n]: "
+  read line
+  if [ ! -z "$line" -a "$line" != "y" -a "$line" != "Y" ]; then
+    exit 1
+  fi
+fi
+ln -sf ../"$base" "$alias"
+git add "$alias"
 

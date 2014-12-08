@@ -1,3 +1,6 @@
+
+"""Helpers for "pieces" of formatted output linked to certain format specifiers."""
+
 from color import color as C
 from datetime import datetime
 from dateutil.parser import parse as parse_datetime

@@ -1,4 +1,6 @@
 
+"""Handy regexs for parsing git-command outputs."""
+
 normal_refname_regex = "[a-zA-Z0-9-_/\.+]+"
 refname_or_tag_regex = "(?:%s|tag: %s)" % (normal_refname_regex, normal_refname_regex)
 detached_refname_regex = "\(detached from %s\)" % normal_refname_regex

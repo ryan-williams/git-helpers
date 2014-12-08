@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+"""Configure a github remote to load refs for each pull request."""
+
 from subprocess import check_output, Popen, PIPE
 import sys
 from util.remotes import get_remotes

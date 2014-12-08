@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Cherry-pick a sequence of commits, by SHA, from a file.
+
 while [ 1 ]; do
     if ! pop_commit_from_file "$@"; then
         break

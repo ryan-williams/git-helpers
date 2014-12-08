@@ -8,6 +8,8 @@ else
   dir="$(dirname "${BASH_SOURCE[0]}")"
 fi
 
+dir="$(cd "$dir" && echo "$PWD")"
+
 [ -s "$dir/.gitcomplete" ] && source "$dir/.gitcomplete"
 [ -s "$dir/.git-completion.bash" ] && source "$dir/.git-completion.bash"
 
@@ -45,7 +47,6 @@ append_subdir_to_path help
 append_subdir_to_path log
 append_subdir_to_path ls
 append_subdir_to_path merge
-append_subdir_to_path log
 append_subdir_to_path merge-base
 append_subdir_to_path mv
 append_subdir_to_path nav

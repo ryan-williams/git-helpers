@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Push a local branch to origin as a $USER-namespaced remote-branch.
+
 force=
 if [ $# -gt 0 -a "$1" == "-f" ]; then
 	force="-f "

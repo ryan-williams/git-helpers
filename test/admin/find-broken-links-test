@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -ex
+
+mkdir -p tmp
+
+ln -s foo tmp/bar
+
+[ "$(git find-broken-links)" == "" ]
+git add tmp/bar
+[ "$(git find-broken-links)" == "tmp/bar: foo" ]
+
+
+test/clean-test-files

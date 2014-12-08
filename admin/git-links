@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Print out all symlinks in the repo.
+
+OLD_IFS="$IFS"
+IFS=$'\n'
+for f in $(g ls-files); do
+  if [ -L "$f" ]; then
+    echo "$f"
+  fi
+done
+IFS="$OLD_IFS"

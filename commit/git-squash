@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Squash all commits since a given upstream (default origin/HEAD); open $EDITOR with all commit
+# messages nicely formatted/bulletted.
+
 if [ $# -eq 0 ]; then
   args="origin/HEAD..HEAD"
 else

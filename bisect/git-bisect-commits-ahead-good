@@ -1,4 +1,6 @@
 #!/bin/bash
 
+# Output the number of commits from the last "good" commit to HEAD.
+
 git count-commits $(git bisect-latest-good)..HEAD
 

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Set the upstream ref for the current branch. Usage:
+#
+#   $ git branch-upstream [upstream ref] <branch>
+
 if [ $# -eq 0 ]; then
   upstream="origin/master"
 else

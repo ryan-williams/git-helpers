@@ -1,3 +1,5 @@
 #!/bin/sh
 
+# `git rm` untracked files.
+
 git ls-files -z --other --exclude-standard | xargs -0 rm -rf

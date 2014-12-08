@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+"""Indicate whether the current git version is >= an input, using the exit code."""
+
 import re
 import subprocess
 import sys

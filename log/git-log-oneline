@@ -1,4 +1,5 @@
 #!/bin/bash
 
-#git log -n 1 $@
+# Pretty, one-line version of `git log`
+
 git log --format="%h %d (%ar) - %s" "$@"

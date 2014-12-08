@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# For every broken link in the repo:
+#
+#   - infer the file in the repo that it should point to,
+#   - move the link to an aliases/ directory just below that file,
+#   - repair the link by pointing it to that file.
+
 source "$(git root)"/config/.helpers-rc
 
 OLD_IFS="$IFS"
@@ -10,7 +16,7 @@ for line in $(git find-broken-links "$@"); do
   dest="$(basename "${line##*: }")"
   echo "Found broken link: $link -> $dest"
 
-  candidates=$(git find "$dest")
+  candidates=$(git find "$dest" | sort)
   num_candidates="$(count $candidates)"
 
   if [ "$num_candidates" -eq 1 ]; then

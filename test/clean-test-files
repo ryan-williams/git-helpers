@@ -1,0 +1,9 @@
+#!/bin/bash
+
+kill_dir() {
+  for arg in "$@"; do
+    ([ -d "$arg" ] && git rm -rf "$arg" 2> /dev/null; rm -rf "$arg")
+  done
+}
+
+kill_dir tmp tmp1 tmp2
