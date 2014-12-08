@@ -44,12 +44,8 @@ cd "$(dirname "$(abspath "$full")")"
 
 mkdir -p aliases
 cd aliases
-if [ -e "$alias" -o -L "$alias" ]; then
-  echo -n "$PWD/$alias already exists; overwrite? [Y/n]: "
-  read line
-  if [ ! -z "$line" -a "$line" != "y" -a "$line" != "Y" ]; then
-    exit 1
-  fi
+if [ ! -e "$alias" -a ! -L "$alias" -a ! prompt "$PWD/$alias already exists; overwrite? [Y/n]: " ]; then
+  exit 1
 fi
 ln -sf ../"$base" "$alias"
 git add "$alias"

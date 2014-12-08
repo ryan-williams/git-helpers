@@ -3,6 +3,9 @@
 # Attempt a `push`; if it's not fast-forward on the remote, dry-run a force-push, display info
 # about it, and prompt the user to proceed or not.
 
+set -e
+source "$GIT_HELPERS_HOME"/config/.helpers-rc
+
 is_remote() {
   git remote | grep -q ^"$1"\$
 }
@@ -71,9 +74,7 @@ echo -e "\t$local_branch: +$local_branch_ahead commits"
 echo -e "\t$remote_refspec: +$remote_branch_ahead commits"
 echo ""
 
-echo -n "Continue? [Y/n]: "
-read line
-if [ "$line" == "" -o "$line" == "y" -o "$line" == "Y" ]; then
+if prompt "Continue? [Y/n]: "; then
   cmd="git push -f '$remote' '$refspec'"
   echo "$cmd"
   eval "$cmd"
