@@ -71,7 +71,9 @@ echo -e "\t$local_branch: +$local_branch_ahead commits"
 echo -e "\t$remote_refspec: +$remote_branch_ahead commits"
 echo ""
 
-if prompt "Continue? [Y/n]: "; then
+echo -n "Continue? [Y/n]: "
+read line
+if [ "$line" == "" -o "$line" == "y" -o "$line" == "Y" ]; then
   cmd="git push -f '$remote' '$refspec'"
   echo "$cmd"
   eval "$cmd"
