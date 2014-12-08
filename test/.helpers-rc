@@ -2,7 +2,7 @@
 
 set -ex
 
-source config/.helpers-rc
+source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
 test/clean-test-files
 

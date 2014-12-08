@@ -9,6 +9,7 @@ else
 fi
 
 dir="$(cd "$dir" && echo "$PWD")"
+export GIT_HELPERS_HOME="$dir"
 
 [ -s "$dir/.gitcomplete" ] && source "$dir/.gitcomplete"
 [ -s "$dir/.git-completion.bash" ] && source "$dir/.git-completion.bash"

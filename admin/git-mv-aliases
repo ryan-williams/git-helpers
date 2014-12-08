@@ -6,7 +6,8 @@
 #   - move the link to an aliases/ directory just below that file,
 #   - repair the link by pointing it to that file.
 
-source "$(git root)"/config/.helpers-rc
+set -e
+source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
 OLD_IFS="$IFS"
 IFS=$'\n'

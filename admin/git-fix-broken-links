@@ -7,8 +7,8 @@
 #   - if there's more than one, prompt the user to select one
 #   - fix the broken symlink by pointing it at the found/selected file.
 
-cd "$(git root)"
-source config/.helpers-rc
+set -e
+source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
 OLD_IFS="$IFS"
 IFS=$'\n'

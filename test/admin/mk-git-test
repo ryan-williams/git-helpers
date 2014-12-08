@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd "$(git root)"
-source test/.helpers-rc
+set -e
+source "$GIT_HELPERS_HOME"/test/.helpers-rc
 
 export PATH="$PATH:$PWD/tmp1:$PWD/tmp1/aliases:$PWD/tmp2:$PWD/tmp2/aliases"
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd "$(git root)"
-source test/.helpers-rc
+set -e
+source "$GIT_HELPERS_HOME"/test/.helpers-rc
 
 check_cmd() {
   # Verify that a command yields the same output in tmp1 and in its mirror/clone tmp2.

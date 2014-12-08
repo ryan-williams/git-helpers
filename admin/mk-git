@@ -10,10 +10,8 @@ if [ $# -ne 2 ]; then
   exit 1
 fi
 
-dir="$(dirname "${BASH_SOURCE[0]}")"
-cd "$dir"
-cd "$(git root)"
-
+cd "$GIT_HELPERS_HOME"
+set -e
 source config/.helpers-rc
 
 base="git-$1"

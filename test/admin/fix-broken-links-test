@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source test/.helpers-rc
+set -e
+source "$GIT_HELPERS_HOME"/test/.helpers-rc
 
 touch tmp1/git-foo
 mkdir tmp1/aaa
