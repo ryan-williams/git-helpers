@@ -1,0 +1,5 @@
+#!/bin/sh
+
+alias gf="git fetch"
+alias gfo="git fetch origin"
+

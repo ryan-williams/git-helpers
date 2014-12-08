@@ -1,0 +1,35 @@
+#!/bin/bash
+
+source "$(git root)"/config/.helpers-rc
+
+OLD_IFS="$IFS"
+IFS=$'\n'
+for line in $(git find-broken-links "$@"); do
+  link="${line%%: *}"
+  link_name="$(basename "$link")"
+  dest="$(basename "${line##*: }")"
+  echo "Found broken link: $link -> $dest"
+
+  candidates=$(git find "$dest")
+  num_candidates="$(count $candidates)"
+
+  if [ "$num_candidates" -eq 1 ]; then
+    candidate="$candidates"
+  else
+    echo "Found $num_candidates possible intended destinations for $link; choose one:"
+    select candidate in $candidates; do
+      break
+    done
+  fi
+
+  new_dest_dir="$(dirname "$(abspath "$candidate")")"
+  aliases_dir="$new_dest_dir"/aliases
+  mkdir -p "$aliases_dir"
+  g mv "$link" "$aliases_dir"
+  new_link_path="$aliases_dir/$link_name"
+
+  new_dest="../$dest"
+  ln -sf "$new_dest" "$new_link_path"
+
+done
+IFS="$OLD_IFS"

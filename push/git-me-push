@@ -1,0 +1,23 @@
+#!/bin/sh
+
+force=
+if [ $# -gt 0 -a "$1" == "-f" ]; then
+	force="-f "
+	shift
+fi
+
+if [ $# -gt 0 ]; then
+	local_branch="$1"
+else
+	local_branch="$(git cb)"
+fi
+shift
+if [ $# -gt 0 ]; then
+	remote_branch="$1"
+else
+	remote_branch="$local_branch"
+fi
+
+cmd="git push ${force}origin $local_branch:$USER-$remote_branch"
+echo "Running: $cmd"
+$cmd

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+alias gc="git commit"
+alias gcm="git commit -m"
+alias gca="git commit -a"
+alias gcam="git commit -a -m"
+

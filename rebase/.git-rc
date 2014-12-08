@@ -1,0 +1,5 @@
+#!/bin/sh
+
+alias grb="g rb"
+alias garc='git arc'
+alias gaurc='git aurc'

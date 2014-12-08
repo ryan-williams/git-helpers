@@ -1,0 +1,7 @@
+#!/bin/sh
+
+alias gg="git graph"
+alias ggc="git graph-commits"
+alias ggp="git graph-pretty"
+alias ggn="git graph -n"
+#alias gln="gn graph -n"

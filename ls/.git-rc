@@ -1,0 +1,3 @@
+#!/bin/sh
+
+alias gls="git ls-files"

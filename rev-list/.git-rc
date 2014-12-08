@@ -1,0 +1,3 @@
+#!/bin/sh
+
+alias gac="g ac '%h'"

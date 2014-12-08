@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ -z "$GITHUBUSER" ]; then
+  echo "Set \$GITHUBUSER to run $0" 1>&2
+  exit 1
+fi
+cmd="git clone git@github.com:$GITHUBUSER/$1.git"
+echo $cmd
+$cmd
+
+
+

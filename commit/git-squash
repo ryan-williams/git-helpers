@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+  args="origin/HEAD..HEAD"
+else
+  args="$1"
+fi
+
+from="${args%%..*}"
+to="${args##*..}"
+
+hashes="$(git rev-list --reverse $args)"
+
+echo "Operating from $from to $to; $(count $hashes) commits:"
+echo ''
+git --no-pager log --color=always --pretty --oneline --decorate --no-walk $args | awk '{ print "\t",$0 }'
+echo ''
+echo "Using commit message:"
+echo ''
+commit_message_file="$(mktemp)"
+cat >"$commit_message_file" <<EOF
+
+
+# Below are the messages for the commits you are squashing.
+
+EOF
+git squashed-commit-message $args | tee -a "$commit_message_file"
+echo ''
+git reset --soft "$from"
+git commit -t "$commit_message_file"
+
+
+

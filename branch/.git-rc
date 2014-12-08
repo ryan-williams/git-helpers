@@ -1,0 +1,9 @@
+#!/bin/sh
+
+alias gbd="git branch -d"
+alias gbD="git branch -D"
+alias gbdf="git branch -D"
+
+alias gb="g b"
+alias gbu="g bu"
+alias gbr="g br"

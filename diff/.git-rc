@@ -1,0 +1,5 @@
+#!/bin/sh
+
+alias gd="git diff"
+alias gdc="gd --cached"
+alias gdh="git diff HEAD"

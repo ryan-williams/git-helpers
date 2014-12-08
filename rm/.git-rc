@@ -1,0 +1,3 @@
+#!/bin/sh
+
+alias rmu="git ls-files --other --exclude-standard | xargs rm -f"

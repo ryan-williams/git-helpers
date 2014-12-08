@@ -1,0 +1,3 @@
+#!/bin/sh
+
+alias gsh="gn sh"  # git-show-short, no pager
