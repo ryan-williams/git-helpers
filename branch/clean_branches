@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Clean out old git branches: iterate through local branches in order of least
 # recently modified, display information about the branch, and prompt for
@@ -16,7 +16,7 @@ export Red="\033[0;31m"          # Red
 export Green="\033[0;32m"        # Green
 
 if [ "$1" == "-n" ]; then
-    echo "${Green}Dry run..${clear}"
+    echo -e "${Green}Dry run..${clear}"
     dry_run=1
     prompt="${Red}Delete${clear} ${Green}(but not really)${clear}"
 else
@@ -34,7 +34,7 @@ for b in $(git local-branches -t); do
 
     echo "Branch $idx of $num_branches: $b"
     echo "Last modified $relativedate: $lastdate"
-    echo "\t\c"; git branch --list -vv "$b"
+    echo -e "\t\c"; git branch --list -vv "$b"
 
     if prompt "$prompt $b? [Y/n]: "; then
         if [ ! "$dry_run" ]; then
