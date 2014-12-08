@@ -8,7 +8,11 @@ import sys
 from tempfile import mktemp
 
 if __name__ == '__main__':
-    sys.path.append('.')
+    file_path = os.path.realpath(__file__)
+    branches_dir = os.path.dirname(file_path)
+    root_dir = os.path.dirname(branches_dir)
+    sys.path.append(root_dir)
+
 from util.remotes import get_mirror_remote
 
 remote = get_mirror_remote()
