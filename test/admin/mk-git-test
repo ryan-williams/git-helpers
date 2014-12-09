@@ -41,3 +41,22 @@ check_link tmp1/aliases/git-bar ../git-foo
 git command-exists foo
 git command-exists bar
 git command-exists bar2
+
+# Break one of the symlinks and then verify that `mk-git`:
+#
+#   - prompts before overwriting,
+#   - doesn't overwrite on 'n', and
+#   - does overwrite on 'y'
+
+g rm -rf tmp2 && rm -rf tmp2
+
+ln -sf ../asdf tmp1/aliases/git-bar
+
+check_link tmp1/aliases/git-bar ../asdf
+
+! echo n | mk-git foo bar
+
+check_link tmp1/aliases/git-bar ../asdf
+
+echo y | mk-git foo bar
+check_link tmp1/aliases/git-bar ../git-foo

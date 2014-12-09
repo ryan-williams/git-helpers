@@ -44,7 +44,7 @@ cd "$(dirname "$(abspath "$full")")"
 
 mkdir -p aliases
 cd aliases
-if [ ! -e "$alias" -a ! -L "$alias" -a ! prompt "$PWD/$alias already exists; overwrite? [Y/n]: " ]; then
+if [ -e "$alias" -o -L "$alias" ] && ! prompt "$PWD/$alias already exists; overwrite? [Y/n]: " ; then
   exit 1
 fi
 ln -sf ../"$base" "$alias"
