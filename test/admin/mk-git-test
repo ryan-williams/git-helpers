@@ -7,7 +7,9 @@ export PATH="$PATH:$PWD/tmp1:$PWD/tmp1/aliases:$PWD/tmp2:$PWD/tmp2/aliases"
 
 touch tmp1/git-foo
 
-# Set up an alias from `git-bar` to `tmp1/git-foo`
+# Set up an alias from `git-bar` to `tmp1/git-foo`.
+# Hard-code GIT_HELPERS_HOME to the repo this is being run from.
+GIT_HELPERS_HOME="$(git root)"
 mk-git foo bar
 check_link tmp1/aliases/git-bar ../git-foo
 
