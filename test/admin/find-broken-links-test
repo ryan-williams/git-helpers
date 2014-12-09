@@ -1,14 +1,10 @@
 #!/bin/bash
 
-set -ex
-
-mkdir -p tmp
+set -e
+source "$GIT_HELPERS_HOME"/test/.helpers-rc
 
 ln -s foo tmp/bar
 
 [ "$(git find-broken-links)" == "" ]
 git add tmp/bar
 [ "$(git find-broken-links)" == "tmp/bar: foo" ]
-
-
-test/clean-test-files

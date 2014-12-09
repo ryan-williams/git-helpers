@@ -23,6 +23,3 @@ touch tmp2/git-foo
 echo 2 | mk-git foo bar2
 check_link tmp2/aliases/git-bar2 ../git-foo
 check_link tmp1/aliases/git-bar ../git-foo
-
-# Clean up
-test/clean-test-files

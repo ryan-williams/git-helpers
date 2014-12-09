@@ -26,5 +26,3 @@ echo 2 | git fix-broken-links
 
 check_link tmp2/git-bar ../tmp1/git-foo
 check_link tmp2/bbb/git-bars ../../tmp1/aaa/git-foos
-
-test/clean-test-files

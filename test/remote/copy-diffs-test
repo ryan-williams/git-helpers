@@ -77,5 +77,3 @@ check_cmd git status
 check_cmd git diff
 check_cmd git diff --cached
 
-cd ..
-test/clean-test-files
