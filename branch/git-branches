@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
+"""Pretty-print all local branches."""
+
 import os
 import sys
-
-# Pretty-print all local branches.
 
 if __name__ == '__main__':
     file_path = os.path.realpath(__file__)
