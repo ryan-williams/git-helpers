@@ -1,5 +1,0 @@
-#!/bin/sh
-
-# List git branches in descending order of how many commits behind their upstream they are.
-
-git branch -vv | sed -n "s/^\(.*behind \)\([0-9]*\)/\2 \1\2/p" | sort -nrk 1
