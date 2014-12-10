@@ -3,9 +3,9 @@
 set -e
 source "$GIT_HELPERS_HOME"/test/.helpers-rc
 
-touch tmp1/git-foo
+echo a > tmp1/git-foo
 mkdir tmp1/aaa
-touch tmp1/aaa/git-foos
+echo b > tmp1/aaa/git-foos
 git add tmp1
 
 ln -s git-foo tmp2/git-bar
