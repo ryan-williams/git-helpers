@@ -7,7 +7,9 @@ export PATH="$PATH:$PWD/tmp1:$PWD/tmp1/aliases:$PWD/tmp2:$PWD/tmp2/aliases"
 
 touch tmp1/git-foo
 
-# Set up an alias from `git-bar` to `tmp1/git-foo`
+# Set up an alias from `git-bar` to `tmp1/git-foo`.
+# Hard-code GIT_HELPERS_HOME to the repo this is being run from.
+GIT_HELPERS_HOME="$(git root)"
 mk-git foo bar
 check_link tmp1/aliases/git-bar ../git-foo
 
@@ -21,5 +23,40 @@ touch tmp2/git-foo
 # Set up a second alias, from `git-bar2` to `tmp2/git-foo`; pass a '2' as stdin to disambiguate
 # between the two choices.
 echo 2 | mk-git foo bar2
+
+# For reference, the file tree at this point looks like:
+#
+#   tmp1
+#   ├── aliases
+#   │   └── git-bar -> ../git-foo
+#   └── git-foo
+#   tmp2
+#   ├── aliases
+#   │   └── git-bar2 -> ../git-foo
+#   └── git-foo
+
 check_link tmp2/aliases/git-bar2 ../git-foo
+check_link tmp1/aliases/git-bar ../git-foo
+
+git command-exists foo
+git command-exists bar
+git command-exists bar2
+
+# Break one of the symlinks and then verify that `mk-git`:
+#
+#   - prompts before overwriting,
+#   - doesn't overwrite on 'n', and
+#   - does overwrite on 'y'
+
+g rm -rf tmp2 && rm -rf tmp2
+
+ln -sf ../asdf tmp1/aliases/git-bar
+
+check_link tmp1/aliases/git-bar ../asdf
+
+! echo n | mk-git foo bar
+
+check_link tmp1/aliases/git-bar ../asdf
+
+echo y | mk-git foo bar
 check_link tmp1/aliases/git-bar ../git-foo
