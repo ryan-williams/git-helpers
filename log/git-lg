@@ -67,7 +67,8 @@ class CommitInfos:
                 map(lambda piece: piece.git_format, pieces)),
             '-n',
             number,
-            branch
+            branch,
+            '--'
         ]
 
         out, err = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
