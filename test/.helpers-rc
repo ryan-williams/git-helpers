@@ -21,3 +21,10 @@ check_link() {
 
   [ "$expected" == "$actual" ] || err "Expected link $link to point to $expected; actually $actual"
 }
+
+finish() {
+  cd "$(git root)"
+  test/clean-test-files
+}
+
+trap finish EXIT
