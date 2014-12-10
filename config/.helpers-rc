@@ -12,6 +12,9 @@ err() {
   exit 1
 }
 
+log() {
+  echo "$(date +%Y-%m-%d-%H:%M:%S): $@"
+}
 
 # Prompt a user for a y/n response until they give you a satisfactory answer.
 # Usage: `prompt <prompt> <default=y>`
