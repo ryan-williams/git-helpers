@@ -18,5 +18,5 @@ else
   shift
 fi
 
-git log --graph --color --oneline --decorate --no-walk "$from" "$to" "$@" $(g mbp "$from" "$to" "$@" | splt ' ' | prepend ^)
+gn log --graph --color --oneline --decorate --no-walk "$from" "$to" "$@" $(g mbp "$from" "$to" "$@" | splt ' ' | prepend ^) --
 
