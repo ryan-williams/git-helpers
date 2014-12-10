@@ -22,6 +22,8 @@ for line in $(git find-broken-links "$@"); do
 
   if [ "$num_candidates" -eq 1 ]; then
     candidate="$candidates"
+  elif [ "$num_candidates" -eq 0 ]; then
+    err "Found no candidates for $dest"
   else
     echo "Found $num_candidates possible intended destinations for $link; choose one:"
     select candidate in $candidates; do
@@ -31,7 +33,8 @@ for line in $(git find-broken-links "$@"); do
 
   new_dest="$(git relpath "$link" "$candidate")"
   echo "Redirecting link $link to $new_dest (was: $dest)"
-  ln -sf "$new_dest" "$link"
+  rm -f "$link"
+  ln -s "$new_dest" "$link"
   echo ''
 
 done
