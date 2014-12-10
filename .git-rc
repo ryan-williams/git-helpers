@@ -60,6 +60,7 @@ append_subdir_to_path show
 append_subdir_to_path stash
 append_subdir_to_path status
 append_subdir_to_path version
+append_subdir_to_path watchman
 
 export oh="origin/HEAD"
 export h="HEAD"

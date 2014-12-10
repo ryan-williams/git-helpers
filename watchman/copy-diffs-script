@@ -1,0 +1,25 @@
+#!/bin/bash
+
+mirror_remote="$1"
+shift
+
+echo "*** $(date +%Y-%m-%d-%H:%M:%S) $PWD: remote $mirror_remote, found changed files: $@"
+
+git_files="$(git ls-files "$@")"
+
+copy_files() {
+   echo "Copying: $git_files"
+   g cd "$mirror_remote"
+}
+
+if [ -n "$git_files" ]; then
+   copy_files
+else
+   for arg in "$@"; do
+      if [ "$arg" == ".git/index" ]; then
+         copy_files
+         exit $?
+      fi
+   done
+   echo "Skipping"
+fi
