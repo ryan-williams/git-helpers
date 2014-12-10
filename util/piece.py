@@ -1,7 +1,7 @@
 
 """Helpers for "pieces" of formatted output linked to certain format specifiers."""
 
-from color import color as C, clen
+from color import color as C, color_symbol, clen
 from datetime import datetime
 from dateutil.parser import parse as parse_datetime
 import re
@@ -14,40 +14,87 @@ def fixed(width, s):
     return (' ' * (width - clen(s))) + str(s)
 
 
-class Piece:
+class Piece(object):
 
     def __call__(self, segment):
-        return C(self.color, self.renderer(self.parser(segment)))
+        return C(self.color, self.render(self.parse(segment)))
 
-    def __init__(self, name, git_format, parser=lambda x: x, renderer=str, fix_width=True, color='clear'):
+
+    def parse(self, s):
+        return s
+
+
+    def render(self, segment):
+        return str(segment)
+
+
+    def __init__(self, name, git_format, fix_width=True, color='clear'):
         self.name = name
         self.git_format = git_format
-        self.parser = parser
-
-        self.renderer = renderer
         self.fix_width = fix_width
         self.color = color
 
 
-def parse_refnames(s):
-    match = re.match('^\((?P<names>(?:%s, )*%s)\)$' %
-                     (refname_or_tag_regex, refname_or_tag_regex), s)
-    if (match):
-        return match.group('names').split(', ')
-    else:
-        return []
+class RefnamesPiece(Piece):
+
+    def __call__(self, segments):
+        return \
+            C(
+                self.color,
+                ' '.join(
+                    [
+                        color_symbol('IYellow') + segment[5:] + color_symbol(self.color)
+                        if segment.startswith('tag: ')
+                        else segment
+                        for segment
+                        in self.parse(segments)
+                    ]
+                )
+            )
 
 
-def render_datetime(dt):
-    return datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
+    def __init__(self, color='Yellow'):
+        super(RefnamesPiece, self).__init__('refnames', '%d', color=color)
+
+    def parse(self, s):
+        match = re.match('^\((?P<names>(?:%s, )*%s)\)$' %
+                         (refname_or_tag_regex, refname_or_tag_regex), s)
+        if (match):
+            return match.group('names').split(', ')
+        else:
+            return []
+
+
+
+class CommitDatePiece(Piece):
+
+    def __init__(self, color='IBlue'):
+        super(CommitDatePiece, self).__init__('date', '%ci', color=color)
+
+    def parse(self, s):
+        return parse_datetime(s)
+
+
+    def render(self, dt):
+        return datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
+
+
+class ReldatePiece(Piece):
+
+    def __init__(self, color='IGreen'):
+        super(ReldatePiece, self).__init__('reldate', '%cr', color=color)
+
+
+    def render(self, dt):
+        return shorten_reldate(dt)
 
 
 default_pieces = [
-    Piece('refnames', '%d', parse_refnames, ' '.join, color='Yellow'),
+    RefnamesPiece(),
     Piece('hash', '%h', color='IRed'),
-    Piece('reldate', '%cr', shorten_reldate, color='IGreen'),
+    ReldatePiece(),
     Piece('author', '%an', color='Cyan'),
-    Piece('date', '%ci', parse_datetime, render_datetime, color='IBlue'),
+    CommitDatePiece(),
     Piece('description', '%s', fix_width=False)
 ]
 
@@ -78,12 +125,13 @@ class Pieces(object):
 
     delimiter = '|||'
     def parse_log(self, args):
+        format_str = self.delimiter.join(
+            map(lambda piece: piece.git_format, self._pieces)
+        )
         cmd = [
             'git',
             'log',
-            '--format=%s' % self.delimiter.join(
-                map(lambda piece: piece.git_format, self._pieces)
-            )
+            '--format=%s' % format_str
         ] + args + [ '--' ]
 
         out, err = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
@@ -97,7 +145,13 @@ class Pieces(object):
         for line in lines:
             segments = line.strip().split(self.delimiter)
             if len(segments) != len(self._pieces):
-                raise Exception('Invalid line %s' % line)
+                raise Exception(
+                    'Invalid line:\n\t%s\nformat str:\n\t%s\ncmd:\n\t%s' % (
+                        line,
+                        format_str,
+                        ' '.join(cmd)
+                    )
+                )
 
             values = {}
             for piece, segment in zip(self._pieces, segments):
