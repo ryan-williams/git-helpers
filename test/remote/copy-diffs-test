@@ -12,16 +12,21 @@ check_cmd() {
 # Set up a temporary "from" repo.
 git clone .git tmp1
 cd tmp1
+prev_branch="$(git current-branch)"
+if [ "$prev_branch" != "master" ]; then
+  g nb master
+  git branch -D "$prev_branch"
+fi
 
 # Initialize a temporary "to" repo to mirror to; perform an initial sync.
-git add-mirror-remote tmp2 ../tmp2
+git remote add tmp2 ../tmp2
 git copy-diffs tmp2
 
 # After an initial copy-diffs, various vital stats should be identical across the two repos.
 check_cmd git status
 check_cmd git current-branch
 check_cmd git local-branches
-check_cmd g b
+check_cmd git branches
 
 # Create a local branch `test`, verify that we have two local branches, `master` and `test`, and
 # that tmp2 doesn't have `test` yet.
@@ -77,3 +82,9 @@ check_cmd git status
 check_cmd git diff
 check_cmd git diff --cached
 
+# Verify that creating a branch triggers a copy of it
+git reset --hard HEAD
+g co master
+git branch -D test
+g cd tmp2
+check_cmd git branches
