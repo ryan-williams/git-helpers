@@ -41,7 +41,8 @@ for line in $(git find-broken-links "$@"); do
 
   new_dest="$(git relpath "$link" "$candidate")"
   echo "Redirecting link $link to $new_dest (was: $dest)"
-  ln -sf "$new_dest" "$link"
+  rm -f "$link"
+  ln -s "$new_dest" "$link"
   echo ''
 
 done
