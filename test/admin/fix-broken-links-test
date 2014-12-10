@@ -26,3 +26,11 @@ echo 2 | git fix-broken-links
 
 check_link tmp2/git-bar ../tmp1/git-foo
 check_link tmp2/bbb/git-bars ../../tmp1/aaa/git-foos
+
+
+# Verify that we error out correctly when there are no candidates to repair the link with.
+ln -s ../asdf tmp1/git-asdf
+git add tmp1/git-asdf
+[ "$(git find-broken-links)" == "tmp1/git-asdf: ../asdf" ]
+! git fix-broken-links
+g rm -f tmp1/git-asdf

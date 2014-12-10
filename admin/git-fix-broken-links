@@ -10,6 +10,14 @@
 set -e
 source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
+not_link() {
+  for arg in "$@"; do
+    if [ "$(realpath "$link")" != "$(realpath "$arg")" ]; then
+      echo "$arg"
+    fi
+  done
+}
+
 OLD_IFS="$IFS"
 IFS=$'\n'
 for line in $(git find-broken-links "$@"); do
@@ -17,11 +25,13 @@ for line in $(git find-broken-links "$@"); do
   dest="$(basename "${line##*: }")"
   echo "Found broken link: $link -> $dest"
 
-  candidates=$(git find "$dest" | sort)
+  candidates=$(not_link $(git find "$dest" | sort ))
   num_candidates="$(count $candidates)"
 
   if [ "$num_candidates" -eq 1 ]; then
     candidate="$candidates"
+  elif [ "$num_candidates" -eq 0 ]; then
+    err "Found no candidates for $dest"
   else
     echo "Found $num_candidates possible intended destinations for $link; choose one:"
     select candidate in $candidates; do
