@@ -44,6 +44,7 @@ append_subdir_to_path diff
 append_subdir_to_path fetch
 append_subdir_to_path github
 append_subdir_to_path graph
+append_subdir_to_path grep
 append_subdir_to_path help
 append_subdir_to_path log
 append_subdir_to_path ls
