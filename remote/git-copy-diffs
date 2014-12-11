@@ -69,11 +69,14 @@ try:
 
             for file in out:
                 if os.path.isdir(file):
-                    print '\tremoving untracked destination directory %s' % file
+                    print '\tremoving untracked destination directory: %s' % file
                     shutil.rmtree(file)
                 elif os.path.isfile(file):
-                    print '\tremoving untracked destination file %s' % file
+                    print '\tremoving untracked destination file: %s' % file
                     os.remove(file)
+                elif os.path.islink(file):
+                    print '\tremoving untracked destination symlink: %s' % file
+                    os.unlink(file)
                 else:
                     # tricky: `out` may contain directories to be deleted and files within those
                     # directories, meaning some paths may have been deleted by an upstream
