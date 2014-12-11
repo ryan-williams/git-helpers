@@ -22,7 +22,13 @@ set -e
 upstream=origin/"$origin_branch"
 
 # Set up a temporary "from" repo.
-git clone .git tmp1
+if [ -f ".git/shallow" ]; then
+  mv .git/shallow{,.bak}
+  git clone .git tmp1
+  mv .git/shallow{.bak,}
+else
+  git clone .git tmp1
+fi
 
 cd tmp1
 prev_branch="$(git current-branch)"
