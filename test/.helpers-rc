@@ -24,7 +24,9 @@ check_link() {
 
 finish() {
   cd "$(git root)"
-  test/clean-test-files
+  if [ -z "$GIT_HELPERS_DEV_MODE" ]; then
+    test/clean-test-files
+  fi
 }
 
 trap finish EXIT
