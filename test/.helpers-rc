@@ -22,8 +22,10 @@ check_link() {
   [ "$expected" == "$actual" ] || err "Expected link $link to point to $expected; actually $actual"
 }
 
+export GIT_HELPERS_TEST_HOME="$(git root)"
+
 finish() {
-  cd "$(git root)"
+  cd "$GIT_HELPERS_TEST_HOME"
   if [ -z "$GIT_HELPERS_DEV_MODE" ]; then
     test/clean-test-files
   fi
