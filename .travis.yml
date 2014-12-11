@@ -6,6 +6,8 @@ install: pip install -r requirements.dev.txt
 
 before_script:
   - source .git-rc
+  - git config --global user.email "you@example.com"
+  - git config --global user.name "Your Name"
 
 script:
   - ./run-tests
