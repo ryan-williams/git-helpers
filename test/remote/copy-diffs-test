@@ -9,8 +9,21 @@ check_cmd() {
   diff <("$@") <(cd ../tmp2 && "$@")
 }
 
+# Parse or create a branch in this repo that can serve as an upstream for branches in subsequent
+# tmp repos, allowing testing of their tracking behavior.
+set +e
+origin_branch="$(git current-branch)"
+if [ $? -ne 0 ]; then
+  git checkout master
+  origin_branch=master
+fi
+set -e
+
+upstream=origin/"$origin_branch"
+
 # Set up a temporary "from" repo.
 git clone .git tmp1
+
 cd tmp1
 prev_branch="$(git current-branch)"
 if [ "$prev_branch" != "master" ]; then
