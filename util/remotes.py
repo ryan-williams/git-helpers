@@ -46,9 +46,12 @@ class Remote(object):
 
         self.user = match.group('user') if 'user' in match.groupdict() else None
         self.opt_user_str = '%s@' % self.user if self.user else ''
+        self.user_host_str = '%s%s' % (self.opt_user_str, self.host)
 
         self.path = match.group('path')
         self.host_path_str = '%s%s' % (self.opt_host_str, self.path)
+
+        self.user_host_path_str = '%s%s' % (self.opt_user_str, self.host_path_str)
 
         self.is_local = not self.host
         self.is_remote = not self.is_local
