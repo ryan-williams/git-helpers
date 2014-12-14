@@ -38,7 +38,7 @@ if [ "$prev_branch" != "master" ]; then
 fi
 
 # Initialize a temporary "to" repo to mirror to; perform an initial sync.
-git remote add tmp2 ../tmp2
+git add-mirror-remote tmp2 ../tmp2
 git copy-diffs tmp2
 
 # After an initial copy-diffs, various vital stats should be identical across the two repos.
