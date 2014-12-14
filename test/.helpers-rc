@@ -8,6 +8,9 @@ test/clean-test-files
 
 mkdir -p tmp tmp1 tmp2
 
+tmp1="$(mktemp -d)"
+tmp2="$(mktemp -d)"
+
 check_link() {
   link="$1"
   expected="$2"
@@ -27,7 +30,14 @@ export GIT_HELPERS_TEST_HOME="$(git root)"
 finish() {
   cd "$GIT_HELPERS_TEST_HOME"
   if [ -z "$GIT_HELPERS_DEV_MODE" ]; then
+    echo "Killing tmp dirs: $tmp1, $tmp2"
+    rm -rf "$tmp1" "$tmp2"
     test/clean-test-files
+  else
+    if ! prompt "dev mode, preserve tmp1: $tmp1, tmp2: $tmp2? [Y/n]"; then
+      echo "Killing tmp dirs: $tmp1, $tmp2"
+      rm -rf "$tmp1" "$tmp2"
+    fi
   fi
 }
 
