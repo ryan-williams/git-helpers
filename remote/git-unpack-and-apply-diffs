@@ -3,14 +3,10 @@
 # Script that `git copy-diffs` copies to and runs on a remote.
 # Makes the remote's local state identical to the local/pusher's.
 
+set +x
+
 # TODO: arg-ify these
-staged="staged_diff_file"
-unstaged="unstaged_diff_file"
 tar="diffs.tar.gz"
-tar_files_file="tar_files"
-added_files="added_files"
-deleted_files="deleted_files"
-untracked_files_to_preserve='untracked_files_to_preserve'
 
 # This script runs remotely from within an scp'd copy with this name.
 remote_script="tmp.git-unpack-and-apply-diffs"
@@ -29,12 +25,33 @@ set -e
 git reset --hard HEAD
 git checkout "$cur_branch_name"
 
-tar tf "$tar" > "$tar_files_file"
-echo "$tar" >> "$tar_files_file"
-echo "$remote_script" >> "$tar_files_file"
-echo "$tar_files_file" >> "$tar_files_file"
+tmpdir="$(mktemp -d)"
+finish() {
+  echo "Removing tmp dir containing $(find "$tmpdir" | wc -l) files"
+  rm -rf "$tmpdir"
+}
+trap finish EXIT
+
+echo "untracked files:"
+g lso
+mv "$tar" "$tmpdir"
+git rmlso
+echo "after:"
+g lso
+
+pushd "$tmpdir"
 
 tar mxf "$tar"
+rm -f "$tar"
+
+popd
+
+staged="$tmpdir/staged_diff_file"
+added_files="$tmpdir/added_files"
+deleted_files="$tmpdir/deleted_files"
+unstaged="$tmpdir/unstaged_diff_file"
+tar="$tmpdir/diffs.tar.gz"
+
 
 if [ -s "$staged" ]; then
 
@@ -71,11 +88,6 @@ if [ -s "$staged" ]; then
     git rm -f -- $(cat "$deleted_files")
   fi
 
-  set +e
-  echo "Resetting: $(cat "$tar_files_file")"
-  git reset $(cat "$tar_files_file")
-  set -e
-
 fi
 
 if [ -s "$unstaged" ]; then
@@ -85,44 +97,14 @@ fi
 
 echo "Verifying staged diff..."
 diff "$staged" <(git diff --cached)
+rm -f "$staged" "$added_files" "$deleted_files"
+echo ''
 
 echo "Verifying unstaged diff..."
 diff "$unstaged" <(git diff)
+rm -f "$unstaged"
+echo ''
 
-set +e
-
-OLD_IFS="$IFS"
-IFS=$'\n'
-
-if [ ! -f "$untracked_files_to_preserve" ]; then
-  touch "$untracked_files_to_preserve"
-fi
-if [ -s "$untracked_files_to_preserve" -a -n "$DEBUG" ]; then
-  echo "Preserving untracked files:"
-  cat "$untracked_files_to_preserve" | sed "s/^/    /"
-  echo
-fi
-
-# The file that lists the files that we copied up to the remote is exempt from our removal of all
-# untracked git files, because we want to use it to (usually redundantly) explicitly remove those
-# files, in case they slip through the first pass via being .gitignore'd, for example.
-echo "$tar_files_file" >> "$untracked_files_to_preserve"
-
-# TODO(ryan): provide options for transferring/preserving untracked git files.
-echo "Removing untracked git files..."
-for f in $(git ls-files --other --exclude-standard --directory --exclude-from="$untracked_files_to_preserve"); do
-  rm -rf "$f"
-done
-
-# It's good to explicitly remove the files that we know we brought up to the remote; the loop
-# above will take care of it, except in cases where the repo .gitignores these files (or all files
-# besides a whitelist).
-if [ -s "$tar_files_file" ]; then
-  echo "Removing tarred transit files..."
-  for f in $(cat "$tar_files_file"); do
-    rm -rf "$f"
-  done
-fi
-
-IFS="$OLD_IFS"
-echo ""
+echo "Copying untracked files from tmp dir ${tmpdir}..."
+rsync -avzh --progress "$tmpdir"/ ./
+echo ''
