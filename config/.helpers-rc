@@ -16,6 +16,14 @@ log() {
   echo "$(date +%Y-%m-%d-%H:%M:%S): $@"
 }
 
+mkt() {
+  mktemp 2>/dev/null || mktemp -t 'mytmpdir'
+}
+
+mktd() {
+  mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir'
+}
+
 # Simplify a path or paths by replacing them with the output of `pwd -P` from within them;
 # optionally unroll any symlinks by passing the "-l" option.
 simplify() {

@@ -3,6 +3,7 @@
 # Squash all commits since a given upstream (default origin/HEAD); open $EDITOR with all commit
 # messages nicely formatted/bulletted.
 
+set -e
 source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
 if [ $# -eq 0 ]; then
@@ -22,7 +23,7 @@ git --no-pager log --color=always --pretty --oneline --decorate --no-walk $args 
 echo ''
 echo "Using commit message:"
 echo ''
-commit_message_file="$(mktemp)"
+commit_message_file="$(mkt)"
 cat >"$commit_message_file" <<EOF
 
 
