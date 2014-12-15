@@ -5,11 +5,15 @@
 __author__ = "Ryan Williams"
 
 import os
-import subprocess
 import sys
 
 if __name__ == '__main__':
-    sys.path.append('.')
+    file_path = os.path.realpath(__file__)
+    branches_dir = os.path.dirname(file_path)
+    root_dir = os.path.dirname(branches_dir)
+    sys.path.append(root_dir)
+
+import subprocess
 from util.remotes import get_remotes
 
 if len(sys.argv) < 3:
