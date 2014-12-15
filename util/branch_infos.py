@@ -13,8 +13,12 @@ class BranchInfos:
         prop_name, left_justify = prop if len(prop) == 2 else (prop, False)
         self.maxs[prop_name] = (
             max(
-                map(lambda bi: clen(
-                    getattr(bi, prop_name) if hasattr(bi, prop_name) else ''), self.branches)
+                map(
+                    lambda bi: clen(
+                        getattr(bi, prop_name) if hasattr(bi, prop_name) else ''
+                    ),
+                    self.branches
+                )
             ),
             left_justify
         )
@@ -77,6 +81,9 @@ class BranchInfos:
         self.branches = sorted(
             self.branches_by_name.values(), key=lambda bi: bi.datetime, reverse=True
         )
+
+        if not self.branches:
+            return
 
         map(self.set_max, self.maxed_fields())
 
