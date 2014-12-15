@@ -3,7 +3,7 @@
 # Determine whether a git command exists.
 
 usage() {
-  err "Usage: $0 [-v] <cmd>"
+  err "Usage: $0 <cmd>"
   exit 1
 }
 
@@ -23,4 +23,9 @@ if which "$full_cmd" &> /dev/null; then
   exit 0
 fi
 
-git help "$cmd" &> /dev/null
+if git help "$cmd" &> /dev/null; then
+  exit 0
+fi
+
+git config alias."$cmd"
+

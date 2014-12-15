@@ -1,0 +1,65 @@
+#!/bin/bash
+
+#source "$GIT_HELPERS_HOME"/test/.helpers-rc
+
+set -ex
+
+tmp="$(mktemp -d)"
+
+finish() {
+  rm -rf "$tmp"
+}
+trap finish EXIT
+
+cd "$tmp"
+git init
+
+# Test that a non "git-"-prefixed file isn't picked up as a git command
+echo a > foo
+chmod 644 foo
+! git command-exists foo
+! PATH="$PATH:." git command-exists foo
+
+# ... even if it's executable
+chmod 755 foo
+! git command-exists foo
+! PATH="$PATH:." git command-exists foo
+
+
+# Test that a non-executable git command isn't picked up
+echo b > git-foo
+! git command-exists foo
+! PATH="$PATH:." git command-exists foo
+
+# If it's executable, it is, provided the PATH points at it
+chmod 755 git-foo
+! git command-exists foo
+PATH="$PATH:." git command-exists foo
+
+# Test that it picks up symlinks to git commands
+ln -s git-foo git-bar
+! git command-exists bar
+PATH="$PATH:." git command-exists bar
+
+# ...but that this also respects executability
+chmod 644 git-foo
+! PATH="$PATH:." git command-exists bar
+chmod 755 git-foo
+
+# Test that command-exists works for some basic git commands
+git command-exists remote
+git command-exists log
+git command-exists help
+
+# And not for some non-existent ones
+! git command-exists asdf
+! git command-exists logz
+! git command-exists a
+
+# Test that the no-arg version fails
+! git command-exists
+
+# Test that it picks up git-config'd aliases
+! git command-exists baz
+git config alias.baz foo
+git command-exists baz

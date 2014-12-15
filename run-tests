@@ -9,6 +9,7 @@ git find-broken-links
 
 test/admin/find-broken-links-test
 test/admin/mk-git-test
+test/help/command-exists-test
 test/nav/relpath-test
 test/remote/copy-diffs-test
 
