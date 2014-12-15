@@ -14,6 +14,7 @@ fi
 
 from="${args%%..*}"
 to="${args##*..}"
+to_sha="$(git sha "$to")"
 
 hashes="$(git rev-list --reverse $args)"
 
@@ -48,7 +49,6 @@ EOF
 git squashed-commit-message $args | tee -a "$commit_message_file"
 echo ''
 git reset --soft "$from"
-git commit -t "$commit_message_file"
-
-
-
+if ! git commit -t "$commit_message_file"; then
+  git reset --hard "$to_sha"
+fi
