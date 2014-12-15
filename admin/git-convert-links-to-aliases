@@ -1,0 +1,56 @@
+#!/bin/bash
+
+source "$GIT_HELPERS_HOME"/config/.helpers-rc
+
+cd "$(git root)"
+
+for arg in "$@"; do
+  if [ ! -d "$arg" ]; then
+    echo "Bad arg, not a dir: $arg" 1>&2
+    continue
+  fi
+  aliases_dir="$(find "$arg" -type d -name 'aliases')"
+  pushd "$aliases_dir" &> /dev/null
+  config_file_path="../.gitconfig"
+  config_file_path_from_root="$(git relpath "$(git root)" "$config_file_path")"
+  master_config_file="$(git root)"/config/.gitconfig
+  config_file_path_from_master_config="$(git relpath "$master_config_file" "$config_file_path")"
+
+  if ! git config -f "$master_config_file" --get-all include.path | grep -q "$config_file_path_from_master_config"; then
+    echo "Adding config file: $config_file_path_from_root"
+    touch "$config_file_path"
+    git add "$config_file_path"
+
+    echo "Adding $config_file_path_from_master_config to [include] list of $master_config_file"
+    git config -f "$master_config_file" --add include.path "$config_file_path_from_master_config"
+    echo "Done. Included paths from $master_config_file:"
+    git config -f "$master_config_file" --get-all include.path
+    echo ''
+  fi
+
+  for full_link in $(git links); do
+    base_link="$(basename "$full_link")"
+    if [[ ! "$base_link" =~ ^git- ]]; then
+      echo "Link $full_link in $PWD doesn't start with 'git-'" 1>&2
+      continue
+    fi
+    link="${base_link#git-}"
+
+    base_dest="$(basename "$(readlink "$base_link")")"
+    if [[ ! "$base_dest" =~ ^git- ]]; then
+      echo "Link destination $base_dest in $PWD doesn't start with 'git-'" 1>&2
+      continue
+    fi
+    dest="${base_dest#git-}"
+
+    if git config -f "$config_file_path" alias."$link" &> /dev/null; then
+      echo "Found alias.$link in $config_file_path_from_root already existing" 1>&2
+    else
+      git config -f "$config_file_path" alias."$link" "$dest"
+      echo "Set alias.$link to $dest in $config_file_path_from_root"
+    fi
+
+    git rm -f "$full_link"
+  done
+  popd &> /dev/null
+done
