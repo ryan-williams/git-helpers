@@ -4,3 +4,4 @@
         ss      = stash save
         sa      = stash apply
         sp      = stash pop
+	sv = stash-view

@@ -29,6 +29,13 @@
 	path = ../graph/.gitconfig
 	path = ../merge-base/.gitconfig
 	path = ../mv/.gitconfig
+	path = ../nav/.gitconfig
+	path = ../push/.gitconfig
+	path = ../rm/.gitconfig
+	path = ../show/.gitconfig
+	path = ../status/.gitconfig
+	path = ../tag/.gitconfig
+	path = ../version/.gitconfig
 
 [alias]
         a       = add
