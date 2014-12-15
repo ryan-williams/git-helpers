@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Wrapper for `git stash save` that returns an error code if no stash was created.
+#
+# Git doesn't seem to expose any clean way to get at this info, making life tricky in other scripts
+# where we want to stash and then restore changes at the beginning and end of the script; the final
+# `git stash pop` should *not* run if no stash was created originally!
+
+before_num_stashes="$(gn sl | wc -l)"
+git stash save "$@"
+after_num_stashes="$(gn sl | wc -l)"
+
+[ $after_num_stashes -gt $before_num_stashes ]

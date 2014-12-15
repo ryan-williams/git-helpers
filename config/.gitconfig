@@ -23,6 +23,7 @@
         d       = diff
         dc      = diff --cached
         df      = diff
+        dt      = diff-tree
         files   = diff-tree --no-commit-id --name-only -r
         h       = help
         history = log --full-diff -p

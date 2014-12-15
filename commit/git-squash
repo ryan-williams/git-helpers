@@ -3,6 +3,7 @@
 # Squash all commits since a given upstream (default origin/HEAD); open $EDITOR with all commit
 # messages nicely formatted/bulletted.
 
+set -e
 source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
 if [ $# -eq 0 ]; then
@@ -13,8 +14,24 @@ fi
 
 from="${args%%..*}"
 to="${args##*..}"
+to_sha="$(git sha "$to")"
 
 hashes="$(git rev-list --reverse $args)"
+
+# Attempt to stash any local changes and set up an EXIT-trap to restore them, if any are found.
+restore_stash=
+if git stash-save; then
+  restore_stash=1
+fi
+finish() {
+  echo "Exiting"
+  if [ -n "$restore_stash" ]; then
+    echo "Restoring changes.."
+    git stash pop
+    echo "Done"
+  fi
+}
+trap finish EXIT
 
 echo "Operating from $from to $to; $(count $hashes) commits:"
 echo ''
@@ -22,7 +39,7 @@ git --no-pager log --color=always --pretty --oneline --decorate --no-walk $args 
 echo ''
 echo "Using commit message:"
 echo ''
-commit_message_file="$(mktemp)"
+commit_message_file="$(mkt)"
 cat >"$commit_message_file" <<EOF
 
 
@@ -32,7 +49,6 @@ EOF
 git squashed-commit-message $args | tee -a "$commit_message_file"
 echo ''
 git reset --soft "$from"
-git commit -t "$commit_message_file"
-
-
-
+if ! git commit -t "$commit_message_file"; then
+  git reset --hard "$to_sha"
+fi
