@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Output the current directory's relative path from the root of the current git repository.
+# Output a relative path from one directory to another.
 
 set -e
 source "$GIT_HELPERS_HOME"/config/.helpers-rc
@@ -15,14 +15,15 @@ fi
 
 from="${1%/}"
 shift
+simplified_from="$(simplify "$from")"
 if [ -d "$from" ]; then
-  from_dir="$(abspath "$from")"
+  from_dir="$simplified_from"
 else
-  from_dir="$(dirname "$(abspath "$from")")"
+  from_dir="$(dirname "$simplified_from")"
 fi
 
 for to in "$@"; do
-  to_dir="$(abspath "$to")"
+  to_dir="$(simplify "$to")"
   tmp_to="${to_dir#/}"
   tmp_from="${from_dir#/}"
 

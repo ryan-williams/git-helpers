@@ -3,3 +3,7 @@
 alias gd="git diff"
 alias gdc="gd --cached"
 alias gdh="git diff HEAD"
+
+alias gnd="gn diff"
+alias gndc="gn diff --cached"
+alias gndh="gn diff HEAD"

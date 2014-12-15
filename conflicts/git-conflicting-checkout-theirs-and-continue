@@ -2,4 +2,4 @@
 
 # Checkout "theirs" version of all conflicting files and continue rebasing.
 
-git conflicting-theirs && git arc $(git conflicting)
+git conflicting-checkout-theirs && git arc $(git conflicting)

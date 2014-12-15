@@ -4,7 +4,7 @@
 
 OLD_IFS="$IFS"
 IFS=$'\n'
-for f in $(g ls-files); do
+for f in $(g ls-files "$@"); do
   if [ -L "$f" ]; then
     echo "$f"
   fi
