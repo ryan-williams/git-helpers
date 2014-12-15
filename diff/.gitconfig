@@ -3,3 +3,5 @@
         dc      = diff --cached
         df      = diff
         dt      = diff-tree
+	d1 = diff-no-context
+	ds = diff-stat

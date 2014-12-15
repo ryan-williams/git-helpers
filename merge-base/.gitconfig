@@ -1,0 +1,3 @@
+[alias]
+	mb = merge-base-plus
+	mbp = merge-base-parents

@@ -25,6 +25,10 @@
         path = "../stash/.gitconfig"
 	path = ../remote/.gitconfig
 	path = ../bisect/.gitconfig
+	path = ../admin/.gitconfig
+	path = ../graph/.gitconfig
+	path = ../merge-base/.gitconfig
+	path = ../mv/.gitconfig
 
 [alias]
         a       = add
