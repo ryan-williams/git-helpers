@@ -16,6 +16,34 @@ log() {
   echo "$(date +%Y-%m-%d-%H:%M:%S): $@"
 }
 
+# Simplify a path or paths by replacing them with the output of `pwd -P` from within them;
+# optionally unroll any symlinks by passing the "-l" option.
+simplify() {
+  follow_links=
+  if [ "$1" == "-l" ]; then
+    follow_links=1
+    shift
+  fi
+  for file in "$@"; do
+    cd "$(dirname $file)"
+    file="$(basename $file)"
+
+    if [ -n "$follow_links" ]; then
+      # Iterate down a (possible) chain of symlinks
+      while [ -L "$file" ]; do
+        file="$(readlink "$file")"
+        cd "$(dirname "$file")"
+        file="$(basename $file)"
+      done
+    fi
+
+    # Compute the canonicalized name by finding the physical path
+    # for the directory we're in and appending the target file.
+    dir="$(pwd -P)"
+    echo "$dir/$file"
+  done
+}
+
 # Prompt a user for a y/n response until they give you a satisfactory answer.
 # Usage: `prompt <prompt> <default=y>`
 # Example: $ prompt "Are you sure? [Y/n] "
