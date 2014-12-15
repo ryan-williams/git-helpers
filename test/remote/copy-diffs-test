@@ -6,50 +6,38 @@ source "$GIT_HELPERS_HOME"/test/.helpers-rc
 check_cmd() {
   # Verify that a command yields the same output in tmp1 and in its mirror/clone tmp2.
   "$@" > /dev/null
-  diff <("$@") <(cd ../tmp2 && "$@")
+  diff <("$@") <(cd "$tmp2" && "$@")
 }
 
-# Parse or create a branch in this repo that can serve as an upstream for branches in subsequent
-# tmp repos, allowing testing of their tracking behavior.
-set +e
-origin_branch="$(git current-branch)"
-if [ $? -ne 0 ]; then
-  git checkout master
-  origin_branch=master
-fi
-set -e
+# Create a dummy git repository with one file and one commit, that we will manipulate and from
+# `copy-diffs` from in various ways.
+cd "$tmp1"
+git init
+echo foo > asdf
+git add asdf
+git commit -m "first commit"
+[ "$(git current-branch)" == "master" ]
 
-upstream=origin/"$origin_branch"
-
-# Set up a temporary "from" repo.
-if [ -f ".git/shallow" ]; then
-  mv .git/shallow{,.bak}
-  git clone .git tmp1
-  mv .git/shallow{.bak,}
-else
-  git clone .git tmp1
-fi
-
-cd tmp1
-prev_branch="$(git current-branch)"
-if [ "$prev_branch" != "master" ]; then
-  g nb master
-  git branch -D "$prev_branch"
-fi
 
 # Initialize a temporary "to" repo to mirror to; perform an initial sync.
-git remote add tmp2 ../tmp2
+git add-mirror-remote tmp2 "$tmp2"
 git copy-diffs tmp2
 
+check_hashes() {
+  git ls-files | xargs shasum
+}
+
+check_cmd check_hashes
+
 # After an initial copy-diffs, various vital stats should be identical across the two repos.
-check_cmd git status
+check_cmd git status -s
 check_cmd git current-branch
 check_cmd git local-branches
-check_cmd git branches
+check_cmd git for-each-ref
 
 # Create a local branch `test`, verify that we have two local branches, `master` and `test`, and
 # that tmp2 doesn't have `test` yet.
-g nb test
+git checkout -b test
 [ "$(g current-branch)" == "test" ]
 
 cat >expected <<EOF
@@ -64,40 +52,49 @@ rm -f expected
 ! check_cmd git local-branches
 
 git copy-diffs tmp2
-check_cmd git status
+check_cmd git status -s
 check_cmd git current-branch
 check_cmd git local-branches
-check_cmd g b
+check_cmd git for-each-ref
 
 # Switch back to `master` branch, verify that copy-diffs pushs that change to tmp2.
 g co master
 [ "$(g current-branch)" == "master" ]
-[ "$(cd ../tmp2 && g current-branch)" == "test" ]
-g cd tmp2
+[ "$(cd "$tmp2" && g current-branch)" == "test" ]
+g copy-diffs tmp2
 check_cmd git current-branch
 
 # Initialize an untracked file `foo`; verify that tmp1 has it and tmp2 doesn't.
 echo a > foo
 [ "$(g lso)" == "foo" ]
-[ "$(cd ../tmp2 && g lso)" == "" ]
+[ "$(cd "$tmp2" && g lso)" == "" ]
 
-g cd tmp2
-check_cmd git status
+g copy-diffs tmp2
+check_cmd git status -s
+check_cmd check_hashes
 check_cmd g lso
+check_cmd git for-each-ref
+
 
 git add foo
-g cd tmp2
-check_cmd git status
+g copy-diffs tmp2
+check_cmd git status -s
+check_cmd git for-each-ref
+check_cmd check_hashes
 
 echo b >> foo
-g cd tmp2
-check_cmd git status
+g copy-diffs tmp2
+check_cmd git status -s
+check_cmd check_hashes
+check_cmd git for-each-ref
 check_cmd git diff
 check_cmd git diff --cached
 
 git commit -m "foo"
-g cd tmp2
-check_cmd git status
+g copy-diffs tmp2
+check_cmd git status -s
+check_cmd check_hashes
+check_cmd git for-each-ref
 check_cmd git diff
 check_cmd git diff --cached
 
@@ -105,5 +102,5 @@ check_cmd git diff --cached
 git reset --hard HEAD
 g co master
 git branch -D test
-g cd tmp2
-check_cmd git branches
+g copy-diffs tmp2
+check_cmd git local-branches

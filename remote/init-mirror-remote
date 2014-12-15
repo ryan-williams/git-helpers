@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ $# -gt 0 ]; then
+  dir="$1"
+  mkdir -p "$dir"
+  cd "$dir"
+else
+  dir=.
+fi
+
+if [ ! -d .git ]; then
+  git init
+fi
+
+git config receive.denyCurrentBranch false
+git config receive.denyNonFastForwards false
+git config receive.denyDeleteCurrent false

@@ -1,12 +1,7 @@
 #!/usr/bin/python
 
-"""Mirror-push changes to a remote, forcing its local state to be identical."""
-
 import os
-import shutil
-from subprocess import check_call, check_output, PIPE, Popen
 import sys
-from tempfile import mktemp, NamedTemporaryFile
 
 if __name__ == '__main__':
     file_path = os.path.realpath(__file__)
@@ -15,135 +10,176 @@ if __name__ == '__main__':
     sys.path.append(root_dir)
 
 from util.remotes import get_mirror_remote
+import errno
+import subprocess
+from subprocess import PIPE, Popen
+import tarfile
+from tempfile import mktemp
+
 
 remote = get_mirror_remote()
 
-print "Got remote %s at %s. Copying .git directory to %s" % (
+print "Got remote %s at %s. Pushing.." % (
     remote.name,
     remote.host_path_str,
-    remote.path
 )
-rsync_cmd = [ 'rsync', '-avzh', '--progress', '--delete', '.git', remote.user_host_path_str ]
-print "rsync'ing: %s" % ' '.join(rsync_cmd)
-print '\t%s' % '\n\t'.join(
-    Popen(
-        rsync_cmd,
-        stdout=PIPE
-    ).communicate()[0].split('\n')[:20]
-)
-print 'Copied!'
+subprocess.check_output(['git', 'push', remote.name])
+print 'Pushed!'
+
+class FileToCopy(object):
+    def __init__(self, basename, path):
+        self.basename = basename
+        self.path = path
+
+    def cleanup(self):
+        pass
 
 
-if remote.is_local:
-    curdir = os.getcwd()
-    os.chdir(remote.path)
-    check_call(['git', 'reset', '--hard', 'HEAD'])
-    os.chdir(curdir)
-else:
-    remote_cmd='cd "%s" && git reset --hard HEAD' % remote.path
-    print 'remoting: %s' % remote_cmd
-    check_call(['ssh', remote.user_host_str, remote_cmd])
+class UntrackedFileToCopy(FileToCopy):
+    def __init__(self, path):
+        self.basename = path
+        self.path = path
 
-names_file_path = mktemp()
+
+class CmdFileToCopy(FileToCopy):
+    def __init__(self, basename, cmd):
+        super(CmdFileToCopy, self).__init__(basename, mktemp())
+        self.cmd = cmd
+        self.write()
+
+    def cleanup(self):
+        os.remove(self.path)
+
+
+    def write(self):
+        with open(self.path, 'w') as fd:
+            subprocess.Popen(
+                self.cmd.split(' '),
+                stdout=fd
+            ).wait()
+            fd.flush()
+
+
+files_to_copy = [
+    CmdFileToCopy('unstaged_diff_file', 'git diff'),
+    CmdFileToCopy('staged_diff_file', 'git diff --cached'),
+    CmdFileToCopy('added_files', 'git diff --cached --name-only --diff-filter=A'),
+    CmdFileToCopy('deleted_files', 'git diff --cached --name-only --diff-filter=D'),
+] + [
+    UntrackedFileToCopy(line.strip())
+    for line in Popen(['git', 'lso'], stdout=PIPE).communicate()[0].split('\n')
+    if line
+]
+
+tar_file_path = mktemp()
 try:
-    with open(names_file_path, 'w') as names_file:
-        print 'Getting staged and unstaged file names..'
-        Popen(['git', 'diff', '--name-only', 'HEAD'], stdout=names_file).wait()
-        Popen(['git', 'lso'], stdout=names_file).wait()
-        names_file.flush()
-        names_file.write('.git/index\n')
 
-    print '\t' + '\n\t'.join(
-        Popen(
-            ['rsync', '-avzh', '--progress', '--files-from=%s' % names_file_path, './', remote.path],
-            stdout=PIPE
-        ).communicate()[0].split('\n')[:20]
+    local_script_basename = 'git-unpack-and-apply-diffs'
+    remote_script_basename = 'tmp.git-unpack-and-apply-diffs'
+    local_script = \
+        subprocess.Popen(
+            ['which', local_script_basename], stdout=subprocess.PIPE
+        ).communicate()[0].strip()
+
+    print "script to run remotely: %s" % local_script
+
+    cur_branch_name = subprocess.check_output(
+        ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])[:-1]
+    print 'Got current branch: %s' % cur_branch_name
+
+    with tarfile.open(tar_file_path, 'w:gz') as tar:
+        for file in files_to_copy:
+            print 'adding %s to tar as %s' % (file.path, file.basename)
+            tar.add(file.path, arcname=file.basename)
+
+    tar_basename = 'diffs.tar.gz'
+
+    paths_to_look_for = [ remote_script_basename, tar_basename ]
+
+    cmd = [
+        'ssh',
+        remote.user_host_path_str,
+        "; ".join(
+            ["cd %s" % remote.path] +
+            # TODO(ryan): use test here
+            [ "ls %s 2> /dev/null" % filename for filename in paths_to_look_for ]
+        )
+    ] if remote.is_remote else (["ls"] + [ os.path.join(remote.path, path) for path in paths_to_look_for])
+    found_files = filter(
+        lambda x: x,
+        subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        ).communicate()[0].split('\n')
     )
 
-    def run_cmd_on_local_and_remote(cmd, handler_fn):
-        with NamedTemporaryFile() as source_untracked_files_fd, \
-                NamedTemporaryFile() as dest_untracked_files_fd:
+    if found_files and len(found_files):
+        inp = raw_input(
+            'Found existing files:\n\t%s\nOverwrite? [Y/n]: ' % '\n\t'.join(
+                found_files)
+        )
+        if inp and inp[0].lower() != 'y':
+            print 'Exiting'
+            sys.exit(1)
 
-            curdir = os.getcwd()
-            try:
-                Popen(cmd, stdout=source_untracked_files_fd).wait()
+    cp = 'scp' if remote.is_remote else 'cp'
 
-                if remote.is_local:
-                    os.chdir(remote.path)
-                    Popen(cmd, stdout=dest_untracked_files_fd).wait()
-                else:
-                    remote_cmd = ['ssh', remote.user_host_str, "cd %s && %s" % (remote.path, " ".join(cmd))]
-                    print 'remoting: %s' % remote_cmd
-                    Popen(remote_cmd, stdout=dest_untracked_files_fd).wait()
+    cmd = [
+        cp,
+        tar.name,
+        os.path.join(remote.host_path_str, tar_basename)
+    ]
+    print "%s'ing tar file: %s" % (cp, ' '.join(cmd))
+    subprocess.call(cmd)
 
-                source_untracked_files_fd.flush()
-                dest_untracked_files_fd.flush()
+    cmd = [
+        cp,
+        local_script,
+        os.path.join(remote.host_path_str, remote_script_basename)
+    ]
+    print "%s'ing remote script: %s" % (cp, ' '.join(cmd))
+    subprocess.call(cmd)
 
-                handler_fn(source_untracked_files_fd, dest_untracked_files_fd)
-            finally:
-                os.chdir(curdir)
+    cmd = [ './%s' % remote_script_basename, cur_branch_name ]
 
-    def check_cmd(cmd):
+    if remote.is_remote:
+        remote_cmd = ' && '.join(['cd %s' % remote.path, ' '.join(cmd)])
 
-        print 'Verifying cmd `%s` are equal on local and remote' % ' '.join(cmd)
-        def diff_files(source_fd, dest_fd):
-            p = Popen(['diff', source_fd.name, dest_fd.name], stdout=PIPE, stderr=PIPE)
-            if p.wait():
-                out, err = p.communicate()
-                raise OSError(
-                    "`diff %s %s` failed:\nstdout:\n%s\nstderr:\n%s" % (
-                        source_fd.name,
-                        dest_fd.name,
-                        out,
-                        err
-                    )
-                )
+        print 'remote_cmd: %s' % remote_cmd
 
-
-        run_cmd_on_local_and_remote(cmd, diff_files)
-
-
-    def rm_dest_untracked_files(source_untracked_files_fd, dest_untracked_files_fd):
-        cmd = [
-            'comm',
-            '-13',
-            source_untracked_files_fd.name,
-            dest_untracked_files_fd.name
+        ssh_cmd = [
+            'ssh',
+            #'-v',
+            remote.host,
+            remote_cmd
         ]
-        out = [ line.strip() for line in check_output(cmd).split('\n') if line ]
 
-        if out:
-            print 'found untracked dest files:\n\t%s' % '\n\t'.join(out)
+        print 'ssh cmd:'
+        print ' '.join(ssh_cmd)
+        subprocess.check_call(ssh_cmd)
 
-            if remote.is_local:
-                for file in out:
-                    if os.path.isdir(file):
-                        print '\tremoving untracked destination directory: %s' % file
-                        shutil.rmtree(file)
-                    elif os.path.isfile(file):
-                        print '\tremoving untracked destination file: %s' % file
-                        os.remove(file)
-                    elif os.path.islink(file):
-                        print '\tremoving untracked destination symlink: %s' % file
-                        os.unlink(file)
-                    else:
-                        # tricky: `out` may contain directories to be deleted and files within those
-                        # directories, meaning some paths may have been deleted by an upstream
-                        # recursive-directory-deletion by the time we get to them; this branch feels
-                        # suspicious but is actually ok. Additionally, the `isdir` and `isfile` checks
-                        # above, per-path, are important for this reason.
-                        pass
-            else:
-                remote_cmd = 'cd %s && rm -rf %s' % (remote.path, ' '.join(out))
-                print 'remoting: %s' % remote_cmd
-                check_output(['ssh', remote.user_host_str, remote_cmd])
-
-
-    run_cmd_on_local_and_remote(['git', 'lso'], rm_dest_untracked_files)
-
-    check_cmd(['git', 'diff'])
-    check_cmd(['git', 'diff', '--cached'])
-    check_cmd(['git', 'lso'])
+    else:
+        os.chdir(remote.path)
+        print 'Local cmd: %s' % ' '.join(cmd)
+        subprocess.check_call(cmd)
 
 finally:
-    os.remove(names_file_path)
+
+    exc = None
+
+    def try_remove(file):
+        global exc
+        try:
+            os.remove(file)
+        except OSError as e:
+            if e.errno != errno.ENOENT:  # ENOENT - no such file or directory
+                print 'Failed to remove: %s' % file
+                exc = e
+
+    try_remove(tar_file_path)
+    [ file.cleanup() for file in files_to_copy ]
+
+    if exc:
+        raise exc
