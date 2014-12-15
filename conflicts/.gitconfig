@@ -1,0 +1,2 @@
+[alias]
+        ct      = !$SRCDIR/git-conflicting-checkout-theirs.sh

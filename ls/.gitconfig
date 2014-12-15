@@ -1,0 +1,4 @@
+[alias]
+        l       = ls-files
+        ls      = ls-files
+        lso     = ls-files --other --exclude-standard --directory

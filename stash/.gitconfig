@@ -1,0 +1,6 @@
+[alias]
+        s       = stash
+        sl      = stash list
+        ss      = stash save
+        sa      = stash apply
+        sp      = stash pop

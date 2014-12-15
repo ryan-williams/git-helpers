@@ -1,0 +1,8 @@
+[alias]
+        pr      = pull --rebase
+        ra      = rebase --abort
+        rb      = rebase
+        rc      = rebase --continue
+        rem     = rebase master
+        ri      = rebase -i
+        rs      = rebase --skip

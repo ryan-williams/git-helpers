@@ -1,0 +1,4 @@
+[alias]
+        cp      = cherry-pick
+        cpc     = cherry-pick --continue
+        cpa     = cherry-pick --abort

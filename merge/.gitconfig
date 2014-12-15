@@ -1,0 +1,4 @@
+[alias]
+        m       = merge
+        ma      = merge --abort
+        mt      = mergetool -t meld -y
