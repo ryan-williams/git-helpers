@@ -9,21 +9,15 @@ check_cmd() {
   diff <("$@") <(cd "$tmp2" && "$@")
 }
 
-# Set up a temporary "from" repo.
-if [ -f ".git/shallow" ]; then
-  mv .git/shallow{,.bak}
-  git clone .git "$tmp1"
-  mv .git/shallow{.bak,}
-else
-  git clone .git "$tmp1"
-fi
-
+# Create a dummy git repository with one file and one commit, that we will manipulate and from
+# `copy-diffs` from in various ways.
 cd "$tmp1"
-prev_branch="$(git current-branch)"
-if [ "$prev_branch" != "master" ]; then
-  g nb master
-  git branch -D "$prev_branch"
-fi
+git init
+echo foo > asdf
+git add asdf
+git commit -m "first commit"
+[ "$(git current-branch)" == "master" ]
+
 
 # Initialize a temporary "to" repo to mirror to; perform an initial sync.
 git add-mirror-remote tmp2 "$tmp2"
@@ -43,7 +37,7 @@ check_cmd git for-each-ref
 
 # Create a local branch `test`, verify that we have two local branches, `master` and `test`, and
 # that tmp2 doesn't have `test` yet.
-g nb test
+git checkout -b test
 [ "$(g current-branch)" == "test" ]
 
 cat >expected <<EOF
