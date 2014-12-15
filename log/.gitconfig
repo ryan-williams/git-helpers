@@ -4,3 +4,9 @@
         history = log --full-diff -p
         L       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset%n%n%B' --date=relative
         lsc     = diff-tree --no-commit-id --name-only -r
+	hashes = hash
+	l1 = log-oneline
+	lg1 = log-oneline
+	lh = log-hash
+	sha = hash
+	shas = hash
