@@ -24,6 +24,7 @@
         path = "../rev-list/.gitconfig"
         path = "../stash/.gitconfig"
 	path = ../remote/.gitconfig
+	path = ../bisect/.gitconfig
 
 [alias]
         a       = add
