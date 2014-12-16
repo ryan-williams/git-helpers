@@ -10,44 +10,35 @@
 [color "diff"]
        meta = yellow bold
 
+[include]
+        path = "../branch/.gitconfig"
+        path = "../cherry-pick/.gitconfig"
+        path = "../commit/.gitconfig"
+        path = "../conflicts/.gitconfig"
+        path = "../diff/.gitconfig"
+        path = "../help/.gitconfig"
+        path = "../log/.gitconfig"
+        path = "../ls/.gitconfig"
+        path = "../merge/.gitconfig"
+        path = "../rebase/.gitconfig"
+        path = "../rev-list/.gitconfig"
+        path = "../stash/.gitconfig"
+	path = ../remote/.gitconfig
+	path = ../bisect/.gitconfig
+	path = ../admin/.gitconfig
+	path = ../graph/.gitconfig
+	path = ../merge-base/.gitconfig
+	path = ../mv/.gitconfig
+	path = ../nav/.gitconfig
+	path = ../push/.gitconfig
+	path = ../rm/.gitconfig
+	path = ../show/.gitconfig
+	path = ../status/.gitconfig
+	path = ../tag/.gitconfig
+	path = ../version/.gitconfig
+
 [alias]
         a       = add
-        bm      = branch -m
-        c       = commit
         co      = checkout
-        cp      = cherry-pick
-        cpc     = cherry-pick --continue
-        cpa     = cherry-pick --abort
-        ct      = !$SRCDIR/git-conflicting-checkout-theirs.sh
-        cur     = log -1 --oneline
-        d       = diff
-        dc      = diff --cached
-        df      = diff
-        dt      = diff-tree
-        files   = diff-tree --no-commit-id --name-only -r
-        h       = help
-        history = log --full-diff -p
-        L       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset%n%n%B' --date=relative
-        ls      = ls-files
-        lso     = ls-files --other --exclude-standard --directory
-        lsc     = diff-tree --no-commit-id --name-only -r
-        m       = merge
-        ma      = merge --abort
-        mt      = mergetool -t meld -y
-        pr      = pull --rebase
-        r       = remote
-        ra      = rebase --abort
-        rb      = rebase
-        rc      = rebase --continue
-        rem     = rebase master
-        ri      = rebase -i
-        rl      = rev-list
-        rs      = rebase --skip
         rsh     = reset HEAD^
-        rv      = remote -v
-        s       = stash
-        sl      = stash list
-        ss      = stash save
-        sa      = stash apply
-        sp      = stash pop
         sm      = submodule

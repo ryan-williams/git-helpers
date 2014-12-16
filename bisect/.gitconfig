@@ -1,0 +1,5 @@
+[alias]
+	bcag = bisect-commits-ahead-good
+	bcbb = bisect-commits-behind-bad
+	beb = bisect-earliest-bad
+	blg = bisect-latest-good

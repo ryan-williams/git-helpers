@@ -1,0 +1,5 @@
+[alias]
+        rl      = rev-list
+	ac = all-commits
+	ah = all-hashes
+	cc = count-commits

@@ -1,0 +1,8 @@
+[alias]
+        ct      = !$SRCDIR/git-conflicting-checkout-theirs.sh
+	cl = conflict-lines
+	coo = conflicting-checkout-ours
+	cooc = conflicting-checkout-ours-and-continue
+	cot = conflicting-checkout-theirs
+	cotc = conflicting-checkout-theirs-and-continue
+	uu = conflicting
