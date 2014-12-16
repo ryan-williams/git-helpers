@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Output the current git branch.
 

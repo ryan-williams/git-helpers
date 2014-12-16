@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Show a pretty `git log` with a graph.
 

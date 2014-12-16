@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Amend the last commit with all local staged and unstaged changes.
 

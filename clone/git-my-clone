@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Clone a repo from your github. Requires $GITHUBUSER to be set.
 

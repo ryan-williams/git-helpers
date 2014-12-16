@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """Mirror-push changes to a remote, forcing its local state to be identical."""
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 alias gbd="git branch -d"
 alias gbD="git branch -D"

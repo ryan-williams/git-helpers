@@ -1,3 +1,3 @@
-#!/bin/sh
+#!/bin/bash
 
 alias gh="g h"

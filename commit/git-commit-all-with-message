@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Commit all staged and unstaged changes, with a message.
 

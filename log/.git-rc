@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 alias gl="git lg"
 alias gln="g lg"

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """Adds a mirrored git remote suitable for pushing to using `git copy-diffs`"""
 

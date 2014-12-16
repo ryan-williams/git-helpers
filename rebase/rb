@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Interactive rebase over the last <arg> commits.
 

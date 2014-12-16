@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Push a local branch to origin as a $USER-namespaced remote-branch.
 

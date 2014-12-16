@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 alias gd="git diff"
 alias gdc="gd --cached"

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Checkout "ours" version of conflicting files and continue a rebase.
 

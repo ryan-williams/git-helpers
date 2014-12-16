@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Show files touched by a commit or commits.
 
