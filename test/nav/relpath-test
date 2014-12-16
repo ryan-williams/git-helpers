@@ -20,15 +20,12 @@ test() {
 
 test log/aliases log/aliases
 test log/aliases/ log/aliases
-test log/aliases/git-l1 log/aliases/git-l1
+test test/admin/ test/admin
+test test/nav/ test/nav
+test test/nav/relpath-test test/nav/relpath-test
 
-test diff/ log/aliases/git-l1 ../log/aliases/git-l1
-test diff log/aliases/git-l1 ../log/aliases/git-l1
+test diff/ test/nav/relpath-test ../test/nav/relpath-test
+test diff test/nav/relpath-test ../test/nav/relpath-test
 
-test diff/aliases/ log/aliases/git-l1 ../../log/aliases/git-l1
-test diff/aliases log/aliases/git-l1 ../../log/aliases/git-l1
-
-test diff/aliases/git-d1 log/aliases/git-l1 ../../log/aliases/git-l1
-
-mkdir -p remote/aliases && cd remote/aliases
-test "$(git root)"/config/.gitconfig ../.gitconfig ../remote/.gitconfig
+test test/admin test/nav/relpath-test ../nav/relpath-test
+test test/admin test/nav/relpath-test ../nav/relpath-test
