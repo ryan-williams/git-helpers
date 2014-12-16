@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 alias gss="git stash save"
 alias gsa="git stash apply"

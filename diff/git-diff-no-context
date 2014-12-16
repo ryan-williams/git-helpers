@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Git diff, one SHA, no context lines.
 

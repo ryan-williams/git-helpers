@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Run `git blame` over multiple files, searching the repo for them by name.
 

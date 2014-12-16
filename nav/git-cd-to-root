@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Change to the top level of this git repository.
 #

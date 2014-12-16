@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # un-"bak"-up a git-tracked file.
 
