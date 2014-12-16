@@ -83,7 +83,9 @@ colors = {
 
 
 def color_symbol(name):
-    return colors[name]
+    if isinstance(name, str):
+        return colors[name]
+    return ''.join([colors[color] for color in name])
 
 
 def color(name, s=None, cond=True):

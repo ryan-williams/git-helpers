@@ -21,10 +21,11 @@ class BranchInfo(object):
 
     ahead_regex = "ahead (?P<ahead>[0-9]+)"
     behind_regex = "behind (?P<behind>[0-9]+)"
-    ahead_behind_regex = ": (?:%s)?(?:, )?(?:%s)?" % (
+    ahead_behind_regex = "(?:%s)?(?:, )?(?:%s)?" % (
         ahead_regex, behind_regex)
-    tracking_info_regex = "(?:\s\[%s(?:%s)?\])?" % (
-        refname_regex('tracking_name'), ahead_behind_regex)
+    upstream_gone_regex = '(?P<gone>gone)'
+    tracking_info_regex = "(?:\s\[%s: (?:%s|%s)?\])?" % (
+        refname_regex('tracking_name'), ahead_behind_regex, upstream_gone_regex)
 
     description_regex = "\s(?P<description>.*)"
 
@@ -47,7 +48,7 @@ class BranchInfo(object):
         return {
             'name': 'BGreen' if 'is_active' in self.dict and self.dict['is_active'] else 'BWhite',
             'hash': 'IRed',
-            'remote': 'Yellow',
+            'remote': 'Yellow' if not 'gone' in self.dict or not self.dict['gone'] else ['On_Red', 'BIYellow'],
             'ahead_str': 'ICyan',
             'behind_str': 'IPurple',
             'date': 'IBlue',
