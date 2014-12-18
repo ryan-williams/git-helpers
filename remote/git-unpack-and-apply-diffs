@@ -39,7 +39,6 @@ cp "$tmpdir"/.git/HEAD ./.git/
 git reset --hard HEAD
 git checkout "$cur_branch_name"
 
-
 echo "untracked files:"
 git ls-files --other --exclude-standard --directory
 git ls-files -z --other --exclude-standard | xargs -0 rm -rf

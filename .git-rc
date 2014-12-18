@@ -71,4 +71,6 @@ export pr="origin/pr"
 alias snippets='git log --since "8days" --oneline --author $USER'
 
 # Source this repository's `.gitconfig` file from your global `.gitconfig`.
-git config --global include.path "$dir"/config/.gitconfig
+config_file="$HOME"/.git-helpers.config
+git config -f "$config_file" include.path "$dir"/config/.gitconfig
+git config --global include.path "$config_file"
