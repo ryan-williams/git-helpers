@@ -24,7 +24,8 @@ remote_name = sys.argv[1]
 remote_url = sys.argv[2]
 
 subprocess.check_output(
-    ['git', 'remote', 'add', '--mirror=push', remote_name, remote_url])
+    ['git', 'remote', 'add', '--mirror=push', remote_name, remote_url]
+)
 
 remotes = get_remotes()
 
@@ -44,7 +45,7 @@ if remote.is_remote:
     remote_cmd = ' && '.join([
         'mkdir -p %s' % (remote.path or '~'),
         'cd %s' % (remote.path or '~'),
-        ] + map(lambda cmd: cmd.join(' '), repo_init_commands)
+        ] + map(' '.join, repo_init_commands)
     )
 
     print 'Running remote cmd: %s' % remote_cmd
