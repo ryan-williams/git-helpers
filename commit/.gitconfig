@@ -1,5 +1,6 @@
 [alias]
         c       = commit
+        ca			= commit -a
 	caane = commit-all-amend-no-edit
 	cam = commit-all-with-message
 	cane = commit-amend-no-edit
