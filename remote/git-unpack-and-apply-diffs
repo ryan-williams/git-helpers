@@ -3,7 +3,7 @@
 # Script that `git copy-diffs` copies to and runs on a remote.
 # Makes the remote's local state identical to the local/pusher's.
 
-set +x
+set -x
 
 # TODO: arg-ify these
 tar="diffs.tar.gz"
@@ -21,10 +21,6 @@ echo "remote: git-unpack-and-apply-diffs!"
 
 set -e
 
-# Kill any uncommitted changes laying around before switching to the branch we should be on.
-git reset --hard HEAD
-git checkout "$cur_branch_name"
-
 tmpdir="$(mktemp -d)"
 finish() {
   echo "Removing tmp dir containing $(find "$tmpdir" | wc -l) files"
@@ -32,19 +28,23 @@ finish() {
 }
 trap finish EXIT
 
-echo "untracked files:"
-g lso
 mv "$tar" "$tmpdir"
-git rmlso
-echo "after:"
-g lso
-
 pushd "$tmpdir"
-
 tar mxf "$tar"
 rm -f "$tar"
-
 popd
+
+# Kill any uncommitted changes laying around before switching to the branch we should be on.
+cp "$tmpdir"/.git/HEAD ./.git/
+git reset --hard HEAD
+git checkout "$cur_branch_name"
+
+
+echo "untracked files:"
+git ls-files --other --exclude-standard --directory
+git ls-files -z --other --exclude-standard | xargs -0 rm -rf
+echo "after:"
+git ls-files --other --exclude-standard --directory
 
 staged="$tmpdir/staged_diff_file"
 added_files="$tmpdir/added_files"

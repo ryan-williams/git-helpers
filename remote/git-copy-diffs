@@ -69,7 +69,7 @@ files_to_copy = [
     UntrackedFileToCopy(line.strip())
     for line in Popen(['git', 'lso'], stdout=PIPE).communicate()[0].split('\n')
     if line
-]
+] + [ UntrackedFileToCopy('.git/HEAD') ]
 
 tar_file_path = mktemp()
 try:
