@@ -1,3 +1,4 @@
 #!/bin/bash
 
 alias gac="g ac '%h'"
+alias gah="g ah"
