@@ -1,7 +1,9 @@
 #!/bin/bash
 
-alias gc="git commit"
-alias gcm="git commit -m"
-alias gca="git commit -a"
-alias gcam="git commit -a -m"
+alias gc="g c"
+alias gca="g ca"
+alias gcm="g cm"
+alias gcam="g cam"
+alias gcane="g cane"
+alias gcaane="g caane"
 

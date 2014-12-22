@@ -1,8 +1,8 @@
 [alias]
-        c       = commit
-        ca			= commit -a
-	caane = commit-all-amend-no-edit
-	cam = commit-all-with-message
-	cane = commit-amend-no-edit
-	cm = commit-with-message
-	scm = squashed-commit-message
+	c	= commit
+	ca	= commit -a
+	cm	= commit -m
+	cam	= commit -a -m
+	cane	= commit --amend --no-edit
+	caane	= commit -a --amend --no-edit
+	scm	= squashed-commit-message

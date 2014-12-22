@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Commit all staged and unstaged changes, with a message.
-
-git cm -a "$1" "$2"
