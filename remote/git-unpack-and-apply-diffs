@@ -22,9 +22,12 @@ echo "remote: git-unpack-and-apply-diffs!"
 set -e
 
 tmpdir="$(mktemp -d)"
+excludes_file="$(mktemp)"
 finish() {
   echo "Removing tmp dir containing $(find "$tmpdir" | wc -l) files"
   rm -rf "$tmpdir"
+  rm -f "$excludes_file"
+  git config --unset core.excludesfile
 }
 trap finish EXIT
 
@@ -33,6 +36,9 @@ pushd "$tmpdir"
 tar mxf "$tar"
 rm -f "$tar"
 popd
+
+echo '.nfs*' > "$excludes_file"
+git config core.excludesfile "$excludes_file"
 
 # Kill any uncommitted changes laying around before switching to the branch we should be on.
 cp "$tmpdir"/.git/HEAD ./.git/
@@ -107,3 +113,4 @@ echo ''
 echo "Copying untracked files from tmp dir ${tmpdir}..."
 rsync -avzh --progress "$tmpdir"/ ./
 echo ''
+
