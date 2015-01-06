@@ -31,6 +31,7 @@ append_subdir_to_path() {
 
 append_to_path "$dir" "$dir/aliases" "$dir"/github
 
+append_subdir_to_path add
 append_subdir_to_path admin
 append_subdir_to_path apply
 append_subdir_to_path bisect
