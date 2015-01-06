@@ -11,6 +11,7 @@
        meta = yellow bold
 
 [include]
+        path = "../admin/.gitconfig"
         path = "../branch/.gitconfig"
         path = "../cherry-pick/.gitconfig"
         path = "../commit/.gitconfig"
