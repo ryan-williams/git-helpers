@@ -75,7 +75,7 @@ I've implemented it here in 3 steps:
 
 Simply create a remote as you usually would (or use an existing one):
 
-    $ git remote add dev-box ryan@dev-box:path/to/repo
+    $ git add-mirror-remote my-dev-box ryan@dev-box:path/to/repo
 
 Then you can say:
 
