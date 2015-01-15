@@ -73,7 +73,7 @@ I've implemented it here in 3 steps:
 
 #### Usage
 
-Simply create a remote as you usually would (or use an existing one):
+Simply create a remote using the `add-mirror-remote` command:
 
     $ git add-mirror-remote my-dev-box ryan@dev-box:path/to/repo
 
