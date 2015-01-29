@@ -2,8 +2,16 @@
 
 """Configure a github remote to load refs for each pull request."""
 
-from subprocess import check_output, Popen, PIPE
+import os
 import sys
+
+if __name__ == '__main__':
+    file_path = os.path.realpath(__file__)
+    branches_dir = os.path.dirname(file_path)
+    root_dir = os.path.dirname(branches_dir)
+    sys.path.append(root_dir)
+
+from subprocess import check_output, Popen, PIPE
 from util.remotes import get_remotes
 
 def die(msg, exit_code=1):
