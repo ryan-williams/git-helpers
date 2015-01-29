@@ -98,7 +98,7 @@ try:
 
     cmd = [
         'ssh',
-        remote.user_host_path_str,
+        remote.user_host_str,
         "; ".join(
             ["cd %s" % remote.path] +
             # TODO(ryan): use test here
