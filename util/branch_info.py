@@ -24,7 +24,7 @@ class BranchInfo(object):
     ahead_behind_regex = "(?:%s)?(?:, )?(?:%s)?" % (
         ahead_regex, behind_regex)
     upstream_gone_regex = '(?P<gone>gone)'
-    tracking_info_regex = "(?:\s\[%s: (?:%s|%s)?\])?" % (
+    tracking_info_regex = "(?:\s\[%s(?:: %s|%s)?\])?" % (
         refname_regex('tracking_name'), ahead_behind_regex, upstream_gone_regex)
 
     description_regex = "\s(?P<description>.*)"
