@@ -28,6 +28,7 @@ finish() {
   rm -rf "$tmpdir"
   rm -f "$excludes_file"
   git config --unset core.excludesfile
+  rm -f "$remote_script"
 }
 trap finish EXIT
 
