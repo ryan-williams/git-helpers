@@ -6,3 +6,4 @@
 	lgp	= load-github-prs
 	mr	= mirror-remote
 	up	= unpack-and-apply-diffs
+  amr = add-mirror-remote

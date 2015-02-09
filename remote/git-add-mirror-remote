@@ -14,14 +14,27 @@ if __name__ == '__main__':
     sys.path.append(root_dir)
 
 import subprocess
-from util.remotes import get_remotes
+from util.remotes import get_remotes, maybe_remove_remote_if_exists
 
 if len(sys.argv) < 3:
-    print 'Usage: git add-mirror-remote <remote_name> <remote_url>'
+    remote_name = os.getenv('DEFAULT_MIRROR_REMOTE_NAME')
+    remote_host = os.getenv('DEFAULT_MIRROR_REMOTE_HOST')
+    remote_dir = os.getenv('DEFAULT_MIRROR_REMOTE_DIR')
+    if not remote_name or not remote_host or not remote_dir:
+        print 'Usage: git add-mirror-remote <remote_name> <remote_url>'
+        sys.exit(1)
+    root = subprocess.check_output(['git', 'root']).strip()
+    basename = os.path.basename(root)
+    remote_url = '%s:%s/%s' % (remote_host, remote_dir, basename)
+    print 'Using default remote url: %s' % remote_url
+else:
+    remote_name = sys.argv[1]
+    remote_url = sys.argv[2]
+
+
+if not maybe_remove_remote_if_exists(remote_name):
     sys.exit(1)
 
-remote_name = sys.argv[1]
-remote_url = sys.argv[2]
 
 subprocess.check_output(
     ['git', 'remote', 'add', '--mirror=push', remote_name, remote_url]
@@ -42,10 +55,10 @@ repo_init_commands = [
 ]
 
 if remote.is_remote:
-    remote_cmd = ' && '.join([
-        'mkdir -p %s' % (remote.path or '~'),
-        'cd %s' % (remote.path or '~'),
-        ] + map(' '.join, repo_init_commands)
+    remote_cmd = ' && '.join(
+        ([ 'mkdir %s' % remote.path ] if remote.path else  []) +
+        [ 'cd %s' % (remote.path or '~') ] +
+        map(' '.join, repo_init_commands)
     )
 
     print 'Running remote cmd: %s' % remote_cmd

@@ -168,13 +168,16 @@ class Pieces(object):
         )
 
     def pretty_print(self):
-        print ''
-        for values in self.results:
-            for piece in self._pieces:
-                if piece.fix_width:
-                    print fixed(piece.max_width, values[piece.name]),
-                else:
-                    print values[piece.name],
+        try:
             print ''
-        print ''
-
+            for values in self.results:
+                for piece in self._pieces:
+                    if piece.fix_width:
+                        print fixed(piece.max_width, values[piece.name]),
+                    else:
+                        print values[piece.name],
+                print ''
+            print ''
+        except IOError as e:
+            # Piping to e.g. `head` can cause "Broken pipe"
+            pass

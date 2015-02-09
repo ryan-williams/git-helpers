@@ -63,6 +63,35 @@ def get_remotes():
     return Remote.parse(remote_lines)
 
 
+def remote_exists(remote_name):
+    return remote_name in subprocess.check_output(['git', 'remote']).split('\n')
+
+
+def prompt(p, default='y'):
+    while True:
+        input = raw_input(p)
+        if (not input and default.lower() == 'y') or input.lower() == 'y' or input.lower() == 'yes':
+            return True
+        if (not input and default.lower() == 'n') or input.lower() == 'n' or input.lower() == 'no':
+            return False
+
+
+def remove_remote(remote_name):
+    print 'Removing remote: %s' % remote_name
+    subprocess.check_call(['git', 'remote', 'remove', remote_name])
+
+
+def maybe_remove_remote_if_exists(remote_name):
+    if remote_exists(remote_name):
+        if prompt('Found existing remote: %s; remove? [Y/n]: ' % remote_name):
+            remove_remote(remote_name)
+            return True
+        else:
+            return False
+    else:
+        return True
+
+
 def get_mirror_remote():
 
     remote_names = []
