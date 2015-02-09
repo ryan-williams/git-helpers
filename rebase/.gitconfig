@@ -1,6 +1,6 @@
 [alias]
         pr      = pull --rebase
-        ra      = rebase --abort
+        rba     = rebase --abort
         rb      = rebase
         rc      = rebase --continue
         rem     = rebase master

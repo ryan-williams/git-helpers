@@ -1,5 +1,6 @@
 [alias]
         r       = remote
+        ra			= remote add
         rv      = remote -v
 	cd	= copy-diffs
 	lgp	= load-github-prs

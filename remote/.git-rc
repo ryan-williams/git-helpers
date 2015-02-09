@@ -3,3 +3,5 @@
 alias gcd="g cd"
 
 alias gr="git remote -vv"
+alias gra="git remote add"
+
