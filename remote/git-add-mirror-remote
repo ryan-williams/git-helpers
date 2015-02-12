@@ -65,7 +65,7 @@ try:
     # If we get here, directory exists; prompt to continue, just in case.
     if prompt('Directory %s exists; continue? [Y/n]: ' % remote.path):
         passed_directory_existence_check = True
-except CalledProcessError:
+except (CalledProcessError, OSError):
     # Directory doesn't exist.
     passed_directory_existence_check = True
 
