@@ -52,6 +52,7 @@ repo_init_commands = [
     ['git', 'config', 'receive.denyCurrentBranch', 'false'],
     ['git', 'config', 'receive.denyNonFastForwards', 'false'],
     ['git', 'config', 'receive.denyDeleteCurrent', 'false'],
+    ['git', 'submodule', 'update', '--init']
 ]
 
 passed_directory_existence_check = False
