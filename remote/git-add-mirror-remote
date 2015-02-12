@@ -13,8 +13,8 @@ if __name__ == '__main__':
     root_dir = os.path.dirname(branches_dir)
     sys.path.append(root_dir)
 
-import subprocess
-from util.remotes import get_remotes, maybe_remove_remote_if_exists
+from subprocess import CalledProcessError, check_call, check_output
+from util.remotes import get_remotes, maybe_remove_remote_if_exists, prompt
 
 if len(sys.argv) < 3:
     remote_name = os.getenv('DEFAULT_MIRROR_REMOTE_NAME')
@@ -23,7 +23,7 @@ if len(sys.argv) < 3:
     if not remote_name or not remote_host or not remote_dir:
         print 'Usage: git add-mirror-remote <remote_name> <remote_url>'
         sys.exit(1)
-    root = subprocess.check_output(['git', 'root']).strip()
+    root = check_output(['git', 'root']).strip()
     basename = os.path.basename(root)
     remote_url = '%s:%s/%s' % (remote_host, remote_dir, basename)
     print 'Using default remote url: %s' % remote_url
@@ -36,7 +36,7 @@ if not maybe_remove_remote_if_exists(remote_name):
     sys.exit(1)
 
 
-subprocess.check_output(
+print check_output(
     ['git', 'remote', 'add', '--mirror=push', remote_name, remote_url]
 )
 
@@ -54,21 +54,38 @@ repo_init_commands = [
     ['git', 'config', 'receive.denyDeleteCurrent', 'false'],
 ]
 
+passed_directory_existence_check = False
+try:
+    if remote.is_remote:
+        check_call(['ssh', remote.host, '[ -d %s ]' % (remote.path if remote.path else '~') ])
+    else:
+        check_call(['[ -d %s ]' % (remote.path if remote.path else '~')])
+
+    # If we get here, directory exists; prompt to continue, just in case.
+    if prompt('Directory %s exists; continue? [Y/n]: ' % remote.path):
+        passed_directory_existence_check = True
+except CalledProcessError:
+    # Directory doesn't exist.
+    passed_directory_existence_check = True
+
+if not passed_directory_existence_check:
+    sys.exit(1)
+
 if remote.is_remote:
     remote_cmd = ' && '.join(
-        ([ 'mkdir %s' % remote.path ] if remote.path else  []) +
+        ([ 'mkdir -p %s' % remote.path ] if remote.path else []) +
         [ 'cd %s' % (remote.path or '~') ] +
         map(' '.join, repo_init_commands)
     )
 
     print 'Running remote cmd: %s' % remote_cmd
 
-    subprocess.check_output(['ssh', remote.host, remote_cmd])
+    check_output(['ssh', remote.host, remote_cmd])
 
     print 'Done!'
 else:
     print 'Initializing local repo'
-    subprocess.check_output(['mkdir', '-p', remote.path])
+    check_output(['mkdir', '-p', remote.path])
     os.chdir(remote.path)
-    map(subprocess.check_output, repo_init_commands)
+    map(check_output, repo_init_commands)
     print 'Done!'
