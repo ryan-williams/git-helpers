@@ -2,4 +2,5 @@
 	mp = me-push
 	mpf = me-push-force
 	pm = push-to-origin-master
+  po = push-to-origin
 	spf = safe-push-force
