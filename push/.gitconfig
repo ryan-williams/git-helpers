@@ -1,5 +1,5 @@
 [alias]
 	mp = me-push
 	mpf = me-push-force
-	pm = push-origin-master
+	pm = push-to-origin-master
 	spf = safe-push-force
