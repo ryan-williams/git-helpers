@@ -7,3 +7,5 @@ alias gbdf="git branch -D"
 alias gb="g b"
 alias gbu="g bu"
 alias gbr="g br"
+
+alias gcb="g cb"
