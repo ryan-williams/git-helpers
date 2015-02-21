@@ -3,10 +3,10 @@
 # Push to origin/master.
 
 if [ $# -gt 0 ]; then
-	arg="$1:"
+	arg="$1"
 else
-	arg="$(git cb):"
+	arg="$(git cb)"
 fi
 
-git push origin "${arg}master"
+git push origin "${arg}:master"
 
