@@ -19,6 +19,7 @@
         path = "../commit/.gitconfig"
         path = "../conflicts/.gitconfig"
         path = "../diff/.gitconfig"
+        path = "../grep/.gitconfig"
         path = "../help/.gitconfig"
         path = "../log/.gitconfig"
         path = "../ls/.gitconfig"

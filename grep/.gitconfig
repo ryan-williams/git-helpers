@@ -1,0 +1,4 @@
+[alias]
+  ng = !git --no-pager grep
+  gl = !git --no-pager grep -l
+  kl = kill-lines

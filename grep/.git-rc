@@ -1,4 +1,5 @@
 #!/bin/bash
 
-alias gng="git --no-pager grep"
-
+alias gng="g ng"
+alias ggl="g gl"
+alias gkl="g kl"
