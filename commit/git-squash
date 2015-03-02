@@ -8,8 +8,24 @@ source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
 if [ $# -eq 0 ]; then
   args="origin/HEAD..HEAD"
+elif [ $# -eq 1 ]; then
+  if [[ ! "$1" =~ \.\. ]]; then
+    args="$1..HEAD"
+  else
+    args="$1"
+  fi
+elif [ $# -eq 2 ]; then
+  args="$1..$2"
 else
-  args="$1"
+  echo <<EOF
+  Usage:
+
+      $0               # squash from origin/HEAD to HEAD
+      $0 <from> <to>   # squash from <from> to <to>
+      $0 <from>..<to>  # squash from <from> to <to>
+      $0 <from>        # squash from <from> to HEAD
+
+EOF
 fi
 
 from="${args%%..*}"
