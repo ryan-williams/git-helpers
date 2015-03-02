@@ -10,6 +10,7 @@ if __name__ == '__main__':
     sys.path.append(root_dir)
 
 from util.remotes import get_mirror_remote
+from util.root import git_root
 import errno
 import subprocess
 from subprocess import PIPE, Popen
@@ -18,6 +19,8 @@ from tempfile import mktemp
 
 
 remote = get_mirror_remote()
+root = git_root()
+os.chdir(root)
 
 print "Got remote %s at %s. Pushing.." % (
     remote.name,
