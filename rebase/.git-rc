@@ -1,5 +1,7 @@
 #!/bin/bash
 
-alias grb="g rb"
+alias grb="git rb"
+alias grba="git rba"
+alias grs="git rs"
 alias garc='git arc'
 alias gaurc='git aurc'
