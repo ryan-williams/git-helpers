@@ -6,6 +6,7 @@
         lsc     = diff-tree --no-commit-id --name-only -r
 	hashes = hash
 	l1 = log-oneline
+	lp = log -p
 	lg1 = log-oneline
 	lh = log-hash
 	sha = hash

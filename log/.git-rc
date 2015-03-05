@@ -2,3 +2,4 @@
 
 alias gl="git lg"
 alias gln="g lg"
+alias glp="g lp"
