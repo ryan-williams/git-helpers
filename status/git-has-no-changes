@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+[ $(expr "$(git status --porcelain | wc -l)") -eq 0 ]
