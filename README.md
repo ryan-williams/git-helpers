@@ -11,7 +11,7 @@ These were written alongside other bash and python helpers that I may not have p
 * `source .git-rc` from your `.bashrc`. This will give you lots of helpful aliases!
     * You might want to make sure it's not clobbering ones you already have/use.
     * It will also put several relevant directories from this repo on your `$PATH`
-* `pip install -r requirements.txt`; currently just makes sure you have `dateutil` available, which some scripts here need.
+* `pip install -r requirements.txt`; currently just makes sure you have `dateutil` available, which some scripts here need. These dependencies are ones that should be available globally for `git-helpers` scripts to import, as opposed to e.g. living in a virtualenv.
 
 ### "git branches" (`git b`) ###
 
