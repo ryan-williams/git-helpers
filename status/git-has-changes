@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+[ $(expr "$(git status --porcelain | wc -l)") -ne 0 ]
+

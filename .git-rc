@@ -81,6 +81,5 @@ alias gstp="gist -p -c -o -P -d"
 
 
 # Source this repository's `.gitconfig` file from your global `.gitconfig`.
-config_file="$HOME"/.git-helpers.config
-git config -f "$config_file" include.path "$dir"/config/.gitconfig
-git config --global include.path "$config_file"
+config_file="$dir"/config/.gitconfig
+git config --global --add include.path "$config_file"

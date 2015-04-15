@@ -1,3 +1,6 @@
 [alias]
 	laf = list-added-files
 	ld = list-deleted
+  hc = has-changes
+  hnc = has-no-changes
+  ic = is-clean
