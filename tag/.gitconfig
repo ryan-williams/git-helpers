@@ -1,2 +1,4 @@
 [alias]
 	t = tags
+  gt = get-tag
+  it = is-tag
