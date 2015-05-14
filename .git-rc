@@ -71,6 +71,8 @@ export pr="origin/pr"
 
 alias snippets='git log --since "8days" --oneline --author $USER'
 
+export PYTHONPATH="$PYTHONPATH:$dir/util"
+
 ### Aliases for `gist` utility: https://github.com/defunkt/gist ###
 # Private gist, copy link to clipboard, parse first argument as gist description
 alias gst="gist -p -c -d"
