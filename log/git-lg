@@ -27,8 +27,8 @@ def isNum(arg):
     except ValueError:
         return False
 
-numbers = filter(isNum, sys.argv[1:])
-non_numbers = filter(lambda arg: not isNum(arg), sys.argv[1:])
+numbers = list(filter(isNum, sys.argv[1:]))
+non_numbers = list(filter(lambda arg: not isNum(arg), sys.argv[1:]))
 
 if len(numbers) > 1:
     raise Exception('Not sure which args are numbers: %s' % str(sys.argv))
