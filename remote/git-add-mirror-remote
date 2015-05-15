@@ -21,12 +21,12 @@ if len(sys.argv) < 3:
     remote_host = os.getenv('DEFAULT_MIRROR_REMOTE_HOST')
     remote_dir = os.getenv('DEFAULT_MIRROR_REMOTE_DIR')
     if not remote_name or not remote_host or not remote_dir:
-        print 'Usage: git add-mirror-remote <remote_name> <remote_url>'
+        print('Usage: git add-mirror-remote <remote_name> <remote_url>')
         sys.exit(1)
     root = check_output(['git', 'root']).strip()
     basename = os.path.basename(root)
     remote_url = '%s:%s/%s' % (remote_host, remote_dir, basename)
-    print 'Using default remote url: %s' % remote_url
+    print('Using default remote url: %s' % remote_url)
 else:
     remote_name = sys.argv[1]
     remote_url = sys.argv[2]
@@ -36,9 +36,9 @@ if not maybe_remove_remote_if_exists(remote_name):
     sys.exit(1)
 
 
-print check_output(
+print(check_output(
     ['git', 'remote', 'add', '--mirror=push', remote_name, remote_url]
-)
+))
 
 remotes = get_remotes()
 
@@ -79,14 +79,14 @@ if remote.is_remote:
         map(' '.join, repo_init_commands)
     )
 
-    print 'Running remote cmd: %s' % remote_cmd
+    print('Running remote cmd: %s' % remote_cmd)
 
     check_output(['ssh', remote.host, remote_cmd])
 
-    print 'Done!'
+    print('Done!')
 else:
-    print 'Initializing local repo'
+    print('Initializing local repo')
     check_output(['mkdir', '-p', remote.path])
     os.chdir(remote.path)
     map(check_output, repo_init_commands)
-    print 'Done!'
+    print('Done!')

@@ -11,6 +11,6 @@ if __name__ == '__main__':
 
 from util.remotes import get_mirror_remote
 
-print get_mirror_remote().name
+print(get_mirror_remote().name)
 
 

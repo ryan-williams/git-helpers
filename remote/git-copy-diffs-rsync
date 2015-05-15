@@ -18,20 +18,20 @@ from util.remotes import get_mirror_remote
 
 remote = get_mirror_remote()
 
-print "Got remote %s at %s. Copying .git directory to %s" % (
+print("Got remote %s at %s. Copying .git directory to %s" % (
     remote.name,
     remote.host_path_str,
     remote.path
-)
+))
 rsync_cmd = [ 'rsync', '-avzh', '--progress', '--delete', '.git', remote.user_host_path_str ]
-print "rsync'ing: %s" % ' '.join(rsync_cmd)
-print '\t%s' % '\n\t'.join(
+print("rsync'ing: %s" % ' '.join(rsync_cmd))
+print('\t%s' % '\n\t'.join(
     Popen(
         rsync_cmd,
         stdout=PIPE
     ).communicate()[0].split('\n')[:20]
-)
-print 'Copied!'
+))
+print('Copied!')
 
 
 if remote.is_local:
@@ -41,24 +41,24 @@ if remote.is_local:
     os.chdir(curdir)
 else:
     remote_cmd='cd "%s" && git reset --hard HEAD' % remote.path
-    print 'remoting: %s' % remote_cmd
+    print('remoting: %s' % remote_cmd)
     check_call(['ssh', remote.user_host_str, remote_cmd])
 
 names_file_path = mktemp()
 try:
     with open(names_file_path, 'w') as names_file:
-        print 'Getting staged and unstaged file names..'
+        print('Getting staged and unstaged file names..')
         Popen(['git', 'diff', '--name-only', 'HEAD'], stdout=names_file).wait()
         Popen(['git', 'lso'], stdout=names_file).wait()
         names_file.flush()
         names_file.write('.git/index\n')
 
-    print '\t' + '\n\t'.join(
+    print('\t' + '\n\t'.join(
         Popen(
             ['rsync', '-avzh', '--progress', '--files-from=%s' % names_file_path, './', remote.path],
             stdout=PIPE
         ).communicate()[0].split('\n')[:20]
-    )
+    ))
 
 finally:
     os.remove(names_file_path)
@@ -77,7 +77,7 @@ def run_cmd_on_local_and_remote(cmd, handler_fn):
                 Popen(cmd, stdout=dest_untracked_files_fd).wait()
             else:
                 remote_cmd = ['ssh', remote.user_host_str, "cd %s && %s" % (remote.path, " ".join(cmd))]
-                print 'remoting: %s' % remote_cmd
+                print('remoting: %s' % remote_cmd)
                 Popen(remote_cmd, stdout=dest_untracked_files_fd).wait()
 
             source_untracked_files_fd.flush()
@@ -89,7 +89,7 @@ def run_cmd_on_local_and_remote(cmd, handler_fn):
 
 def check_cmd(cmd):
 
-    print 'Verifying cmd `%s` are equal on local and remote' % ' '.join(cmd)
+    print('Verifying cmd `%s` are equal on local and remote' % ' '.join(cmd))
     def diff_files(source_fd, dest_fd):
         p = Popen(['diff', source_fd.name, dest_fd.name], stdout=PIPE, stderr=PIPE)
         if p.wait():
@@ -117,18 +117,18 @@ def rm_dest_untracked_files(source_untracked_files_fd, dest_untracked_files_fd):
     out = [ line.strip() for line in check_output(cmd).split('\n') if line ]
 
     if out:
-        print 'found untracked dest files:\n\t%s' % '\n\t'.join(out)
+        print('found untracked dest files:\n\t%s' % '\n\t'.join(out))
 
         if remote.is_local:
             for file in out:
                 if os.path.isdir(file):
-                    print '\tremoving untracked destination directory: %s' % file
+                    print('\tremoving untracked destination directory: %s' % file)
                     shutil.rmtree(file)
                 elif os.path.isfile(file):
-                    print '\tremoving untracked destination file: %s' % file
+                    print('\tremoving untracked destination file: %s' % file)
                     os.remove(file)
                 elif os.path.islink(file):
-                    print '\tremoving untracked destination symlink: %s' % file
+                    print('\tremoving untracked destination symlink: %s' % file)
                     os.unlink(file)
                 else:
                     # tricky: `out` may contain directories to be deleted and files within those
@@ -139,7 +139,7 @@ def rm_dest_untracked_files(source_untracked_files_fd, dest_untracked_files_fd):
                     pass
         else:
             remote_cmd = 'cd %s && rm -rf %s' % (remote.path, ' '.join(out))
-            print 'remoting: %s' % remote_cmd
+            print('remoting: %s' % remote_cmd)
             check_output(['ssh', remote.user_host_str, remote_cmd])
 
 
