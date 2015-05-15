@@ -1,4 +1,4 @@
-
+from __future__ import print_function
 
 """Helpers for "pieces" of formatted output linked to certain format specifiers."""
 
