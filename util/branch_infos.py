@@ -87,5 +87,5 @@ class BranchInfos:
 
         print('')
         for bi in self.branches:
-            print((bi.to_string(self.maxs)))
+            print(bi.to_string(self.maxs))
         print('')
