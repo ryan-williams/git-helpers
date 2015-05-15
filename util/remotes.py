@@ -64,7 +64,7 @@ def get_remotes():
 
 
 def remote_exists(remote_name):
-    return remote_name in subprocess.check_output(['git', 'remote']).split('\n')
+    return remote_name in subprocess.check_output(['git', 'remote']).decode().split('\n')
 
 
 def prompt(p, default='y'):
