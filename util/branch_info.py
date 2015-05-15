@@ -2,11 +2,11 @@ __author__ = 'ryan'
 
 """Encapsulates info about one git branch."""
 
-from color import clen, color
+from .color import clen, color
 from datetime import datetime
 from dateutil.parser import parse
-from regexs import refname_regex, captured_whitespace_regex, hash_regex
-from reldate_util import shorten_reldate
+from .regexs import refname_regex, captured_whitespace_regex, hash_regex
+from .reldate_util import shorten_reldate
 import re
 
 
@@ -126,7 +126,7 @@ class BranchInfo(object):
         ]
 
     def to_string(self, fixed_width_map=None):
-        return ''.join(map(lambda field: self.field_string(field, fixed_width_map), self.fields()))
+        return ''.join([self.field_string(field, fixed_width_map) for field in self.fields()])
 
     def __str__(self):
         return self.to_string()
