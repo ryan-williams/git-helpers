@@ -59,7 +59,7 @@ class Remote(object):
 
 def get_remotes():
     remote_lines = subprocess.Popen(
-        ['git', 'remote', '-v'], stdout=subprocess.PIPE).communicate()[0].split('\n')
+        ['git', 'remote', '-v'], stdout=subprocess.PIPE).communicate()[0].decode().split('\n')
     return Remote.parse(remote_lines)
 
 
@@ -69,10 +69,10 @@ def remote_exists(remote_name):
 
 def prompt(p, default='y'):
     while True:
-        input = input(p)
-        if (not input and default.lower() == 'y') or input.lower() == 'y' or input.lower() == 'yes':
+        inp = input(p)
+        if (not inp and default.lower() == 'y') or inp.lower() == 'y' or inp.lower() == 'yes':
             return True
-        if (not input and default.lower() == 'n') or input.lower() == 'n' or input.lower() == 'no':
+        if (not inp and default.lower() == 'n') or inp.lower() == 'n' or inp.lower() == 'no':
             return False
 
 
