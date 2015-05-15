@@ -2,8 +2,8 @@ __author__ = 'ryan'
 
 """Functionality for parsing and manipulating data about git branches."""
 
-from branch_info import BranchInfo
-from color import clen
+from .branch_info import BranchInfo
+from .color import clen
 import subprocess
 
 
@@ -34,7 +34,7 @@ class BranchInfos:
         return out.decode().splitlines()
 
     def run_secondary_cmd(self):
-        hashes = [bi.hash for bi in self.branches_by_name.values()]#map(lambda bi: bi.hash, self.branches_by_name.values())
+        hashes = [bi.hash for bi in list(self.branches_by_name.values())]#map(lambda bi: bi.hash, self.branches_by_name.values())
         cmd = ['git', 'show',
                # NOTE(ryan): seems to omit 'master' branch in Git 1.7.1; doesn't seem to be necessary in general.
                #'--quiet',
@@ -77,7 +77,7 @@ class BranchInfos:
         self.run_secondary_cmd()
 
         self.branches = sorted(
-            self.branches_by_name.values(), key=lambda bi: bi.datetime, reverse=True
+            list(self.branches_by_name.values()), key=lambda bi: bi.datetime, reverse=True
         )
 
         if not self.branches:
@@ -87,5 +87,5 @@ class BranchInfos:
 
         print('')
         for bi in self.branches:
-            print(bi.to_string(self.maxs))
+            print((bi.to_string(self.maxs)))
         print('')

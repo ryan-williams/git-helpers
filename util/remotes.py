@@ -69,7 +69,7 @@ def remote_exists(remote_name):
 
 def prompt(p, default='y'):
     while True:
-        input = raw_input(p)
+        input = input(p)
         if (not input and default.lower() == 'y') or input.lower() == 'y' or input.lower() == 'yes':
             return True
         if (not input and default.lower() == 'n') or input.lower() == 'n' or input.lower() == 'no':
@@ -77,7 +77,7 @@ def prompt(p, default='y'):
 
 
 def remove_remote(remote_name):
-    print 'Removing remote: %s' % remote_name
+    print('Removing remote: %s' % remote_name)
     subprocess.check_call(['git', 'remote', 'remove', remote_name])
 
 
@@ -110,7 +110,7 @@ def get_mirror_remote():
                      for remote in remote_names if remote in remotes]
     if len(found_remotes) > 1:
         raise Exception('Found multiple eligible remotes: %s' % ','.join(
-            map(lambda remote: remote.name, found_remotes)))
+            [remote.name for remote in found_remotes]))
     if not found_remotes:
         raise Exception('Found no eligible remotes: %s' % ','.join(remote_names))
 
@@ -119,4 +119,4 @@ def get_mirror_remote():
 
 
 if __name__ == '__main__':
-    print get_remotes()
+    print(get_remotes())

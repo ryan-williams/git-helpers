@@ -22,4 +22,4 @@ def shorten_reldate(reldate):
     return reldate
 
 if __name__ == '__main__':
-    print('\n'.join([shorten_reldate(arg) for arg in sys.argv[1:]]))
+    print(('\n'.join([shorten_reldate(arg) for arg in sys.argv[1:]])))
