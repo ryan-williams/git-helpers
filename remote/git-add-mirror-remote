@@ -38,7 +38,7 @@ if not maybe_remove_remote_if_exists(remote_name):
 
 print(check_output(
     ['git', 'remote', 'add', '--mirror=push', remote_name, remote_url]
-))
+).decode())
 
 remotes = get_remotes()
 
@@ -85,8 +85,8 @@ if remote.is_remote:
 
     print('Done!')
 else:
-    print('Initializing local repo')
+    print('Initializing local repo at %s' % remote.path)
     check_output(['mkdir', '-p', remote.path])
     os.chdir(remote.path)
-    map(check_output, repo_init_commands)
+    list(map(check_output, repo_init_commands))
     print('Done!')
