@@ -23,7 +23,7 @@ if len(sys.argv) < 3:
     if not remote_name or not remote_host or not remote_dir:
         print('Usage: git add-mirror-remote <remote_name> <remote_url>')
         sys.exit(1)
-    root = check_output(['git', 'root']).strip()
+    root = check_output(['git', 'root']).decode().strip()
     basename = os.path.basename(root)
     remote_url = '%s:%s/%s' % (remote_host, remote_dir, basename)
     print('Using default remote url: %s' % remote_url)
@@ -76,7 +76,7 @@ if remote.is_remote:
     remote_cmd = ' && '.join(
         ([ 'mkdir -p %s' % remote.path ] if remote.path else []) +
         [ 'cd %s' % (remote.path or '~') ] +
-        map(' '.join, repo_init_commands)
+        list(map(' '.join, repo_init_commands))
     )
 
     print('Running remote cmd: %s' % remote_cmd)
