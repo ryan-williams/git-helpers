@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 if len(sys.argv) == 0:
-    print "Usage: %s <version>" % sys.argv[0]
+    print("Usage: %s <version>" % sys.argv[0])
     sys.exit(255)
 
 input_segments = map(int, sys.argv[1].split('.'))

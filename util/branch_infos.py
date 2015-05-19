@@ -2,8 +2,8 @@ __author__ = 'ryan'
 
 """Functionality for parsing and manipulating data about git branches."""
 
-from branch_info import BranchInfo
-from color import clen
+from .branch_info import BranchInfo
+from .color import clen
 import subprocess
 
 
@@ -13,12 +13,11 @@ class BranchInfos:
         prop_name, left_justify = prop if len(prop) == 2 else (prop, False)
         self.maxs[prop_name] = (
             max(
-                map(
-                    lambda bi: clen(
+                [
+                    clen(
                         getattr(bi, prop_name) if hasattr(bi, prop_name) else ''
-                    ),
-                    self.branches
-                )
+                    ) for bi in self.branches
+                ]
             ),
             left_justify
         )
@@ -32,10 +31,10 @@ class BranchInfos:
     def get_lines(self):
         out, err = subprocess.Popen(
             self.cmd(), stdout=subprocess.PIPE).communicate()
-        return out.splitlines()
+        return out.decode().splitlines()
 
     def run_secondary_cmd(self):
-        hashes = map(lambda bi: bi.hash, self.branches_by_name.values())
+        hashes = [bi.hash for bi in list(self.branches_by_name.values())]#map(lambda bi: bi.hash, self.branches_by_name.values())
         cmd = ['git', 'show',
                # NOTE(ryan): seems to omit 'master' branch in Git 1.7.1; doesn't seem to be necessary in general.
                #'--quiet',
@@ -43,7 +42,7 @@ class BranchInfos:
                '--format=%h\t%ci\t%cr'] + hashes
         out, err = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
 
-        lines = out.splitlines()
+        lines = out.decode().splitlines()
         for line in lines:
             if not line:
                 continue
@@ -52,8 +51,7 @@ class BranchInfos:
                 raise Exception(
                     'Expected 3 columns, found %d:\n%s\nfull output:\n%s' % (len(cols), cols, out))
             hsh, date, reldate = cols
-            map(lambda bi: bi.set_dates(date, reldate),
-                self.branches_by_hash[hsh])
+            [bi.set_dates(date, reldate) for bi in self.branches_by_hash[hsh]]
 
     def maxed_fields(self):
         return [
@@ -79,15 +77,15 @@ class BranchInfos:
         self.run_secondary_cmd()
 
         self.branches = sorted(
-            self.branches_by_name.values(), key=lambda bi: bi.datetime, reverse=True
+            list(self.branches_by_name.values()), key=lambda bi: bi.datetime, reverse=True
         )
 
         if not self.branches:
             return
 
-        map(self.set_max, self.maxed_fields())
+        [self.set_max(field) for field in self.maxed_fields()]
 
-        print ''
+        print('')
         for bi in self.branches:
-            print bi.to_string(self.maxs)
-        print ''
+            print(bi.to_string(self.maxs))
+        print('')

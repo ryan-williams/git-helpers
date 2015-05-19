@@ -2,8 +2,8 @@ __author__ = 'ryan'
 
 """Info about a remote branch."""
 
-from branch_info import BranchInfo
-from regexs import hash_regex, named
+from .branch_info import BranchInfo
+from .regexs import hash_regex, named
 
 
 class RemoteBranchInfo(BranchInfo):

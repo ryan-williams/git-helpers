@@ -22,12 +22,12 @@ remote = get_mirror_remote()
 root = git_root()
 os.chdir(root)
 
-print "Got remote %s at %s. Pushing.." % (
+print("Got remote %s at %s. Pushing.." % (
     remote.name,
     remote.host_path_str,
-)
+))
 subprocess.check_output(['git', 'push', remote.name])
-print 'Pushed!'
+print('Pushed!')
 
 class FileToCopy(object):
     def __init__(self, basename, path):
@@ -70,7 +70,7 @@ files_to_copy = [
     CmdFileToCopy('deleted_files', 'git diff --cached --name-only --diff-filter=D'),
 ] + [
     UntrackedFileToCopy(line.strip())
-    for line in Popen(['git', 'lso'], stdout=PIPE).communicate()[0].split('\n')
+    for line in Popen(['git', 'lso'], stdout=PIPE).communicate()[0].decode().split('\n')
     if line
 ] + [ UntrackedFileToCopy('.git/HEAD') ]
 
@@ -82,17 +82,17 @@ try:
     local_script = \
         subprocess.Popen(
             ['which', local_script_basename], stdout=subprocess.PIPE
-        ).communicate()[0].strip()
+        ).communicate()[0].decode().strip()
 
-    print "script to run remotely: %s" % local_script
+    print("script to run remotely: %s" % local_script)
 
     cur_branch_name = subprocess.check_output(
-        ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])[:-1]
-    print 'Got current branch: %s' % cur_branch_name
+        ['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode()[:-1]
+    print('Got current branch: %s' % cur_branch_name)
 
     with tarfile.open(tar_file_path, 'w:gz') as tar:
         for file in files_to_copy:
-            print 'adding %s to tar as %s' % (file.path, file.basename)
+            print('adding %s to tar as %s' % (file.path, file.basename))
             tar.add(file.path, arcname=file.basename)
 
     tar_basename = 'diffs.tar.gz'
@@ -108,23 +108,23 @@ try:
             [ "ls %s 2> /dev/null" % filename for filename in paths_to_look_for ]
         )
     ] if remote.is_remote else (["ls"] + [ os.path.join(remote.path, path) for path in paths_to_look_for])
-    found_files = filter(
+    found_files = list(filter(
         lambda x: x,
         subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
-        ).communicate()[0].split('\n')
-    )
+        ).communicate()[0].decode().split('\n')
+    ))
 
     if found_files and len(found_files):
-        inp = raw_input(
+        inp = input(
             'Found existing files:\n\t%s\nOverwrite? [Y/n]: ' % '\n\t'.join(
                 found_files)
         )
         if inp and inp[0].lower() != 'y':
-            print 'Exiting'
+            print('Exiting')
             sys.exit(1)
 
     cp = 'scp' if remote.is_remote else 'cp'
@@ -134,7 +134,7 @@ try:
         tar.name,
         os.path.join(remote.host_path_str, tar_basename)
     ]
-    print "%s'ing tar file: %s" % (cp, ' '.join(cmd))
+    print("%s'ing tar file: %s" % (cp, ' '.join(cmd)))
     subprocess.call(cmd)
 
     cmd = [
@@ -142,7 +142,7 @@ try:
         local_script,
         os.path.join(remote.host_path_str, remote_script_basename)
     ]
-    print "%s'ing remote script: %s" % (cp, ' '.join(cmd))
+    print("%s'ing remote script: %s" % (cp, ' '.join(cmd)))
     subprocess.call(cmd)
 
     cmd = [ './%s' % remote_script_basename, cur_branch_name ]
@@ -150,7 +150,7 @@ try:
     if remote.is_remote:
         remote_cmd = ' && '.join(['cd %s' % remote.path, ' '.join(cmd)])
 
-        print 'remote_cmd: %s' % remote_cmd
+        print('remote_cmd: %s' % remote_cmd)
 
         ssh_cmd = [
             'ssh',
@@ -159,13 +159,13 @@ try:
             remote_cmd
         ]
 
-        print 'ssh cmd:'
-        print ' '.join(ssh_cmd)
+        print('ssh cmd:')
+        print(' '.join(ssh_cmd))
         subprocess.check_call(ssh_cmd)
 
     else:
         os.chdir(remote.path)
-        print 'Local cmd: %s' % ' '.join(cmd)
+        print('Local cmd: %s' % ' '.join(cmd))
         subprocess.check_call(cmd)
 
 finally:
@@ -178,7 +178,7 @@ finally:
             os.remove(file)
         except OSError as e:
             if e.errno != errno.ENOENT:  # ENOENT - no such file or directory
-                print 'Failed to remove: %s' % file
+                print('Failed to remove: %s' % file)
                 exc = e
 
     try_remove(tar_file_path)

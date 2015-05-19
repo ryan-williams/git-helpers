@@ -1,12 +1,13 @@
+from __future__ import print_function
 
 """Helpers for "pieces" of formatted output linked to certain format specifiers."""
 
-from color import color as C, color_symbol, clen
+from .color import color as C, color_symbol, clen
 from datetime import datetime
 from dateutil.parser import parse as parse_datetime
 import re
-from regexs import refname_or_tag_regex
-from reldate_util import shorten_reldate
+from .regexs import refname_or_tag_regex
+from .reldate_util import shorten_reldate
 import subprocess
 
 
@@ -126,7 +127,7 @@ class Pieces(object):
     delimiter = '|||'
     def parse_log(self, args):
         format_str = self.delimiter.join(
-            map(lambda piece: piece.git_format, self._pieces)
+            [piece.git_format for piece in self._pieces]
         )
         cmd = [
             'git',
@@ -138,7 +139,7 @@ class Pieces(object):
         if err:
             raise Exception(err)
 
-        lines = out.splitlines()
+        lines = out.decode().splitlines()
 
         self.results = []
 
@@ -160,24 +161,27 @@ class Pieces(object):
 
         def compute_max_width_for_piece(piece):
             piece.max_width = max(
-                map(lambda values: clen(values[piece.name]), self.results))
+                [clen(values[piece.name]) for values in self.results]
+            )
 
-        map(
-            compute_max_width_for_piece,
-            filter(lambda piece: piece.fix_width, self._pieces)
-        )
+        [
+            compute_max_width_for_piece(piece)
+            for piece
+            in self._pieces
+            if piece.fix_width
+        ]
 
     def pretty_print(self):
         try:
-            print ''
+            print('')
             for values in self.results:
                 for piece in self._pieces:
                     if piece.fix_width:
-                        print fixed(piece.max_width, values[piece.name]),
+                        print(fixed(piece.max_width, values[piece.name]), end=' ')
                     else:
-                        print values[piece.name],
-                print ''
-            print ''
+                        print(values[piece.name], end=' ')
+                print('')
+            print('')
         except IOError as e:
             # Piping to e.g. `head` can cause "Broken pipe"
             pass
