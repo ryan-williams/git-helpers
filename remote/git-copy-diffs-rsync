@@ -29,7 +29,7 @@ print('\t%s' % '\n\t'.join(
     Popen(
         rsync_cmd,
         stdout=PIPE
-    ).communicate()[0].split('\n')[:20]
+    ).communicate()[0].decode().split('\n')[:20]
 ))
 print('Copied!')
 
@@ -57,7 +57,7 @@ try:
         Popen(
             ['rsync', '-avzh', '--progress', '--files-from=%s' % names_file_path, './', remote.path],
             stdout=PIPE
-        ).communicate()[0].split('\n')[:20]
+        ).communicate()[0].decode().split('\n')[:20]
     ))
 
 finally:
@@ -98,8 +98,8 @@ def check_cmd(cmd):
                 "`diff %s %s` failed:\nstdout:\n%s\nstderr:\n%s" % (
                     source_fd.name,
                     dest_fd.name,
-                    out,
-                    err
+                    out.decode(),
+                    err.decode()
                 )
             )
 

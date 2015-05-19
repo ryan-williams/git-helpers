@@ -137,7 +137,7 @@ class Pieces(object):
 
         out, err = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
         if err:
-            raise Exception(err)
+            raise Exception(err.decode())
 
         lines = out.decode().splitlines()
 
