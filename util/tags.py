@@ -6,7 +6,7 @@ from .piece import Pieces
 import subprocess
 
 def get_tags():
-    return [tag for tag in subprocess.check_output(['git', 'tag', '-l']).split('\n') if tag]
+    return [tag for tag in subprocess.check_output(['git', 'tag', '-l']).decode().split('\n') if tag]
 
 
 def print_recent_tags():
