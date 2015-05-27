@@ -2,4 +2,4 @@
 
 # Delete branches which have been merged into the current one.
 
-git branch --merged | grep -v '^*' | xargs git branch -d
+git branch --merged origin/HEAD | grep -v '^*' | xargs git branch -d
