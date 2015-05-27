@@ -1,7 +1,7 @@
 
 import sys
 
-from .piece import Pieces
+from piece import Pieces
 
 import subprocess
 

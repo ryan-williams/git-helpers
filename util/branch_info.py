@@ -2,11 +2,11 @@ __author__ = 'ryan'
 
 """Encapsulates info about one git branch."""
 
-from .color import clen, color
+from color import clen, color
 from datetime import datetime
 from dateutil.parser import parse
-from .regexs import refname_regex, captured_whitespace_regex, hash_regex
-from .reldate_util import shorten_reldate
+from regexs import refname_regex, captured_whitespace_regex, hash_regex
+from reldate_util import shorten_reldate
 import re
 
 
