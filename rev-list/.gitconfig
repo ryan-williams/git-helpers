@@ -4,3 +4,4 @@
 	ah = all-hashes
 	cc = count-commits
 	tail = rev-list --max-parents=0 HEAD
+	rp = rev-parse
