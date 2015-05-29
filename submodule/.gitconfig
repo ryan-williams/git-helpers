@@ -1,3 +1,6 @@
 [alias]
-  sm  = submodule
-  sma = submodule add
+  sm   = submodule
+  sma  = submodule add
+  sms  = submodule status
+  smfe = submodule foreach
+  sf   = submodule foreach
