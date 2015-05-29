@@ -38,10 +38,10 @@
 	path = ../rm/.gitconfig
 	path = ../show/.gitconfig
 	path = ../status/.gitconfig
+	path = ../submodule/.gitconfig
 	path = ../tag/.gitconfig
 	path = ../version/.gitconfig
 
 [alias]
         co      = checkout
         rsh     = reset HEAD^
-        sm      = submodule
