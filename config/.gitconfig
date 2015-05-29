@@ -42,7 +42,6 @@
 	path = ../version/.gitconfig
 
 [alias]
-        a       = add
         co      = checkout
         rsh     = reset HEAD^
         sm      = submodule

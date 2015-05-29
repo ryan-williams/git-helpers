@@ -1,3 +1,4 @@
 
 [alias]
+  a  = add
   ap = add -p
