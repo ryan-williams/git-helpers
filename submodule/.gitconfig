@@ -4,3 +4,6 @@
   sms  = submodule status
   smfe = submodule foreach
   sf   = submodule foreach
+  smu  = submodule update
+  su   = submodule update
+
