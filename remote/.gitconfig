@@ -8,3 +8,5 @@
 	mr	= mirror-remote
 	up	= unpack-and-apply-diffs
   amr = add-mirror-remote
+	rr = remote rename
+	rmv = remote rename
