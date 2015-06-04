@@ -1,0 +1,4 @@
+[alias]
+  f = fetch --tags
+  fo = fetch --tags origin
+  fu = fetch --tags upstream

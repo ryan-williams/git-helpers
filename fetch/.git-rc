@@ -1,5 +1,7 @@
 #!/bin/bash
 
-alias gf="git fetch"
-alias gfo="git fetch origin"
+alias gf="g f"
+alias gfo="g fo"
+alias gfu="g fu"
+
 
