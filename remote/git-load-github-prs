@@ -40,7 +40,7 @@ def remote_configured_to_fetch_pr_tags():
   return bool(
     [
       line
-      for line in check_output(['git', 'config', '--get-all', remote_fetch_config_key]).split('\n')
+      for line in check_output(['git', 'config', '--get-all', remote_fetch_config_key]).decode().split('\n')
       if line.endswith(remote_fetch_config_value)
     ]
   )

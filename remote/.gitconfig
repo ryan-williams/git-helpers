@@ -4,6 +4,7 @@
         rv      = remote -v
 	cd	= copy-diffs
 	lgp	= load-github-prs
+	lpr = load-github-prs
 	mr	= mirror-remote
 	up	= unpack-and-apply-diffs
   amr = add-mirror-remote

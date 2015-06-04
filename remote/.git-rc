@@ -7,3 +7,6 @@ alias gra="git remote add"
 
 alias gamr="g amr"
 alias gmr="g mr"
+
+alias glgp="g lgp"
+alias glpr="g lpr"
