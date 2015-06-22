@@ -1,11 +1,12 @@
 [alias]
-        bm      = branch -m
+        bm = branch -m
 	b = branches
 	bmv = branch-move
 	br = remote-branches
 	bu = branch-upstream
 	cb = current-branch
 	dmb = delete-merged-branches
+	dmbr = delete-merged-branches --remote
 	lb = local-branches
 	nb = new-branch
 	ub = update-branch
