@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 # Use the Python3 version of input(), even in Python2.
+# pylint: disable=undefined-variable
 if sys.version[0] == '2': input=raw_input
 
 name_regex = '(?P<name>[^\s]+)'
