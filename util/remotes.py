@@ -5,6 +5,10 @@ import re
 import subprocess
 import sys
 
+# Use the Python3 version of input(), even in Python2.
+# pylint: disable=undefined-variable
+if sys.version[0] == '2': input=raw_input
+
 name_regex = '(?P<name>[^\s]+)'
 opt_user_regex = '((?P<user>[^@]+)@)?'
 opt_host_regex = '(?:(?P<host>[^:]+):)?'

@@ -24,7 +24,7 @@ os.chdir(root)
 
 print("Got remote %s at %s. Pushing.." % (
     remote.name,
-    remote.host_path_str,
+    remote.user_host_path_str,
 ))
 subprocess.check_output(['git', 'push', remote.name])
 print('Pushed!')
@@ -132,7 +132,7 @@ try:
     cmd = [
         cp,
         tar.name,
-        os.path.join(remote.host_path_str, tar_basename)
+        os.path.join(remote.user_host_path_str, tar_basename)
     ]
     print("%s'ing tar file: %s" % (cp, ' '.join(cmd)))
     subprocess.call(cmd)
@@ -140,7 +140,7 @@ try:
     cmd = [
         cp,
         local_script,
-        os.path.join(remote.host_path_str, remote_script_basename)
+        os.path.join(remote.user_host_path_str, remote_script_basename)
     ]
     print("%s'ing remote script: %s" % (cp, ' '.join(cmd)))
     subprocess.call(cmd)
@@ -155,7 +155,7 @@ try:
         ssh_cmd = [
             'ssh',
             #'-v',
-            remote.host,
+            remote.user_host_str,
             remote_cmd
         ]
 

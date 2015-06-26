@@ -58,7 +58,7 @@ repo_init_commands = [
 passed_directory_existence_check = False
 try:
     if remote.is_remote:
-        check_call(['ssh', remote.host, '[ -d %s ]' % (remote.path if remote.path else '~') ])
+        check_call(['ssh', remote.user_host_str, '[ -d %s ]' % (remote.path if remote.path else '~') ])
     else:
         check_call(['[ -d %s ]' % (remote.path if remote.path else '~')])
 
@@ -81,7 +81,7 @@ if remote.is_remote:
 
     print('Running remote cmd: %s' % remote_cmd)
 
-    check_output(['ssh', remote.host, remote_cmd])
+    check_output(['ssh', remote.user_host_str, remote_cmd])
 
     print('Done!')
 else:

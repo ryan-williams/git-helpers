@@ -20,7 +20,7 @@ remote = get_mirror_remote()
 
 print("Got remote %s at %s. Copying .git directory to %s" % (
     remote.name,
-    remote.host_path_str,
+    remote.user_host_path_str,
     remote.path
 ))
 rsync_cmd = [ 'rsync', '-avzh', '--progress', '--delete', '.git', remote.user_host_path_str ]
