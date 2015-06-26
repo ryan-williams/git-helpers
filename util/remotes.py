@@ -69,7 +69,7 @@ def remote_exists(remote_name):
 
 def prompt(p, default='y'):
     while True:
-        inp = input(p)
+        inp = raw_input(p)
         if (not inp and default.lower() == 'y') or inp.lower() == 'y' or inp.lower() == 'yes':
             return True
         if (not inp and default.lower() == 'n') or inp.lower() == 'n' or inp.lower() == 'no':
