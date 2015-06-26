@@ -5,6 +5,9 @@ import re
 import subprocess
 import sys
 
+# Use the Python3 version of input(), even in Python2.
+if sys.version[0] == '2': input=raw_input
+
 name_regex = '(?P<name>[^\s]+)'
 opt_user_regex = '((?P<user>[^@]+)@)?'
 opt_host_regex = '(?:(?P<host>[^:]+):)?'
@@ -69,7 +72,7 @@ def remote_exists(remote_name):
 
 def prompt(p, default='y'):
     while True:
-        inp = raw_input(p)
+        inp = input(p)
         if (not inp and default.lower() == 'y') or inp.lower() == 'y' or inp.lower() == 'yes':
             return True
         if (not inp and default.lower() == 'n') or inp.lower() == 'n' or inp.lower() == 'no':
