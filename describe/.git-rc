@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+alias gdsc="g dsc"
+alias gdsca="g dsca"

@@ -1,0 +1,4 @@
+
+[alias]
+  dsc = describe
+  dsca = describe --all
