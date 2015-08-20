@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+alias grsh="g rsh"
+alias gr.="g reset ."
