@@ -59,4 +59,4 @@ else:
       'Failed to add fetch mapping "%s" to git config key "%s"' % (remote_fetch_config_value, remote_fetch_config_key)
     )
 
-print(check_output(['git', 'fetch', remote_name]))
+print(check_output(['git', 'fetch', remote_name]).decode())
