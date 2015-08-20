@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-# Checkout a new branch and set its upstream (default to origin/master).
+# Checkout a new branch and set its upstream (default to $DEFAULT_REMOTE/master).
 
 set -e
 source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
 if [ $# -eq 0 ]; then
-	echo "Usage: git new-branch <new branch name> [<tracking branch name=origin/master>]"
+	echo "Usage: git new-branch <new branch name> [<tracking branch name=$DEFAULT_REMOTE/master>]"
 	exit 1
 fi
 
@@ -14,12 +14,12 @@ new_branch_name="$1"
 if [ $# -gt 1 ]; then
 	tracking_branch_name="$2"
 else
-	if git rev-parse --verify -q origin/HEAD; then
-		tracking_branch_name="origin/HEAD"
-	elif git rev-parse --verify -q origin/master; then
-		tracking_branch_name="origin/master"
+	if git rev-parse --verify -q "$DEFAULT_REMOTE"/HEAD; then
+		tracking_branch_name="$DEFAULT_REMOTE"/HEAD
+	elif git rev-parse --verify -q "$DEFAULT_REMOTE"/master; then
+		tracking_branch_name="$DEFAULT_REMOTE/master"
 	else
-		err "Neither origin/HEAD nor origin/master found"
+		err "Neither $DEFAULT_REMOTE/HEAD nor $DEFAULT_REMOTE/master found"
 	fi
 fi
 

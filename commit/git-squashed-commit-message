@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Output commit messages from a range of commits (default: origin/HEAD..HEAD).
+# Output commit messages from a range of commits (default: $DEFAULT_REMOTE/HEAD..HEAD).
 #
 # Each message is formatted as follows:
 #
@@ -17,7 +17,7 @@
 # TODO(ryan): do smart wrapping on the body at 70-chars, per official guidance!
 
 if [ $# -eq 0 ]; then
-  args="origin/HEAD..HEAD"
+  args="$DEFAULT_REMOTE/HEAD..HEAD"
 else
   args="$@"
 fi

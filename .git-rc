@@ -70,9 +70,16 @@ append_subdir_to_path tag
 append_subdir_to_path version
 append_subdir_to_path watchman
 
+export o="origin"
 export oh="origin/HEAD"
+
+export u="upstream"
+export uh="upstream/HEAD"
+
+export DEFAULT_REMOTE="${DEFAULT_REMOTE:-origin}"
+
 export h="HEAD"
-export pr="origin/pr"
+export pr="$DEFAULT_REMOTE/pr"
 
 alias snippets='git log --since "8days" --oneline --author $USER'
 
