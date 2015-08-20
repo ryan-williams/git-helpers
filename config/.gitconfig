@@ -15,6 +15,7 @@
         path = "../admin/.gitconfig"
         path = "../branch/.gitconfig"
         path = "../check-ignore/.gitconfig"
+        path = "../checkout/.gitconfig"
         path = "../cherry-pick/.gitconfig"
         path = "../commit/.gitconfig"
         path = "../conflicts/.gitconfig"
@@ -42,7 +43,3 @@
 	path = ../submodule/.gitconfig
 	path = ../tag/.gitconfig
 	path = ../version/.gitconfig
-
-[alias]
-        co      = checkout
-        rsh     = reset HEAD^
