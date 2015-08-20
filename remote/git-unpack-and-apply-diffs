@@ -58,7 +58,6 @@ deleted_files="$tmpdir/deleted_files"
 unstaged="$tmpdir/unstaged_diff_file"
 tar="$tmpdir/diffs.tar.gz"
 
-
 if [ -s "$staged" ]; then
 
   echo '*** applying staged diff'
@@ -112,6 +111,8 @@ rm -f "$unstaged"
 echo ''
 
 echo "Copying untracked files from tmp dir ${tmpdir}..."
-rsync -avzh --progress "$tmpdir"/ ./
+cp "$tmpdir/untracked.tar.gz" ./
+tar mxf untracked.tar.gz
+rm -f untracked.tar.gz
 echo ''
 
