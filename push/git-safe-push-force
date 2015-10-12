@@ -32,10 +32,17 @@ elif [ $# -eq 2 ]; then
     refspec="$local_branch:$remote_branch"
   fi
 elif [ $# -eq 1 ]; then
-  remote="$DEFAULT_REMOTE"
-  refspec="$1"
-  local_branch="${refspec%%:*}"
-  remote_branch="${refspec##*:}"
+  if is_remote "$1"; then
+    remote="$1"
+    local_branch="$(git current-branch)"
+    remote_branch="$local_branch"
+    refspec="$local_branch:$remote_branch"
+  else
+    remote="$DEFAULT_REMOTE"
+    refspec="$1"
+    local_branch="${refspec%%:*}"
+    remote_branch="${refspec##*:}"
+  fi
 else
   err "Usage: $0 [remote] <refspec>"
   exit 1

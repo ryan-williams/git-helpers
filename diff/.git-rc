@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-alias gd="git diff"
-alias gdc="gd --cached"
+alias gd="git d"
+alias gdc="g dc"
 alias gdh="git diff HEAD"
+alias gds="g ds"
+alias gdt="g dt"
 
 alias gnd="gn diff"
 alias gndc="gn diff --cached"

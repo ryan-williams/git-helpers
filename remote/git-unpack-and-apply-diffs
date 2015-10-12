@@ -34,7 +34,7 @@ trap finish EXIT
 
 mv "$tar" "$tmpdir"
 pushd "$tmpdir"
-tar mxf "$tar"
+tar mxfz "$tar"
 rm -f "$tar"
 popd
 

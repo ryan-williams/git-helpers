@@ -2,4 +2,4 @@
 
 # List git-tracked files that partially match arguments.
 
-git ls-files | grep "$@"
+git ls-files | grep "${@:-.}"

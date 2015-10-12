@@ -68,6 +68,7 @@ class CmdFileToCopy(FileToCopy):
             ).wait()
             fd.flush()
 
+
 files_to_copy = [
     CmdFileToCopy('unstaged_diff_file', 'git diff'),
     CmdFileToCopy('staged_diff_file', 'git diff --cached'),

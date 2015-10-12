@@ -11,4 +11,4 @@ else
   shift
 fi
 
-git push "$@" origin "$branch"
+git push "$@" upstream "$branch"

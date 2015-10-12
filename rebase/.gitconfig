@@ -1,11 +1,10 @@
 [alias]
-        pr      = pull --rebase
-        rba     = rebase --abort
-        rb      = rebase
-        rc      = rebase --continue
-        rem     = rebase master
-        ri      = rebase -i
-        rim     = rebase -i master
-        rs      = rebase --skip
-	arc = add-rebase-continue.sh
-	aurc = add-u-rebase-continue
+  pr      = pull --rebase
+  rba     = rebase --abort
+  rb      = rebase
+  rc      = rebase --continue
+  rem     = rebase master
+  ri      = rebase -i
+  rim     = rebase -i master
+  rs      = rebase --skip
+  arc     = add-rebase-continue

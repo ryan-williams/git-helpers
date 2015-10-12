@@ -1,7 +1,8 @@
 [alias]
-        d       = diff
-        dc      = diff --cached
-        df      = diff
-        dt      = diff-tree
-	d1 = diff-no-context
-	ds = diff-stat
+  d       = diff
+  dc      = diff --cached
+  df      = diff
+  dh      = diff HEAD
+  ds = diff-stat
+  dt      = diff-tree
+  d1 = diff-no-context

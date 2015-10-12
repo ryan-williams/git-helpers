@@ -4,10 +4,11 @@
 # to origin/master.
 
 if [ $# -gt 0 ]; then
-	arg="$1"
+	branch="$1"
+	shift
 else
-	arg="$(git cb)"
+	branch="$(git current-branch)"
 fi
 
-git push origin "${arg}:master"
+git push "$@" "${DEFAULT_REMOTE:-upstream}" "${branch}:master"
 
