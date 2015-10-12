@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+alias gbs="g bs"
 alias gbcag="git bcag"
 alias gbcbb="git bcbb"
 alias gbeb="git beb"
