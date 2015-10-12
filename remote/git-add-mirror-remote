@@ -46,6 +46,7 @@ if remote_name not in remotes:
     raise Exception('Failed to add remote %s' % remote_name)
 
 remote = remotes[remote_name]
+print(remote)
 
 repo_init_commands = [
     ['git', 'init'],
