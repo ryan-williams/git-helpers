@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-alias gls="git ls-files"
+alias gls="g ls"
+alias gfn="g fn"

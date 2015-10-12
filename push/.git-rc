@@ -1,3 +1,8 @@
 
 alias gpm="g pm"
 alias gpo="g po"
+alias gpu="g pu"
+
+alias gspf="g spf"
+alias gspfo="g spfo"
+alias gspfu="g spfu"

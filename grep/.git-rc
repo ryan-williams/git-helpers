@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
 alias gng="g ng"
+alias gg="g g"
+alias ggi="g gi"
+
 alias ggl="g gl"
 alias gkl="g kl"

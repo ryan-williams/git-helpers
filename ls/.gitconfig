@@ -3,3 +3,4 @@
   ls      = ls-files
   lso     = ls-files --other --exclude-standard --directory
   lsh = ls-hashes
+  fn = find

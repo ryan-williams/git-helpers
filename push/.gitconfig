@@ -3,4 +3,7 @@
   mpf = me-push-force
   pm = push-to-master
   po = push-to-origin
+  pu = push-to-upstream
   spf = safe-push-force
+  spfo = safe-push-force origin
+  spfu = safe-push-force upstream
