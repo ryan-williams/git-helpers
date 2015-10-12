@@ -3,13 +3,15 @@
 # Delete local branches which have been merged into the current one.
 # If you pass --remote, it will prune merged branches instead.
 
+remote="${1:-${DEFAULT_REMOTE:-upstream}}"
+
 if [[ $* == *--remote* ]]; then
   # See http://stackoverflow.com/a/8236216/388951
-  git branch -a --merged remotes/origin/master \
+  git branch -a --merged remotes/"$remote"/master \
     | grep -v master \
     | grep "remotes/$DEFAULT_REMOTE/" \
     | cut -d "/" -f 3 \
-    | xargs -n 1 git push --delete origin
+    | xargs -n 1 git push --delete "$remote"
 else
-  git branch --merged "$DEFAULT_REMOTE"/HEAD | grep -v '^*' | xargs git branch -d
+  git branch --merged "$remote"/HEAD | grep -v '^*' | xargs git branch -d
 fi
