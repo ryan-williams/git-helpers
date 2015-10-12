@@ -1,6 +1,6 @@
 [alias]
-	mp = me-push
-	mpf = me-push-force
-	pm = push-to-origin-master
+  mp = me-push
+  mpf = me-push-force
+  pm = push-to-master
   po = push-to-origin
-	spf = safe-push-force
+  spf = safe-push-force
