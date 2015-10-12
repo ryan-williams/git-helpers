@@ -11,3 +11,4 @@
   amr     = add-mirror-remote
   rr      = remote rename
   rmv     = remote rename
+  rrm     = remote remove
