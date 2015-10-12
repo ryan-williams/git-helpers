@@ -9,4 +9,4 @@ else
 	args=.
 fi
 
-git add "$args" && git cherry-pick --continue
+git add -u "$args" && git cherry-pick --continue

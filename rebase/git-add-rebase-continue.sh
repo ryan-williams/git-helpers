@@ -8,4 +8,4 @@ else
 	args="$@"
 fi
 
-git add "$args" && git rebase --continue
+git add -u "$args" && git rebase --continue
