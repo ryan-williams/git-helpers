@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+if [ -s .gitmodules ]; then
+  cat .gitmodules | perl -ne 'print if s/.*path = //'
+fi
