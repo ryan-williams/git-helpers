@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [ $# -gt 1 ]; then
+  err "Usage: $0 [branch; default: current branch]"
+fi
+
+if [ $# -eq 0 ]; then
+  branch="$(git current-branch)"
+else
+  branch="$1"
+  shift
+fi
+
+git push "$@" upstream "$branch"

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Push a branch (provided as a cmdline arg; default: current branch)
+# to origin/master.
+
+if [ $# -gt 0 ]; then
+	branch="$1"
+	shift
+else
+	branch="$(git current-branch)"
+fi
+
+git push "$@" "${DEFAULT_REMOTE:-upstream}" "${branch}:master"
+
