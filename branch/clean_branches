@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Clean out old git branches: iterate through local branches in order of least
 # recently modified, display information about the branch, and prompt for

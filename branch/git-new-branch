@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Checkout a new branch and set its upstream (default to origin/master).
 

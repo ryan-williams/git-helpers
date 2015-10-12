@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 alias gsh="g sh"
 alias gshs="gn shs"  # git-show-short, no pager

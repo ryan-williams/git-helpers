@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Delete local branches which have been merged into the current one.
 # If you pass --remote, it will prune merged branches instead.

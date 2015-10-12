@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Attempt a `push`; if it's not fast-forward on the remote, dry-run a force-push, display info
 # about it, and prompt the user to proceed or not.

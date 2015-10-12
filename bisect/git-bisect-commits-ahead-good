@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Output the number of commits from the last "good" commit to HEAD.
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Squash all commits since a given upstream (default origin/HEAD); open $EDITOR with all commit
 # messages nicely formatted/bulletted.

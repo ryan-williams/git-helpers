@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Output commit messages from a range of commits (default: origin/HEAD..HEAD).
 #

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Replay all commits that affect a given file in a new git repository, effectively reconstructing that file's history
 # divorced from its original repository. Example:

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # `git add` files whose conflicts have been resolved, and continue rebasing.
 

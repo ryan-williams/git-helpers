@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script takes care of some common steps involved in adding new scripts to this repo:
 #

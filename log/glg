@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Display history of files, lookup by partial/grep matches, prompt to disambiguate if multiple.
 

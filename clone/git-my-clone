@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Clone a repo from your github. Requires $GITHUBUSER to be set.
 

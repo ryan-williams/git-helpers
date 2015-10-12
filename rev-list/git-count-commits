@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Show "number of commits ahead/behind" relationship between two refs.
 

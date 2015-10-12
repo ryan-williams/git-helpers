@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Cherry-pick a sequence of commits, by SHA, from a file.
 

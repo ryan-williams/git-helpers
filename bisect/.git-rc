@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 alias gbcag="git bcag"
 alias gbcbb="git bcbb"

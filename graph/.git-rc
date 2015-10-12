@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 alias gg="git graph"
 alias ggc="git graph-commits"
