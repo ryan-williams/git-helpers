@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
-# Check whether a remote exists.
+# Check whether a remote exists. If a second argument is present, verify that
+# it matches the remote's path.
 
-git ls-remote "$1" &> /dev/null
+set -e
+
+remote="$1"
+git ls-remote "$remote" &> /dev/null
+shift
+if [ $# -gt 0 ]; then
+  diff -q <(echo "$1") <(git ls-remote --get-url "$remote") > /dev/null
+fi

@@ -5,6 +5,8 @@ alias gcd="g cd"
 alias gr="git remote -vv"
 alias gra="git remote add"
 
+alias gre="g re"
+
 alias gamr="g amr"
 alias gmr="g mr"
 
