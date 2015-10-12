@@ -124,9 +124,6 @@ def get_mirror_remote():
     remotes = get_remotes()
     found_remotes = [remotes[remote]
                      for remote in remote_names if remote in remotes]
-    if len(found_remotes) > 1:
-        raise Exception('Found multiple eligible remotes: %s' % ','.join(
-            [remote.name for remote in found_remotes]))
     if not found_remotes:
         raise Exception('Found no eligible remotes: %s' % ','.join(remote_names))
 
