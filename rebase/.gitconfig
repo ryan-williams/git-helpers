@@ -7,5 +7,4 @@
   ri      = rebase -i
   rim     = rebase -i master
   rs      = rebase --skip
-  arc = add-rebase-continue.sh
-  aurc = add-u-rebase-continue
+  arc     = add-rebase-continue

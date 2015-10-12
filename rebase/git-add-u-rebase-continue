@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# Add unstanged files and continue a rebase.
-
-git arc -u
