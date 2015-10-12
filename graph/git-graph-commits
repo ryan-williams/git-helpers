@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Graph commits up to the nearest common ancestor of the arguments (default HEAD and origin/HEAD).
+# Graph commits up to the nearest common ancestor of the arguments (default HEAD and $DEFAULT_REMOTE/HEAD).
 
 from=
 if [ $# -lt 1 ]; then
-  from=origin/HEAD
+  from="$DEFAULT_REMOTE"/HEAD
 else
   from="$1"
   shift

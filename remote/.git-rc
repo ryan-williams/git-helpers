@@ -1,9 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 alias gcd="g cd"
 
 alias gr="git remote -vv"
 alias gra="git remote add"
+
+alias gre="g re"
 
 alias gamr="g amr"
 alias gmr="g mr"
@@ -13,3 +15,4 @@ alias glpr="g lpr"
 
 alias grr="g rr"
 alias grmv="g rmv"
+alias grrm="g rrm"

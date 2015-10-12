@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # For each argument, output all files in the repo that are symlinks to it.
 #

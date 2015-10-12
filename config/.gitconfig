@@ -15,9 +15,11 @@
         path = "../admin/.gitconfig"
         path = "../branch/.gitconfig"
         path = "../check-ignore/.gitconfig"
+        path = "../checkout/.gitconfig"
         path = "../cherry-pick/.gitconfig"
         path = "../commit/.gitconfig"
         path = "../conflicts/.gitconfig"
+        path = "../describe/.gitconfig"
         path = "../diff/.gitconfig"
         path = "../fetch/.gitconfig"
         path = "../grep/.gitconfig"
@@ -26,6 +28,7 @@
         path = "../ls/.gitconfig"
         path = "../merge/.gitconfig"
         path = "../rebase/.gitconfig"
+        path = "../reset/.gitconfig"
         path = "../rev-list/.gitconfig"
         path = "../stash/.gitconfig"
 	path = ../remote/.gitconfig
@@ -42,7 +45,3 @@
 	path = ../submodule/.gitconfig
 	path = ../tag/.gitconfig
 	path = ../version/.gitconfig
-
-[alias]
-        co      = checkout
-        rsh     = reset HEAD^

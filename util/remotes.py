@@ -39,26 +39,38 @@ class Remote(object):
     def parse_line(cls, line):
         match = re.match(https_push_re, line) or re.match(ssh_push_re, line)
         if match:
-            return Remote(match)
+            return Remote.from_match(match)
         return None
 
-    def __init__(self, match):
-        self.match = match
-        self.name = match.group('name')
-        self.host = match.group('host')
+    @classmethod
+    def from_match(cls, match):
+        return Remote(
+            match.group('name'),
+            match.group('host'),
+            match.group('path'),
+            match.group('user') if 'user' in match.groupdict() else None
+        )
+
+    def __init__(self, name, host, path, user):
+        self.name = name
+        self.host = host
         self.opt_host_str = '%s:' % self.host if self.host else ''
 
-        self.user = match.group('user') if 'user' in match.groupdict() else None
+        self.user = user
         self.opt_user_str = '%s@' % self.user if self.user else ''
         self.user_host_str = '%s%s' % (self.opt_user_str, self.host)
 
-        self.path = match.group('path')
+        self.path = path
         self.host_path_str = '%s%s' % (self.opt_host_str, self.path)
 
         self.user_host_path_str = '%s%s' % (self.opt_user_str, self.host_path_str)
 
         self.is_local = not self.host
         self.is_remote = not self.is_local
+
+    def append_path(self, path):
+        return Remote(self.name, self.host, os.path.join(self.path, path), self.user)
+
 
 
 def get_remotes():
@@ -112,9 +124,6 @@ def get_mirror_remote():
     remotes = get_remotes()
     found_remotes = [remotes[remote]
                      for remote in remote_names if remote in remotes]
-    if len(found_remotes) > 1:
-        raise Exception('Found multiple eligible remotes: %s' % ','.join(
-            [remote.name for remote in found_remotes]))
     if not found_remotes:
         raise Exception('Found no eligible remotes: %s' % ','.join(remote_names))
 

@@ -9,11 +9,12 @@ if __name__ == '__main__':
     root_dir = os.path.dirname(branches_dir)
     sys.path.append(root_dir)
 
+from dir import GitDirPath
 from util.remotes import get_mirror_remote
 from util.root import git_root
 import errno
 import subprocess
-from subprocess import PIPE, Popen
+from subprocess import CalledProcessError, PIPE, Popen
 import tarfile
 from tempfile import mktemp
 
@@ -40,8 +41,13 @@ class FileToCopy(object):
 
 class UntrackedFileToCopy(FileToCopy):
     def __init__(self, path):
-        self.basename = path
-        self.path = path
+        super(UntrackedFileToCopy, self).__init__(path, path)
+
+
+class GitDirFileToCopy(FileToCopy):
+    def __init__(self, git_dir_path):
+        self.gdp = GitDirPath(git_dir_path)
+        super(GitDirFileToCopy, self).__init__(os.path.join('.git', git_dir_path), self.gdp.path)
 
 
 class CmdFileToCopy(FileToCopy):
@@ -62,19 +68,21 @@ class CmdFileToCopy(FileToCopy):
             ).wait()
             fd.flush()
 
-
 files_to_copy = [
     CmdFileToCopy('unstaged_diff_file', 'git diff'),
     CmdFileToCopy('staged_diff_file', 'git diff --cached'),
     CmdFileToCopy('added_files', 'git diff --cached --name-only --diff-filter=A'),
     CmdFileToCopy('deleted_files', 'git diff --cached --name-only --diff-filter=D'),
-] + [
+] + [ GitDirFileToCopy('HEAD') ]
+
+untracked_files_to_copy = [
     UntrackedFileToCopy(line.strip())
     for line in Popen(['git', 'lso'], stdout=PIPE).communicate()[0].decode().split('\n')
     if line
-] + [ UntrackedFileToCopy('.git/HEAD') ]
+]
 
 tar_file_path = mktemp()
+untracked_tar_file_path = mktemp()
 try:
 
     local_script_basename = 'git-unpack-and-apply-diffs'
@@ -94,6 +102,13 @@ try:
         for file in files_to_copy:
             print('adding %s to tar as %s' % (file.path, file.basename))
             tar.add(file.path, arcname=file.basename)
+
+        with tarfile.open(untracked_tar_file_path, 'w:gz') as untracked_tar:
+            for file in untracked_files_to_copy:
+                print('adding %s to untracked tar as %s' % (file.path, file.basename))
+                untracked_tar.add(file.path, arcname=file.basename)
+
+        tar.add(untracked_tar_file_path, arcname='untracked.tar.gz')
 
     tar_basename = 'diffs.tar.gz'
 
@@ -146,6 +161,27 @@ try:
     subprocess.call(cmd)
 
     cmd = [ './%s' % remote_script_basename, cur_branch_name ]
+
+    submodules = [ x for x in [ l.strip() for l in subprocess.check_output(['git', 'submodules']).decode().split('\n') ] if x ]
+    if submodules:
+        print("Copying %d submodules: %s" % (len(submodules), ', '.join(submodules)))
+
+        for submodule_path in submodules:
+            print("Copying submodule: %s" % submodule_path)
+
+            submodule_remote = remote.append_path(submodule_path)
+            os.chdir(submodule_path)
+            try:
+                print("Checking for remote: %s %s" % (submodule_remote.name, submodule_remote.user_host_path_str))
+                subprocess.check_call([ 'git', 'remote-exists', submodule_remote.name, submodule_remote.user_host_path_str ])
+                print("Found!")
+            except CalledProcessError:
+                print("Not found, adding...")
+                subprocess.check_call([ 'git', 'add-mirror-remote', submodule_remote.name, submodule_remote.user_host_path_str ])
+
+            subprocess.check_call(['git', 'copy-diffs', remote.name])
+            os.chdir(root)
+
 
     if remote.is_remote:
         remote_cmd = ' && '.join(['cd %s' % remote.path, ' '.join(cmd)])

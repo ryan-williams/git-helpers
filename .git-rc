@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Git aliases. source me from .bashrc!
 
@@ -40,10 +40,12 @@ append_subdir_to_path apply
 append_subdir_to_path bisect
 append_subdir_to_path blame
 append_subdir_to_path branch
+append_subdir_to_path checkout
 append_subdir_to_path cherry-pick
 append_subdir_to_path clone
 append_subdir_to_path commit
 append_subdir_to_path conflicts
+append_subdir_to_path describe
 append_subdir_to_path diff
 append_subdir_to_path fetch
 append_subdir_to_path github
@@ -59,6 +61,7 @@ append_subdir_to_path nav
 append_subdir_to_path push
 append_subdir_to_path rebase
 append_subdir_to_path remote
+append_subdir_to_path reset
 append_subdir_to_path rev-list
 append_subdir_to_path rm
 append_subdir_to_path show
@@ -69,9 +72,16 @@ append_subdir_to_path tag
 append_subdir_to_path version
 append_subdir_to_path watchman
 
+export o="origin"
 export oh="origin/HEAD"
+
+export u="upstream"
+export uh="upstream/HEAD"
+
+export DEFAULT_REMOTE="${DEFAULT_REMOTE:-origin}"
+
 export h="HEAD"
-export pr="origin/pr"
+export pr="$DEFAULT_REMOTE/pr"
 
 alias snippets='git log --since "8days" --oneline --author $USER'
 

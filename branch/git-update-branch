@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Moves to a branch, rebases it against its upstream, and moves back to the branch where you started.
 

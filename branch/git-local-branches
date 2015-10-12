@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Output local branches; -t flag sorts in reverse-chron order.
 

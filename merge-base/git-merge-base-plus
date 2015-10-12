@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Find octopus merge-base for inputs.
 
 from=
 if [ $# -lt 1 ]; then
-  from=origin/HEAD
+  from="$DEFAULT_REMOTE"/HEAD
 else
   from="$1"
   shift

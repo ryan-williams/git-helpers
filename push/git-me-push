@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Push a local branch to origin as a $USER-namespaced remote-branch.
 

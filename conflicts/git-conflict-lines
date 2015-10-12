@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Greps for finding merge conflicts that may not have been resolved.
 

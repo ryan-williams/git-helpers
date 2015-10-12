@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Show "number of commits ahead/behind" relationship between two refs.
 
@@ -11,7 +11,7 @@ if [ $# -eq 2 ]; then
   shift
   shift
 elif [ $# -eq 1 ]; then
-  if [[ "$1" =~ ^[0-9a-fA-F]*..[0-9a-fA-F]*$ ]]; then
+  if [[ "$1" =~ ^[0-9a-fA-F]*\.\.[0-9a-fA-F]*$ ]]; then
     from="${1%%..*}"
     to="${1##*..}"
   else

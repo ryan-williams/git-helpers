@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Output the number of commits behind the earliest "bad" commit that HEAD is.
 

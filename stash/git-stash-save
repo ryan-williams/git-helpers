@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Wrapper for `git stash save` that returns an error code if no stash was created.
 #

@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Set the upstream ref for the current branch. Usage:
 #
 #   $ git branch-upstream [upstream ref] <branch>
 
 if [ $# -eq 0 ]; then
-  upstream="origin/master"
+  upstream="$DEFAULT_REMOTE/master"
 else
   upstream="$1"
   shift

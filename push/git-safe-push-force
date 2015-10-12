@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Attempt a `push`; if it's not fast-forward on the remote, dry-run a force-push, display info
 # about it, and prompt the user to proceed or not.
@@ -26,13 +26,13 @@ elif [ $# -eq 2 ]; then
     local_branch="${refspec%%:*}"
     remote_branch="${refspec##*:}"
   else
-    remote="origin"
+    remote="$DEFAULT_REMOTE"
     local_branch="$1"
     remote_branch="$2"
     refspec="$local_branch:$remote_branch"
   fi
 elif [ $# -eq 1 ]; then
-  remote="origin"
+  remote="$DEFAULT_REMOTE"
   refspec="$1"
   local_branch="${refspec%%:*}"
   remote_branch="${refspec##*:}"

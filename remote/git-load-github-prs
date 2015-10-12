@@ -18,8 +18,12 @@ def die(msg, exit_code=1):
   sys.stderr.write(msg + '\n')
   sys.exit(exit_code)
 
+default_remote = 'origin'
+if os.environ.get('DEFAULT_REMOTE'):
+  default_remote = os.environ.get('DEFAULT_REMOTE')
+
 if len(sys.argv) < 2:
-  remote_name='origin'
+  remote_name=default_remote
 else:
   remote_name=sys.argv[1]
 
@@ -33,7 +37,7 @@ if remote.host != 'github.com':
   die("Remote '%s' doesn't appear to be a github remote: %s@%s" % (remote_name, remote.user, remote.host))
 
 remote_fetch_config_key = 'remote.%s.fetch' % remote_name
-remote_fetch_config_pr_mapping = 'refs/remotes/pr/*' if remote_name == 'origin' else 'refs/remotes/%s/pr/*' % remote_name
+remote_fetch_config_pr_mapping = 'refs/remotes/pr/*' if remote_name == default_remote else 'refs/remotes/%s/pr/*' % remote_name
 remote_fetch_config_value = '+refs/pull/*/head:%s' % remote_fetch_config_pr_mapping
 
 def remote_configured_to_fetch_pr_tags():
@@ -55,4 +59,4 @@ else:
       'Failed to add fetch mapping "%s" to git config key "%s"' % (remote_fetch_config_value, remote_fetch_config_key)
     )
 
-print(check_output(['git', 'fetch', remote_name]))
+print(check_output(['git', 'fetch', remote_name]).decode())
