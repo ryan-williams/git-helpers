@@ -1,9 +1,23 @@
 #!/usr/bin/env bash
 
 # Delete local branches which have been merged into the current one.
-# If you pass --remote, it will prune merged branches instead.
+#
+# $ git delete-merged-branches [--remote] [remote]
+#
+# The --remote option will prune merged branches instead.
+#
+# An optional final argument gives a remote to check against, defaulting
+# to the DEFAULT_REMOTE env var or "upstream".
 
-remote="${1:-${DEFAULT_REMOTE:-upstream}}"
+# If the last argument exists and doesn't start with "--", interpret it
+# as the name of a remote.
+if [ $# -gt 0 ]; then
+  last_arg="${@: -1}"
+  if ! [[ "$last_arg" =~ ^-- ]]; then
+    remote="$last_arg"
+  fi
+fi
+remote="${remote:-${DEFAULT_REMOTE:-upstream}}"
 
 if [[ $* == *--remote* ]]; then
   # See http://stackoverflow.com/a/8236216/388951
