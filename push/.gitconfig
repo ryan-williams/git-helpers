@@ -3,6 +3,7 @@
   mpf = me-push-force
   pm = push-to-master
   po = push-to-origin
+  pt = push --tags
   pu = push-to-upstream
   spf = safe-push-force
   spfo = safe-push-force origin
