@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
 
-[ $(expr "$(git status --porcelain | wc -l)") -ne 0 ]
+if [ $# -eq 0 ]; then
+  xargs "$0" "$@"
+  exit $?
+fi
+
+[ -n "$(git status --porcelain "$@")" ]
 
