@@ -12,7 +12,7 @@ import subprocess
 
 
 def fixed(width, s):
-    return (' ' * (width - clen(s))) + unicode(s)
+    return (' ' * (width - clen(s))) + s
 
 
 class Piece(object):
@@ -26,7 +26,7 @@ class Piece(object):
 
 
     def render(self, segment):
-        return unicode(segment)
+        return segment
 
 
     def __init__(self, name, git_format, fix_width=True, color='clear'):

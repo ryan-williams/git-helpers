@@ -12,7 +12,7 @@ import re
 
 def fixed(width, s, left_justified=False):
     spaces = (' ' * (width - clen(s)))
-    return unicode(s) + spaces if left_justified else spaces + unicode(s)
+    return s + spaces if left_justified else spaces + s
 
 
 class BranchInfo(object):

@@ -99,4 +99,4 @@ color_char_regex = '\x1b' + '\[(?:[0-9];)?[0-9]+m'
 
 
 def clen(s):
-    return len(re.sub(color_char_regex, '', unicode(s)))
+    return len(re.sub(color_char_regex, '', s))
