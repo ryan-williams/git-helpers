@@ -1,7 +1,10 @@
 
 """Handy regexs for parsing git-command outputs."""
 
-normal_refname_regex = "[a-zA-Z0-9-_/\.+]+"
+# This is an approximation of valid branch names. The real rules are here:
+# https://www.kernel.org/pub/software/scm/git/docs/git-check-ref-format.html
+normal_refname_regex = r'[^ ~^:?*\[@\\]+'
+
 refname_or_tag_regex = "(?:(?:HEAD -> )?%s|tag: %s)" % (normal_refname_regex, normal_refname_regex)
 detached_refname_regex = "\((?:HEAD )?detached (?:from|at) %s\)" % normal_refname_regex
 no_branch_regex = "\(no branch\)"

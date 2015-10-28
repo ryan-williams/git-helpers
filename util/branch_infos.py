@@ -31,7 +31,7 @@ class BranchInfos:
     def get_lines(self):
         out, err = subprocess.Popen(
             self.cmd(), stdout=subprocess.PIPE).communicate()
-        return out.decode().splitlines()
+        return out.decode('utf8').splitlines()
 
     def run_secondary_cmd(self):
         hashes = [bi.hash for bi in list(self.branches_by_name.values())]#map(lambda bi: bi.hash, self.branches_by_name.values())
