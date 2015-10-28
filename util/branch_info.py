@@ -12,7 +12,7 @@ import re
 
 def fixed(width, s, left_justified=False):
     spaces = (' ' * (width - clen(s)))
-    return str(s) + spaces if left_justified else spaces + str(s)
+    return s + spaces if left_justified else spaces + s
 
 
 class BranchInfo(object):
@@ -64,12 +64,12 @@ class BranchInfo(object):
     def __init__(self, line):
         self.line = line
 
-        match = re.match(self.regex(), line)
+        match = re.match(self.regex(), line, re.UNICODE)
         if (match):
             pass
         else:
             raise Exception(
-                "Invalid branch line:\n%s\nregex:\n%s" % (line, '\n'.join(self.regex_pieces)))
+                u'Invalid branch line:\n%s\nregex:\n%s' % (line, '\n'.join(self.regex_pieces)))
 
         self.dict = match.groupdict()
 
