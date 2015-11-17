@@ -2,3 +2,4 @@
 [alias]
   a  = add
   ap = add -p
+  dma = diff-then-maybe-add

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+  while read -r arg <&6; do
+    git diff "$arg"
+    if prompt 'add'; then
+      git add "$arg"
+    fi
+  done
+else
+  for arg in "$@"; do
+    git diff "$arg"
+    if prompt 'add'; then
+      git add "$arg"
+    fi
+  done
+fi

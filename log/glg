@@ -2,15 +2,16 @@
 
 # Display history of files, lookup by partial/grep matches, prompt to disambiguate if multiple.
 
-echo $1
-files=$(git ls-files | grep --color=never "$1")
+pattern="$1"
+shift
+files=$(git ls-files | grep --color=never "$pattern")
 if [ $(count $files) -eq 1 ]; then
-    git log -p --follow -- $files
+    git log -p --follow "$@" -- $files
 else
     select filename in $files; do
         echo $filename
         set -v
-        git log -p --follow -- "$filename"
+        git log -p --follow "$@" -- "$filename"
         set +v
         break
     done
