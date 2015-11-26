@@ -103,3 +103,7 @@ config_file="$dir"/config/.gitconfig
 if ! git config --global --get-all include.path | grep "$config_file" >/dev/null; then
   git config --global --add include.path "$config_file"
 fi
+
+set-sha() {
+  export sha="$(git sha)"
+}
