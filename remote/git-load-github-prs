@@ -9,7 +9,7 @@ if __name__ == '__main__':
     file_path = os.path.realpath(__file__)
     branches_dir = os.path.dirname(file_path)
     root_dir = os.path.dirname(branches_dir)
-    sys.path.append(root_dir)
+    sys.path.insert(0, root_dir)
 
 from subprocess import check_output, Popen, PIPE
 from util.remotes import get_remotes

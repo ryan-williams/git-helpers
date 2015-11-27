@@ -12,7 +12,7 @@ if __name__ == '__main__':
     file_path = os.path.realpath(__file__)
     branches_dir = os.path.dirname(file_path)
     root_dir = os.path.dirname(branches_dir)
-    sys.path.append(root_dir)
+    sys.path.insert(0, root_dir)
 
 from util.remotes import get_mirror_remote
 
@@ -148,4 +148,3 @@ run_cmd_on_local_and_remote(['git', 'lso'], rm_dest_untracked_files)
 check_cmd(['git', 'diff'])
 check_cmd(['git', 'diff', '--cached'])
 check_cmd(['git', 'lso'])
-
