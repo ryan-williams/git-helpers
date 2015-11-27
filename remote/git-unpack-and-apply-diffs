@@ -5,6 +5,8 @@
 
 set -x
 
+source "$GIT_HELPERS_HOME"/config/.helpers-rc
+
 # TODO: arg-ify these
 tar="diffs.tar.gz"
 
@@ -21,8 +23,8 @@ echo "remote: git-unpack-and-apply-diffs!"
 
 set -e
 
-tmpdir="$(mktemp -d)"
-excludes_file="$(mktemp)"
+tmpdir="$(mktd)"
+excludes_file="$(mkt)"
 finish() {
   echo "Removing tmp dir containing $(find "$tmpdir" | wc -l) files"
   rm -rf "$tmpdir"
@@ -115,4 +117,3 @@ cp "$tmpdir/untracked.tar.gz" ./
 tar mxf untracked.tar.gz
 rm -f untracked.tar.gz
 echo ''
-

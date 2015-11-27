@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-#source "$GIT_HELPERS_HOME"/test/.helpers-rc
+source "$GIT_HELPERS_HOME"/test/.helpers-rc
 
 set -ex
 
-tmp="$(mktemp -d)"
+tmp="$(mktd)"
 
 finish() {
   rm -rf "$tmp"

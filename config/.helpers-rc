@@ -17,11 +17,11 @@ log() {
 }
 
 mkt() {
-  mktemp 2>/dev/null || mktemp -t 'mytmpdir'
+  mktemp 2>/dev/null || mktemp -t 'githelpers.tmp.fXX'
 }
 
 mktd() {
-  mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir'
+  mktemp -d 2>/dev/null || mktemp -d -t 'githelpers.tmp.dXX'
 }
 
 # Simplify a path or paths by replacing them with the output of `pwd -P` from within them;
