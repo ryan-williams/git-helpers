@@ -1,3 +1,4 @@
+mock
 nose
 pylint
 python-dateutil

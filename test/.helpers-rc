@@ -8,8 +8,8 @@ test/clean-test-files
 
 mkdir -p tmp tmp1 tmp2
 
-tmp1="$(mktemp -d)"
-tmp2="$(mktemp -d)"
+tmp1="$(mktd)"
+tmp2="$(mktd)"
 
 check_link() {
   link="$1"
