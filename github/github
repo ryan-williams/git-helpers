@@ -10,7 +10,7 @@ if __name__ == '__main__':
     root_dir = os.path.dirname(github_dir)
     sys.path.insert(0, root_dir)
 
-from util import github
+from util import github_util
 from util.root import git_root
 
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         usage()
 
-    remotes = github.get_github_remotes()
+    remotes = github_util.get_github_remotes()
     if len(remotes) == 0:
         sys.stderr.write("There are no github remotes for this repo, "
                          "or perhaps you're not in a git repo.\n")
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         chosen_remote = remotes[0].path
         sys.stderr.write('Found multiple remotes. Using %s\n' % chosen_remote)
 
-    repo_url = github.make_github_url(remote)
+    repo_url = github_util.make_github_url(remote)
 
     arg = sys.argv[1] if len(sys.argv) > 1 else ''
     if arg in PAGES:
