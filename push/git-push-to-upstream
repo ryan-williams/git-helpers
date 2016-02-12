@@ -5,10 +5,19 @@ if [ $# -gt 1 ]; then
 fi
 
 if [ $# -eq 0 ]; then
-  branch="$(git current-branch)"
+  source=HEAD
+  dest="$(git current-branch)"
 else
-  branch="$1"
+  if [[ "$1" =~ : ]]; then
+    source="${1%%:*}"
+    dest="${1##*:}"
+  else
+    source=HEAD
+    dest="$1"
+  fi
   shift
 fi
 
-git push "$@" upstream "$branch"
+echo "$source -> $dest"
+
+git push "$@" upstream "$source":"$dest"
