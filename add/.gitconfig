@@ -3,3 +3,6 @@
   a  = add
   ap = add -p
   dma = diff-then-maybe-add
+  au = add -u
+  aup = add -u -p
+  apu = add -p -u

@@ -21,6 +21,7 @@
         path = "../check-ignore/.gitconfig"
         path = "../checkout/.gitconfig"
         path = "../cherry-pick/.gitconfig"
+        path = "../clone/.gitconfig"
         path = "../commit/.gitconfig"
         path = "../conflicts/.gitconfig"
         path = "../describe/.gitconfig"
