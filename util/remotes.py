@@ -47,7 +47,7 @@ class Remote(object):
         return Remote(
             match.group('name'),
             match.group('host'),
-            match.group('path'),
+            match.group('path') or '~',
             match.group('user') if 'user' in match.groupdict() else None
         )
 
