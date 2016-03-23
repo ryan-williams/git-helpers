@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
 alias gco="g co"
+alias gcom="gco master"
