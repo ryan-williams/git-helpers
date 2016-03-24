@@ -17,6 +17,7 @@
 [include]
         path = "../add/.gitconfig"
         path = "../admin/.gitconfig"
+        path = "../blame/.gitconfig"
         path = "../branch/.gitconfig"
         path = "../check-ignore/.gitconfig"
         path = "../checkout/.gitconfig"
