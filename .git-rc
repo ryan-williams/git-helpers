@@ -97,6 +97,9 @@ alias gsto="gist -p -c -o -d"
 # Same as above, but pulling content from clipboard
 alias gstp="gist -p -c -o -P -d"
 
+alias gop="gist -op"
+alias gopc="gist -opc"
+alias gpc="gist -opc"
 
 # Source this repository's `.gitconfig` file from your global `.gitconfig`.
 config_file="$dir"/config/.gitconfig
