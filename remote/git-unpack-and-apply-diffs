@@ -23,6 +23,14 @@ echo "remote: git-unpack-and-apply-diffs!"
 
 set -e
 
+mkt() {
+  mktemp 2>/dev/null || mktemp -t 'githelpers.tmp.fXX'
+}
+
+mktd() {
+  mktemp -d 2>/dev/null || mktemp -d -t 'githelpers.tmp.dXX'
+}
+
 tmpdir="$(mktd)"
 excludes_file="$(mkt)"
 finish() {
