@@ -2,9 +2,9 @@
   mp = me-push
   mpf = me-push-force
   pm = push-to-master
-  po = push-to-origin
+  po = push-to-remote-branch origin
   pt = push --tags
-  pu = push-to-upstream
+  pu = push-to-remote-branch upstream
   spf = safe-push-force
   spfo = safe-push-force origin
   spfu = safe-push-force upstream

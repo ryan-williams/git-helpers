@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-if [ $# -gt 1 ]; then
-  err "Usage: $0 [branch; default: current branch]"
-fi
+remote="$1"
+shift
 
 if [ $# -eq 0 ]; then
   source=HEAD
@@ -20,4 +19,4 @@ fi
 
 echo "$source -> $dest"
 
-git push "$@" upstream "$source":"$dest"
+git push "$@" "$remote" "$source":"$dest"
