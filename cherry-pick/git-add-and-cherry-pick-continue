@@ -3,10 +3,4 @@
 # When done resolving conflicts while cherry-picking, call `g acpc` to confirm your commit message
 # and continue.
 
-if [ $# -gt 0 ]; then
-	args="$@"
-else
-	args=.
-fi
-
-git add -u "$args" && git cherry-pick --continue
+git add -u "${@:-.}" && git cherry-pick --continue --no-edit

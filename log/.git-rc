@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-alias gl="git lg"
-alias gln="g lg"
+alias gl="g l"
+alias gln="g ln"
 alias glp="g lp"
 alias gfh="g fh"
 alias gsha="g sha"
 
+alias glf="g lf"
+alias glsc="g lsc"
+alias gfiles="g files"

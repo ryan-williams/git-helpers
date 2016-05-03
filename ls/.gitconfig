@@ -4,3 +4,9 @@
   lso     = ls-files --other --exclude-standard --directory
   lsh = ls-hashes
   fn = find
+  fns = find-suffix
+  fs = find-suffix
+  fnp = find-prefix
+  fp = find-prefix
+  lsu = list-unstaged
+  lu = list-unstaged

@@ -1,10 +1,11 @@
 [alias]
   pr      = pull --rebase
-  rba     = rebase --abort
   rb      = rebase
+  rba     = rebase --abort
+  rbc     = rebase --continue
+  rbm     = rebase master
+  rbs     = rebase --skip
   rc      = rebase --continue
-  rem     = rebase master
   ri      = rebase -i
   rim     = rebase -i master
-  rs      = rebase --skip
   arc     = add-rebase-continue

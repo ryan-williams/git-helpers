@@ -1,0 +1,4 @@
+
+[alias]
+  cf = cat-file
+  cfp = cat-file -p

@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# Wrapper for git --no-pager
-
-git --no-pager "$@"

@@ -2,21 +2,5 @@
 
 # Graph commits up to the nearest common ancestor of the arguments (default HEAD and $DEFAULT_REMOTE/HEAD).
 
-from=
-if [ $# -lt 1 ]; then
-  from="$DEFAULT_REMOTE"/HEAD
-else
-  from="$1"
-  shift
-fi
-
-to=
-if [ $# -lt 1 ]; then
-  to=HEAD
-else
-  to="$1"
-  shift
-fi
-
-gn log --graph --color --oneline --decorate --no-walk "$from" "$to" "$@" $(g mbp "$from" "$to" "$@" | splt ' ' | prepend ^) --
+g log --graph --color --oneline --decorate "$@" HEAD "$DEFAULT_REMOTE"/HEAD
 

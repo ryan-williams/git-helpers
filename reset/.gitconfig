@@ -1,3 +1,6 @@
 
 [alias]
-        rsh     = reset HEAD^
+  rsh = reset HEAD^
+  rs = reset
+  rp = reset -p
+  rh = reset-hard

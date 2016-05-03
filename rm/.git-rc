@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
 alias rmu="git ls-files --other --exclude-standard | xargs rm -f"
+alias grmlso="g rmlso"

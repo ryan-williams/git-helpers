@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+  first="$DEFAULT_REMOTE"/HEAD
+  second=HEAD
+elif [ $# -eq 1 ]; then
+  first="$1"
+  second=HEAD
+elif [ $# -eq 2 ]; then
+  first="$1"
+  second="$2"
+else
+  echo "Usage: $0 [first=HEAD] [second=$DEFAULT_REMOTE/HEAD]" 1>&2
+  exit 1
+fi
+
+diff -u <(git rev-list-first-parents "$first") <(git rev-list-first-parents "$second") | sed -ne 's/^ //p' | head -n 1
