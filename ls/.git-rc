@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
 
 alias gls="g ls"
+
 alias gfn="g fn"
+
+alias gfp="g fp"
+alias gfnp="g fnp"
+
+alias gfs="g fs"
+alias gfns="g fns"
+
+alias glu="g lu"
+alias glsu="g lsu"

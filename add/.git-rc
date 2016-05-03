@@ -1,6 +1,7 @@
 
 alias ga="g a"
 alias ga.="g a ."
+alias gaf="g af"
 alias gap="g ap"
 alias gap.="g ap ."
 alias gdma="g dma"

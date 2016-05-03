@@ -5,4 +5,5 @@ alias gsa="git stash apply"
 alias gsp="git stash pop"
 alias gsl="gn sl"
 alias gss="g ss"
-
+alias gssk="g ssk"
+alias gsk="g sk"

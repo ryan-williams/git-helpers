@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# List git-tracked files that end with a given argument.
+
+find="$1"
+shift
+
+git ls-files "$@" | grep "$find\$"

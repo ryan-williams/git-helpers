@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if ! git is-clean; then
+  git stash save "Resetting --hard: ${@:-$(git sha)}"
+fi
+
+git reset --hard "$@"
+

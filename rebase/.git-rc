@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
-alias grb="git rb"
-alias grba="git rba"
-alias grs="git rs"
-alias garc='git arc'
+alias gpr="g pr"
+
+alias grb="g rb"
+alias grba="g rba"
+alias grbc="g rbc"
+alias grbs="g rbs"
+
+alias grc="g rc"
+alias gri="g ri"
+alias grim="g rim"
+
+alias garc='g arc'

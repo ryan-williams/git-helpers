@@ -23,6 +23,14 @@ echo "remote: git-unpack-and-apply-diffs!"
 
 set -e
 
+mkt() {
+  mktemp 2>/dev/null || mktemp -t 'githelpers.tmp.fXX'
+}
+
+mktd() {
+  mktemp -d 2>/dev/null || mktemp -d -t 'githelpers.tmp.dXX'
+}
+
 tmpdir="$(mktd)"
 excludes_file="$(mkt)"
 finish() {
@@ -36,7 +44,7 @@ trap finish EXIT
 
 mv "$tar" "$tmpdir"
 pushd "$tmpdir"
-tar mxfz "$tar"
+tar mxzf "$tar"
 rm -f "$tar"
 popd
 
@@ -114,6 +122,6 @@ echo ''
 
 echo "Copying untracked files from tmp dir ${tmpdir}..."
 cp "$tmpdir/untracked.tar.gz" ./
-tar mxf untracked.tar.gz
+tar mxzf untracked.tar.gz
 rm -f untracked.tar.gz
 echo ''

@@ -11,13 +11,15 @@
        meta = yellow bold
 
 [alias]
-        cf = config
+        cfg = config
         cg = config
 
 [include]
         path = "../add/.gitconfig"
         path = "../admin/.gitconfig"
+        path = "../blame/.gitconfig"
         path = "../branch/.gitconfig"
+        path = "../cat-file/.gitconfig"
         path = "../check-ignore/.gitconfig"
         path = "../checkout/.gitconfig"
         path = "../cherry-pick/.gitconfig"

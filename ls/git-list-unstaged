@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+git status -s | perl -ne 'print if s/^ M //'

@@ -4,3 +4,4 @@
   gi = !git --no-pager grep -i
   gl = !git --no-pager grep -l
   kl = kill-lines
+  fc = grep '<<<<<<<'

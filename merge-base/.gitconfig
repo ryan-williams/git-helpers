@@ -1,3 +1,4 @@
 [alias]
-	mb = merge-base-plus
-	mbp = merge-base-parents
+  mb = merge-base-plus
+  mbp = merge-base-parents
+  bp = branch-point

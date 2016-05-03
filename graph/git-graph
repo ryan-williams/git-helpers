@@ -2,4 +2,4 @@
 
 # Show a pretty `git log` with a graph.
 
-gn log --graph --decorate --color --oneline --all "$@"
+git log --graph --decorate --color --oneline "$@" HEAD "$DEFAULT_REMOTE"/HEAD

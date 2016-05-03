@@ -1,7 +1,8 @@
 [alias]
   bm = branch -m
   b = branches
-  bmv = branch-move
+  bmv = branch -m
+  bf = branch -f
   br = remote-branches
   bu = branch-upstream
   cb = current-branch
@@ -10,3 +11,6 @@
   lb = local-branches
   nb = new-branch
   ub = update-branch
+  bd = branch -d
+  bdf = branch -D
+  bD = branch -D

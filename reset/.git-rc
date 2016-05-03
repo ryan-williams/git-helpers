@@ -2,3 +2,6 @@
 
 alias grsh="g rsh"
 alias gr.="g reset ."
+alias grp="g rp"
+alias grh="g rh"
+alias grs="g rs"

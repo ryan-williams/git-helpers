@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-alias ggc="git graph-commits"
-alias ggp="git graph-pretty"
-alias ggn="git graph -n"
-#alias gln="gn graph -n"
+alias ggc="g ggc"
+alias ggp="g gp"
+alias ggn="g gn"
+alias ggr="g gr"

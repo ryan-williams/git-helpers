@@ -1,7 +1,9 @@
 [alias]
-        rl      = rev-list
-	ac = all-commits
-	ah = all-hashes
-	cc = count-commits
-	tail = rev-list --max-parents=0 HEAD
-	rp = rev-parse
+  rl = rev-list
+  rla = rev-list --all
+  rlfp = rev-list-first-parents
+  ac = all-commits
+  ah = all-hashes
+  cc = count-commits
+  tail = rev-list --max-parents=0 HEAD
+  rvp = rev-parse

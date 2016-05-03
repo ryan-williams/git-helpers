@@ -3,8 +3,10 @@
 alias gd="git d"
 alias gdc="g dc"
 alias gdh="git diff HEAD"
+alias gdp="g dp"
 alias gds="g ds"
 alias gdt="g dt"
+alias gdu="g du"
 
 alias gnd="gn diff"
 alias gndc="gn diff --cached"

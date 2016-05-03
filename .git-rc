@@ -17,6 +17,14 @@ if [ -n "$BASH_VERSION" ]; then
   [ -s "$dir/.git-completion.bash" ] && source "$dir/.git-completion.bash"
 fi
 
+define-function() {
+  name="$1"
+  shift
+  eval "$name() { $@ \"\$@\"; }"
+  export -f "$name"
+}
+alias defn=define-function
+
 append_to_path() {
   for arg in "$@"; do
     if [ -d "$arg" ]; then
@@ -36,10 +44,12 @@ append_to_path "$dir" "$dir/aliases" "$dir"/github
 
 append_subdir_to_path add
 append_subdir_to_path admin
+append_subdir_to_path aliases
 append_subdir_to_path apply
 append_subdir_to_path bisect
 append_subdir_to_path blame
 append_subdir_to_path branch
+append_subdir_to_path cat-file
 append_subdir_to_path checkout
 append_subdir_to_path check-ignore
 append_subdir_to_path cherry-pick
@@ -83,6 +93,13 @@ export uh="upstream/HEAD"
 export DEFAULT_REMOTE="${DEFAULT_REMOTE:-origin}"
 
 export h="HEAD"
+
+export p="HEAD^"
+export p2="HEAD~2"
+export p3="HEAD~3"
+export p4="HEAD~4"
+export p5="HEAD~5"
+
 export pr="$DEFAULT_REMOTE/pr"
 
 alias snippets='git log --since "8days" --oneline --author $USER'
@@ -97,6 +114,9 @@ alias gsto="gist -p -c -o -d"
 # Same as above, but pulling content from clipboard
 alias gstp="gist -p -c -o -P -d"
 
+alias gop="gist -op"
+alias gopc="gist -opc"
+alias gpc="gist -opc"
 
 # Source this repository's `.gitconfig` file from your global `.gitconfig`.
 config_file="$dir"/config/.gitconfig
@@ -107,3 +127,7 @@ fi
 set-sha() {
   export sha="$(git sha)"
 }
+
+if [ -n "$GLOBAL_GIT_IGNORE_PATH" ]; then
+  git config --global core.excludesfile "$GLOBAL_GIT_IGNORE_PATH"
+fi

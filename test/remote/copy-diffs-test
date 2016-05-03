@@ -38,7 +38,7 @@ check_cmd git for-each-ref
 # Create a local branch `test`, verify that we have two local branches, `master` and `test`, and
 # that tmp2 doesn't have `test` yet.
 git checkout -b test
-[ "$(g current-branch)" == "test" ]
+[ "$(git current-branch)" == "test" ]
 
 cat >expected <<EOF
 master
@@ -58,32 +58,32 @@ check_cmd git local-branches
 check_cmd git for-each-ref
 
 # Switch back to `master` branch, verify that copy-diffs pushs that change to tmp2.
-g co master
-[ "$(g current-branch)" == "master" ]
-[ "$(cd "$tmp2" && g current-branch)" == "test" ]
-g copy-diffs tmp2
+git co master
+[ "$(git current-branch)" == "master" ]
+[ "$(cd "$tmp2" && git current-branch)" == "test" ]
+git copy-diffs tmp2
 check_cmd git current-branch
 
 # Initialize an untracked file `foo`; verify that tmp1 has it and tmp2 doesn't.
 echo a > foo
-[ "$(g lso)" == "foo" ]
-[ "$(cd "$tmp2" && g lso)" == "" ]
+[ "$(git lso)" == "foo" ]
+[ "$(cd "$tmp2" && git lso)" == "" ]
 
-g copy-diffs tmp2
+git copy-diffs tmp2
 check_cmd git status -s
 check_cmd check_hashes
-check_cmd g lso
+check_cmd git lso
 check_cmd git for-each-ref
 
 
 git add foo
-g copy-diffs tmp2
+git copy-diffs tmp2
 check_cmd git status -s
 check_cmd git for-each-ref
 check_cmd check_hashes
 
 echo b >> foo
-g copy-diffs tmp2
+git copy-diffs tmp2
 check_cmd git status -s
 check_cmd check_hashes
 check_cmd git for-each-ref
@@ -91,7 +91,7 @@ check_cmd git diff
 check_cmd git diff --cached
 
 git commit -m "foo"
-g copy-diffs tmp2
+git copy-diffs tmp2
 check_cmd git status -s
 check_cmd check_hashes
 check_cmd git for-each-ref
@@ -100,7 +100,7 @@ check_cmd git diff --cached
 
 # Verify that creating a branch triggers a copy of it
 git reset --hard HEAD
-g co master
+git co master
 git branch -D test
-g copy-diffs tmp2
+git copy-diffs tmp2
 check_cmd git local-branches

@@ -1,4 +1,6 @@
 [alias]
-        m       = merge
-        ma      = merge --abort
-        mt      = mergetool -t meld -y
+  m  = merge
+  ma = merge --abort
+  mne = merge --no-edit
+  mn = merge --no-edit
+  mt = mergetool -t meld -y

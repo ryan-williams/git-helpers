@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 alias guu='git conflicting'
-
+alias gcl="g cl"
