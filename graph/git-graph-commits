@@ -2,5 +2,5 @@
 
 # Graph commits up to the nearest common ancestor of the arguments (default HEAD and $DEFAULT_REMOTE/HEAD).
 
-g log --graph --color --oneline --decorate "$@" HEAD "$DEFAULT_REMOTE"/HEAD
+git log --graph --color --oneline --decorate "$@" HEAD "$DEFAULT_REMOTE"/HEAD
 

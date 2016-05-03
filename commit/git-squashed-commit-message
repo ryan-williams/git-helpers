@@ -22,7 +22,7 @@ else
   args="$@"
 fi
 
-for sha in $(g rev-list --reverse $args); do
+for sha in $(git rev-list --reverse $args); do
   echo -n '- '
   gn log --format="%s" -n 1 $sha
   body="$(gn log --format=%b -n 1 $sha | indent | trim)"

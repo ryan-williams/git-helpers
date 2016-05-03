@@ -7,7 +7,7 @@
 
 for arg in "$@"; do
   name="$(basename "$arg")"
-  for f in $(g ls); do
+  for f in $(git ls); do
     if readlink "$f" | grep -q "$name"; then
       echo $f
     fi

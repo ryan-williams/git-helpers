@@ -48,7 +48,7 @@ git command-exists bar2
 #   - doesn't overwrite on 'n', and
 #   - does overwrite on 'y'
 
-g rm -rf tmp2 && rm -rf tmp2
+git rm -rf tmp2 && rm -rf tmp2
 
 ln -sf ../asdf tmp1/aliases/git-bar
 
@@ -59,4 +59,5 @@ check_link tmp1/aliases/git-bar ../asdf
 check_link tmp1/aliases/git-bar ../asdf
 
 echo y | mk-git foo bar
+
 check_link tmp1/aliases/git-bar ../git-foo
