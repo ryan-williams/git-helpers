@@ -2,3 +2,4 @@
   rmd = rm-deleted
   rmlso = rm-untracked
   rmut = rm-untracked
+  ud = undelete

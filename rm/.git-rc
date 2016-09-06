@@ -2,3 +2,5 @@
 
 alias rmu="git ls-files --other --exclude-standard | xargs rm -f"
 alias grmlso="g rmlso"
+
+alias gud="g ud"
