@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Print the SHA of the commit that is currently being applied, during a rebase.
+cat .git/rebase-apply/original-commit
