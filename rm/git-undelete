@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+for arg in "$@"; do
+  git reset -- "$arg"
+  git checkout "$arg"
+done
