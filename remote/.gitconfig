@@ -12,3 +12,5 @@
   rr      = remote rename
   rmv     = remote rename
   rrm     = remote remove
+  rsh     = remote set-head
+  rsu     = remote set-url
