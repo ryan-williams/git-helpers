@@ -2,3 +2,6 @@
 
 alias guu='git conflicting'
 alias gcl="g cl"
+
+alias gcot="g cot"
+alias gcoo="g coo"

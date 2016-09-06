@@ -4,7 +4,7 @@
 	cm	= commit -m
 	cam	= commit -a -m
 	cane	= commit --amend --no-edit
-	caane	= commit -a --amend --no-edit
+	caane	= commit -a -u --amend --no-edit
 	scm	= squashed-commit-message
 	cn = commit --amend
 

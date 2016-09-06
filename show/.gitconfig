@@ -1,3 +1,4 @@
 [alias]
-	shs = show-short
 	sh = show
+	shs = show --stat
+	sn = show --name-only

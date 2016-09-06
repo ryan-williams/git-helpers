@@ -16,3 +16,6 @@ alias glpr="g lpr"
 alias grr="g rr"
 alias grmv="g rmv"
 alias grrm="g rrm"
+
+alias grsh="g rsh"
+alias grsu="g rsu"
