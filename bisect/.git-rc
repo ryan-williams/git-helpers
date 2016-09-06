@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 alias gbs="g bs"
+alias gbsb="g bsb"
+alias gbsg="g bsg"
+alias gbsr="g bsr"
+alias gbss="g bss"
 alias gbcag="git bcag"
 alias gbcbb="git bcbb"
 alias gbeb="git beb"
