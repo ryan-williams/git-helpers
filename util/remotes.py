@@ -31,9 +31,11 @@ class Remote(object):
 
     @classmethod
     def parse(cls, input):
-        return {remote.name: remote
-                for remote in map(cls.parse_line, input)
-                if remote}
+        return {
+            remote.name: remote
+            for remote in map(cls.parse_line, input)
+            if remote
+            }
 
     @classmethod
     def parse_line(cls, line):
@@ -70,7 +72,6 @@ class Remote(object):
 
     def append_path(self, path):
         return Remote(self.name, self.host, os.path.join(self.path, path), self.user)
-
 
 
 def get_remotes():
@@ -110,7 +111,6 @@ def maybe_remove_remote_if_exists(remote_name):
 
 def get_mirror_remote():
 
-    remote_names = []
     if len(sys.argv) > 1:
         remote_names = [sys.argv[1]]
     elif os.environ.get('MIRROR_REMOTES'):
@@ -128,7 +128,6 @@ def get_mirror_remote():
         raise Exception('Found no eligible remotes: %s' % ','.join(remote_names))
 
     return found_remotes[0]
-
 
 
 if __name__ == '__main__':

@@ -94,13 +94,20 @@ if [ -s "$staged" ]; then
   git add .
 
   if [ -s "$added_files" ]; then
-    echo "Force adding files: $(cat "$added_files")"
+    echo "Force adding files:"
+    cat "$added_files"
     git add -f -- $(cat "$added_files")
   fi
 
   if [ -s "$deleted_files" ]; then
-    echo "Force removing files: $(cat "$deleted_files")"
-    git rm -f -- $(cat "$deleted_files")
+    echo "Force removing files:"
+    cat "$deleted_files"
+    for f in "$(cat "$deleted_files")"; do
+      if [ -e "$f" ]; then
+        git rm -f -- "$f"
+      fi
+    done
+    #git rm -f -- $(cat "$deleted_files")
   fi
 
 fi

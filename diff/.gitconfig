@@ -8,3 +8,4 @@
   dt = diff-tree
   du = diff -u
   d1 = diff-no-context
+  dn = diff --name-only
