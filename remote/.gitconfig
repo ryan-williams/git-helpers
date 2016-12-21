@@ -1,6 +1,8 @@
 [alias]
   r       = remote
   ra      = remote add
+  rao     = remote add origin
+  rau     = remote add upstream
   rv      = remote -v
   re      = remote-exists
   cd      = copy-diffs

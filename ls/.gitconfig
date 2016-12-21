@@ -10,3 +10,13 @@
   fp = find-prefix
   lsu = list-unstaged
   lu = list-unstaged
+  deleted-by-them = list-status UD
+  dbt = list-status UD
+  deleted-by-us = list-status DU
+  dbu = list-status DU
+  added-by-them = list-status UA
+  abt = list-status UA
+  added-by-us = list-status AU
+  abu = list-status AU
+  both-deleted = list-status DD
+  brm = list-status DD

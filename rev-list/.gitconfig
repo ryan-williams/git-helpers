@@ -1,5 +1,5 @@
 [alias]
-  rl = rev-list
+  rvl = rev-list
   rla = rev-list --all
   rlfp = rev-list-first-parents
   ac = all-commits

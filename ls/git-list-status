@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+arg="$1"
+shift
+
+git status -s "$@" | perl -ne "print if s/^$arg //"

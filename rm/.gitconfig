@@ -1,5 +1,6 @@
 [alias]
   rmd = rm-deleted
+  rmr = rm -r
   rmlso = rm-untracked
   rmut = rm-untracked
   ud = undelete

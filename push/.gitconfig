@@ -1,10 +1,16 @@
 [alias]
-  p = push
   mp = me-push
   mpf = me-push-force
   pm = push-to-master
   po = push-to-remote-branch origin
+  p = push
+  pn = push -n
+  pnt = push -n --tags
   pt = push --tags
+  put = push --tags upstream
+  ptu = push --tags upstream
+  pot = push --tags origin
+  pto = push --tags origin
   pu = push-to-remote-branch upstream
   spf = safe-push-force
   spfo = safe-push-force origin

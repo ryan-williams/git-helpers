@@ -13,6 +13,12 @@
 [alias]
         cfg = config
         cg = config
+        cgg = config --global
+        cga = config --add
+        cgga = config --global --add
+        cgl = config --get-all
+        cgd = config --unset
+        cgda = config --unset-all
 
 [include]
         path = "../add/.gitconfig"
@@ -35,6 +41,7 @@
         path = "../ls/.gitconfig"
         path = "../merge/.gitconfig"
         path = "../rebase/.gitconfig"
+        path = "../reflog/.gitconfig"
         path = "../reset/.gitconfig"
         path = "../rev-list/.gitconfig"
         path = "../stash/.gitconfig"

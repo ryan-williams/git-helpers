@@ -3,5 +3,6 @@
   g = !git --no-pager grep
   gi = !git --no-pager grep -i
   gl = !git --no-pager grep -l
+  gn = grep -n
   kl = kill-lines
   fc = grep '<<<<<<<'

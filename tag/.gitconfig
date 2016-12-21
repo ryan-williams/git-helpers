@@ -1,4 +1,7 @@
 [alias]
-  t = tags
+  t = tag
+  ts = tags
   gt = get-tag
   it = is-tag
+  tl = tag -l
+  td = tag -d

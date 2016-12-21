@@ -1,5 +1,4 @@
 
-defn lf git lfs
 defn lff lf fetch
 defn lfl lf ls-files
 defn lfs lf status

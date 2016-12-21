@@ -9,3 +9,5 @@ alias glc="g lc"
 alias glc1="g lc | head -n 1"
 alias glcc="g lcc"
 alias gld="g ld"
+
+alias gsts="g sts"

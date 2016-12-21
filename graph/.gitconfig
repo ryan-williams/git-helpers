@@ -1,5 +1,4 @@
 [alias]
   gp = graph-pretty
   gr = graph
-  gn = graph -n
   ggc = graph-commits

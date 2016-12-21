@@ -2,6 +2,7 @@
 	c	= commit
 	ca	= commit -a
 	cm	= commit -m
+	cmp = commit-multiple-parents
 	cam	= commit -a -m
 	cane	= commit --amend --no-edit
 	caane	= commit -a -u --amend --no-edit

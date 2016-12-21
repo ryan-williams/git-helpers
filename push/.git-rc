@@ -1,9 +1,16 @@
 
 alias gp="g p"
 alias gpm="g pm"
+alias gpn="g pn"
+alias gpnt="g pnt"
 alias gpo="g po"
 alias gpt="g pt"
 alias gpu="g pu"
+
+alias gput="g put"
+alias gptu="g ptu"
+alias gpot="g pot"
+alias gpto="g pto"
 
 alias gspf="g spf"
 alias gspfo="g spfo"

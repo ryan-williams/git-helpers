@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -ex
+
+head_tree="$(git log --no-walk --format='%T' HEAD)"
+
+parents_str=
+parent_args=()
+for arg in "$@"; do
+  parent_args+=("-p")
+  parent_args+=("$arg")
+  parents_str="${arg}${parents_str:+,}${parents_str}"
+done
+
+new_tree="$(git commit-tree "$head_tree" "${parent_args[@]}" -m "Merge in $parents_str")"
+
+git reset --hard "$new_tree"

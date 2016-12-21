@@ -6,6 +6,7 @@
   dp = diff -p
   ds = diff-stat
   dt = diff-tree
+  dtp = diff-tree -p
   du = diff -u
   d1 = diff-no-context
   dn = diff --name-only

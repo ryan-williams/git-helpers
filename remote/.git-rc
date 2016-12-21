@@ -3,9 +3,13 @@
 alias gcd="g cd"
 
 alias gr="git remote -vv"
-alias gra="git remote add"
+alias gra="g ra"
+alias grao="g rao"
+alias grau="g rau"
 
 alias gre="g re"
+
+alias grv="g rv"
 
 alias gamr="g amr"
 alias gmr="g mr"
