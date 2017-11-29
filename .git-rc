@@ -21,7 +21,7 @@ define-function() {
   name="$1"
   shift
   eval "$name() { $@ \"\$@\"; }"
-  export -f "$name"
+  export -f "$name" > /dev/null
 }
 alias defn=define-function
 
