@@ -1,9 +1,10 @@
 [alias]
-  sm   = submodule
-  sma  = submodule add
-  sms  = submodule status
-  smfe = submodule foreach
-  sf   = submodule foreach
-  smu  = submodule update
-  su   = submodule update
-
+  sm   = submodule --quiet
+  sma  = submodule add --quiet
+  sms  = submodule status --quiet
+  smfe = submodule foreach --quiet
+  sf   = submodule foreach --quiet
+  smu  = submodule update --quiet
+  su   = submodule update --quiet
+  sml  = submodule foreach --quiet 'echo $name'
+  smp  = submodule foreach --quiet 'echo $path'

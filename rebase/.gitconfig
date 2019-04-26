@@ -11,6 +11,6 @@
   rim     = rebase -i master
   arc     = add-rebase-continue
   oc      = original-commit
-  oh      = orig-head
-  shoc    = !git show `git original-commit`
-  shoh    = !git show `git orig-head`
+  oh      = original-head
+  shoc    = show-original-commit
+  shoh    = show-original-head

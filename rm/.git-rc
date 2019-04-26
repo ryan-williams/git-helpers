@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 alias grmr="g rmr"
-alias rmu="git ls-files --other --exclude-standard | xargs rm -f"
+alias grmu="g rmu"
+alias grmut="g rmut"
+alias grmlo="g rmlo"
 alias grmlso="g rmlso"
 
 alias gud="g ud"

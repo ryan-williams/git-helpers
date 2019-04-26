@@ -6,6 +6,7 @@
   history = log --full-diff -p
   L       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset%n%n%B' --date=relative
   hashes = hash
+  hsh = full-hash
   l1 = log-oneline
   lp = log -p
   lg1 = log-oneline

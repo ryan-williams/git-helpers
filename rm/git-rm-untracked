@@ -2,4 +2,4 @@
 
 # remove untracked files.
 
-git ls-files -z --other --exclude-standard --directory "$@" | xargs -0 rm -rf
+git ls-files -z --other --exclude-standard --directory --no-empty-directory "$@" | xargs -0 rm -rf

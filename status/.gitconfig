@@ -1,11 +1,7 @@
 [alias]
-  list-added = list-added-files
-  la = list-added-files
-  laf = list-added-files
-  lc = list-changed
-  lcc = list-changed-cached
-  ld = list-deleted
-  hc = has-changes
-  hnc = has-no-changes
-  ic = is-clean
-  sts = status -s
+	hc = has-changes
+	hnc = has-no-changes
+	ic = is-clean
+	s = status
+	sts = status -s
+	stp = status --porcelain

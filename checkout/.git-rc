@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
 alias gco="g co"
+alias gcob="g cob"
 alias gcom="gco master"

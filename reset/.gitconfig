@@ -4,3 +4,4 @@
   rs = reset
   rp = reset -p
   rh = reset-hard
+	rrs = reverse-reset

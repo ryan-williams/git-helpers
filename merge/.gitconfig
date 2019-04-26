@@ -1,6 +1,11 @@
 [alias]
-  m  = merge
-  ma = merge --abort
-  mne = merge --no-edit
-  mn = merge --no-edit
-  mt = mergetool -t meld -y
+	m  = merge
+	ma = merge --abort
+	mm = merge master
+	mmne = merge master --no-edit
+	mn = merge --no-edit
+	mne = merge --no-edit
+	mt = mergetool -t meld -y
+	mu = merge upstream/HEAD
+	mun = merge upstream/HEAD --no-edit
+	mune = merge upstream/HEAD --no-edit

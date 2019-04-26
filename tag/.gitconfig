@@ -3,5 +3,6 @@
   ts = tags
   gt = get-tag
   it = is-tag
-  tl = tag -l
   td = tag -d
+  tf = tag -f
+  tl = tag -l

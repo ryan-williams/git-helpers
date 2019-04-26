@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-# Print the SHA that is being rebased.
-cat .git/rebase-apply/orig-head
