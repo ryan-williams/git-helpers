@@ -137,8 +137,6 @@ export s10="stash@{10}"
 
 export pr="$DEFAULT_REMOTE/pr"
 
-alias snippets='git log --since "8days" --oneline --author $USER'
-
 export PYTHONPATH="$PYTHONPATH:$dir/util"
 
 ### Aliases for `gist` utility: https://github.com/defunkt/gist ###
@@ -154,15 +152,13 @@ alias gopc="gist -opc"
 alias gpc="gist -opc"
 
 # Source this repository's `.gitconfig` file from your global `.gitconfig`.
-config_file="$dir"/config/.gitconfig
-if ! git config --global --get-all include.path | grep "$config_file" >/dev/null; then
-  git config --global --add include.path "$config_file"
-fi
+git-add-global-config-file "$dir"/config/.gitconfig
 
 set-sha() {
   export sha="$(git sha)"
 }
+export -f set-sha
 
 if [ -n "$GLOBAL_GIT_IGNORE_PATH" ]; then
-  git config --global core.excludesfile "$GLOBAL_GIT_IGNORE_PATH"
+  git-add-global-ignore-file "$GLOBAL_GIT_IGNORE_PATH"
 fi
