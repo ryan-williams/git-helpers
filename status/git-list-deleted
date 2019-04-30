@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# List deleted files.
-
-git status -s | pne 's/^[^\s]?D[^\s]?[\s]*//'

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 alias gls="g ls"
+alias glt="g lt"
 
 alias gfn="g fn"
 
@@ -10,5 +11,29 @@ alias gfnp="g fnp"
 alias gfs="g fs"
 alias gfns="g fns"
 
+alias glo="g lo"
+alias glso="g lso"
+
+alias gla="g la"
+
+alias glc="g lc"
+alias glcu="g lcu"
+alias glcs="g lcs"
+alias glcc="g lcc"
+alias glc1="g lc | head -n 1"
+
+alias gld="g ld"
+alias gldu="g ldu"
+alias glds="g lds"
+alias gldc="g ldc"
+
 alias glu="g lu"
 alias glsu="g lsu"
+
+alias gdbt="g dbt"
+alias gdbu="g dbu"
+
+alias gabt="g abt"
+alias gabu="g abu"
+
+alias gbrm="g brm"

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+git list-deleted-unstaged "$@"
+git list-deleted-staged "$@"

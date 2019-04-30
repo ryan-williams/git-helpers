@@ -3,9 +3,11 @@
 alias gd="git d"
 alias gdc="g dc"
 alias gdh="git diff HEAD"
+alias gdn="g dn"
 alias gdp="g dp"
 alias gds="g ds"
 alias gdt="g dt"
+alias gdtp="g dtp"
 alias gdu="g du"
 
 alias gnd="gn diff"

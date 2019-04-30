@@ -6,10 +6,23 @@
   history = log --full-diff -p
   L       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset%n%n%B' --date=relative
   hashes = hash
+  hsh = full-hash
   l1 = log-oneline
   lp = log -p
   lg1 = log-oneline
   lh = log-hash
+  ln = list-n
+  ln1 = list-n 1
+  ln2 = list-n 2
+  ln3 = list-n 3
+  ln4 = list-n 4
+  ln5 = list-n 5
+  ln6 = list-n 6
+  ln7 = list-n 7
+  ln8 = list-n 8
+  ln9 = list-n 9
+  ln20 = list-n 20
   sha = hash
   shas = hash
   fh = full-hash
+  fm = format

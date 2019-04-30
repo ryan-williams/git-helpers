@@ -2,9 +2,12 @@
 
 alias gc="g c"
 alias gca="g ca"
+alias gcam="g cam"
+alias gcaam="g caam"
 alias gcm="g cm"
+alias gcmp="g cmp"
 alias gcn="g cn"
+alias gcne="g cne"
 alias gcam="g cam"
 alias gcane="g cane"
 alias gcaane="g caane"
-

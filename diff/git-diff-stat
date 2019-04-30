@@ -2,4 +2,8 @@
 
 # git diff-stat, one SHA
 
-git diff --stat $1^..$1
+if [[ "$1" =~ ^[a-f0-9]*$ ]]; then
+  git diff --stat $1^..$1
+else
+  git diff --stat "$1"
+fi

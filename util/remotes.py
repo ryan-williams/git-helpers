@@ -9,20 +9,34 @@ import sys
 # pylint: disable=undefined-variable
 if sys.version[0] == '2': input=raw_input
 
+
+def group(regex, name=None, trailing=''):
+    if name is None:
+        return '(?:%s)%s' % (regex, trailing)
+    return '(?P<%s>%s)%s' % (name, regex, trailing)
+
+
+def opt(regex, name=None, trailing=''):
+    return '(?:%s)?' % group(regex, name, trailing)
+
+
 name_regex = '(?P<name>[^\s]+)'
 opt_user_regex = '((?P<user>[^@]+)@)?'
-opt_host_regex = '(?:(?P<host>[^:]+):)?'
-domain_regex = '(?P<host>[^/]+)'
-path_regex = '(?P<path>[^\s]+)'
+opt_scheme_regex = opt('https?|git', 'scheme', '://')
+opt_host_regex = opt(opt_scheme_regex + opt('[^:]+', 'host', ':'))
+domain_regex = group('[^/]+', 'host', '/')
+path_regex = group('[^\s]+', 'path')
 push_label_regex = '\(push\)'
 
+push_regex = r'%s\s+%s%s%s?\s%s' % (name_regex, opt_user_regex, opt_host_regex, path_regex, push_label_regex)
+
 # e.g. 'origin	git@github.com:danvk/expandable-image-grid.git (push)'
-ssh_push_re = re.compile(
-    r'%s\s+%s%s%s?\s%s' % (name_regex, opt_user_regex, opt_host_regex, path_regex, push_label_regex))
+ssh_push_re = re.compile(push_regex)
 
 # e.g. 'origin	https://github.com/danvk/git-helpers.git (push)'
 https_push_re = re.compile(
-    r'%s\s+https?://%s/%s\s%s' % (name_regex, domain_regex, path_regex, push_label_regex))
+    r'%s\s+%s%s%s\s%s' % (name_regex, group('https?', 'scheme', '://'), domain_regex, path_regex, push_label_regex)
+)
 
 local_remote_re = re.compile(r'%s\s+%s\s%s' % (name_regex, path_regex, push_label_regex))
 
@@ -31,9 +45,11 @@ class Remote(object):
 
     @classmethod
     def parse(cls, input):
-        return {remote.name: remote
-                for remote in map(cls.parse_line, input)
-                if remote}
+        return {
+            remote.name: remote
+            for remote in map(cls.parse_line, input)
+            if remote
+            }
 
     @classmethod
     def parse_line(cls, line):
@@ -48,10 +64,11 @@ class Remote(object):
             match.group('name'),
             match.group('host'),
             match.group('path') or '~',
-            match.group('user') if 'user' in match.groupdict() else None
+            match.group('user') if 'user' in match.groupdict() else None,
+            match.group('scheme') if 'scheme' in match.groupdict() else 'git'
         )
 
-    def __init__(self, name, host, path, user):
+    def __init__(self, name, host, path, user, scheme='git'):
         self.name = name
         self.host = host
         self.opt_host_str = '%s:' % self.host if self.host else ''
@@ -65,12 +82,13 @@ class Remote(object):
 
         self.user_host_path_str = '%s%s' % (self.opt_user_str, self.host_path_str)
 
+        self.scheme = scheme
+
         self.is_local = not self.host
         self.is_remote = not self.is_local
 
     def append_path(self, path):
         return Remote(self.name, self.host, os.path.join(self.path, path), self.user)
-
 
 
 def get_remotes():
@@ -110,7 +128,6 @@ def maybe_remove_remote_if_exists(remote_name):
 
 def get_mirror_remote():
 
-    remote_names = []
     if len(sys.argv) > 1:
         remote_names = [sys.argv[1]]
     elif os.environ.get('MIRROR_REMOTES'):
@@ -128,7 +145,6 @@ def get_mirror_remote():
         raise Exception('Found no eligible remotes: %s' % ','.join(remote_names))
 
     return found_remotes[0]
-
 
 
 if __name__ == '__main__':

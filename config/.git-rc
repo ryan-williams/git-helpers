@@ -1,3 +1,30 @@
 
 alias gcfg="g cfg"
 alias gcg="g cg"
+
+alias gcgg="g cgg"
+alias gcga="g cga"
+alias gcgga="g cgga"
+alias gcgl="g cgl"
+alias gcgd="g cgd"
+alias gcgda="g cgda"
+
+git-add-global-file() {
+    config="$1"
+    shift
+    for file in "$@"; do
+	if [ -s "$file" ] && ! git config --global --get-all "$config" | grep "$file" >/dev/null; then
+	    git config --global --add "$config" "$file"
+	fi
+    done
+}
+
+git-add-global-config-file() {
+    git-add-global-file "include.path" "$@"
+}
+export -f git-add-global-config-file
+
+git-add-global-ignore-file() {
+    git-add-global-file "core.excludesfile" "$@"
+}
+export -f git-add-global-ignore-file

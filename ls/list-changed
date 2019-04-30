@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+git list-changed-unstaged "$@"
+git list-changed-staged "$@"

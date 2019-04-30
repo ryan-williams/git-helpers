@@ -2,5 +2,6 @@
 
 # Interactive rebase over the last <arg> commits.
 
-echo $1
-git rebase -i HEAD~$1
+num="$1"
+shift
+git rebase -i HEAD~"$num" "$@"

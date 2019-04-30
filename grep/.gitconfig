@@ -1,7 +1,7 @@
 [alias]
-  ng = !git --no-pager grep
-  g = !git --no-pager grep
-  gi = !git --no-pager grep -i
-  gl = !git --no-pager grep -l
+  g = grep --recurse-submodules
+  gi = grep --recurse-submodules -i
+  gl = grep --recurse-submodules -l
+  gn = grep --recurse-submodules -n
   kl = kill-lines
-  fc = grep '<<<<<<<'
+  fc = grep --recurse-submodules '<<<<<<<'

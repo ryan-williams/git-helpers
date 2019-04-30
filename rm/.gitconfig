@@ -1,4 +1,8 @@
 [alias]
   rmd = rm-deleted
+  rmr = rm -r
+  rmlo = rm-untracked
   rmlso = rm-untracked
+  rmu = rm-untracked
   rmut = rm-untracked
+  ud = undelete

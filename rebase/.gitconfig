@@ -3,9 +3,14 @@
   rb      = rebase
   rba     = rebase --abort
   rbc     = rebase --continue
+  rbo     = rebase --onto
   rbm     = rebase master
   rbs     = rebase --skip
   rc      = rebase --continue
   ri      = rebase -i
   rim     = rebase -i master
   arc     = add-rebase-continue
+  oc      = original-commit
+  oh      = original-head
+  shoc    = show-original-commit
+  shoh    = show-original-head

@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
-alias gs="git status"
+alias gs="g s"
+alias gsts="g sts"
+alias gstp="g stp"
+
 alias ghc="g hc"
 alias ghnc="g hnc"
 alias gic="g ic"
-alias gla="g la"
-alias glc="g lc"
-alias glc1="g lc | head -n 1"
-alias glcc="g lcc"
-alias gld="g ld"
+

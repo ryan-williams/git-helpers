@@ -1,10 +1,25 @@
 #!/usr/bin/env bash
 
 alias gl="g l"
+
 alias gln="g ln"
+alias gln1="g ln1"
+alias gln2="g ln2"
+alias gln3="g ln3"
+alias gln4="g ln4"
+alias gln5="g ln5"
+alias gln6="g ln6"
+alias gln7="g ln7"
+alias gln8="g ln8"
+alias gln9="g ln9"
+alias gln20="g ln20"
+
 alias glp="g lp"
 alias gfh="g fh"
+alias gfm="g fm"
+alias gnfm="gn fm"
 alias gsha="g sha"
+alias ghsh="g hsh"
 
 alias glf="g lf"
 alias glsc="g lsc"

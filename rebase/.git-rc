@@ -5,6 +5,8 @@ alias gpr="g pr"
 alias grb="g rb"
 alias grba="g rba"
 alias grbc="g rbc"
+alias grbo="g rbo"
+alias rbo="g rbo"
 alias grbs="g rbs"
 
 alias grc="g rc"
@@ -12,3 +14,8 @@ alias gri="g ri"
 alias grim="g rim"
 
 alias garc='g arc'
+
+alias goc="g oc"
+alias goh="g oh"
+alias gshoc="g shoc"
+alias gshoh="g shoh"

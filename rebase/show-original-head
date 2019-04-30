@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+original_head="$(git original-head)"
+if [ -z "$original_head" ]; then
+	exit 1
+fi
+
+git show "$original_head"

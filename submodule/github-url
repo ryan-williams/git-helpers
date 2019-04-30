@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+for arg in "$@"; do
+	git config --file .gitmodules "submodule.$arg.url" | perl -pe 's/^(git@)?github.com:/https:\/\/github.com\//' | perl -pe 's/\.git$//'
+done

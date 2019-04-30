@@ -9,4 +9,3 @@ else
 fi
 shift
 git show -s --format="$format" "$@"
-

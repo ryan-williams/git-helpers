@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-alias grsh="g rsh"
+alias grsp="g rsp"
 alias gr.="g reset ."
+alias grs.="g reset ."
 alias grp="g rp"
 alias grh="g rh"
 alias grs="g rs"
+alias grrs="g rrs"

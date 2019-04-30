@@ -1,0 +1,4 @@
+[alias]
+  rl = reflog
+  rlh = !git reflog | head
+  rlt = !git reflog | head -n 20

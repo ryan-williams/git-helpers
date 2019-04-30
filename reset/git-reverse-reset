@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Set the working tree state to a given commit, but restore the HEAD pointer to its current commit.
+
+set -e
+
+if [ $# -ne 1 ]; then
+	echo "Usage: $0 <commit>" >&2
+	exit 1
+fi
+
+git reset --hard "$1"
+git reset HEAD@{1}

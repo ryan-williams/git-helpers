@@ -1,6 +1,8 @@
 [alias]
   r       = remote
   ra      = remote add
+  rao     = remote add origin
+  rau     = remote add upstream
   rv      = remote -v
   re      = remote-exists
   cd      = copy-diffs
@@ -12,3 +14,5 @@
   rr      = remote rename
   rmv     = remote rename
   rrm     = remote remove
+  rsh     = remote set-head
+  rsu     = remote set-url

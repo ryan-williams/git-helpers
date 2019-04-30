@@ -1,4 +1,8 @@
 [alias]
-  t = tags
+  t = tag
+  ts = tags
   gt = get-tag
   it = is-tag
+  td = tag -d
+  tf = tag -f
+  tl = tag -l

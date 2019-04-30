@@ -64,6 +64,7 @@ append_subdir_to_path github
 append_subdir_to_path graph
 append_subdir_to_path grep
 append_subdir_to_path help
+append_subdir_to_path lfs
 append_subdir_to_path log
 append_subdir_to_path ls
 append_subdir_to_path merge
@@ -72,6 +73,7 @@ append_subdir_to_path mv
 append_subdir_to_path nav
 append_subdir_to_path push
 append_subdir_to_path rebase
+append_subdir_to_path reflog
 append_subdir_to_path remote
 append_subdir_to_path reset
 append_subdir_to_path rev-list
@@ -100,9 +102,40 @@ export p3="HEAD~3"
 export p4="HEAD~4"
 export p5="HEAD~5"
 
-export pr="$DEFAULT_REMOTE/pr"
+export h1="HEAD@{1}"
+export h2="HEAD@{2}"
+export h3="HEAD@{3}"
+export h4="HEAD@{4}"
+export h5="HEAD@{5}"
+export h6="HEAD@{6}"
+export h7="HEAD@{7}"
+export h8="HEAD@{8}"
+export h9="HEAD@{9}"
+export h10="HEAD@{10}"
+export h11="HEAD@{11}"
+export h12="HEAD@{12}"
+export h13="HEAD@{13}"
+export h14="HEAD@{14}"
+export h15="HEAD@{15}"
+export h16="HEAD@{16}"
+export h17="HEAD@{17}"
+export h18="HEAD@{18}"
+export h19="HEAD@{19}"
+export h20="HEAD@{20}"
 
-alias snippets='git log --since "8days" --oneline --author $USER'
+export s0="stash@{0}"
+export s1="stash@{1}"
+export s2="stash@{2}"
+export s3="stash@{3}"
+export s4="stash@{4}"
+export s5="stash@{5}"
+export s6="stash@{6}"
+export s7="stash@{7}"
+export s8="stash@{8}"
+export s9="stash@{9}"
+export s10="stash@{10}"
+
+export pr="$DEFAULT_REMOTE/pr"
 
 export PYTHONPATH="$PYTHONPATH:$dir/util"
 
@@ -119,15 +152,13 @@ alias gopc="gist -opc"
 alias gpc="gist -opc"
 
 # Source this repository's `.gitconfig` file from your global `.gitconfig`.
-config_file="$dir"/config/.gitconfig
-if ! git config --global --get-all include.path | grep "$config_file" >/dev/null; then
-  git config --global --add include.path "$config_file"
-fi
+git-add-global-config-file "$dir"/config/.gitconfig
 
 set-sha() {
   export sha="$(git sha)"
 }
+export -f set-sha
 
 if [ -n "$GLOBAL_GIT_IGNORE_PATH" ]; then
-  git config --global core.excludesfile "$GLOBAL_GIT_IGNORE_PATH"
+  git-add-global-ignore-file "$GLOBAL_GIT_IGNORE_PATH"
 fi

@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-# List `git-add`ed files.
-
-git diff --name-only --diff-filter=M "$@"
-
