@@ -26,7 +26,6 @@ else
   exit 1
 fi
 
-echo -"$(git rev-list --count "$@" "$to".."$from")"
-echo +"$(git rev-list --count "$@" "$from".."$to")"
+echo -"$(git rev-list --count "$@" "$to".."$from")" +"$(git rev-list --count "$@" "$from".."$to")"
 
 

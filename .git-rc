@@ -152,13 +152,14 @@ alias gopc="gist -opc"
 alias gpc="gist -opc"
 
 # Source this repository's `.gitconfig` file from your global `.gitconfig`.
-git-add-global-config-file "$dir"/config/.gitconfig
+git_add_global_config_file "$dir"/config/.gitconfig
 
-set-sha() {
+git_set_sha() {
   export sha="$(git sha)"
 }
-export -f set-sha
+export -f git_set_sha
+alias git-set-sha=git_set_sha
 
 if [ -n "$GLOBAL_GIT_IGNORE_PATH" ]; then
-  git-add-global-ignore-file "$GLOBAL_GIT_IGNORE_PATH"
+  git_add_global_ignore_file "$GLOBAL_GIT_IGNORE_PATH"
 fi

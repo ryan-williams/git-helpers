@@ -19,12 +19,12 @@ git-add-global-file() {
     done
 }
 
-git-add-global-config-file() {
+git_add_global_config_file() {
     git-add-global-file "include.path" "$@"
 }
-export -f git-add-global-config-file
+export -f git_add_global_config_file
 
-git-add-global-ignore-file() {
+git_add_global_ignore_file() {
     git-add-global-file "core.excludesfile" "$@"
 }
-export -f git-add-global-ignore-file
+export -f git_add_global_ignore_file
