@@ -1,4 +1,5 @@
 [alias]
-	sh = show
-	shs = show --stat
-	sn = show --name-only
+  sh = show
+  shs = show --stat
+  sn = show --name-only
+  eq = equal

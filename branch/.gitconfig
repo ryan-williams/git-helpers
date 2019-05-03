@@ -14,6 +14,7 @@
 
   current-branch = symbolic-ref -q --short HEAD
   cb = current-branch
+  ib = is-branch
 
   dmb = delete-merged-branches
   dmbr = delete-merged-branches --remote

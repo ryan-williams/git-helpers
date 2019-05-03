@@ -7,7 +7,6 @@ to=
 if [ $# -eq 2 ]; then
   from="$1"
   to="$2"
-  #refspec="$1..$2"
   shift
   shift
 elif [ $# -eq 1 ]; then
@@ -15,7 +14,7 @@ elif [ $# -eq 1 ]; then
     from="${1%%..*}"
     to="${1##*..}"
   else
-    from="HEAD"
+    from=HEAD
     to="$1"
   fi
   shift
@@ -26,6 +25,9 @@ else
   exit 1
 fi
 
-echo -"$(git rev-list --count "$@" "$to".."$from")" +"$(git rev-list --count "$@" "$from".."$to")"
+subtract="$(git commits-behind "$to..$from")"
+add="$(git commits-behind "$from..$to")"
+
+echo -"$subtract" +"$add"
 
 

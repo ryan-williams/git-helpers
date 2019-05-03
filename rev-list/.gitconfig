@@ -7,3 +7,5 @@
   cc = count-commits
   tail = rev-list --max-parents=0 HEAD
   rvp = rev-parse
+  commits-behind = rev-list --count
+  cbh = commits-behind
