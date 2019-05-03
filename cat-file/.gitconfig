@@ -1,4 +1,4 @@
 
 [alias]
-  cf = cat-file
-  cfp = cat-file -p
+  ct = cat-file
+  ctp = cat-file -p

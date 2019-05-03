@@ -11,8 +11,8 @@
   mr      = mirror-remote
   up      = unpack-and-apply-diffs
   amr     = add-mirror-remote
-  rr      = remote rename
-  rmv     = remote rename
+  rr      = remote-rename
+  rmv     = remote-rename
   rrm     = remote remove
   rsh     = remote set-head
   rsu     = remote set-url

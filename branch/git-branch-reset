@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+if [ $# -gt 0 ]; then
+  branch="$1"
+  shift
+else
+  branch=master
+fi
+
+if [ $# -gt 0 ]; then
+  dest="$2"
+  shift
+else
+  dest=HEAD
+fi
+
+git branch -f "$branch" "$dest"
+
+if [ "$dest" == "HEAD" ]; then
+  git checkout "$branch"
+fi

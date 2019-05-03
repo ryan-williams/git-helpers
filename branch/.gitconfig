@@ -1,16 +1,27 @@
 [alias]
-  bm = branch -m
   b = branches
+
+  bm = branch -m
+  branch-move = branch -m
   bmv = branch -m
-  bf = branch -f
+
+  bf = branch-reset
+  brs = branch-reset
+  brh = branch-reset
+
   br = remote-branches
   bu = branch-upstream
+
+  current-branch = symbolic-ref -q --short HEAD
   cb = current-branch
+
   dmb = delete-merged-branches
   dmbr = delete-merged-branches --remote
+
   lb = local-branches
   nb = new-branch
   ub = update-branch
+
   bd = branch -d
   bdf = branch -D
   bD = branch -D

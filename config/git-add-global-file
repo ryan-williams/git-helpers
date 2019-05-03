@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+config="$1"
+shift
+for file in "$@"; do
+   if [ -s "$file" ] && ! git config --global --get-all "$config" | grep "$file" >/dev/null; then
+       git config --global --add "$config" "$file"
+   fi
+done

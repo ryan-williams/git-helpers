@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Run a git command in a different git directory
+#
+# Usage:
+#
+# git <other repo root dir> <args...>
+
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 <git dir> [args...]" >&2
+  exit 1
+fi
+
+dir="$1"
+shift
+git --git-dir="$dir"/.git --work-tree="$dir" "$@"
