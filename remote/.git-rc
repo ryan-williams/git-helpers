@@ -1,25 +1,19 @@
 #!/usr/bin/env bash
 
-alias gcd="g cd"
-
-alias gr="git remote -vv"
-alias gra="g ra"
-alias grao="g rao"
-alias grau="g rau"
-
-alias gre="g re"
-
-alias grv="g rv"
-
-alias gamr="g amr"
-alias gmr="g mr"
-
-alias glgp="g lgp"
-alias glpr="g lpr"
-
-alias grr="g rr"
-alias grmv="g rmv"
-alias grrm="g rrm"
-
-alias grsh="g rsh"
-alias grsu="g rsu"
+defn gr g r
+defn grv g rv
+defn gra g ra
+defn grao g rao
+defn grau g rau
+defn gre g re
+defn gcd g cd
+defn glgp g lgp
+defn glpr g lpr
+defn gmr g mr
+defn gup g up
+defn gamr g amr
+defn grr g rr
+defn grmv g rmv
+defn grrm g rrm
+defn grsh g rsh
+defn grsu g rsu

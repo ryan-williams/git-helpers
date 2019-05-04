@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+  remote="$DEFAULT_REMOTE"
+else
+  remote="$1"
+  shift
+fi
+
+git remote get-url "$remote" | parse-github-url

@@ -1,9 +1,11 @@
 [alias]
-  r       = remote
+  r       = remote -vv
+  rv      = remote -vv
+
   ra      = remote add
   rao     = remote add origin
   rau     = remote add upstream
-  rv      = remote -v
+
   re      = remote-exists
   cd      = copy-diffs
   lgp     = load-github-prs
@@ -11,8 +13,10 @@
   mr      = mirror-remote
   up      = unpack-and-apply-diffs
   amr     = add-mirror-remote
+
   rr      = remote-rename
   rmv     = remote-rename
   rrm     = remote remove
+
   rsh     = remote set-head
   rsu     = remote set-url

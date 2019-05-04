@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+row() {
+  printf "$1: "
+  curl -n -I "$1" 2>/dev/null | head -n 1 | cut -d " " -f 2-
+}
+export -f row
+
+github-commit-api-urls "$@" | p row

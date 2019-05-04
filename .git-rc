@@ -20,6 +20,11 @@ export GIT_HELPERS_HOME="$(root_dir)"
 define_function() {
   name="$1"
   shift
+  if [ $# -eq 0 ]; then
+    echo "Usage: $0 <alias name> <aliased function> [args...]" >&2
+    return 1
+  fi
+  unalias "$name" &>/dev/null
   eval "$name() { $@ \"\$@\"; }"
   export -f "$name" > /dev/null
 }
@@ -140,6 +145,8 @@ root_setup() {
 }
 
 root_setup
+
+defn p parallel -k -j+0 --env PATH
 
 git_set_sha() {
   export sha="$(git sha)"

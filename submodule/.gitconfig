@@ -5,6 +5,8 @@
   smfe = submodule foreach --quiet
   sf   = submodule foreach --quiet
   smu  = submodule update --quiet
+  sshs = submodule-shas
+  sst  = submodule-shas
   su   = submodule update --quiet
   sml  = submodule foreach --quiet 'echo $name'
   smp  = submodule foreach --quiet 'echo $path'

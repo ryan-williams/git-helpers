@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+git submodule-url "$@" | parse-github-url | perl -pe 's/(.*)/https:\/\/github.com\/\1/'
