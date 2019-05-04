@@ -1,12 +1,15 @@
 [alias]
-  sm   = submodule --quiet
+  sm   = submodule
   sma  = submodule add --quiet
-  sms  = submodule status --quiet
-  smfe = submodule foreach --quiet
+  sms  = submodules
+  smst = submodule status
   sf   = submodule foreach --quiet
-  smu  = submodule update --quiet
-  sshs = submodule-shas
+  smf = submodule foreach --quiet
+  ssh  = submodule-shas
   sst  = submodule-shas
+  smu  = submodule update --quiet
   su   = submodule update --quiet
+  smcc = submodule-check-commits
   sml  = submodule foreach --quiet 'echo $name'
   smp  = submodule foreach --quiet 'echo $path'
+  smlp = submodule foreach --quiet 'echo $name $path $sha1'
