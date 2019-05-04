@@ -147,6 +147,7 @@ git_set_sha() {
 export -f git_set_sha
 alias git-set-sha=git_set_sha
 
-if [ -n "$GLOBAL_GIT_IGNORE_PATH" ]; then
-  git_add_global_ignore_file "$GLOBAL_GIT_IGNORE_PATH"
+export GLOBAL_GIT_IGNORE_PATH="${GLOBAL_GIT_IGNORE_PATH:-$HOME/global.gitignore}"
+if [ -s "$GLOBAL_GIT_IGNORE_PATH" ]; then
+  git config --global --replace-all core.excludesfile "$GLOBAL_GIT_IGNORE_PATH"
 fi

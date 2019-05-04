@@ -27,8 +27,8 @@
         global-config-file = config --get-all  --global include.path
 
         cfig = config --get-all core.excludesfile
-        cgig = config --get-all  --global core.excludesfile
-        global-ignore-file = config --get-all  --global core.excludesfile
+        cgig = config --get-all --global core.excludesfile
+        global-ignore-file = config --get-all --global core.excludesfile
 
         add-global-config-file = add-global-file include.path
-        add-global-ignore-file = add-global-file core.excludesfile
+        agi = add-global-ignore
