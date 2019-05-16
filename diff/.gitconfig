@@ -2,6 +2,7 @@
   d  = diff
   dc = diff --cached
   df = diff
+  dft = difftool
   dh = diff HEAD
   dp = diff -p
   ds = diff-stat

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-alias gd="git d"
+alias gd="g d"
+alias gdft="g dft"
 alias gdc="g dc"
-alias gdh="git diff HEAD"
+alias gdh="g diff HEAD"
 alias gdn="g dn"
 alias gdp="g dp"
 alias gds="g ds"
