@@ -4,8 +4,18 @@ alias gsma="g sma"
 alias gsms="g sms"
 alias gsmfe="g smfe"
 alias gsf="g sf"
+
 alias gsu="g su"
+alias gsuq="g suq"
+alias gsur="g sur"
+alias gsurq="g surq"
+
+
 alias gsmu="g smu"
+alias gsmur="g smur"
+alias gsmuq="g smuq"
+alias gsmurq="g smurq"
+
 alias gsml="g sml"
 alias gsmp="g smp"
 alias gsshs="g sshs"
