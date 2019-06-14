@@ -1,5 +1,8 @@
 [alias]
   f   = fetch --tags
+  ft  = fetch --tags
+  fa  = fetch --tags --all
+  fta = fetch --tags --all
   fo  = fetch --tags origin
   fu  = fetch --tags upstream
   fr  = fetch --tags --recurse-submodules
