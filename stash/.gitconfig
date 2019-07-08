@@ -6,4 +6,6 @@
   sk      = stash save -k
   sa      = stash apply
   sp      = stash pop
+  ssp     = stash show -p
+  sth     = stash show
   sv = stash-view
