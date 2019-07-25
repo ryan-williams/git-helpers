@@ -10,4 +10,5 @@
 	caane	= commit -a -u --amend --no-edit
 	scm	= squashed-commit-message
 	cn = commit --amend
+	cnm = commit --amend -m
 
