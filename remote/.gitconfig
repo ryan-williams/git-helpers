@@ -1,22 +1,24 @@
 [alias]
-  r       = remote -vv
-  rv      = remote -vv
+  r         = remote -vv
+  rv        = remote -vv
 
-  ra      = remote add
-  rao     = remote add origin
-  rau     = remote add upstream
+  ra        = remote add
+  rao       = remote add origin
+  rau       = remote add upstream
 
-  re      = remote-exists
-  cd      = copy-diffs
-  lgp     = load-github-prs
-  lpr     = load-github-prs
-  mr      = mirror-remote
-  up      = unpack-and-apply-diffs
-  amr     = add-mirror-remote
+  re        = remote-exists
+  is-remote = remote-exists
+  ir        = is-remote
+  cd        = copy-diffs
+  lgp       = load-github-prs
+  lpr       = load-github-prs
+  mr        = mirror-remote
+  up        = unpack-and-apply-diffs
+  amr       = add-mirror-remote
 
-  rr      = remote-rename
-  rmv     = remote-rename
-  rrm     = remote remove
+  rr        = remote-rename
+  rmv       = remote-rename
+  rrm       = remote remove
 
-  rsh     = remote set-head
-  rsu     = remote set-url
+  rsh       = remote set-head
+  rsu       = remote set-url

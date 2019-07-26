@@ -6,7 +6,7 @@
 set -e
 
 remote="$1"
-git ls-remote "$remote" &> /dev/null
+git remote show -n "$remote" &> /dev/null
 shift
 if [ $# -gt 0 ]; then
   diff -q <(echo "$1") <(git ls-remote --get-url "$remote") > /dev/null

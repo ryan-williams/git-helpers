@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+git="$(git root)"/.git
+[ -f "$git" ]

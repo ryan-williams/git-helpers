@@ -21,3 +21,5 @@
   sml   = submodule foreach --quiet 'echo $name'
   smp   = submodule foreach --quiet 'echo $path'
   smlp  = submodule foreach --quiet 'echo $name $path $sha1'
+  ism   = is-submodule
+  is    = is-submodule
