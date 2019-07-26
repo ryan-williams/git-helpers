@@ -16,11 +16,9 @@ if git is-submodule; then
   cd "$root" || exit 1
   path="$name/$path"
   echo "Moved to parent git repo: $root; committing and pushing $name (full path: $path)"
-  if prompt "Continue"; then
-    git commit -m "update $name" -- "$name"
-    git push
-    git push-parents "$path"
-  fi
+  git commit -m "update $name" -- "$name"
+  git push
+  git push-parents "$path"
 else
   echo "$PWD: not in a submodule; exiting"
 fi
