@@ -1,8 +1,13 @@
 [alias]
+  dtc     = diff-theirs-conflicting
+  dth     = diff-theirs
+  dthc    = diff-theirs-conflicting
   pr      = pull --rebase
   rb      = rebase
   rba     = rebase --abort
   rbc     = rebase --continue
+  rbh     = rebase-head
+  rbp     = rebase-parent
   rbo     = rebase --onto
   rbm     = rebase master
   rbs     = rebase --skip

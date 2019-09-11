@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
+alias gdtc="g dtc"
+alias gdth="g dth"
+alias gdthc="g dthc"
+
 alias gpr="g pr"
 
 alias grb="g rb"
 alias grba="g rba"
 alias grbc="g rbc"
+alias grbh="g rbh"
+alias grbp="g rbp"
 alias grbo="g rbo"
 alias rbo="g rbo"
 alias grbs="g rbs"

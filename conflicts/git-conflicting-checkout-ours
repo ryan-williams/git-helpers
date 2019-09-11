@@ -2,4 +2,5 @@
 
 # Checkout "ours" version of all conflicting files.
 
-git checkout --ours $(git conflicting)
+git rm -- "$(git deleted-by-us)"
+git checkout --ours "$(git conflicting)"
