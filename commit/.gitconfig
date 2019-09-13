@@ -19,8 +19,9 @@
   cppa  = commit-push-parents -a
   cppam = commit-push-parents -a -m
   cppm  = commit-push-parents -m
-  ppr   = push-parents
   pp    = commit-push-parents
   ppa   = commit-push-parents -a
   ppam  = commit-push-parents -a -m
   ppm   = commit-push-parents -m
+  ppr   = push-parents
+  pps   = push-parents
