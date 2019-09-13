@@ -2,28 +2,33 @@
 
 # Git aliases. source me from .bashrc!
 
-if [ -n "$ZSH_VERSION" ]; then
-  dir="$(dirname $0)"
-else
-  dir="$(dirname "${BASH_SOURCE[0]}")"
-fi
+root_dir() {
+  local dir=
+  if [ -n "$ZSH_VERSION" ]; then
+    dir="$(dirname $0)"
+  else
+    dir="$(dirname "${BASH_SOURCE[0]}")"
+  fi
 
-dir="$(cd "$dir" && echo "$PWD")"
-export GIT_HELPERS_HOME="$dir"
+  dir="$(cd "$dir" && echo "$PWD")"
+  echo "$dir"
+}
 
-[ -s "$dir/.gitcomplete" ] && source "$dir/.gitcomplete"
+export GIT_HELPERS_HOME="$(root_dir)"
 
-if [ -n "$BASH_VERSION" ]; then
-  [ -s "$dir/.git-completion.bash" ] && source "$dir/.git-completion.bash"
-fi
-
-define-function() {
+# Function-definition helper used in subdirectories
+define_function() {
   name="$1"
   shift
+  if [ $# -eq 0 ]; then
+    echo "Usage: $0 <alias name> <aliased function> [args...]" >&2
+    return 1
+  fi
+  unalias "$name" &>/dev/null
   eval "$name() { $@ \"\$@\"; }"
   export -f "$name" > /dev/null
 }
-alias defn=define-function
+alias defn=define_function
 
 append_to_path() {
   for arg in "$@"; do
@@ -34,57 +39,42 @@ append_to_path() {
 }
 
 append_subdir_to_path() {
-  append_to_path "$dir/$1" "$dir/$1/aliases"
-  if [ -s "$dir/$1/.git-rc" ]; then
-    source "$dir/$1/.git-rc"
-  fi
+  for name in "$@"; do
+    local module="$GIT_HELPERS_HOME/$name"
+    append_to_path "$module" "$module/aliases"
+
+    local gitrc="$module/.git-rc"
+    if [ -s "$gitrc" ]; then
+      source "$gitrc"
+    fi
+
+    local gitconfig="$module/.gitconfig"
+    if [ -s "$gitconfig" ]; then
+      git-add-global-file include.path "$gitconfig"
+    fi
+  done
 }
 
-append_to_path "$dir" "$dir/aliases" "$dir"/github
-
-append_subdir_to_path add
-append_subdir_to_path admin
-append_subdir_to_path aliases
-append_subdir_to_path apply
-append_subdir_to_path bisect
-append_subdir_to_path blame
-append_subdir_to_path branch
-append_subdir_to_path cat-file
-append_subdir_to_path checkout
-append_subdir_to_path check-ignore
-append_subdir_to_path cherry-pick
-append_subdir_to_path clone
-append_subdir_to_path commit
+# do this first, because it bootstraps the
 append_subdir_to_path config
-append_subdir_to_path conflicts
-append_subdir_to_path describe
-append_subdir_to_path diff
-append_subdir_to_path fetch
-append_subdir_to_path github
-append_subdir_to_path graph
-append_subdir_to_path grep
-append_subdir_to_path help
-append_subdir_to_path lfs
-append_subdir_to_path log
-append_subdir_to_path ls
-append_subdir_to_path merge
-append_subdir_to_path merge-base
-append_subdir_to_path mv
-append_subdir_to_path nav
-append_subdir_to_path push
-append_subdir_to_path rebase
-append_subdir_to_path reflog
-append_subdir_to_path remote
-append_subdir_to_path reset
-append_subdir_to_path rev-list
-append_subdir_to_path rm
-append_subdir_to_path show
-append_subdir_to_path stash
-append_subdir_to_path status
-append_subdir_to_path submodule
-append_subdir_to_path tag
-append_subdir_to_path version
-append_subdir_to_path watchman
+
+append_subdir_to_path \
+  add admin aliases apply \
+  bisect blame branch \
+  cat-file checkout check-ignore cherry-pick clone commit conflicts \
+  describe diff \
+  fetch \
+  gist github graph grep \
+  help \
+  lfs log ls \
+  merge merge-base mv \
+  nav \
+  push \
+  rebase reflog remote reset rev-list rm \
+  show stash status submodule \
+  tag \
+  version \
+  watchman
 
 export o="origin"
 export oh="origin/HEAD"
@@ -96,12 +86,14 @@ export DEFAULT_REMOTE="${DEFAULT_REMOTE:-origin}"
 
 export h="HEAD"
 
+# Parent commit aliases
 export p="HEAD^"
 export p2="HEAD~2"
 export p3="HEAD~3"
 export p4="HEAD~4"
 export p5="HEAD~5"
 
+# Reflog history aliases
 export h1="HEAD@{1}"
 export h2="HEAD@{2}"
 export h3="HEAD@{3}"
@@ -123,6 +115,7 @@ export h18="HEAD@{18}"
 export h19="HEAD@{19}"
 export h20="HEAD@{20}"
 
+# Stashes
 export s0="stash@{0}"
 export s1="stash@{1}"
 export s2="stash@{2}"
@@ -137,22 +130,23 @@ export s10="stash@{10}"
 
 export pr="$DEFAULT_REMOTE/pr"
 
-export PYTHONPATH="$PYTHONPATH:$dir/util"
+root_setup() {
+  local dir="$GIT_HELPERS_HOME"
+  [ -s "$dir/.gitcomplete" ] && source "$dir/.gitcomplete"
 
-### Aliases for `gist` utility: https://github.com/defunkt/gist ###
-# Private gist, copy link to clipboard, parse first argument as gist description
-alias gst="gist -p -c -d"
-# Same as above, but open in browser ("-o")
-alias gsto="gist -p -c -o -d"
-# Same as above, but pulling content from clipboard
-alias gstp="gist -p -c -o -P -d"
+  if [ -n "$BASH_VERSION" ]; then
+    [ -s "$dir/.git-completion.bash" ] && source "$dir/.git-completion.bash"
+  fi
 
-alias gop="gist -op"
-alias gopc="gist -opc"
-alias gpc="gist -opc"
+  # Source this repository's `.gitconfig` file from your global `.gitconfig`.
+  git add-global-config-file "$dir"/config/.gitconfig
 
-# Source this repository's `.gitconfig` file from your global `.gitconfig`.
-git_add_global_config_file "$dir"/config/.gitconfig
+  export PYTHONPATH="$PYTHONPATH:$dir/util"
+}
+
+root_setup
+
+defn p parallel -k -j+0 --env PATH
 
 git_set_sha() {
   export sha="$(git sha)"
@@ -160,6 +154,7 @@ git_set_sha() {
 export -f git_set_sha
 alias git-set-sha=git_set_sha
 
-if [ -n "$GLOBAL_GIT_IGNORE_PATH" ]; then
-  git_add_global_ignore_file "$GLOBAL_GIT_IGNORE_PATH"
+export GLOBAL_GIT_IGNORE_PATH="${GLOBAL_GIT_IGNORE_PATH:-$HOME/global.gitignore}"
+if [ -s "$GLOBAL_GIT_IGNORE_PATH" ]; then
+  git config --global --replace-all core.excludesfile "$GLOBAL_GIT_IGNORE_PATH"
 fi

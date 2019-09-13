@@ -7,6 +7,10 @@
   pn = push -n
   pnt = push -n --tags
   pt = push --tags
+  pon = push -n origin
+  pno = push -n origin
+  pun = push -n upstream
+  pnu = push -n upstream
   put = push --tags upstream
   ptu = push --tags upstream
   pot = push --tags origin

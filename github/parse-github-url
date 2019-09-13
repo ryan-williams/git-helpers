@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if [ $# -gt 0 ]; then
+  cat "$@" | "$0"
+else
+  perl -pe 's/^(?:(?:git@)?github.com:|https:\/\/github.com\/)//' | perl -pe 's/\.git$//'
+fi

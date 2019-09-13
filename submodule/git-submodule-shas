@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+git submodules "$@" | parallel -k -j+0 --env PATH 'echo -n "{} "; gx {} hsh'

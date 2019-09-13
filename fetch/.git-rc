@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 
 alias gf="g f"
+alias gft="g ft"
+alias gfa="g fa"
+alias gfta="g fta"
 alias gfo="g fo"
 alias gfu="g fu"
-
-
+alias gfr="g fr"
+alias gfro="g fro"
+alias gfru="g fru"
+alias gfor="g fro"
+alias gfur="g fru"

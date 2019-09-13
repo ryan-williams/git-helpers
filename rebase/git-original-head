@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
+dir="$(git dir)"
 # Print the SHA that is being rebased.
-if [ -f .git/rebase-apply/orig-head ]; then
-	cat .git/rebase-apply/orig-head
-elif [ -f .git/rebase-merge/orig-head ]; then
-	cat .git/rebase-merge/orig-head
+if [ -f "$dir"/ORIG_HEAD ]; then
+  cat "$dir"/ORIG-HEAD
+elif [ -f "$dir"/rebase-apply/orig-head ]; then
+  cat "$dir"/rebase-apply/orig-head
+elif [ -f "$dir"/rebase-merge/orig-head ]; then
+  cat "$dir"/rebase-merge/orig-head
 else
-	echo "Error: couldn't find .git/rebase-{merge,apply}/orig-head" >&2
-	exit 1
+  echo "Error: couldn't find $dir/{rebase-{merge,apply}/,}orig-head" >&2
+  exit 1
 fi

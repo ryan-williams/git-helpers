@@ -1,2 +1,4 @@
 [alias]
-	rt = root
+  rt = root
+  dir = rev-parse --git-dir
+  dr  = rev-parse --git-dir

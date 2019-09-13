@@ -2,11 +2,17 @@
   d  = diff
   dc = diff --cached
   df = diff
+  dft = difftool
   dh = diff HEAD
+  dn = diff --name-status
+  dno = diff --name-only
+  dns = diff --name-status
   dp = diff -p
   ds = diff-stat
   dt = diff-tree
   dtp = diff-tree -p
   du = diff -u
   d1 = diff-no-context
-  dn = diff --name-only
+
+[diff]
+  submodule = diff

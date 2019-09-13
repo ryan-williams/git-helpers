@@ -1,5 +1,3 @@
 #!/usr/bin/env bash
 
-for arg in "$@"; do
-	git config "submodule.$arg.url"
-done
+git submodules "$@" | parallel -k -j+0 --env PATH 'git config --file .gitmodules "submodule.{}.url"'

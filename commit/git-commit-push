@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Run git commit and git push
+#
+# The remote to push to is the first argument (if it matches a git remote), or $DEFAULT_REMOTE.
+
+if [ $# -gt 0 ] && git remote-exists "$1"; then
+  remote="$1"
+  shift
+else
+  remote="${DEFAULT_REMOTE:-upstream}"
+fi
+echo "Pushing to: $remote"
+
+git commit "$@" && git push "$remote"

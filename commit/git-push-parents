@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+  path=""
+else
+  path="$1"
+  shift
+fi
+
+if git is-submodule; then
+  echo "$PWD: in a submodule; recursing up"
+  submodule="$PWD"
+  cd ..
+  root="$(git root)"
+  name="$(git relpath "$root" "$submodule")"
+  cd "$root" || exit 1
+  path="$name/$path"
+  echo "Moved to parent git repo: $root; committing and pushing $name (full path: $path)"
+  git commit -m "update $name" -- "$name"
+  git push
+  git push-parents "$path"
+else
+  echo "$PWD: not in a submodule; exiting"
+fi

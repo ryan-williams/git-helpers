@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-git submodule foreach --quiet 'if [ "$name" ]; then echo $name $sha1; fi'| parallel -k -j+0 --env PATH --colsep ' ' 'github-url {1}; echo commit/{2}' | paste -d/ - -

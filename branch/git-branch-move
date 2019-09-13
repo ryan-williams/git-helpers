@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# Rename a git branch.
-
-git branch -m "$@"

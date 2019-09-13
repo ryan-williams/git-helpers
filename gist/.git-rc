@@ -1,0 +1,14 @@
+
+if which -a gist &> /dev/null; then
+  ### Aliases for `gist` utility: https://github.com/defunkt/gist ###
+  # Private gist, copy link to clipboard, parse first argument as gist description
+  alias gst="gist -p -c -d"
+  # Same as above, but open in browser ("-o")
+  alias gsto="gist -p -c -o -d"
+  # Same as above, but pulling content from clipboard
+  alias gstp="gist -p -c -o -P -d"
+
+  alias gop="gist -op"
+  alias gopc="gist -opc"
+  alias gpc="gist -opc"
+fi

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+verbose=
+if [ "$1" == "-v" ]; then
+  verbose=1
+  shift
+fi
+
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 <ref1> <ref2> [refN..]" >&2
+  exit 1
+fi
+
+hashes="$(git hash "$@" | sort | uniq)"
+
+num="$(echo "$hashes" | wc -l)"
+
+if [ "$num" -gt 1 ]; then
+  if [ -n "$verbose" ]; then
+    echo "$hashes"
+  fi
+  exit 1
+fi

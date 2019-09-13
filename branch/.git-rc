@@ -3,7 +3,11 @@
 alias gbd="g bd"
 alias gbD="g bD"
 alias gbdf="g bdf"
+
 alias gbf="g bf"
+alias gbrs="g brs"
+alias gbrh="g brh"
+
 alias gbmv="g bmv"
 
 alias gb="g b"
@@ -11,6 +15,8 @@ alias gbu="g bu"
 alias gbr="g br"
 
 alias gcb="g cb"
+alias gib="g ib"
+
 alias gdmb="g dmb"
 alias gdmbr="g dmbr"
 

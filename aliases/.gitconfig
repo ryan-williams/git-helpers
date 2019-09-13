@@ -1,0 +1,3 @@
+[alias]
+  gd = !git-git-dir
+  x = !git-git-dir

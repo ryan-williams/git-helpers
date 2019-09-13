@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+git submodule-shas "$@" | parallel -k -j+0 --env PATH --colsep ' ' 'github-web-url {1}; echo commit/{2}' | paste -d/ - -

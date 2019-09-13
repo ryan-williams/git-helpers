@@ -11,51 +11,24 @@
        meta = yellow bold
 
 [alias]
-        cfg = config
-        cg = config
-        cgg = config --global
-        cga = config --add
-        cgga = config --global --add
-        cgl = config --get-all
-        cgd = config --unset
-        cgda = config --unset-all
+        cf = config
+        cg = config --global
+        cfa = config --add
+        cga = config --add --global
+        cfl = config --get-all
+        cgl = config --get-all --global
+        cfd = config --unset
+        cgd = config --unset --global
+        cfda = config --unset-all
+        cgda = config --unset-all --global
 
-[include]
-        path = "../add/.gitconfig"
-        path = "../admin/.gitconfig"
-        path = "../blame/.gitconfig"
-        path = "../branch/.gitconfig"
-        path = "../cat-file/.gitconfig"
-        path = "../check-ignore/.gitconfig"
-        path = "../checkout/.gitconfig"
-        path = "../cherry-pick/.gitconfig"
-        path = "../clone/.gitconfig"
-        path = "../commit/.gitconfig"
-        path = "../conflicts/.gitconfig"
-        path = "../describe/.gitconfig"
-        path = "../diff/.gitconfig"
-        path = "../fetch/.gitconfig"
-        path = "../grep/.gitconfig"
-        path = "../help/.gitconfig"
-        path = "../log/.gitconfig"
-        path = "../ls/.gitconfig"
-        path = "../merge/.gitconfig"
-        path = "../rebase/.gitconfig"
-        path = "../reflog/.gitconfig"
-        path = "../reset/.gitconfig"
-        path = "../rev-list/.gitconfig"
-        path = "../stash/.gitconfig"
-        path = ../remote/.gitconfig
-        path = ../bisect/.gitconfig
-        path = ../admin/.gitconfig
-        path = ../graph/.gitconfig
-        path = ../merge-base/.gitconfig
-        path = ../mv/.gitconfig
-        path = ../nav/.gitconfig
-        path = ../push/.gitconfig
-        path = ../rm/.gitconfig
-        path = ../show/.gitconfig
-        path = ../status/.gitconfig
-        path = ../submodule/.gitconfig
-        path = ../tag/.gitconfig
-        path = ../version/.gitconfig
+        cfi = config --get-all include.path
+        cgi = config --get-all  --global include.path
+        global-config-file = config --get-all  --global include.path
+
+        cfig = config --get-all core.excludesfile
+        cgig = config --get-all --global core.excludesfile
+        global-ignore-file = config --get-all --global core.excludesfile
+
+        add-global-config-file = add-global-file include.path
+        agi = add-global-ignore

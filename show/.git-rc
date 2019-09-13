@@ -5,3 +5,4 @@ alias gnsh="gn sh"
 alias gsn="g sn"
 alias gshs="gn shs"  # git-show-short, no pager
 alias gshh="g sh HEAD"
+alias geq="g eq"

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+  from=origin
+else
+  from="$1"
+  shift
+fi
+
+if [ $# -eq 0 ]; then
+  to="$DEFAULT_REMOTE"
+else
+  to="$1"
+  shift
+fi
+
+if [ -z "$from" ]; then
+  err "Empty 'src'"
+  exit 1
+fi
+
+if [ -z "$to" ]; then
+  err "Empty 'dest'"
+  exit 1
+fi
+
+git remote rename "$from" "$to"
