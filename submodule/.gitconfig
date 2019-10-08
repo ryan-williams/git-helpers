@@ -1,4 +1,5 @@
 [alias]
+  ps    = !git pull --rebase && git submodule update --recursive
   sm    = submodule
   sma   = submodule add --quiet
   sms   = submodules
