@@ -2,3 +2,6 @@
   rl = reflog
   rlh = !git reflog | head
   rlt = !git reflog | head -n 20
+
+  fer = for-each-ref
+  er = for-each-ref

@@ -24,3 +24,4 @@
   smlp  = submodule foreach --quiet 'echo $name $path $sha1'
   ism   = is-submodule
   is    = is-submodule
+  filter-to-dir = filter-branch --subdirectory-filter 'path/to/your/submodule' --prune-empty -- --all

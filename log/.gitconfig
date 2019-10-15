@@ -26,3 +26,4 @@
   shas = hash
   fh = full-hash
   fm = format
+  tree = log --no-walk --format=%T
