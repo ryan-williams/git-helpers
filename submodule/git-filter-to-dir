@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 <dir>" >&2
+  exit 1
+fi
+
+dir="$1"
+shift
+git filter-branch --subdirectory-filter "$dir" --prune-empty -- --all "$@"

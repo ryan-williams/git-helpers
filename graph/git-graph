@@ -2,4 +2,11 @@
 
 # Show a pretty `git log` with a graph.
 
-git log --graph --decorate --color --oneline "$@" $(git all-branches)  # TODO: escape array correctly
+git all-branches | xargs -d $'\n' \
+git log \
+  --graph \
+  --decorate \
+  --color \
+  --oneline \
+  --author-date-order \
+  "$@"

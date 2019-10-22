@@ -26,3 +26,5 @@ alias gssh="g ssh"
 
 alias gism="g ism"
 alias gis="g is"
+
+alias gftd="g ftd"
