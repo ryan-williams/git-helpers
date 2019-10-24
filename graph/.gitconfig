@@ -2,3 +2,5 @@
   gp = graph-pretty
   gr = graph
   ggc = graph-commits
+  grh = graph -n 10
+  grn = graph -n

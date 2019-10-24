@@ -5,8 +5,7 @@
 git all-branches | xargs -d $'\n' \
 git log \
   --graph \
-  --decorate \
-  --color \
-  --oneline \
+  --format="%C(auto)%h %C(blue)%ad%C(auto)%d %s" \
+  --date=relative \
   --author-date-order \
   "$@"
