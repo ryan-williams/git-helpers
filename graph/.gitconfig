@@ -2,5 +2,8 @@
   gp = graph-pretty
   gr = graph
   ggc = graph-commits
+  grd = graph --date=iso
+  grdh = grd -n 10
+  grdn = grd -n
   grh = graph -n 10
   grn = graph -n
