@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ $# -eq 0 ]; then
+  "$0" .
+  exit $?
+fi
+
+for dir in "$@"; do
+  echo "Gisting ${dir}…"
+  pushd "$dir"
+
+  # initialize the gist with a dummy file
+  now="$(date '+%Y-%m-%d %H:%M:%S')"
+  echo foo > "$now"
+
+  # create the gist and grab its ID
+  id="$(gist -p "$now" | grep -o '[^/]*$')"
+
+  url="https://gist.github.com/$id"
+  echo "Created gist $url"
+
+  # make working dir a clone of the upstream gist
+  git init
+  git remote add upstream "git@gist.github.com:$id.git"
+  git fetch upstream
+
+  # get the dummy file out of the way before checking out master branch
+  rm -f "$now"
+  git checkout upstream/master
+
+  # add the local dir's contents
+  git add .
+
+  # rm the dummy file again (checkout will have restored it, and it's git-tracked this time)
+  git rm "$now"
+
+  # create a new "initial commit", overwriting the one the gist was created with
+  git commit --amend -m 'initial commit'
+
+  # overwrite the gist (and its history) with the single real commit we want to be present
+  git push upstream --force HEAD:master
+
+  echo "Updated gist: $url"
+  popd
+done
