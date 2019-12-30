@@ -56,10 +56,13 @@ def gist_dir(dir, remote='gist'):
                 run('git', 'fetch', remote)
 
         if init:
+            # suppress warning from subsequent `checkout`
+            run('git', 'config', 'advice.detachedHead', 'false')
+
             run('git', 'checkout', f'{remote}/master')
 
             # add the local dir's contents
-            run('git', 'add' '.')
+            run('git', 'add', '.')
 
             # rm the dummy file again (checkout will have restored it, and it's git-tracked this time)
             run('git', 'rm', name)
