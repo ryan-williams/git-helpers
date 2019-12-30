@@ -28,12 +28,14 @@ def run(*args, stdout=sys.stdout, stderr=sys.stderr):
     check_call(args, stdout=stdout, stderr=stderr)
 
 
-def gist_dir(dir, remote='gist', copy_url=False, open_gist=False, private=False):
+def gist_dir(dir, remote='gist', copy_url=False, open_gist=False, private=False, files=None):
     dir = Path(dir)
     print(f"Gist'ing {dir}")
     with cd(dir):
         # We'll make a git repository in this directory iff one doesn't exist
         init = not exists('.git')
+        if not init and files:
+            raise Exception('File-restrictions not supported for existing git-repo directories')
 
         with NamedTemporaryFile(dir=Path.cwd()) as f:
             name = f.name
@@ -69,8 +71,11 @@ def gist_dir(dir, remote='gist', copy_url=False, open_gist=False, private=False)
 
             run('git', 'checkout', f'{remote}/master')
 
-            # add the local dir's contents
-            run('git', 'add', '.')
+            # add the local dir's contents (including only specific files if necessary)
+            if files:
+                run(*(['git', 'add'] + files))
+            else:
+                run('git', 'add', '.')
 
             # rm the dummy file again (checkout will have restored it, and it's git-tracked this time)
             run('git', 'rm', name)
@@ -93,21 +98,40 @@ def gist_dir(dir, remote='gist', copy_url=False, open_gist=False, private=False)
 if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('dir', nargs='?', help='Directories to commit as GitHub gists')
+    parser.add_argument('paths', nargs='*', help='Either a list of directories to create GitHub gists of, or a list of files to add to a gist from the current directory (binary files work in both cases!)')
     parser.add_argument('-c', '--copy', default=False, action='store_true', help="Copy the resulting gist's URL to the clipboard")
+    parser.add_argument('-d', '--dir', required=False, help="Specify a single directory to make a gist from; any positional arguments must point to files in this directory")
     parser.add_argument('-o', '--open', default=False, action='store_true', help="Open the gist when finished running")
     parser.add_argument('-p', '--private', default=False, action='store_true', help="Make the gist private")
     parser.add_argument('-r', '--remote', default='gist', help='Name to use for a git remote created in each repo/directory, which points at the created gist.')
     args = parser.parse_args()
 
+    dir = args.dir
     remote = args.remote
     copy_url = args.copy
     open_gist = args.open
     private = args.private
 
-    dirs = args.dir
-    if not dirs:
-        dirs = [ Path.cwd() ]
+    paths = [ Path(path) for path in args.paths ]
+    are_files = [ path.is_file() for path in paths ]
+    files = None
+    if dir:
+        if not all(are_files):
+            raise Exception('When a directory is passed via the -d/--dir flag, all positional arguments must be files (and in that directory)')
+        dirs = [ dir ]
+        files = paths
+    else:
+        if paths:
+            if any(are_files):
+                if all(are_files):
+                    dirs = [ Path.cwd() ]
+                    files = paths
+                else:
+                    raise Exception('Arguments should be all directories or all files')
+            else:
+                dirs = paths
+        else:
+            dirs = [ Path.cwd() ]
 
     for dir in dirs:
         gist_dir(
@@ -116,4 +140,5 @@ if __name__ == '__main__':
             copy_url=copy_url,
             open_gist=open_gist,
             private=private,
+            files=files,
         )
