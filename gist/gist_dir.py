@@ -28,7 +28,7 @@ def run(*args, stdout=sys.stdout, stderr=sys.stderr):
     check_call(args, stdout=stdout, stderr=stderr)
 
 
-def gist_dir(dir, remote='gist', copy_url=False, open_gist=False):
+def gist_dir(dir, remote='gist', copy_url=False, open_gist=False, private=False):
     dir = Path(dir)
     print(f"Gist'ing {dir}")
     with cd(dir):
@@ -42,9 +42,11 @@ def gist_dir(dir, remote='gist', copy_url=False, open_gist=False):
                 f.write('foo')
 
             # prepare gist cmd
-            cmd = [ 'gist', '-p' ]
+            cmd = [ 'gist' ]
             if copy_url:
                 cmd.append('-c')
+            if private:
+                cmd.append('-p')
             cmd.append(name)
 
             # create the gist and grab its ID
@@ -92,18 +94,26 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('dir', nargs='?', help='Directories to commit as GitHub gists')
-    parser.add_argument('-r', '--remote', default='gist', help='Name to use for a git remote created in each repo/directory, which points at the created gist.')
-    parser.add_argument('-c', '--copy', default=False, action='store_true', help="When set, copy the resulting gist's URL to the clipboard")
+    parser.add_argument('-c', '--copy', default=False, action='store_true', help="Copy the resulting gist's URL to the clipboard")
     parser.add_argument('-o', '--open', default=False, action='store_true', help="Open the gist when finished running")
+    parser.add_argument('-p', '--private', default=False, action='store_true', help="Make the gist private")
+    parser.add_argument('-r', '--remote', default='gist', help='Name to use for a git remote created in each repo/directory, which points at the created gist.')
     args = parser.parse_args()
 
     remote = args.remote
     copy_url = args.copy
     open_gist = args.open
+    private = args.private
 
     dirs = args.dir
     if not dirs:
         dirs = [ Path.cwd() ]
 
     for dir in dirs:
-        gist_dir(dir, remote=remote, copy_url=copy_url, open_gist=open_gist)
+        gist_dir(
+            dir,
+            remote=remote,
+            copy_url=copy_url,
+            open_gist=open_gist,
+            private=private,
+        )
