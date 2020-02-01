@@ -33,4 +33,10 @@ unset bak
 
 git checkout master
 git submodule update --init --recursive
-source .bashrc
+IFS_BAK="$IFS"
+IFS=$'\n'
+for f in $(git ls-tree -z --name-only HEAD .*rc); do
+  echo "Sourcing $f"
+  source $f;
+done
+IFS="$IFS_BAK"
