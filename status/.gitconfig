@@ -6,3 +6,4 @@
 	s = status
 	sts = status -s
 	stp = status --porcelain
+	su = status -uno

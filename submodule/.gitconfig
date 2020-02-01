@@ -1,4 +1,5 @@
 [alias]
+  ps    = !git pull --rebase && git submodule update --recursive
   sm    = submodule
   sma   = submodule add --quiet
   sms   = submodules
@@ -23,3 +24,4 @@
   smlp  = submodule foreach --quiet 'echo $name $path $sha1'
   ism   = is-submodule
   is    = is-submodule
+  ftd = filter-to-dir

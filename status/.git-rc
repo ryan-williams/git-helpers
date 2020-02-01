@@ -3,6 +3,7 @@
 alias gs="g s"
 alias gsts="g sts"
 alias gstp="g stp"
+alias gsu="g su"
 
 alias ghc="g hc"
 alias ghnc="g hnc"

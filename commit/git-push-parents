@@ -2,6 +2,7 @@
 
 if [ $# -eq 0 ]; then
   path=""
+  git push
 else
   path="$1"
   shift

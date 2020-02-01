@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-alias gss="git stash save"
-alias gsa="git stash apply"
-alias gsp="git stash pop"
+alias gss="g ss"
+alias gsa="g sa"
+alias gsd="g sd"
+alias gsp="g sp"
 alias gsl="g sl"
 alias gss="g ss"
 alias gssk="g ssk"

@@ -1,4 +1,5 @@
 
+alias gps="g ps"
 alias gsm="g sm"
 alias gsma="g sma"
 alias gsms="g sms"
@@ -25,3 +26,5 @@ alias gssh="g ssh"
 
 alias gism="g ism"
 alias gis="g is"
+
+alias gftd="g ftd"

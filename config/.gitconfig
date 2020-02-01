@@ -32,3 +32,8 @@
 
         add-global-config-file = add-global-file include.path
         agi = add-global-ignore
+
+        allow-pushes = config receive.denyCurrentBranch ignore
+        aps = allow-pushes
+        receive-pushes = allow-pushes
+        rcp = receive-pushes

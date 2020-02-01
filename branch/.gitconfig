@@ -8,6 +8,7 @@
   bf = branch-reset
   brs = branch-reset
   brh = branch-reset
+  branch-set = branch-reset
 
   br = remote-branches
   bu = branch-upstream
@@ -26,3 +27,11 @@
   bd = branch -d
   bdf = branch -D
   bD = branch -D
+
+  upstream = rev-parse --abbrev-ref --symbolic-full-name @{u}
+  us = upstream
+
+  sb = show-branch
+
+  all-branches = for-each-ref --format='%(refname:short)'
+  ab = all-branches

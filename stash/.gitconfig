@@ -1,5 +1,6 @@
 [alias]
   s       = stash
+  sd      = stash drop
   sl      = stash list
   ss      = stash save
   ssk     = stash save -k
