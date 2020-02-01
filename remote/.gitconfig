@@ -21,4 +21,8 @@
   rrm       = remote remove
 
   rsh       = remote set-head
-  rsu       = remote set-url
+
+  gru       = remote-get-url
+  rgu       = remote-get-url
+  sru       = remote-set-url
+  rsu       = remote-set-url

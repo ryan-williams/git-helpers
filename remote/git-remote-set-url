@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ $# -eq 1 ]; then
+  url="$1"
+  shift
+  remotes=("$(git get-only-remote)")
+else
+  remote="$1"
+  shift
+  url="$1"
+  shift
+fi
+
+git remote set-url "$remote" "$url"

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ $# -eq 0 ]; then
+  remotes=("$(git get-only-remote)")
+else
+  remotes=("$@")
+fi
+
+for remote in ${remotes[@]}; do
+  git remote get-url "$remote"
+done
