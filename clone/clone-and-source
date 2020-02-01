@@ -14,8 +14,10 @@ else
 fi
 
 git init
-git remote add upstream "$url"
-git fetch upstream --recurse-submodules
+remote="upstream"
+branch="master"
+git remote add "$remote" "$url" || echo "Found existing remote \"$remote\""
+git fetch "$remote" --recurse-submodules
 
 # Helper for backing up any files already present that would conflict with the git checkout (and cause it to abort)
 bak() {
@@ -28,10 +30,10 @@ bak() {
 }
 export -f bak
 
-git ls-tree -r -z --name-only upstream/master | xargs -0 bash -c 'bak "$@"' _
+git ls-tree -r -z --name-only "$remote/$branch" | xargs -0 bash -c 'bak "$@"' _
 unset bak
 
-git checkout master
+git checkout "$branch"
 git submodule update --init --recursive
 IFS_BAK="$IFS"
 IFS=$'\n'
