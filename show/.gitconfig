@@ -1,5 +1,9 @@
 [alias]
+  eq = equal
   sh = show
   shs = show --stat
-  sn = show --name-only
-  eq = equal
+  sn = show-names
+  sln = show-local-names
+  snl = show-local-names
+  snr = show-remote-names
+  srn = show-remote-names

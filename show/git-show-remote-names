@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+  git show-names refs/remotes HEAD
+else
+  git show-names refs/remotes "$@"
+fi

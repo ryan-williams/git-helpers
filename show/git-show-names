@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+  sha=HEAD
+  args=()
+else
+  sha="${@: -1}"
+  args=("${@:1:(${#@}-1)}")
+fi
+
+git for-each-ref --format='%(objectname) %(refname:short)' ${args[@]} | \
+grep "$(git rev-parse "$sha")" | \
+awk '{ print $2 }'

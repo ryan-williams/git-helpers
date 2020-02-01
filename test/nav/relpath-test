@@ -7,7 +7,7 @@ set -ex
 test() {
 
   expected="${@: -1}"
-  args="${@:1:(${#@}-1)}"
+  args=("${@:1:(${#@}-1)}")
 
   actual="$(git relpath $args)"
 

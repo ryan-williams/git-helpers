@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-alias gsh="g sh"
-alias gnsh="gn sh"
-alias gsn="g sn"
-alias gshs="gn shs"  # git-show-short, no pager
-alias gshh="g sh HEAD"
 alias geq="g eq"
+alias gsh="g sh"
+alias gshs="g shs"
+alias gsn="g sn"
+alias gsln="g sln"
+alias gsnl="g snl"
+alias gsnr="g snr"
+alias gsrn="g srn"
