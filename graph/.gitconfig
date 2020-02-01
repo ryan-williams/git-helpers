@@ -1,7 +1,7 @@
 [alias]
-  gp = graph-pretty
+  g = graph-all
+  ga = graph-all
   gr = graph
-  ggc = graph-commits
   grd = graph --date=iso
   grdh = grd -n 10
   grdn = grd -n

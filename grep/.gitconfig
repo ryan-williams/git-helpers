@@ -1,7 +1,10 @@
 [alias]
-  g = grep --recurse-submodules
+  fc = grep --recurse-submodules '<<<<<<<'
   gi = grep --recurse-submodules -i
   gl = grep --recurse-submodules -l
   gn = grep --recurse-submodules -n
+  gp = grep --recurse-submodules
+  gpi = grep --recurse-submodules -i
+  gpl = grep --recurse-submodules -l
+  gpn = grep --recurse-submodules -n
   kl = kill-lines
-  fc = grep --recurse-submodules '<<<<<<<'

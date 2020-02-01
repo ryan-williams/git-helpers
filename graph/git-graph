@@ -2,10 +2,9 @@
 
 # Show a pretty `git log` with a graph.
 
-git all-branches | xargs -d $'\n' \
 git log \
   --graph \
-  --format="%C(auto)%h %C(blue)%ad%C(reset)%C(auto)%d %s" \
+  --format="%C(auto)%h %C(blue)%ad %C(red)%an%C(reset)%C(reset)%C(auto)%d %s" \
   --date=relative \
   --author-date-order \
   "$@"

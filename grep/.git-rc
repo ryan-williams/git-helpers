@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-alias gng="g ng"
-alias gg="g g"
+alias gfc="g fc"
+
 alias ggi="g gi"
 alias ggl="g gl"
 alias ggn="g gn"
+alias ggp="g gr"
+alias ggpi="g gri"
+alias ggpl="g grl"
+alias ggpn="g grn"
 
 alias gkl="g kl"
-
-alias gfc="g fc"

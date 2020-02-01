@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-alias ggc="g ggc"
+alias gg="g g"
+alias gga="g ga"
+alias ggg="g gg"
 alias ggp="g gp"
 alias ggr="g gr"
+alias gggc="g ggc"
 alias ggrd="g grd"
 alias ggrdh="g grdh"
 alias ggrdn="g grdn"

@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# `git graph` with a status on top.
-
-(git status -s && gn graph "$@") | less -R

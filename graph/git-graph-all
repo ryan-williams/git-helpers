@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Show a pretty `git log` with a graph, including all branches/tags/refs
+
+git graph "$@" $(git all-branches) --
