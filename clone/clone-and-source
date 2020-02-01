@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -e
+if [ $# -eq 1 ]; then
+  url="$1"
+  shift
+elif [ $# -eq 2 ]; then
+  group="$1"
+  shift
+  repo="$1"
+  shift
+  url="git@github.com:$group/$repo.git"
+else
+  echo "Usage: $0 <group> <repo>"
+fi
+
+git init
+git remote add upstream "$url"
+git fetch upstream --recurse-submodules
+
+# Helper for backing up any files already present that would conflict with the git checkout (and cause it to abort)
+bak() {
+  for arg in "$@"; do
+    if [ -e "$arg" ]; then
+      echo "Backing up $arg to $arg.bak"
+      mv "$arg" "$arg.bak"
+    fi
+  done
+}
+export -f bak
+
+git ls-tree -r -z --name-only upstream/master | xargs -0 bash -c 'bak "$@"' _
+unset bak
+
+git checkout master
+git submodule update --init --recursive
+source .bashrc
