@@ -15,6 +15,7 @@
   caap  = commit-push -a
   capm  = commit-push -m
   caapm = commit-push -a -m
+  cpam  = commit-push -a -m
   cpp   = commit-push-parents
   cppa  = commit-push-parents -a
   cppam = commit-push-parents -a -m
