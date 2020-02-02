@@ -9,7 +9,7 @@ test() {
   expected="${@: -1}"
   args=("${@:1:(${#@}-1)}")
 
-  actual="$(git relpath $args)"
+  actual="$(git relpath ${args[@]})"
 
   if [ "$actual" != "$expected" ]; then
     echo "Failed: \`git relpath $args\`: expected $expected, actual $actual" 1>&2
