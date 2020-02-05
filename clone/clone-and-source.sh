@@ -50,7 +50,7 @@ else
   url="${ARGS[0]}"
   ARGS=("${ARGS[@]:1}")
   if [ -n "${url%%https://*}" ]; then
-    url="git@github.com:$url.git"
+    url="https://github.com:$url.git"
   fi
   if [ $nargs -eq 2 ]; then
     dest="${ARGS[0]}"
