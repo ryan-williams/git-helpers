@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+branch="$(\
+  git reflog | \
+  perl -ne "print if s/.*: checkout: moving from (.+) to (.+)$/\1/" | \
+  head -n 1
+)"
+
+git checkout "$branch"

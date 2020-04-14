@@ -1,6 +1,11 @@
 [alias]
   b = branches
 
+  branch-back = checkout-previous-branch
+  bk = branch-back
+  previous-branch = checkout-previous-branch
+  pb = previous-branch
+
   bm = branch -m
   branch-move = branch -m
   bmv = branch -m

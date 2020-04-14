@@ -1,4 +1,5 @@
-
 [alias]
-        co      = checkout
-        cob = checkout -b
+  co  = checkout
+  cob = checkout -b
+  coh = checkout HEAD --
+  cop = checkout-previous-branch
