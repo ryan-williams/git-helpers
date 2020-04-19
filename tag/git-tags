@@ -13,4 +13,9 @@ if __name__ == '__main__':
 
 from util.tags import print_recent_tags
 
-print_recent_tags()
+from argparse import ArgumentParser
+parser = ArgumentParser()
+parser.add_argument('-n', '--num', required=False, type=int)
+args = parser.parse_args()
+
+print_recent_tags(n=args.num)

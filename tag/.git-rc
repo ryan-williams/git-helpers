@@ -1,9 +1,13 @@
 
-alias gt="g t"
+alias ggt="g gt"
 
+alias gt="g t"
 alias gtd="g td"
 alias gtf="g tf"
+alias gtg="g tg"
+alias gth="g th"
 alias gtl="g tl"
+alias gtn="g tn"
+alias gtp="g tp"
 alias gts="g ts"
 
-alias ggt="g gt"
