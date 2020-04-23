@@ -4,3 +4,37 @@ defn gn git --no-pager
 
 defn ggd git-git-dir
 defn gx git-git-dir
+#defn gxs git-git-dir
+
+function git_dir_curry() {
+    exportfun=$1; shift
+    #fun=$1; shift
+    params=$*
+    cmd=$"function $exportfun() {
+        dir=\"\$1\";
+        shift;
+        more_params=\$*;
+        while [ -n \"\$dir\" ]; do
+          d=\"\${dir%%,*}\";
+          dir=\"\${dir#*,}\";
+          echo \"** \$d:\";
+          git-git-dir \"\$d\" $params \$more_params;
+          echo \"\";
+          if [ \"\$d\" == \"\$dir\" ]; then break; fi;
+        done
+    }"
+    eval $cmd
+}
+
+git_dir_curry gxb b
+git_dir_curry gxg g
+git_dir_curry gxh sha
+git_dir_curry gxl ln
+git_dir_curry gxr r
+git_dir_curry gxs s
+git_dir_curry gxt t
+git_dir_curry gxc c
+git_dir_curry gxca ca
+git_dir_curry gxcam cam
+git_dir_curry gxcap cap
+git_dir_curry gxcapm capm
