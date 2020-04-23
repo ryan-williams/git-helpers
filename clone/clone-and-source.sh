@@ -110,8 +110,8 @@ else
 fi
 
 if [ -n "$script" ]; then
-  echo "Appending \"source $dir/$script\" to .bashrc"
-  echo "source $dir/$script" >> ~/.bashrc
+  echo "Appending \"source $PWD/$dir/$script\" to .bashrc"
+  echo "source $PWD/$dir/$script" >> ~/.bashrc
 fi
 
 . .bashrc
