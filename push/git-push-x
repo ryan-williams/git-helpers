@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+remotes="$1"
+shift
+while [ 1 ]; do
+  remote="${remotes%%,*}"
+  git push "$remote" "$@"
+  if [ "$remote" == "$remotes" ]; then break; fi
+  remotes="${remotes#*,}"
+done

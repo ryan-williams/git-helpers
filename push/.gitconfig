@@ -3,7 +3,8 @@
   mpf = me-push-force
   pm = push-to-master
   po = push-to-remote-branch origin
-  p = push
+  p = push-x
+  px = push-x
   pn = push -n
   pnt = push -n --tags
   pt = push --tags
