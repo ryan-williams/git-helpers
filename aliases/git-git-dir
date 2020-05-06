@@ -11,6 +11,11 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
-dir="$1"
+dirs="$1"
 shift
-git --git-dir="$dir"/.git --work-tree="$dir" "$@"
+IFS=, read -ra dirs <<< "$dirs"
+for dir in "${dirs[@]}"; do
+  echo "** $dir"
+  echo ""
+  git --git-dir="$dir"/.git --work-tree="$dir" "$@"
+done
