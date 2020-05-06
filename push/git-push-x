@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
-remotes="$1"
-shift
-while [ 1 ]; do
-  remote="${remotes%%,*}"
+if [ $# -gt 0 ]; then
+  IFS=, read -ra remotes <<< "$1"
+  shift
+else
+  remotes=()
+  while read -r remote; do
+    remotes+=("$remote")
+  done < <(git remote)
+fi
+
+for remote in "${remotes[@]}"; do
   git push "$remote" "$@"
-  if [ "$remote" == "$remotes" ]; then break; fi
-  remotes="${remotes#*,}"
 done

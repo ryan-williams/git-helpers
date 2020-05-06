@@ -11,22 +11,20 @@ function git_dir_curry() {
     #fun=$1; shift
     params=$*
     cmd=$"function $exportfun() {
-        dir=\"\$1\";
+        IFS=, read -ra dirs <<< \"\$1\";
         shift;
         more_params=\$*;
-        while [ -n \"\$dir\" ]; do
-          d=\"\${dir%%,*}\";
-          dir=\"\${dir#*,}\";
+        for d in \${dirs[@]}; do
           echo \"** \$d:\";
           git-git-dir \"\$d\" $params \$more_params;
           echo \"\";
-          if [ \"\$d\" == \"\$dir\" ]; then break; fi;
         done
     }"
     eval $cmd
 }
 
 git_dir_curry gxb b
+git_dir_curry gxd d
 git_dir_curry gxg g
 git_dir_curry gxh sha
 git_dir_curry gxl ln

@@ -15,7 +15,9 @@ dirs="$1"
 shift
 IFS=, read -ra dirs <<< "$dirs"
 for dir in "${dirs[@]}"; do
-  echo "** $dir"
-  echo ""
+  if [ ${#dirs[@]} -gt 1 ]; then
+    echo "** $dir:"
+    echo ""
+  fi
   git --git-dir="$dir"/.git --work-tree="$dir" "$@"
 done
