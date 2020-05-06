@@ -1,11 +1,12 @@
 [alias]
-	hc = has-changes
-	hnc = has-no-changes
-	ic = is-clean
-	id = is-dirty
-	s = status
-	sts = status -s
-	stp = status --porcelain
-	st = status -uno
-	su = status -uno
-	sx = status-x
+  hc = has-changes
+  hnc = has-no-changes
+  ic = is-clean
+  id = is-dirty
+  s = status
+  sc = status --porcelain
+  sts = status -s
+  stp = status --porcelain
+  st = status -uno
+  su = status -uno
+  sx = status-x
