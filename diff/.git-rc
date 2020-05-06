@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 alias gd="g d"
+alias gda="g da"
+alias gdas="g das"
 alias gdft="g dft"
 alias gdc="g dc"
 alias gdh="g diff HEAD"
@@ -8,6 +10,7 @@ alias gdn="g dn"
 alias gdno="g dno"
 alias gdns="g dns"
 alias gdp="g dp"
+alias gdps="g dps"
 alias gds="g ds"
 alias gdsc="g dsc"
 alias gdsh="g dsh"

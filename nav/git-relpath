@@ -1,20 +1,32 @@
 #!/usr/bin/env bash
 
-# Output a relative path from one directory to another.
+# Output a relative path from one directory to another; defaults: from git root, to current directory.
+#
+# Usage:
+#
+# $ git relpath              # output path to current directory, relative to git root
+# $ git relpath <path>       # output <path> relative to git root
+# $ git relpath <to> <from>  # output relative path to <to> starting from <from>
 
 set -e
 source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
-if [ $# -eq 0 ]; then
-  "$0" "$PWD" "$(git root)"
-  exit $?
-elif [ $# -eq 1 ]; then
-  "$0" "$PWD" "$1"
-  exit $?
+if [ $# -gt 0 ]; then
+  to="$1"
+  shift
+else
+  to="$PWD"
 fi
 
-from="${1%/}"
-shift
+if [ $# -gt 0 ]; then
+  from="${1%/}"
+  shift
+  if [ "$from" -eq "-" ]; then
+    from="$(git root)"
+  fi
+else
+  from="$(git root)"
+fi
 simplified_from="$(simplify "$from")"
 if [ -d "$from" ]; then
   from_dir="$simplified_from"
@@ -22,48 +34,46 @@ else
   from_dir="$(dirname "$simplified_from")"
 fi
 
-for to in "$@"; do
-  to_dir="$(simplify "$to")"
-  tmp_to="${to_dir#/}"
-  tmp_from="${from_dir#/}"
+to_dir="$(simplify "$to")"
+tmp_to="${to_dir#/}"
+tmp_from="${from_dir#/}"
 
-  while [ 1 ]; do
+while [ 1 ]; do
 
-    from_segment="${tmp_from%%/*}"
+  from_segment="${tmp_from%%/*}"
 
-    to_segment="${tmp_to%%/*}"
+  to_segment="${tmp_to%%/*}"
 
-    if [ "$from_segment" != "$to_segment" -o -z "$from_segment" ]; then
-      break
-    fi
-
-    if [ "$from_segment" == "$tmp_from" ]; then
-      tmp_from=
-    else
-      tmp_from="${tmp_from#*/}"
-    fi
-    if [ "$to_segment" == "$tmp_to" ]; then
-      tmp_to=
-    else
-      tmp_to="${tmp_to#*/}"
-    fi
-
-  done
-
-  if [ -z "$tmp_from" ]; then
-    echo "$tmp_to"
-    continue
+  if [ "$from_segment" != "$to_segment" ] || [ -z "$from_segment" ]; then
+    break
   fi
 
-  dots_str=
-  while [ 1 ]; do
-    dots_str="../$dots_str"
-    next_tmp_from="${tmp_from#*/}"
-    if [ "$tmp_from" == "$next_tmp_from" ]; then
-      break
-    fi
-    tmp_from="$next_tmp_from"
-  done
+  if [ "$from_segment" == "$tmp_from" ]; then
+    tmp_from=
+  else
+    tmp_from="${tmp_from#*/}"
+  fi
+  if [ "$to_segment" == "$tmp_to" ]; then
+    tmp_to=
+  else
+    tmp_to="${tmp_to#*/}"
+  fi
 
-  echo "${dots_str}${tmp_to}"
 done
+
+if [ -z "$tmp_from" ]; then
+  echo "${tmp_to:-.}"
+  exit 0
+fi
+
+dots_str=
+while [ 1 ]; do
+  dots_str="../$dots_str"
+  next_tmp_from="${tmp_from#*/}"
+  if [ "$tmp_from" == "$next_tmp_from" ]; then
+    break
+  fi
+  tmp_from="$next_tmp_from"
+done
+
+echo "${dots_str}${tmp_to}"

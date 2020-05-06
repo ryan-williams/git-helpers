@@ -12,9 +12,9 @@ for arg in "$@"; do
   aliases_dir="$(find "$arg" -type d -name 'aliases')"
   pushd "$aliases_dir" &> /dev/null
   config_file_path="../.gitconfig"
-  config_file_path_from_root="$(git relpath "$(git root)" "$config_file_path")"
+  config_file_path_from_root="$(git relpath "$config_file_path")"
   master_config_file="$(git root)"/config/.gitconfig
-  config_file_path_from_master_config="$(git relpath "$master_config_file" "$config_file_path")"
+  config_file_path_from_master_config="$(git relpath "$config_file_path" "$master_config_file")"
 
   if ! git config -f "$master_config_file" --get-all include.path | grep -q "$config_file_path_from_master_config"; then
     echo "Adding config file: $config_file_path_from_root"

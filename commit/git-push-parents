@@ -13,7 +13,7 @@ if git is-submodule; then
   submodule="$PWD"
   cd ..
   root="$(git root)"
-  name="$(git relpath "$root" "$submodule")"
+  name="$(git relpath "$submodule" "$root")"
   cd "$root" || exit 1
   path="$name/$path"
   echo "Moved to parent git repo: $root; committing and pushing $name (full path: $path)"

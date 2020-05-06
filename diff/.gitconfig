@@ -1,5 +1,9 @@
 [alias]
   d    = diff
+  da   = diff-pipe
+  das  = diff-pipe sort
+  dp   = diff-pipe
+  dps  = diff-pipe sort
   dc   = diff --cached
   df   = diff
   dft  = difftool
@@ -7,7 +11,6 @@
   dn   = diff --name-status
   dno  = diff --name-only
   dns  = diff --name-status
-  dp   = diff -p
   ds   = diff --stat
   dsc  = diff --stat --cached
   dsh  = diff --stat HEAD
