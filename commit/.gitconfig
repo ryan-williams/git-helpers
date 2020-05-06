@@ -13,7 +13,8 @@
   cnm   = commit --amend -m
   cap   = commit-push
   caap  = commit-push -a
-  capm  = commit-push -m
+  cpm   = commit-push -m
+  capm  = commit-push -a -m
   caapm = commit-push -a -m
   cpam  = commit-push -a -m
   cpp   = commit-push-parents

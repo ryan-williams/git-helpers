@@ -5,6 +5,7 @@
   po = push-to-remote-branch origin
   p = push-x
   px = push-x
+  ph = push-head
   pn = push -n
   pnt = push -n --tags
   pt = push --tags

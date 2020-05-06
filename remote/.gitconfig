@@ -20,7 +20,8 @@
   rmv       = remote-rename
   rrm       = remote remove
 
-  rsh       = remote set-head
+  rsh       = remote-set-head
+  rsha      = remote-set-head-auto
 
   gru       = remote-get-url
   rgu       = remote-get-url

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ "$#" -gt 0 ]; then
+  remote="$1"
+  shift
+else
+  remote="${DEFAULT_GIT_REMOTE}"
+fi
+
+git remote set-head -a "$remote"

@@ -33,8 +33,6 @@ if remote_name not in remotes:
   die("Remote '%s' doesn't exist" % remote_name)
 
 remote = remotes[remote_name]
-if remote.host != 'github.com':
-  die("Remote '%s' doesn't appear to be a github remote: %s@%s" % (remote_name, remote.user, remote.host))
 
 remote_fetch_config_key = 'remote.%s.fetch' % remote_name
 remote_fetch_config_pr_mapping = 'refs/remotes/pr/*' if remote_name == default_remote else 'refs/remotes/%s/pr/*' % remote_name

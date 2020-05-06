@@ -2,29 +2,35 @@
 
 
 [color]
-        diff    = auto
-        status  = auto
         branch  = auto
-        grep = auto
+        diff    = auto
+        grep    = auto
+        status  = auto
 
 [color "diff"]
        meta = yellow bold
 
 [alias]
-        cf = config
-        cg = config --global
-        cfa = config --add
-        cga = config --add --global
-        cfl = config --get-all
-        cgl = config --get-all --global
-        cfd = config --unset
-        cgd = config --unset --global
+        cf   = config
+        cg   = config --global
+        cfa  = config --add
+        cga  = config --add --global
+        cfd  = config --unset
+        cgd  = config --unset --global
         cfda = config --unset-all
         cgda = config --unset-all --global
+        cfl  = config --get-all
+        cgl  = config --get-all --global
+        cfs  = config --list
+        cgs  = config --list --global
+        cfu  = config --unset
+        cgu  = config --unset --global
+        cfua = config --unset-all
+        cgua = config --unset-all --global
 
         cfi = config --get-all include.path
         cgi = config --get-all  --global include.path
-        global-config-file = config --get-all  --global include.path
+        global-config-file = config --get-all --global include.path
 
         cfig = config --get-all core.excludesfile
         cgig = config --get-all --global core.excludesfile

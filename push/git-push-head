@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Push current head to its upstream tracking branch
+
+head="$(git symbolic-ref -q HEAD)"
+remote="$(git for-each-ref --format='%(upstream:remotename)' "$head")"
+dst="$(git for-each-ref --format='%(upstream:remoteref)' "$head")"
+
+git push "$@" "$remote" HEAD:"$dst"

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# git diff --stat of a commit against its parent
+
+sha="${@:(($#))}"
+set -- "${@:1:$(($#-1))}"
+
+git diff "$@" "$sha^..$sha"

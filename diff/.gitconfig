@@ -1,18 +1,23 @@
 [alias]
-  d  = diff
-  dc = diff --cached
-  df = diff
-  dft = difftool
-  dh = diff HEAD
-  dn = diff --name-status
-  dno = diff --name-only
-  dns = diff --name-status
-  dp = diff -p
-  ds = diff-stat
-  dt = diff-tree
-  dtp = diff-tree -p
-  du = diff -u
-  d1 = diff-no-context
+  d    = diff
+  dc   = diff --cached
+  df   = diff
+  dft  = difftool
+  dh   = diff HEAD
+  dn   = diff --name-status
+  dno  = diff --name-only
+  dns  = diff --name-status
+  dp   = diff -p
+  ds   = diff --stat
+  dsc  = diff --stat --cached
+  dsh  = diff --stat HEAD
+  dsp  = diff --stat HEAD^
+  dsph = diff --stat HEAD^..HEAD
+  dsu  = diff-stat-parent
+  dt   = diff-tree
+  dtp  = diff-tree -p
+  du   = diff -u
+  d1   = diff-no-context
 
 [diff]
   submodule = diff
