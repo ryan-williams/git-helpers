@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+IFS=, read -ra shas <<< "$1"
+shift
+for sha in "${shas[@]}"; do
+  for module in "${@:-`git submodules`}"; do
+    dir="$(dirname "$module")"
+    if [ "$dir" == "." ]; then dir=; fi
+    name="$(basename "$module")"
+    git cat-file -p "$sha:$dir" | awk "\$4 == \"$name\" {print \$3}"
+  done
+done
