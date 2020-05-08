@@ -36,7 +36,7 @@ shift
 file="$1"
 shift
 
-if [ "$(git root)" != "."  ]; then
+if [ "$(git relpath "$(git root)")" != "."  ]; then
   file="$(git relpath "$file")"
 fi
 
