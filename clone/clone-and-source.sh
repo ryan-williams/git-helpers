@@ -114,4 +114,4 @@ if [ -n "$script" ]; then
   echo "source $PWD/$dir/$script" >> ~/.bashrc
 fi
 
-. .bashrc
+. ~/.bashrc
