@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+msg="${@: -1}"
+paths=("${@:1:(($#-1))}")
+
+git add "${paths[@]}" && git commit -m "$msg"

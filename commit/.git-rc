@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+alias gacm="g acm"
 alias gc="g c"
 alias gca="g ca"
 alias gcam="g cam"

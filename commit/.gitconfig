@@ -1,4 +1,5 @@
 [alias]
+  acm   = add-and-commit-msg
   c     = commit
   ca    = commit -a
   cm    = commit -m
