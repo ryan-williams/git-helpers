@@ -8,6 +8,8 @@
   hashes = hash
   hsh = full-hash
   l1 = log-oneline
+  lgs = log --stat
+  lst = log --stat
   lp = log -p
   lg1 = log-oneline
   lh = log-hash
