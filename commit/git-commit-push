@@ -4,12 +4,13 @@
 #
 # The remote to push to is the first argument (if it matches a git remote), or $DEFAULT_REMOTE.
 
-if [ $# -gt 0 ] && git remote-exists "$1"; then
-  remote="$1"
-  shift
+if [ $# -gt 0 ] && git remote-exists "${@: -1}"; then
+  IFS=, read -ra remotes <<< "${@: -1}"
+  set -- "${@:1:(($#-1))}"
 else
-  remote="${DEFAULT_REMOTE:-upstream}"
+  remotes=("${DEFAULT_REMOTE:-upstream}")
 fi
-echo "Pushing to: $remote"
+echo "Pushing to: ${remotes[@]}"
 
-git commit "$@" && git push "$remote"
+
+git commit "$@" && for remote in "${remotes[@]}"; do git push "$remote"; done

@@ -5,9 +5,16 @@
 
 set -e
 
-remote="$1"
-git remote show -n "$remote" &> /dev/null
+IFS=, read -ra remotes <<< "$1"
 shift
-if [ $# -gt 0 ]; then
-  diff -q <(echo "$1") <(git ls-remote --get-url "$remote") > /dev/null
+if [ ${#remotes[@]} -gt 1 ]; then
+  for remote in "${remotes[@]}"; do
+    git remote-exists "$remote"
+  done
+else
+  remote="${remotes[1]}"
+  git remote show -n "$remote" &> /dev/null
+  if [ $# -gt 0 ]; then
+    diff -q <(echo "$1") <(git ls-remote --get-url "$remote") > /dev/null
+  fi
 fi

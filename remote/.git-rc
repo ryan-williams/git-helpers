@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+defn gir g ir
 defn gr g r
 defn grv g rv
 defn gra g ra
