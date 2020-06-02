@@ -1,6 +1,10 @@
 [alias]
   eq = equal
   sh = show
+  shf = show-sha-file
+  ssf = show-sha-file
+  shh = show-sha-file HEAD
+  shp = show-sha-file HEAD^
   shs = show --stat
   sn = show-names
   sln = show-local-names

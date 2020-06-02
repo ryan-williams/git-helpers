@@ -6,8 +6,9 @@
 set -e
 source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
+remote="$(git default-remote)"
 if [ $# -eq 0 ]; then
-  args="$DEFAULT_REMOTE/HEAD..HEAD"
+  args="$remote/HEAD..HEAD"
 elif [ $# -eq 1 ]; then
   if [[ ! "$1" =~ \.\. ]]; then
     args="$1..HEAD"
@@ -20,7 +21,7 @@ else
   echo <<EOF
   Usage:
 
-      $0               # squash from $DEFAULT_REMOTE/HEAD to HEAD
+      $0               # squash from $remote/HEAD to HEAD
       $0 <from> <to>   # squash from <from> to <to>
       $0 <from>..<to>  # squash from <from> to <to>
       $0 <from>        # squash from <from> to HEAD

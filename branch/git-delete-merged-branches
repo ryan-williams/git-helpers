@@ -23,7 +23,7 @@ if [[ $* == *--remote* ]]; then
   # See http://stackoverflow.com/a/8236216/388951
   git branch -a --merged remotes/"$remote"/master \
     | grep -v master \
-    | grep "remotes/$DEFAULT_REMOTE/" \
+    | grep "remotes/$remote/" \
     | cut -d "/" -f 3 \
     | xargs -n 1 git push --delete "$remote"
 else

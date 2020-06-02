@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+  author="$(git config user.name)"
+  email="$(git config user.email)"
+elif [ $# -eq 1 ]; then
+  email="$1"; shift
+  #author="$(git log -n1 --format=%an)"
+  author="$(git config user.name)"
+elif [ $# -eq 2 ]; then
+  author="$1"; shift
+  email="$1"; shift
+else
+  echo "Usage:" >&2
+  echo "  $0 <email>" >&2
+  echo "  $0 <name> <email>" >&2
+  exit 1
+fi
+
+git commit --amend --author="${author} <${email}>)" --no-edit

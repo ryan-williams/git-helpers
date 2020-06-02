@@ -26,7 +26,7 @@ elif [ $# -eq 2 ]; then
     local_branch="${refspec%%:*}"
     remote_branch="${refspec##*:}"
   else
-    remote="$DEFAULT_REMOTE"
+    remote="$(git default-remote)"
     local_branch="$1"
     remote_branch="$2"
     refspec="$local_branch:$remote_branch"
@@ -38,7 +38,7 @@ elif [ $# -eq 1 ]; then
     remote_branch="$local_branch"
     refspec="$local_branch:$remote_branch"
   else
-    remote="$DEFAULT_REMOTE"
+    remote="$(git default-remote)"
     refspec="$1"
     local_branch="${refspec%%:*}"
     remote_branch="${refspec##*:}"

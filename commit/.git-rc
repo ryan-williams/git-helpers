@@ -24,6 +24,9 @@ alias gcpp="g cpp"
 alias gcppa="g cppa"
 alias gcppam="g cppam"
 alias gcppm="g cppm"
+
+alias gfua="g fua"
+
 alias gpp="g pp"
 alias gppa="g ppa"
 alias gppam="g ppam"

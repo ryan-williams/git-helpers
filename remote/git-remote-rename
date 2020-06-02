@@ -8,7 +8,7 @@ else
 fi
 
 if [ $# -eq 0 ]; then
-  to="$DEFAULT_REMOTE"
+  to="$(git default-remote -n)"
 else
   to="$1"
   shift

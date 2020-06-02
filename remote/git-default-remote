@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+skip_existing=
+if [ "$1" == "-n" ]; then
+  skip_existing=1
+fi
+
+remote="$(git config remote.default)"
+if [ -n "$remote" ]; then
+  echo "$remote"
+  exit 0
+fi
+
+if [ -z "$skip_existing" ]; then
+  remotes=()
+  while read -r remote; do
+    remotes+=("$remote")
+  done < <(git remote)
+
+  if [ ${#remotes[@]} -eq 1 ]; then
+    echo "${remotes[0]}"
+    exit 0
+  fi
+fi
+
+if [ -n "$DEFAULT_REMOTE" ]; then
+  echo "$DEFAULT_REMOTE"
+  exit 0
+fi
+
+echo "$origin"

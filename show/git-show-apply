@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+IFS=, read -ra shas <<< "$1"; shift
+file="$1"; shift
+
+if [ $# -gt 0 ]; then
+  cmd="$1"; shift
+else
+  cmd=
+fi
+
+#echo "shas: ${shas[@]}, file: $file, cmd: $cmd"
+
+for sha in "${shas[@]}"; do
+  echo "$sha"
+done | \
+parallel -k -j+0 "git show {}:$file | $cmd"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# -eq 0 ]; then
-  remote="$DEFAULT_REMOTE"
+  remote="$(git default-remote)"
 else
   remote="$1"
   shift

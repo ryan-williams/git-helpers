@@ -5,22 +5,24 @@
 set -e
 source "$GIT_HELPERS_HOME"/config/.helpers-rc
 
+remote="$(git default-remote)"
+
 if [ $# -eq 0 ]; then
-	echo "Usage: git new-branch <new branch name> [<tracking branch name=$DEFAULT_REMOTE/master>]"
-	exit 1
+  echo "Usage: git new-branch <new branch name> [<tracking branch name=$remote/master>]"
+  exit 1
 fi
 
 new_branch_name="$1"
 if [ $# -gt 1 ]; then
-	tracking_branch_name="$2"
+  tracking_branch_name="$2"
 else
-	if git rev-parse --verify -q "$DEFAULT_REMOTE"/HEAD; then
-		tracking_branch_name="$DEFAULT_REMOTE"/HEAD
-	elif git rev-parse --verify -q "$DEFAULT_REMOTE"/master; then
-		tracking_branch_name="$DEFAULT_REMOTE/master"
-	else
-		err "Neither $DEFAULT_REMOTE/HEAD nor $DEFAULT_REMOTE/master found"
-	fi
+  if git rev-parse --verify -q "$remote"/HEAD; then
+    tracking_branch_name="$remote"/HEAD
+  elif git rev-parse --verify -q "$remote"/master; then
+    tracking_branch_name="$remote/master"
+  else
+    err "Neither $remote/HEAD nor $remote/master found"
+  fi
 fi
 
 git checkout -b "$new_branch_name" -t "$tracking_branch_name"

@@ -17,7 +17,7 @@
 # TODO(ryan): do smart wrapping on the body at 70-chars, per official guidance!
 
 if [ $# -eq 0 ]; then
-  args="$DEFAULT_REMOTE/HEAD..HEAD"
+  args="$(git default-remote)/HEAD..HEAD"
 else
   args="$@"
 fi

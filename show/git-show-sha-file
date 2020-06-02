@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+sha="$1"; shift
+file="$1"; shift
+git show "$sha:$file" "$@"

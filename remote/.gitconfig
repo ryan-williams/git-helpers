@@ -2,6 +2,8 @@
   r         = remote -vv
   rv        = remote -vv
 
+  dfr       = default-remote
+
   ra        = remote add
   rao       = remote add origin
   rau       = remote add upstream

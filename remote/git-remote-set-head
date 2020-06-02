@@ -4,7 +4,7 @@ if [ "$#" -gt 0 ]; then
   remote="$1"
   shift
 else
-  remote="${DEFAULT_GIT_REMOTE}"
+  remote="$(git default-remote)"
 fi
 
 if [ "$#" -gt 0 ]; then

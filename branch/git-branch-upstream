@@ -5,20 +5,10 @@
 #   $ git branch-upstream [upstream ref] <branch>
 
 if [ $# -eq 0 ]; then
-  upstream="$DEFAULT_REMOTE/master"
+  upstream="$(git default-remote)/master"
 else
   upstream="$1"
   shift
 fi
 
-if g vgte "1.8"; then
-  git branch --set-upstream-to "$upstream" "$@"
-else
-  if [ $# -eq 0 ]; then
-    target="$(git current-branch)"
-  else
-    target="$1"
-  fi
-  git branch --set-upstream "$target" "$upstream"
-fi
-
+git branch --set-upstream-to "$upstream" "$@"

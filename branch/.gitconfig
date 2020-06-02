@@ -40,3 +40,5 @@
 
   all-branches = for-each-ref --format='%(refname:short)'
   ab = all-branches
+
+  be = branch-exists

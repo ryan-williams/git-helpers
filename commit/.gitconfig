@@ -22,6 +22,7 @@
   cppa  = commit-push-parents -a
   cppam = commit-push-parents -a -m
   cppm  = commit-push-parents -m
+  fua   = fixup-author
   pp    = commit-push-parents
   ppa   = commit-push-parents -a
   ppam  = commit-push-parents -a -m

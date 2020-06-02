@@ -2,11 +2,14 @@
   ps    = !git pull --rebase && git submodule update --recursive
   sm    = submodule
   sma   = submodule add --quiet
+  smd   = submodule deinit
   smi   = submodule init
   sms   = submodules
   smst  = submodule status
   smt   = submodule status
+  fes   = submodule foreach --quiet
   sf    = submodule foreach --quiet
+  sfv   = submodule foreach
   smf   = submodule foreach --quiet
   ssh   = submodule-shas
   sst   = submodule-shas

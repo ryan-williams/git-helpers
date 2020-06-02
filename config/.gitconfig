@@ -43,3 +43,10 @@
         aps = allow-pushes
         receive-pushes = allow-pushes
         rcp = receive-pushes
+
+        sid = set-id
+        gid = get-id
+        ue = config user.email
+        un = config user.name
+        gue = config --global user.email
+        gun = config --global user.name

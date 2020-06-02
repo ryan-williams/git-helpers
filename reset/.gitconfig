@@ -6,3 +6,4 @@
   rh = reset-hard
   rhh = reset --hard HEAD
   rrs = reverse-reset
+  rsf = checkout HEAD --

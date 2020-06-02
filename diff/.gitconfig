@@ -3,6 +3,7 @@
   da   = diff-pipe
   das  = diff-pipe sort
   dp   = diff-pipe
+  dph  = diff HEAD^..HEAD
   dps  = diff-pipe sort
   dc   = diff --cached
   df   = diff
@@ -11,8 +12,10 @@
   dn   = diff --name-status
   dno  = diff --name-only
   dns  = diff --name-status
+  dq   = diff --quiet
   ds   = diff --stat
   dsc  = diff --stat --cached
+  dcs  = diff --stat --cached
   dsh  = diff --stat HEAD
   dsp  = diff --stat HEAD^
   dsph = diff --stat HEAD^..HEAD
