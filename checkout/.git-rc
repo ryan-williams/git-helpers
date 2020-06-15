@@ -2,6 +2,7 @@
 
 alias gco="g co"
 alias gcob="g cob"
+alias gcof="g cof"
 alias gcoh="g coh"
 alias gcom="gco master"
 alias gcop="g cop"
