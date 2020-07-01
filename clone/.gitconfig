@@ -1,3 +1,3 @@
 [alias]
-  cln = clone --recurse-submodules
+  cln = clone-and-cd
   mc = my-clone

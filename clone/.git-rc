@@ -1,3 +1,5 @@
 
 alias gcln="g cln"
+alias gccd=". git-clone-and-cd"
+alias gcsb=". git-clone-single-branch"
 alias gmc="g mc"

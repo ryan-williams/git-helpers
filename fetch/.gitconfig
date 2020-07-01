@@ -1,5 +1,6 @@
 [alias]
   f   = fetch --tags
+  ff  = fetch --force --tags
   ft  = fetch --tags
   fa  = fetch --tags --all
   fta = fetch --tags --all

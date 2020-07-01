@@ -1,10 +1,11 @@
-from os import chdir, getcwd
+from os import chdir, environ as env, getcwd
 from os.path import exists
 from pathlib import Path
 from re import search
 from subprocess import check_call, check_output, DEVNULL, CalledProcessError
 import sys
 from tempfile import NamedTemporaryFile
+from urllib.parse import urlparse
 
 
 class cd:
@@ -44,6 +45,16 @@ def line(*args, **kwargs):
     return line
 
 
+def parse_gist_url(url):
+    url = urlparse(url)
+    path = url.path
+    assert path[0] == '/'
+    path = path[1:]
+    id = path.split('/')[-1]
+    ssh_url = f'git@{url.netloc}:{path}.git'
+    return id, ssh_url
+
+
 def gist_dir(
     dir,
     remote='gist',
@@ -53,7 +64,9 @@ def gist_dir(
     private=False,
     files=None,
     push_history=False,
-    restore_branch=False
+    restore_branch=False,
+    host=None,
+    gist=None,
 ):
     dir = Path(dir)
     print(f"Gist'ing {dir}")
@@ -63,31 +76,36 @@ def gist_dir(
         # if not init and files:
         #     raise Exception('File-restrictions not supported for existing git-repo directories')
 
-        with NamedTemporaryFile(dir=Path.cwd()) as f:
-            name = f.name
-            # initialize the gist with a dummy file
-            with open(name, 'w') as f:
-                f.write('placeholder text; in process of creating Gist from existing files\n')
+        if gist:
+            id, ssh_url = parse_gist_url(gist)
+        else:
+            with NamedTemporaryFile(dir=Path.cwd()) as f:
+                name = f.name
+                # initialize the gist with a dummy file
+                with open(name, 'w') as f:
+                    f.write('placeholder text; in process of creating Gist from existing files\n')
 
-            # prepare gist cmd
-            cmd = [ 'gist' ]
-            if copy_url:
-                cmd.append('-c')
-            if private:
-                cmd.append('-p')
-            cmd.append(name)
+                # prepare gist cmd
+                cmd = [ 'gist' ]
+                if copy_url:
+                    cmd.append('-c')
+                if private:
+                    cmd.append('-p')
+                cmd.append(name)
 
-            # create the gist and grab its ID
-            url = check_output(cmd).decode().strip()
-            id = search('(?P<id>[^/]+)$', url).groupdict()['id']
-            print(f"Created gist {url} (id {id})")
+                # create the gist and grab its ID
+                url = check_output(cmd).decode().strip()
+                id, ssh_url = parse_gist_url(url)
+                print(f"Created gist {url} (id {id})")
 
-            if init:
-                # make working dir a clone of the upstream gist
-                run('git', 'init')
+                if init:
+                    # make working dir a clone of the upstream gist
+                    run('git', 'init')
 
-            run('git', 'remote', 'add', remote, f"git@gist.github.com:{id}.git")
-            run('git', 'fetch', remote)
+        remotes = lines('git','remote')
+        if remote not in remotes:
+            run('git','remote','add',remote,ssh_url)
+        run('git','fetch', remote)
 
         prev_branch = line('git', 'symbolic-ref', '-q', '--short', 'HEAD')
         prev_sha = line('git', '--no-pager', 'log', '--no-walk', '--format=%h', 'HEAD')
@@ -102,7 +120,7 @@ def gist_dir(
                     file = Path(file)
                     if not file.exists():
                         run(*['git','checkout',prev_sha,'--',file])
-                    
+
                     run('git', 'add', file)
             else:
                 run('git', 'add', '.')
@@ -136,6 +154,8 @@ if __name__ == '__main__':
     parser.add_argument('-B', '--restore_branch', default=False, action='store_true', help="Move back to current branch at end of execution (by default, a new local branch tracking the new Gist's \"master\" branch is checked out when `gist-dir` is finished running")
     parser.add_argument('-c', '--copy', default=False, action='store_true', help="Copy the resulting gist's URL to the clipboard")
     parser.add_argument('-d', '--dir', required=False, help="Specify a single directory to make a gist from; any positional arguments must point to files in this directory")
+    parser.add_argument('-e', '--enterprise_host', help="Use a GitHub Enterprise host (defaults to $GITHUB_URL, when set)")
+    parser.add_argument('-g', '--gist', help="URL of an existing Gist (will overwrite that Gist's contents!)")
     parser.add_argument('-o', '--open', default=False, action='store_true', help="Open the gist when finished running")
     parser.add_argument('-p', '--private', default=False, action='store_true', help="Make the gist private")
     parser.add_argument('-r', '--remote', default='gist', help='Name to use for a git remote created in each repo/directory, which points at the created gist.')
@@ -150,6 +170,12 @@ if __name__ == '__main__':
     private = args.private
     push_history = args.history
     restore_branch = args.restore_branch
+
+    host = args.enterprise_host
+    if host:
+        env['GITHUB_URL'] = host
+
+    gist = args.gist
 
     paths = [ Path(path) for path in args.paths ]
     are_files = [ path.is_file() for path in paths ]
@@ -183,4 +209,6 @@ if __name__ == '__main__':
             files=files,
             push_history=push_history,
             restore_branch=restore_branch,
+            host=host,
+            gist=gist,
         )

@@ -6,6 +6,9 @@ defn gr g r
 defn grv g rv
 defn gra g ra
 defn grao g rao
+defn grah g rah
+defn gras g ras
+defn grat g rat
 defn grau g rau
 defn gre g re
 defn gcd g cd

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 alias gf="g f"
+alias gff="g ff"
 alias gft="g ft"
 alias gfa="g fa"
 alias gfta="g fta"

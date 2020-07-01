@@ -7,3 +7,4 @@
   au = add -u
   aup = add -u -p
   apu = add -p -u
+  aus = !git add -u && git status
