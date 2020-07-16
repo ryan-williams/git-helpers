@@ -7,11 +7,13 @@ from subprocess import check_call, check_output
 
 parser = ArgumentParser()
 parser.add_argument('--https',action='store_true',help='When set, add an HTTPS remote')
+parser.add_argument('-F','--no-fetch',action='store_true',help="When set, don't fetch from the newly added remote")
 parser.add_argument('-s','--ssh',action='store_true',help='When set, add an SSH remote')
-parser.add_argument('name',nargs='?',help='Name of the remote to add')
 parser.add_argument('remote',nargs='?',help='Name of the remote to add')
+parser.add_argument('name',nargs='?',help='Name of the remote to add')
 args = parser.parse_args()
 https = args.https
+fetch = not args.no_fetch
 ssh = args.ssh
 remote = args.remote
 name = args.name
@@ -50,3 +52,6 @@ else:
 
     print(f'Adding HTTPS remote {name}: {https_url}')
     check_call(['git','remote','add',name,https_url])
+
+if fetch:
+    check_call(['git','fetch',name])
