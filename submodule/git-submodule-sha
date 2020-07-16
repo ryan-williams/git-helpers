@@ -1,12 +1,30 @@
 #!/usr/bin/env bash
+#
+# Print submodules' SHAs (as viewed by their containing repo, optionally at specific outer refs)
+#
+# Usage: git submodule-sha [parent_sha=HEAD,parent_sha2,...] [submodule1 [submodule2 [...]]]
 
-IFS=, read -ra shas <<< "$1"
-shift
+if [ $# -eq 0 ]; then
+  IFS=$'\n' read -d '' -r -a modules < <(git submodules)
+else
+  IFS=, read -ra modules <<< "$1"
+  shift
+  if [ ${#modules[@]} -eq 1 -a "${modules[0]}" == "--" ]; then
+    IFS=$'\n' read -d '' -r -a modules < <(git submodules)
+  fi
+fi
+if [ $# -gt 0 ]; then
+  IFS=, read -ra shas <<< "$1"
+  shift
+else
+  shas=(HEAD)
+fi
 for sha in "${shas[@]}"; do
-  for module in "${@:-`git submodules`}"; do
+  for module in ${modules[@]}; do
     dir="$(dirname "$module")"
     if [ "$dir" == "." ]; then dir=; fi
     name="$(basename "$module")"
+    echo -n "$name"$'\t'
     git cat-file -p "$sha:$dir" | awk "\$4 == \"$name\" {print \$3}"
   done
 done

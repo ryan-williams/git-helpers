@@ -15,12 +15,14 @@
   sst   = submodule-shas
   smu   = submodule update
   smir  = !git submodule init && git submodule update --recursive
+  smh   = submodule-sha
+  smid  = submodule-sha
+  smsh  = submodule-sha
+  smsha = submodule-sha
+  smshs = submodule-shas
   smuf  = submodule update --recursive --rebase
   smur  = submodule update --recursive --init
   smurr = submodule update --recursive --rebase
-  smsh  = submodule-sha
-  smsha = submodule-sha
-  smid  = submodule-sha
   smuq  = submodule update --quiet
   smurq = submodule update --recursive --quiet
   su    = submodule update

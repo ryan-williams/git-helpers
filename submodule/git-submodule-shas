@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
+#
+# cd into each submodule and print its current HEAD SHA
 
 git submodules "$@" | parallel -k -j+0 --env PATH 'echo -n "{} "; gx {} hsh'
