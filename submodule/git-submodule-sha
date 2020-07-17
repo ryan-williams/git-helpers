@@ -2,29 +2,72 @@
 #
 # Print submodules' SHAs (as viewed by their containing repo, optionally at specific outer refs)
 #
-# Usage: git submodule-sha [parent_sha=HEAD,parent_sha2,...] [submodule1 [submodule2 [...]]]
+# Usage: git submodule-sha [spec [spec2 [...]]]
+#
+# Where each `spec` is composed of two ":"-delimited components:
+# - "ref": a Git ref (commit SHA or branch; default: HEAD)
+# - "module": path to a Git submodule
+#
+# SHAs are sometimes prefixed by (tab-delimited) columns:
+#
+# - submodule name (omitted iff exactly one submodule argument is explicitly provided)
+# - parent SHA (omitted iff <2 are provided as (comma-delimited) arguments)
 
+specs=()
+print_module_names=
+last_module=
+print_refs=
+last_ref=
 if [ $# -eq 0 ]; then
-  IFS=$'\n' read -d '' -r -a modules < <(git submodules)
-else
-  IFS=, read -ra modules <<< "$1"
-  shift
-  if [ ${#modules[@]} -eq 1 -a "${modules[0]}" == "--" ]; then
-    IFS=$'\n' read -d '' -r -a modules < <(git submodules)
+  set -- :
+fi
+for arg in "$@"; do
+  module="${arg#*:}"
+  if [ "$module" == "$arg" ]; then
+    ref=HEAD
+  else
+    ref="${arg%:*}"
+    if [ -z "$ref" ]; then
+      ref=HEAD
+    fi
   fi
-fi
-if [ $# -gt 0 ]; then
-  IFS=, read -ra shas <<< "$1"
-  shift
-else
-  shas=(HEAD)
-fi
-for sha in "${shas[@]}"; do
+  if [ -n "$last_ref" -a "$last_ref" != "$ref" ]; then
+    print_refs=1
+  fi
+  last_ref="$ref"
+
+  if [ -z "$module" ]; then
+    IFS=$'\n' read -d '' -r -a modules < <(git submodules)
+    print_module_names=1
+  else
+    modules=("$module")
+    if [ -n "$last_module" -a "$last_module" != "$module" ]; then
+      print_module_names=1
+    fi
+    last_module="$module"
+  fi
   for module in ${modules[@]}; do
-    dir="$(dirname "$module")"
-    if [ "$dir" == "." ]; then dir=; fi
-    name="$(basename "$module")"
-    echo -n "$name"$'\t'
-    git cat-file -p "$sha:$dir" | awk "\$4 == \"$name\" {print \$3}"
+    specs+=("$ref:$module")
   done
+done
+
+for spec in ${specs[@]}; do
+  ref="${spec%:*}"
+  module="${spec#*:}"
+  #echo "spec: $spec, ref: $ref, module: $module"
+
+  dir="$(dirname "$module")"
+  if [ "$dir" == "." ]; then dir=; fi
+
+  name="$(basename "$module")"
+
+  if [ -n "$print_refs"  ]; then
+    echo -n "$ref"$'\t'
+  fi
+
+  if [ -n "$print_module_names" ]; then
+    echo -n "$name"$'\t'
+  fi
+
+  git cat-file -p "$ref:$dir" | awk "\$4 == \"$name\" {print \$3}"
 done
