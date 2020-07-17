@@ -4,6 +4,7 @@
   sma   = submodule add --quiet
   smd   = submodule deinit
   smi   = submodule init
+  smlg  = submodule-log
   sms   = submodules
   smst  = submodule status
   smt   = submodule status
