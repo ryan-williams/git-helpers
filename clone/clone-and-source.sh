@@ -4,6 +4,7 @@ declare -a ARGS
 
 branch=
 inplace=
+jobs=8
 remote=upstream
 script=
 dest=
@@ -12,11 +13,12 @@ while [ $# -gt 0 ]
 do
     unset OPTIND
     unset OPTARG
-    while getopts ":b:ir:s:" opt
+    while getopts ":b:ij:r:s:" opt
     do
       case "$opt" in
         b) branch="$OPTARG";;
         i) inplace=1;;
+        j) jobs="$OPTARG";;
         r) remote="$OPTARG";;
         s) script="$OPTARG";;
         *) ;;
@@ -65,18 +67,18 @@ if [ -z "$inplace" ]; then
   dir="${dir##*/}"
   echo "Cloning $url to $dir"
   if [ -z "$dest" ]; then
-    git clone "$url"
+    git clone -j "$jobs" "$url"
   else
-    git clone "$url" "$dest"
+    git clone -j "$jobs" "$url" "$dest"
   fi
 
-  pushd "$dir"
+  pushd "$dir" || exit 2
   if [ -n "$branch" ]; then
     echo "Checking out branch $branch"
     git checkout "$branch"
   fi
-  git submodule update --init --recursive
-  popd
+  git submodule update --init --recursive --jobs "$jobs"
+  popd || exit 3
 
   if [ -z "$script" ]; then
     script=".*rc"
@@ -106,7 +108,7 @@ else
 
   echo "Checking out branch $branch"
   git checkout "$branch"
-  git submodule update --init --recursive
+  git submodule update --init --recursive --jobs "$jobs"
 fi
 
 if [ -n "$script" ]; then
