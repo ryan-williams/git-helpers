@@ -3,6 +3,11 @@ alias gm="g m"
 alias gma="g ma"
 alias gmt="g mt"
 
+alias gmf="g mf"
+alias gmff="g mff"
+alias gmnf="g mnf"
+alias gmnnf="g mnnf"
+
 alias gmm="g mm"
 alias gmn="g mn"
 alias gmne="g mne"
