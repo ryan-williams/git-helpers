@@ -77,7 +77,7 @@ if [ -z "$inplace" ]; then
     echo "Checking out branch $branch"
     git checkout "$branch"
   fi
-  git submodule update --init --recursive --jobs "$jobs"
+  git submodule update --init --recursive --jobs "$jobs" || return 100 2>/dev/null || exit 100
   popd || exit 3
 
   if [ -z "$script" ]; then
