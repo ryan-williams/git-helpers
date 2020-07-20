@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
-if [ $# -ne 2 ]; then
+if [ $# -eq 0 ]; then
+  name="$(git log -n1 --format=%an)"
+  email="$(git log -n1 --format=%ae)"
+elif [ $# -ne 2 ]; then
   echo "Usage: $0 <name> <email>" >&2
   exit 1
+else
+  name="$1"; shift
+  email="$1"; shift
 fi
 
-name="$1"; shift
-email="$1"; shift
-
+echo "Setting global Git configs: name=$name, email=$email"
 git config --global user.name "$name"
 git config --global user.email "$email"
