@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
 git clone --recurse-submodules "$@" && \
-cd "$(last-updated-dir)"
+cd "$(last-updated-dir)" || \
+exit 1
