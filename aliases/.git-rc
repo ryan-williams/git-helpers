@@ -1,6 +1,7 @@
 
 defn g git
 defn gn git --no-pager
+defn gnx g nx
 
 defn ggd git-git-dir
 defn gx git-git-dir
