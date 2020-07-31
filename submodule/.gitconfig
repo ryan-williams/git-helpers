@@ -1,5 +1,5 @@
 [alias]
-  ps    = !git pull --rebase && git submodule update --recursive
+  ps    = !git pull --rebase && git submodule update --init --recursive
   sm    = submodule
   sma   = submodule add --quiet
   smd   = submodule deinit
