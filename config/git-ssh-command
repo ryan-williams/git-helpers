@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 <ssh private key path>" >&2
+  exit 1
+fi
+file="$1"; shift
+
+git config core.sshCommand "ssh -i $file"

@@ -50,3 +50,5 @@
         un = config user.name
         gue = config --global user.email
         gun = config --global user.name
+
+        shc = ssh-command
