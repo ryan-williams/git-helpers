@@ -6,4 +6,12 @@ if [ $# -ne 1 ]; then
 fi
 file="$1"; shift
 
+if [ ! -e "$file" ]; then
+  echo "SSH key not found: $file" >&2
+  exit 2
+fi
+
+file="$(readlink -f "$file")"
+
+echo "Setting Git SSH key: $file"
 git config core.sshCommand "ssh -i $file"
