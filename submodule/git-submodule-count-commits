@@ -22,8 +22,4 @@ fi
 from="$(git submodule-sha "$parent_ref:$submodule")"
 to="$submodule_ref"
 
-cd "$submodule"
-tag=parent
-git tag "$tag" "$from"
-git graph "${from}^" "$to" "$tag"
-git tag -d "$tag" >/dev/null
+git x "$submodule" count-commits "$from^" "$to"
