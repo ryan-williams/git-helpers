@@ -7,6 +7,8 @@
   lso     = ls-files --other --exclude-standard --directory --no-empty-directory
 
   lt = ls-tree
+  ltr = ls-tree -r
+  ltrn = ls-tree -r --name-only
 
   lsh = ls-hashes
 

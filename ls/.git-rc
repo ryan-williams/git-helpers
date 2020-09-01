@@ -4,6 +4,8 @@ alias glr="g lr"
 alias gls="g ls"
 alias glsr="g lsr"
 alias glt="g lt"
+alias gltr="g ltr"
+alias gltrn="g ltrn"
 
 alias gfn="g fn"
 
