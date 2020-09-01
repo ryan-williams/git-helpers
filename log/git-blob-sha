@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#
+# Print the hash of a blob (at a given commit, or staged in the index)
+#
+# Usage:
+#
+# $ git blob-sha [-i] [-s] [<tree>:]<path>
+#
+# "-i" is exclusive with [<tree>:]
+
+set -e
+
+declare -a ARGS
+index=
+short_sha=
+while [ $# -gt 0 ]
+do
+    unset OPTIND
+    unset OPTARG
+    while getopts "is" opt
+    do
+      case "$opt" in
+        i) index=1;;
+        s) short=1;;
+        *) ;;
+      esac
+    done
+    shift $((OPTIND-1))
+    ARGS+=("$1")
+    if [ $# -gt 0 ]; then
+      shift
+    fi
+done
+
+if [ ${#ARGS[@]} -eq 1 ]; then
+  ref="${ARGS[0]}"
+  sha="${ref%%:*}"
+  if [ "$sha" == "$ref" ]; then
+    sha=HEAD
+  else
+    if [ -n "$index" ]; then
+      echo "Can't specify both -i (index) and a <tree>" >&2
+      echo "Usage: $0 [-i] [-s] [<tree>:]<path>" >&2
+      exit 1
+    fi
+  fi
+  path="${ref#*:}"
+else
+  echo "Usage: $0 [-i] [-s] [<tree>:]<path>" >&2
+  exit 1
+fi
+
+if [ -n "$short" ]; then
+  flags=( "--abbrev" )
+else
+  flags=()
+fi
+
+if [ -n "$index" ]; then
+  git ls-files --stage "${flags[@]}" -- "$path" | awk '{ print $2 }'
+else
+  git ls-tree -r "${flags[@]}" "$sha" -- "$path" | awk '{ print $3 }'
+fi

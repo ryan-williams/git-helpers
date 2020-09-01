@@ -29,7 +29,7 @@
         cgua = config --unset-all --global
 
         cfi = config --get-all include.path
-        cgi = config --get-all  --global include.path
+        cgi = config --get-all --global include.path
         global-config-file = config --get-all --global include.path
 
         cfig = config --get-all core.excludesfile

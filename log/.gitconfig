@@ -1,4 +1,14 @@
 [alias]
+  blob-hash = blob-sha
+  bh = blob-hash
+  bhi = blob-hash -i
+  bhis = blob-hash -is
+  bhs = blob-hash -s
+  hash-blob = blob-sha
+  hb = blob-hash
+  hbi = blob-hash -i
+  hbis = blob-hash -is
+  hbs = blob-hash -s
   cur     = log -1 --oneline
   files   = diff-tree --no-commit-id --name-only -r
   lf      = diff-tree --no-commit-id --name-only -r

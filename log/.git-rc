@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+alias gbh="g bh"
+alias gbhi="g bhi"
+alias gbhis="g bhis"
+alias gbhs="g bhs"
+alias ghb="g hb"
+alias ghbi="g hbi"
+alias ghbis="g hbis"
+alias ghbs="g hbs"
+
 alias gl="g l"
 alias glgs="g lgs"
 alias glst="g lst"
