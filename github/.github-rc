@@ -1,5 +1,0 @@
-
-defn pgr parse-github-url
-defn hb hub browse
-defn hpr hub pr
-defn hprq hub pull-request

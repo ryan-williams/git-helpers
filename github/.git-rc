@@ -1,0 +1,11 @@
+
+defn pgr parse-github-url
+defn hb hub browse
+defn hpr hub pr
+defn hprq hub pull-request
+
+defn ghds github-docs-snapshot
+defn ghdss github-docs-snapshot -s
+
+defn hds github-docs-snapshot
+defn hdss github-docs-snapshot -s

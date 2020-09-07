@@ -12,4 +12,5 @@ fi
 
 for remote in "${remotes[@]}"; do
   git push "$remote" "$@"
+  git push --tags "$remote" "$@"
 done

@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+set -ex
+
+declare -a ARGS
+abbrev=
+skip_git_add=
+copy=
+name=
+short_sha=
+while [ $# -gt 0 ]
+do
+    unset OPTIND
+    unset OPTARG
+    while getopts ":a:Acn:s" opt
+    do
+      case "$opt" in
+        a) abbrev="$OPTARG";;
+        A) skip_git_add=1;;
+        c) copy=1;;
+        n) name="$OPTARG";;
+        s) short_sha=1;;
+        *) ;;
+      esac
+    done
+    shift $((OPTIND-1))
+    if [ $# -gt 0 ]; then
+      ARGS+=("$1")
+      shift
+    fi
+done
+
+if [ -n "$short_sha" ]; then
+  flags=( "-s" )
+else
+  flags=()
+fi
+
+if [ -n "$copy" ]; then
+  cmd=( cp -r )
+else
+  cmd=( mv )
+fi
+
+if [ ${#ARGS[@]} -eq 0 ]; then
+  if [ -z "$name" ]; then
+    echo "'-n' (name) is required when reading from stdin" >&2
+    exit 1
+  fi
+  tmp="$(mktemp)"
+  sha="$(cat | tee "$tmp" | git hash-object --stdin)"
+
+  if test "$short_sha" || test -n "$abbrev"; then
+    abbrev="${abbrev:-8}"
+    sha="$(echo "$sha" | head -c "$abbrev")"
+  fi
+  dir="docs/$sha"
+  mkdir -p "$dir"
+  mv "$tmp" "$dir/$name"
+else
+  for arg in "${ARGS[@]}"; do
+    if [ -z "$(git status -s "$arg")" ]; then
+      sha="$(git hash-blob "${flags[@]}" "$arg")"
+    else
+      sha="$(cat "$arg" | git hash-object --stdin)"
+    fi
+    dst="docs/$sha/$arg"
+    dir="$(dirname "$dst")"
+    if [ -n "$name" ]; then
+      dst="$dir/$name"
+    fi
+    mkdir -p "$dir"
+    "${cmd[@]}" "$arg" "$dst"
+    if [ -z "$skip_git_add" ]; then
+      if [ -n "$copy" ]; then
+        git add "$dst"
+      else
+        git add "$arg" "$dst"
+      fi
+    fi
+  done
+fi

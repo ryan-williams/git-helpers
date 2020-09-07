@@ -8,8 +8,7 @@ parents_str=
 parent_args=()
 add_parents() {
   for arg in "$@"; do
-    parent_args+=("-p")
-    parent_args+=("$arg")
+    parent_args+=( "-p" "$arg" )
     parents_str="${arg}${parents_str:+, }${parents_str}"
   done
 }

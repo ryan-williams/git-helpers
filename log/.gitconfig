@@ -38,6 +38,7 @@
   shas = hash
   fh = full-hash
   fm = format
+  rwa = rewrite-author
   subject = log -n1 --format=%s
   sj = log -n1 --format=%s
   tree = log --no-walk --format=%T
