@@ -6,5 +6,5 @@ git log \
   --graph \
   --format="%C(auto)%h %C(blue)%ad %C(red)%an%C(reset)%C(reset)%C(auto)%d %s" \
   --date=relative \
-  --author-date-order \
+  --date-order \
   "$@"
