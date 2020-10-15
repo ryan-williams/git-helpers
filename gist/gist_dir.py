@@ -1,7 +1,6 @@
 from os import chdir, environ as env, getcwd
 from os.path import exists
 from pathlib import Path
-from re import search
 from subprocess import check_call, check_output, DEVNULL, CalledProcessError
 import sys
 from tempfile import NamedTemporaryFile
@@ -105,15 +104,20 @@ def gist_dir(
         remotes = lines('git','remote')
         if remote not in remotes:
             run('git','remote','add',remote,ssh_url)
-        run('git','fetch', remote)
+        run('git','fetch',remote)
 
-        prev_branch = line('git', 'symbolic-ref', '-q', '--short', 'HEAD')
-        prev_sha = line('git', '--no-pager', 'log', '--no-walk', '--format=%h', 'HEAD')
+        prev_branch = line('git','symbolic-ref','-q','--short','HEAD')
+        prev_sha = line('git','--no-pager','log','--no-walk','--format=%h','HEAD')
         print(f'Saved current branch: {prev_branch} ({prev_sha})')
 
-        run('git', 'checkout', '-b', branch, '-t', f'{remote}/master')
+        if push_history:
+            run('git','branch',branch,prev_sha)
+            run('git','branch','-u',f'{remote}/master',branch)
+        else:
+            run('git','branch',branch)
+            run('git','branch','-u',f'{remote}/master',branch)
+            run('git','reset',branch)
 
-        if not push_history:
             # add the local dir's contents (including only specific files if necessary)
             if files:
                 for file in files:
@@ -121,29 +125,29 @@ def gist_dir(
                     if not file.exists():
                         run(*['git','checkout',prev_sha,'--',file])
 
-                    run('git', 'add', file)
+                    run('git','add',file)
             else:
-                run('git', 'add', '.')
+                run('git','add','.')
 
             # rm the dummy file again (checkout will have restored it, and it's git-tracked this time)
-            run('git', 'rm', name)
+            run('git','rm',name)
 
             # create a new "initial commit", overwriting the one the gist was created with
-            run('git', 'commit', '--amend', '-m', 'initial commit')
+            run('git','commit','--amend','--allow-empty','-m','initial commit')
 
         # overwrite the gist (and its history) with the single real commit we want to be present
-        run('git', 'push', remote, '--force', f'{branch}:master')
+        run('git','push', remote, '--force', f'{branch}:master')
 
         print(f"Updated gist: {url}")
         if open_gist:
             try:
-                run('which', 'open', stdout=DEVNULL, stderr=DEVNULL)
+                run('which','open', stdout=DEVNULL, stderr=DEVNULL)
                 run('open', url)
             except CalledProcessError:
                 print("Couldn't find `open` command")
 
         if restore_branch:
-            run('git', 'checkout', prev_branch)
+            run('git','checkout', prev_branch)
 
 
 if __name__ == '__main__':
@@ -159,7 +163,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--open', default=False, action='store_true', help="Open the gist when finished running")
     parser.add_argument('-p', '--private', default=False, action='store_true', help="Make the gist private")
     parser.add_argument('-r', '--remote', default='gist', help='Name to use for a git remote created in each repo/directory, which points at the created gist.')
-    parser.add_argument('--history', '--push_history', default=False, action='store_true', help="When set, push the directory's existing Git history to the newly-created Gist (by default, a standalone commit appearing add applicable files de novo will be created).")
+    parser.add_argument('-H', '--history', '--push_history', default=False, action='store_true', help="When set, push the directory's existing Git history to the newly-created Gist (by default, a standalone commit appearing add applicable files de novo will be created).")
     args = parser.parse_args()
 
     dir = args.dir
