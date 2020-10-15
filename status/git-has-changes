@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-if [ $# -eq 0 ]; then
-  xargs "$0" "$@"
-  exit $?
-fi
-
-[ -n "$(git status --porcelain "$@")" ]
-

@@ -25,5 +25,15 @@
   du   = diff -u
   d1   = diff-no-context
 
+  has-changes = is-dirty
+  has-no-changes = is-clean
+  hc = has-changes
+  hnc = has-no-changes
+  is-clean = diff --quiet --exit-code HEAD
+  is-dirty = ! ! git is-clean
+  ic = is-clean
+  id = is-dirty
+  no-diff = diff --quiet --exit-code HEAD
+
 [diff]
   submodule = diff

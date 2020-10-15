@@ -24,6 +24,11 @@ alias gdt="g dt"
 alias gdtp="g dtp"
 alias gdu="g du"
 
+alias ghc="g hc"
+alias ghnc="g hnc"
+alias gic="g ic"
+alias gid="g id"
+
 alias gnd="gn diff"
 alias gndc="gn diff --cached"
 alias gndh="gn diff HEAD"
