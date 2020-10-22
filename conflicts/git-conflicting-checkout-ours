@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-# Checkout "ours" version of all conflicting files.
-
-git rm -- "$(git deleted-by-us)"
-git checkout --ours "$(git conflicting)"

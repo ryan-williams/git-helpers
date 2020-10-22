@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-alias guu='git conflicting'
+alias gct="g ct"
 alias gcl="g cl"
-
-alias gcot="g cot"
 alias gcoo="g coo"
+alias gcot="g cot"
+alias gcoco="g coco"
+alias gcococ="g cococ"
+alias gcoct="g coct"
+alias gcoctc="g coctc"
+alias guu="g uu"

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Checkout "ours" or theirs" version of all conflicting files.
+
+from="$1"; shift
+if [ "$from" != "ours" ] && [ "$from" != "theirs" ]; then
+  echo "Usage: $0 <ours|theirs>" >&2
+  exit 1
+fi
+
+# Read conflicting paths
+IFS=$'\n' read -d '' -ra conflicting_paths < <(git conflicting)
+echo "${#conflicting_paths[@]} conflicting paths:"
+printf '\t%s\n' "${conflicting_paths[@]}"
+
+git checkout "--$from" "${conflicting_paths[@]}"

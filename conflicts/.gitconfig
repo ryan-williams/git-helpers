@@ -3,6 +3,8 @@
   cl = conflict-lines
   coo = checkout --ours --
   cot = checkout --theirs --
+  conflicting-checkout-ours = conflicting-checkout ours
+  conflicting-checkout-theirs = conflicting-checkout theirs
   coco = conflicting-checkout-ours
   cococ = conflicting-checkout-ours-and-continue
   coct = conflicting-checkout-theirs
