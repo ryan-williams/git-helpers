@@ -1,4 +1,43 @@
 #!/usr/bin/env bash
 
-git config user.name
-git config user.email
+exit=0
+
+if ! git config user.name; then
+  if [ -n "$GIT_COMMITTER_NAME" ] && [ -n "$GIT_AUTHOR_NAME" ]; then
+    if [ "$GIT_COMMITTER_NAME" != "$GIT_AUTHOR_NAME" ]; then
+      echo "$GIT_AUTHOR_NAME ($GIT_COMMITTER_NAME)"
+    else
+      echo "$GIT_AUTHOR_NAME"
+    fi
+  elif [ -n "$GIT_COMMITTER_NAME" ] && [ -z "$GIT_AUTHOR_NAME" ]; then
+    echo "No \`git config user.name\` set, and \$GIT_AUTHOR_NAME missing (\$GIT_COMMITTER_NAME: $GIT_COMMITTER_NAME)" >&2
+    exit=1
+  elif [ -z "$GIT_COMMITTER_NAME" ] && [ -n "$GIT_AUTHOR_NAME" ]; then
+    echo "No \`git config user.name\` set, and \$GIT_COMMITTER_NAME missing (\$GIT_AUTHOR_NAME: $GIT_AUTHOR_NAME)" >&2
+    exit=1
+  else
+    echo "No \`git config user.name\` set, and \$GIT_AUTHOR_NAME and \$GIT_COMMITTER_NAME both missing" >&2
+    exit=1
+  fi
+fi
+
+if ! git config user.email; then
+  if [ -n "$GIT_COMMITTER_EMAIL" ] && [ -n "$GIT_AUTHOR_EMAIL" ]; then
+    if [ "$GIT_COMMITTER_EMAIL" != "$GIT_AUTHOR_EMAIL" ]; then
+      echo "$GIT_AUTHOR_EMAIL ($GIT_COMMITTER_EMAIL)"
+    else
+      echo "$GIT_AUTHOR_EMAIL"
+    fi
+  elif [ -n "$GIT_COMMITTER_EMAIL" ] && [ -z "$GIT_AUTHOR_EMAIL" ]; then
+    echo "No \`git config user.email\` set, and \$GIT_AUTHOR_EMAIL missing (\$GIT_COMMITTER_EMAIL: $GIT_COMMITTER_EMAIL)" >&2
+    exit=1
+  elif [ -z "$GIT_COMMITTER_EMAIL" ] && [ -n "$GIT_AUTHOR_EMAIL" ]; then
+    echo "No \`git config user.email\` set, and \$GIT_COMMITTER_EMAIL missing (\$GIT_AUTHOR_EMAIL: $GIT_AUTHOR_EMAIL)" >&2
+    exit=1
+  else
+    echo "No \`git config user.email\` set, and \$GIT_AUTHOR_EMAIL and \$GIT_COMMITTER_EMAIL both missing" >&2
+    exit=1
+  fi
+fi
+
+exit $exit
