@@ -4,6 +4,7 @@
   pm = push-to-master
   po = push-to-remote-branch origin
   p = push-x
+  pd = push --delete
   px = push-x
   ph = push-head
   pn = push -n

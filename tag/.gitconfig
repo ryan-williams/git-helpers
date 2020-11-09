@@ -1,4 +1,7 @@
 [alias]
+  current-tags = tag --points-at
+  ctg = current-tags
+  ctgs = current-tags
   gt = get-tag
   it = is-tag
 
