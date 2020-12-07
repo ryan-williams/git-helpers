@@ -7,8 +7,16 @@
   lso     = ls-files --other --exclude-standard --directory --no-empty-directory
 
   lt = ls-tree
+  lth = ls-tree HEAD
+  lthr = ls-tree -r HEAD
+  lthn = ls-tree -r --name-only HEAD
   ltr = ls-tree -r
   ltrn = ls-tree -r --name-only
+
+  tree-full-id = log -n1 --format=%T
+  tfi = tree-full-id
+  tree-id = log -n1 --format=%t
+  ti = tree-id
 
   lsh = ls-hashes
 
@@ -50,6 +58,9 @@
 
   list-changed-cached = diff --name-only --cached --diff-filter=M
   lcc = diff --name-only --cached --diff-filter=M
+
+  list-mode = list-status
+  lm = list-mode
 
   deleted-by-them = list-status UD
   dbt = list-status UD

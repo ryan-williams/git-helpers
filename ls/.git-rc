@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
+alias glm="g lm"
 alias glr="g lr"
 alias gls="g ls"
 alias glsr="g lsr"
 alias glt="g lt"
+alias glth="g lth"
+alias glthr="g lthr"
+alias glthn="g lthn"
 alias gltr="g ltr"
 alias gltrn="g ltrn"
 
@@ -41,3 +45,6 @@ alias gabt="g abt"
 alias gabu="g abu"
 
 alias gbrm="g brm"
+
+alias gtfi="g tfi"
+alias gti="g ti"

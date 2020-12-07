@@ -23,6 +23,7 @@
   dt   = diff-tree
   dtp  = diff-tree -p
   du   = diff -u
+  dw   = diff -w
   d1   = diff-no-context
 
   has-changes = is-dirty
