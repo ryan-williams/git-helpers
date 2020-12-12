@@ -29,7 +29,9 @@ alias gaps="g aps"
 alias grcp="g rcp"
 
 alias gsid="g sid"
+alias gsgid="g sgid"
 alias ggid="g gid"
+alias gggid="g ggid"
 
 alias gue="g ue"
 alias gun="g un"

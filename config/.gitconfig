@@ -49,7 +49,9 @@
         rcp = receive-pushes
 
         sid = set-id
+        sgid = set-id -g
         gid = get-id
+        ggid = get-id -g
         ue = config user.email
         un = config user.name
         gue = config --global user.email

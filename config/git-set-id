@@ -1,16 +1,35 @@
 #!/usr/bin/env bash
+#
+# Set git config user.{name,email}:
+#
+# $ git set-id [--global] [<name> <email>]
+#
+# If <name>/<email> are omitted, they will be inferred from the HEAD commit of the current Git repository:
+#
+# $ git set-id [--global]
 
-if [ $# -eq 0 ]; then
+if [ "$1" == "-g" ] || [ "$1" == "--global" ]; then
+  global=("--global")
+  global_msg="global "
+  args=("${@:2:$#}")
+else
+  global=()
+  global_msg=
+  args=("${@:1:$#}")
+fi
+
+n=${#args[@]}
+if [ $n -eq 0 ]; then
   name="$(git log -n1 --format=%an)"
   email="$(git log -n1 --format=%ae)"
-elif [ $# -ne 2 ]; then
+elif [ $n -ne 2 ]; then
   echo "Usage: $0 <name> <email>" >&2
   exit 1
 else
-  name="$1"; shift
-  email="$1"; shift
+  name="${args[0]}"
+  email="${args[1]}"
 fi
 
-echo "Setting global Git configs: name=$name, email=$email"
-git config --global user.name "$name"
-git config --global user.email "$email"
+echo "Setting ${global_msg}Git configs: name=\"$name\", email=\"$email\""
+git config "${global[@]}" user.name "$name"
+git config "${global[@]}" user.email "$email"
