@@ -21,7 +21,7 @@ fi
 if [ $# -gt 0 ]; then
   from="${1%/}"
   shift
-  if [ "$from" -eq "-" ]; then
+  if [ "$from" == "-" ]; then
     from="$(git root)"
   fi
 else

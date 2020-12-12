@@ -5,17 +5,15 @@ cd "$(git root)"
 set -ex
 
 test() {
+  expected="${*: -1}"
+  args=("${@:1:($#-1)}")
 
-  expected="${@: -1}"
-  args=("${@:1:(${#@}-1)}")
-
-  actual="$(git relpath ${args[@]})"
+  actual="$(git relpath "${args[@]}")"
 
   if [ "$actual" != "$expected" ]; then
-    echo "Failed: \`git relpath $args\`: expected $expected, actual $actual" 1>&2
+    echo "Failed: \`git relpath ${args[*]}\`: expected $expected, actual $actual" 1>&2
     exit 1
   fi
-
 }
 
 test log/aliases log/aliases
@@ -24,8 +22,8 @@ test test/admin/ test/admin
 test test/nav/ test/nav
 test test/nav/relpath-test test/nav/relpath-test
 
-test diff/ test/nav/relpath-test ../test/nav/relpath-test
-test diff test/nav/relpath-test ../test/nav/relpath-test
+test test/nav/relpath-test diff ../test/nav/relpath-test
+test test/nav/relpath-test diff/ ../test/nav/relpath-test
 
-test test/admin test/nav/relpath-test ../nav/relpath-test
-test test/admin test/nav/relpath-test ../nav/relpath-test
+test test/nav/relpath-test test/admin ../nav/relpath-test
+test test/nav/relpath-test test/admin/ ../nav/relpath-test
