@@ -7,6 +7,7 @@ global_msg=
 if [ "$1" == "-g" ] || [ "$1" == "--global" ]; then
   global=("--global")
   global_msg="global "
+  shift
 fi
 
 if ! git config "${global[@]}" user.name; then

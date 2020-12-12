@@ -11,23 +11,21 @@
 if [ "$1" == "-g" ] || [ "$1" == "--global" ]; then
   global=("--global")
   global_msg="global "
-  args=("${@:2:$#}")
+  shift
 else
   global=()
   global_msg=
-  args=("${@:1:$#}")
 fi
 
-n=${#args[@]}
-if [ $n -eq 0 ]; then
+if [ $# -eq 0 ]; then
   name="$(git log -n1 --format=%an)"
   email="$(git log -n1 --format=%ae)"
-elif [ $n -ne 2 ]; then
+elif [ $# -ne 2 ]; then
   echo "Usage: $0 <name> <email>" >&2
   exit 1
 else
-  name="${args[0]}"
-  email="${args[1]}"
+  name="$1"; shift
+  email="$1"; shift
 fi
 
 echo "Setting ${global_msg}Git configs: name=\"$name\", email=\"$email\""
