@@ -5,7 +5,6 @@ if [ $# -eq 0 ]; then
   email="$(git config user.email)"
 elif [ $# -eq 1 ]; then
   email="$1"; shift
-  #author="$(git log -n1 --format=%an)"
   author="$(git config user.name)"
 elif [ $# -eq 2 ]; then
   author="$1"; shift
