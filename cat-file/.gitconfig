@@ -2,3 +2,4 @@
 [alias]
   ct = cat-file
   ctp = cat-file -p
+  ho = hash-object
