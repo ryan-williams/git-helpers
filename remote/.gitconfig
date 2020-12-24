@@ -19,6 +19,9 @@
   cd        = copy-diffs
   lgp       = load-github-prs
   lpr       = load-github-prs
+  lsr       = ls-remote
+  lrh       = ls-remote --heads
+  lrt       = ls-remote --tags
   mr        = mirror-remote
   up        = unpack-and-apply-diffs
   amr       = add-mirror-remote

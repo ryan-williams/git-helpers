@@ -1,4 +1,5 @@
 [alias]
   mb = merge-base-plus
+  mbo = merge-base --octopus
   mbp = merge-base-parents
   bp = branch-point

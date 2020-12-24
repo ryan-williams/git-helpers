@@ -2,7 +2,6 @@
   l       = ls-files
   ls      = ls-files
   lr      = ls-files --recurse-submodules
-  lsr     = ls-files --recurse-submodules
   lo      = ls-files --other --exclude-standard --directory --no-empty-directory
   lso     = ls-files --other --exclude-standard --directory --no-empty-directory
 

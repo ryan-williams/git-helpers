@@ -26,3 +26,7 @@ defn grsha g rsha
 defn grsu g rsu
 defn ggru g gru
 defn gsru g sru
+
+defn glsr g lsr
+defn glrh g lrh
+defn glrt g lrt

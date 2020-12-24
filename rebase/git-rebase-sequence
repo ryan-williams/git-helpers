@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+
+onto="$1"; shift
+base="$1"; shift
+while [ $# -gt 0 ]; do
+  head="$1"; shift
+  set -x
+  prv="$(git log --format=%h -n1 "$head")"
+  base="$(git merge-base --octopus "$base" "$head")"
+  git rebase --onto "$onto" "$base" "$head"
+  onto="$head"
+  set +x
+  base="$prv"
+done

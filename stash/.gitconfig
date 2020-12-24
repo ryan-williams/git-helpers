@@ -7,6 +7,16 @@
   sk      = stash save -k
   sa      = stash apply
   sp      = stash pop
+  sp1     = stash pop 'stash@{1}'
+  sp2     = stash pop 'stash@{2}'
+  sp3     = stash pop 'stash@{3}'
+  sp4     = stash pop 'stash@{4}'
+  sp5     = stash pop 'stash@{5}'
   ssp     = stash show -p
   sth     = stash show
   sv = stash-view
+  sw = stash show -p
+  sw0 = stash show -p 'stash@{0}'
+  sw1 = stash show -p 'stash@{1}'
+  sw2 = stash show -p 'stash@{2}'
+  sw3 = stash show -p 'stash@{3}'

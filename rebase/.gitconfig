@@ -14,6 +14,7 @@
   rc      = rebase --continue
   ri      = rebase -i
   rim     = rebase -i master
+  rq      = rebase-sequence
   arc     = add-rebase-continue
   oc      = original-commit
   oh      = original-head
