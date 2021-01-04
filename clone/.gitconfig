@@ -4,3 +4,5 @@
   mc = my-clone
   srv = serve
   usi = update-server-info
+  wd = working-dir
+  working-dir = rev-parse --git-dir
