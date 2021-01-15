@@ -51,8 +51,12 @@ if [ $nargs -eq 0 ]; then
 else
   url="${ARGS[0]}"
   ARGS=("${ARGS[@]:1}")
-  if [ -n "${url%%https://*}" ]; then
-    url="https://github.com/$url.git"
+  if [ "${url#git@}" != "$url" ] || [ "${url#https://}" != "$url" ]; then
+    # $url appears to be a full git URL already
+    :
+  else
+    # otherwise, assume github.com and HTTPS protocol
+    url="https://github.com/$url"
   fi
   if [ $nargs -eq 2 ]; then
     dest="${ARGS[0]}"
