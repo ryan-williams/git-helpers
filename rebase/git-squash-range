@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+if [ $# -ne 3 ]; then
+  echo "Usage: $0 <parent> <start> <end>" >&2
+  exit 1
+fi
+
+parent="$1"; shift
+start="$1"; shift
+end="$1"; shift
+
+read -d '' -ra shas < <(git log --format=%h "$start..$end") || true
+
+msg_args=()
+
+echo "Squashing ${#shas[@]}} commits:"
+for sha in "${shas[@]}"; do
+  msg="$(git log -n1 --format=%s "$sha")"
+  msg_args+=("-m" "$msg")
+  echo "- $sha: $msg"
+done
+
+tree="$(git log -n1 --format=%t "$end")"
+git commit-tree "$tree" -p "$parent" "${msg_args[@]}"

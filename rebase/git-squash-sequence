@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -ex
+
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 <start> <<src>:<dst>...>" >&2
+  exit 1
+fi
+
+cur_src="$1"
+cur_dst="$1"
+shift
+
+for arg in "$@"; do
+  src="${arg%%:*}"
+  dst="${arg#*:}"
+  if [ "$src" == "$dst" ]; then
+    echo "Malformed arg: $arg" >&2
+    exit 1
+  fi
+  tree="$(git log -n1 --format=%t "$src")"
+  read -d '' -ra shas < <(git log --format=%h "$cur_src..$src") || true
+  echo "$dst (${cur_src}→${src}): tree $tree, ${#shas[@]} shas: ${shas[*]}"
+
+  msg_args=()
+  for sha in "${shas[@]}"; do
+    msg_args+=("-m" "$(git log -n1 --format="%s" "$sha")")
+  done
+  sha="$(git commit-tree "$tree" -p "$cur_dst" "${msg_args[@]}")"
+  git branch "$dst" "$sha" || git branch -f "$dst" "$sha"
+  cur_src="$src"
+  cur_dst="$dst"
+done

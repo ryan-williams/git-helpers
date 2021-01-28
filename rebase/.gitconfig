@@ -20,3 +20,4 @@
   oh      = original-head
   shoc    = show-original-commit
   shoh    = show-original-head
+  sqsq    = squash-sequence

@@ -2,8 +2,11 @@
   bs = bisect
   bsg = bisect good
   bsb = bisect bad
+  brr = bisect-reverse-run
+  bsr = bisect run
   bss = bisect start
-  bsr = bisect reset
+  bssr = bisect-start-run
+  bsx = bisect reset
   bcag = bisect-commits-ahead-good
   bcbb = bisect-commits-behind-bad
   beb = bisect-earliest-bad

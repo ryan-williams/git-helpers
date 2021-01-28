@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -ex
+
+if [ $# -lt 3 ]; then
+  echo "Usage: $0 <bad> <good> <cmd...>" >&2
+  exit 1
+fi
+
+bad="$1"; shift
+good="$1"; shift
+
+git bisect start "$bad" "$good"
+git bisect run "$@"

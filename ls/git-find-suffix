@@ -5,4 +5,4 @@
 find="$1"
 shift
 
-git ls-files "$@" | grep "$find\$"
+git ls-files --recurse-submodules "$@" | grep "$find\$"

@@ -2,6 +2,10 @@
 
 set -e
 
+if [ $# -lt 3 ]; then
+  echo "Usage: $0 <onto> <base> <branch...>" >&2
+  exit 1
+fi
 onto="$1"; shift
 base="$1"; shift
 while [ $# -gt 0 ]; do

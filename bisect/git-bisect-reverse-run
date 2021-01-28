@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -ex
+
+if [ $# -lt 3 ]; then
+  echo "Usage: $0 <new> <old> <cmd...>" >&2
+  exit 1
+fi
+
+new="$1"; shift
+old="$1"; shift
+
+script="$(mktemp)"
+finish() {
+  rm -f "$script"
+}
+#trap finish EXIT
+
+echo '#!/usr/bin/env bash' > "$script"
+echo 'set -ex' >> "$script"
+echo -n '! ' >> "$script"
+echo "$@" >> "$script"
+chmod u+x "$script"
+
+echo "Bisecting with script $script:"
+cat "$script"
+
+git bisect start --term-bad new --term-good old "$new" "$old"
+git bisect run "$script"

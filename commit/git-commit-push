@@ -8,9 +8,9 @@ if [ $# -gt 0 ] && git remote-exists "${@: -1}"; then
   IFS=, read -ra remotes <<< "${@: -1}"
   set -- "${@:1:(($#-1))}"
 else
-  read -ra remotes < <(git remote)
+  read -d '' -ra remotes < <(git remote)
 fi
-echo "Pushing to: ${remotes[@]}"
+echo "Pushing to: ${remotes[*]}"
 
 
 git commit "$@" && for remote in "${remotes[@]}"; do git push "$remote"; done
