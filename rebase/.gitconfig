@@ -13,6 +13,7 @@
   rbs     = rebase --skip
   rc      = rebase --continue
   ri      = rebase -i
+  rx      = rebase -i -x
   rim     = rebase -i master
   rq      = rebase-sequence
   arc     = add-rebase-continue

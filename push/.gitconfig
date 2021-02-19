@@ -5,6 +5,9 @@
   po = push-to-remote-branch origin
   p = push-x
   pd = push --delete
+  pf = push -f
+  pfo = push -f origin
+  pfu = push -f upstream
   px = push-x
   ph = push-head
   pn = push -n

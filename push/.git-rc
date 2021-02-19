@@ -1,6 +1,9 @@
 
 alias gp="g p"
 alias gpd="g pd"
+alias gpf="g pf"
+alias gpfo="g pfo"
+alias gpfu="g pfu"
 alias gph="g ph"
 alias gpm="g pm"
 alias gpn="g pn"

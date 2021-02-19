@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -e
+
+base=HEAD
+msg=
+ARGS=()
+
+while [ $# -gt 0 ]
+do
+    unset OPTIND
+    unset OPTARG
+    while getopts ":b:m:" opt
+    do
+      case "$opt" in
+        b) base="$OPTARG";;
+        m) msg="$OPTARG";;
+        *) ;;
+      esac
+    done
+    shift $((OPTIND-1))
+    ARGS+=("$1")
+    shift
+done
+
+if [ "$base" != "HEAD" ]; then
+  git checkout "$base"
+fi
+
+for arg in "${ARGS[@]}"; do
+  git merge --no-edit "$arg"
+done
+
+if [ -z "$msg" ]; then
+  msg="Octo-merge:"
+  for arg in "${ARGS[@]}"; do
+    msg="$msg $arg"
+  done
+fi
+
+git commit-multiple-parents -m "$msg" "${ARGS[@]}"

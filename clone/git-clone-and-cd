@@ -2,4 +2,4 @@
 
 git clone --recurse-submodules "$@" && \
 cd "$(last-updated-dir)" || \
-exit 1
+return 1

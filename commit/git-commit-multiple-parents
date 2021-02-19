@@ -2,14 +2,40 @@
 
 set -ex
 
-head_tree="$(git log -n 1 --format='%T' HEAD)"
+base=HEAD
+msg=
+ARGS=()
 
-parents_str=
+while [ $# -gt 0 ]
+do
+    unset OPTIND
+    unset OPTARG
+    while getopts ":b:m:" opt
+    do
+      case "$opt" in
+        b) base="$OPTARG";;
+        m) msg="$OPTARG";;
+        *) ;;
+      esac
+    done
+    shift $((OPTIND-1))
+    ARGS+=("$1")
+    shift
+done
+
+if [ -z "$msg" ]; then
+  msg="Octo-merge:"
+  for arg in "${ARGS[@]}"; do
+    msg="$msg $arg"
+  done
+fi
+
+tree="$(git log -n 1 --format='%T' "$base")"
+
 parent_args=()
 add_parents() {
-  for arg in "$@"; do
+  for arg in "${ARGS[@]}"; do
     parent_args+=( "-p" "$arg" )
-    parents_str="${arg}${parents_str:+, }${parents_str}"
   done
 }
 
@@ -19,6 +45,6 @@ if [ $# -eq 1 ]; then
   add_parents HEAD
 fi
 
-new_tree="$(git commit-tree "$head_tree" "${parent_args[@]}" -m "Merge in $parents_str")"
+commit="$(git commit-tree "$tree" "${parent_args[@]}" -m "$msg")"
 
-git reset --hard "$new_tree"
+git reset --hard "$commit"
