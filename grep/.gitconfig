@@ -8,3 +8,4 @@
   gpl = grep --recurse-submodules -l
   gpn = grep --recurse-submodules -n
   kl = kill-lines
+  pie = sub  # name derived from perl -pi -e

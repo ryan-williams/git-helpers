@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Apply a perl-style substitution to all (or some) Git-tracked files
+#
+# $ git sub 's/v1/v2/g'  # replace "v1" with "v2" in entire repo
+#
+# Excludes symbolic links
+
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 [git ls-files args...] <perl expr>" >&2
+  exit 1
+else
+  args=("${@:1:(($#-1))}")
+  sub="${@:$#}"
+fi
+
+# Debugging:
+#echo "${#args[@]} args: ${args[*]}"
+#echo "sub: $sub"
+#exit 0
+
+git ls-files -z --recurse-submodules "${args[@]}" | \
+perl -0 -lne 'print if lstat && -f _' | \
+xargs -0 perl -pi -e "$sub"

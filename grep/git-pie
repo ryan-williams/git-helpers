@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-git ls-files --recurse-submodules | no-links | xargs perl -pi -e "$@"
