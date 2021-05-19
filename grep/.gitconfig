@@ -9,3 +9,5 @@
   gpn = grep --recurse-submodules -n
   kl = kill-lines
   pie = sub  # name derived from perl -pi -e
+
+  cs3 = check-s3-buckets

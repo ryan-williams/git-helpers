@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#
+# Search for S3 bucket URLs in a repo and check whether `aws s3 ls` can access them
+#
+# This is a slightly weird place for this, but 🤷🏼‍♂ shouldn't harm anything️
+
+git grep 's3://' "$@" \
+| perl -ne 'print if s/.*(s3:\/\/[\w\-]+).*/\1/' \
+| sort \
+| uniq \
+| parallel -k --env PATH 'aws s3 ls {} &>/dev/null && echo "Success: {}" || echo "Failure: {}"'
