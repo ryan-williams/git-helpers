@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+# For each submodule, print info about the current HEAD commit.
+#
+# By default, use `git log --format=%h%d`, which prints the short SHA as well as any "decorations" (branch pointers or
+# tags) that point to that commit. Pass a single argument to override this format.
+
+if [ $# -eq 1 ]; then
+  fmt="$1"
+  shift
+elif [ $# -eq 0 ]; then
+  fmt="%h%d"
+else
+  echo "Usage: git submodule-commits [fmt=%h%d]" >&2
+  exit 1
+fi
+
+if which parallel &>/dev/null; then
+#   git submodules | parallel -k -j+0 --env PATH "printf \"{} \"; gx {} log -n1 --format=\"$fmt\""
+# else
+  git submodule foreach --quiet "printf \"\$name \"\ && git --no-pager log -n1 --format=\"$fmt\""
+fi

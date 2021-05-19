@@ -3,8 +3,11 @@
 num_remotes="$(git remote | wc -l)"
 if [ "$num_remotes" -eq "1" ]; then
   git remote
-else
-  echo "Found more than one remote:
-$(git remote)" >&2
+elif [ "$num_remotes" -eq "0" ]; then
+  echo "No remotes found" >&2
   exit 1
+else
+  echo "Found more than one remote:" >&2
+  git remote >&2
+  exit 2
 fi

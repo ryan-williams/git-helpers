@@ -3,5 +3,7 @@
 if [ $# -eq 0 ]; then
   git submodule foreach --quiet 'echo $name'
 else
-  for arg in "$@"; do echo "$arg"; done
+  for arg in "$@"; do
+    echo "$arg"
+  done
 fi

@@ -2,6 +2,7 @@
   ps    = !git pull --rebase && git submodule update --init --recursive
   sm    = submodule
   sma   = submodule add --quiet
+  smc   = submodule-commits
   smd   = submodule deinit
   smi   = submodule init
   sg  = submodule-log
