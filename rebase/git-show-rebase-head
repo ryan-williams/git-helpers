@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+rebase_head="$(git rebase-head)"
+if [ -z "$rebase_head" ]; then
+	exit 1
+fi
+
+git show "$rebase_head"

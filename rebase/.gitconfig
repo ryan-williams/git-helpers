@@ -12,6 +12,7 @@
   rbm     = rebase master
   rbs     = rebase --skip
   rc      = rebase --continue
+  rd      = rebase-diff
   ri      = rebase -i
   rx      = rebase -i -x
   rim     = rebase -i master
@@ -21,4 +22,5 @@
   oh      = original-head
   shoc    = show-original-commit
   shoh    = show-original-head
+  shrh    = show-rebase-head
   sqsq    = squash-sequence

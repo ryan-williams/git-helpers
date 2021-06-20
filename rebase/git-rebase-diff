@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+readarray -t heads <<<"$(
+  git --no-pager reflog --format='%h: %gs' \
+  | perl -ne 'print if s/^([0-9a-f]+): rebase [^:]+ \(finish\): .*/\1/' \
+  | head -n2
+)"
+
+cur="${heads[0]}"
+prv="${heads[1]}"
+
+git --no-pager log --no-walk --format="%C(auto)%h %C(blue)%ar%C(reset) %C(green)%cr%C(reset) %C(red)%an%C(reset)%C(auto)%d %s" "$cur" "$prv"
+
+if ! git diff --exit-code "$prv..$cur"; then
+  git diff "$prv..$cur"
+fi

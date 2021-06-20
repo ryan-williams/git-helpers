@@ -2,10 +2,10 @@
 
 # Print the SHA of the commit that is currently being applied, during a rebase.
 if [ -f .git/rebase-apply/orig-commit ]; then
-	cat .git/rebase-apply/orig-commit
+  cat .git/rebase-apply/orig-commit
 elif [ -f .git/rebase-merge/orig-commit ]; then
-	cat .git/rebase-merge/orig-commit
+  cat .git/rebase-merge/orig-commit
 else
-	echo "Error: couldn't find .git/rebase-{merge,apply}/orig-commit" >&2
-	exit 1
+  echo "Error: couldn't find .git/rebase-{merge,apply}/orig-commit" >&2
+  exit 1
 fi

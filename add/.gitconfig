@@ -2,6 +2,8 @@
 [alias]
   a  = add
   af = add -f
+  an = add -n
+  aN = add -N
   ap = add -p
   dma = diff-then-maybe-add
   au = add -u
