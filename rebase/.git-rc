@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+alias gcrb="g crb"
+alias gcrh="g crh"
+alias gcrbh="g crbh"
+alias gcarb="g carb"
+alias gcorb="g corb"
+
 alias gdtc="g dtc"
 alias gdth="g dth"
 alias gdthc="g dthc"
@@ -11,6 +17,8 @@ alias grd="g rd"
 alias grba="g rba"
 alias grbc="g rbc"
 alias grbh="g rbh"
+alias grbhm="g rbhm"
+alias grbm="g rbm"
 alias grbp="g rbp"
 alias grbo="g rbo"
 alias rbo="g rbo"

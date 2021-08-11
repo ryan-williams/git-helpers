@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+  git commit-basenames
+  exit $?
+fi
+
+if ! git diff --exit-code --cached; then
+  echo "Expected no staged changes" >&2
+  exit 1
+fi
+
+for arg in "$@"; do
+  name="$(basename "$arg")"
+  git add "$arg"
+  git commit -m "$name"
+done

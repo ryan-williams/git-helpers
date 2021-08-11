@@ -18,6 +18,9 @@
   hashes = hash
   hsh = full-hash
   l1 = log-oneline
+  lgg = log -S
+  lgpg = log -p -S
+  lggp = log -p -S
   lgs = log --stat
   lst = log --stat
   lp = log -p

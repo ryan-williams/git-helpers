@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Commit staged changes with the same message as the current .git/REBASE_HEAD commit
+
+msg="$(git rebase-head-message)"
+if [ -z "$msg" ]; then
+  echo "No rebase-head-message found (\`git rebase-head-message\`)" >&2
+  exit 1
+fi
+
+git commit -m "$msg"

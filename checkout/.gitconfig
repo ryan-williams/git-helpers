@@ -4,3 +4,5 @@
   cof = checkout -f
   coh = checkout HEAD --
   cop = checkout-previous-branch
+  cor = checkout --recurse-submodules
+  corf = checkout --recurse-submodules -f

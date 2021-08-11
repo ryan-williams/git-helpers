@@ -6,10 +6,16 @@
   rb      = rebase
   rba     = rebase --abort
   rbc     = rebase --continue
+  crb     = checkout-and-rebase
+  crh     = commit-rebase-head
+  carb    = checkout-and-rebase
+  corb    = checkout-and-rebase
+  crbh    = commit-rebase-head
   rbh     = rebase-head
+  rbhm    = rebase-head-message
   rbp     = rebase-parent
   rbo     = rebase --onto
-  rbm     = rebase master
+  rbm     = rebase-head-message
   rbs     = rebase --skip
   rc      = rebase --continue
   rd      = rebase-diff

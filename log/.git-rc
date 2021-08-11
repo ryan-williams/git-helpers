@@ -10,6 +10,11 @@ alias ghbis="g hbis"
 alias ghbs="g hbs"
 
 alias gl="g l"
+
+alias glgg="g lgg"
+alias glgpg="g lgpg"
+alias glggp="g lggp"
+
 alias glgs="g lgs"
 alias glst="g lst"
 

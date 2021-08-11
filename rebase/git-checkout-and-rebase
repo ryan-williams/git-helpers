@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+while [ $# -gt 0 ]; do
+  branch="$1"; shift
+  git checkout "$branch"
+  git rebase || (if [ $# -gt 0 ]; then echo "Aborting before rebasing branches: $*" >&2; fi)
+done

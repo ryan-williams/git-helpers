@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+git log -n1 --format=%B "$(git rebase-head)"
