@@ -6,6 +6,7 @@
   dph  = diff HEAD^..HEAD
   dps  = diff-pipe sort
   dc   = diff --cached
+  dcss = diff --cached --submodule=short
   df   = diff
   dft  = difftool
   dh   = diff HEAD
@@ -19,6 +20,7 @@
   dsh  = diff --stat HEAD
   dsp  = diff --stat HEAD^
   dsph = diff --stat HEAD^..HEAD
+  dss  = diff --submodule=short
   dsu  = diff-stat-parent
   dt   = diff-tree
   dtp  = diff-tree -p
