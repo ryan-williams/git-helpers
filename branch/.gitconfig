@@ -3,6 +3,10 @@
 
   branch-back = checkout-previous-branch
   bk = branch-back
+
+  bpa = branch --points-at
+  bpar = branch --points-at -r
+
   previous-branch = checkout-previous-branch
   pb = previous-branch
 

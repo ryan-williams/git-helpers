@@ -20,6 +20,7 @@
   put = push --tags upstream
   ptu = push --tags upstream
   pot = push --tags origin
+  psu = push --set-upstream
   pto = push --tags origin
   pu = push-to-remote-branch upstream
   spf = safe-push-force
