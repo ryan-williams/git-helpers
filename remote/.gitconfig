@@ -10,7 +10,7 @@
   rao       = remote add origin
   rah       = remote-add.py --https
   ras       = remote-add.py --ssh
-  rat       = remote-add.py
+  rat       = remote-add.py -i
   rau       = remote add upstream
 
   re        = remote-exists
