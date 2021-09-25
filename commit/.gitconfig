@@ -2,6 +2,13 @@
   acm   = add-and-commit-msg
   c     = commit
   ca    = commit -a
+  caa   = commit -a --amend
+  caam  = commit -a --amend -m
+  cam   = commit -a -m
+  can   = commit --amend --no-edit
+  cane  = commit --amend --no-edit
+  caan  = commit -a -u --amend --no-edit
+  caane = commit -a -u --amend --no-edit
   cbn   = commit-basename
   cbns   = commit-basenames
   cfn   = commit-filename
@@ -9,12 +16,6 @@
   cm    = commit -m
   cne   = commit --no-edit
   cmp   = commit-multiple-parents
-  caam  = commit -a --amend -m
-  cam   = commit -a -m
-  can   = commit --amend --no-edit
-  cane  = commit --amend --no-edit
-  caan  = commit -a -u --amend --no-edit
-  caane = commit -a -u --amend --no-edit
   scm   = squashed-commit-message
   cn    = commit --amend
   cnm   = commit --amend -m
