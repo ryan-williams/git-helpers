@@ -1,6 +1,5 @@
 [alias]
   s       = stash
-  sd      = stash drop
   sl      = stash list
   ss      = stash save
   ssk     = stash save -k
@@ -13,6 +12,7 @@
   sp4     = stash pop 'stash@{4}'
   sp5     = stash pop 'stash@{5}'
   ssp     = stash show -p
+  std     = stash drop
   sth     = stash show
   sv = stash-view
   sw = stash show -p

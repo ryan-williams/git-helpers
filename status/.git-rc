@@ -2,6 +2,9 @@
 
 alias gs="g s"
 alias gsc="g sc"
+alias gsd="g sd"
+alias gsdc="g sdc"
+alias gsdh="g sdh"
 alias gst="g st"
 alias gsts="g sts"
 alias gstp="g stp"

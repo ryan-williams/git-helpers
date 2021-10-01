@@ -1,6 +1,9 @@
 [alias]
   s = status
   sc = status --porcelain
+  sd = !git status && git diff
+  sdc = !git status && git diff --cached
+  sdh = !git status && git diff HEAD
   sts = status -s
   stp = status --porcelain
   st = status -uno

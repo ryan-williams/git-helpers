@@ -7,6 +7,7 @@
   ap = add -p
   dma = diff-then-maybe-add
   au = add -u
+  aud = !git add -u && git diff --cached
   aup = add -u -p
   apu = add -p -u
   aus = !git add -u && git status
