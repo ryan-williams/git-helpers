@@ -129,8 +129,9 @@ def gist_dir(
             else:
                 run('git','add','.')
 
-            # rm the dummy file again (checkout will have restored it, and it's git-tracked this time)
-            run('git','rm',name)
+            # rm the dummy file again (checkout may have restored it, and it's git-tracked this time)
+            if exists(name):
+                run('git','rm',name)
 
             # create a new "initial commit", overwriting the one the gist was created with
             run('git','commit','--amend','--allow-empty','-m','initial commit')
