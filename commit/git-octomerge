@@ -24,10 +24,12 @@ do
 done
 
 if [ "$base" != "HEAD" ]; then
+  echo "Checkout: $base"
   git checkout "$base"
 fi
 
 for arg in "${ARGS[@]}"; do
+  echo "Merge: $arg"
   git merge --no-edit "$arg"
 done
 
@@ -38,4 +40,5 @@ if [ -z "$msg" ]; then
   done
 fi
 
+echo "Commit (multiple parents): \"$msg\", ${ARGS[*]}"
 git commit-multiple-parents -m "$msg" "${ARGS[@]}"

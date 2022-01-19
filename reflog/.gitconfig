@@ -1,5 +1,7 @@
 [alias]
-  rl = reflog
+  rl = reflog '--format=%C(green)%gd %C(yellow)%h %C(blue)%aI %C(red)%an %C(auto)%gs'
+  rlr = reflog '--format=%C(green)%gd %C(yellow)%h %C(blue)%ar %C(red)%an %C(auto)%gs'
+  rls = reflog '--format=%C(green)%gd %C(yellow)%h %C(blue)%as %C(red)%an %C(auto)%gs'
   rlh = !git reflog | head
   rlt = !git reflog | head -n 20
 

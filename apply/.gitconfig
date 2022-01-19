@@ -1,0 +1,3 @@
+[alias]
+  abd = patch-branch-diff
+  pbd = patch-branch-diff

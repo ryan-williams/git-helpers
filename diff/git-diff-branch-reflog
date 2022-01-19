@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Diff two previous versions of a given branch:
+#
+# $ git diff-branch-reflog [ref=HEAD [start_idx=1 [end_idx=0]]]
+#
+# Examples:
+# - git diff-branch-reflog                # (HEAD@{1}..HEAD@{0}; previous HEAD vs. current)
+# - git diff-branch-reflog my_branch      # (my_branch@{1}..my_branch@{0}; previous `my_branch` commit vs. current)
+# - git diff-branch-reflog my_branch 2    # (my_branch@{2}..my_branch@{0}; 2 `my_branch` commits ago vs. current)
+# - git diff-branch-reflog my_branch 2 1  # (my_branch@{2}..my_branch@{1}; 2 `my_branch` commits ago vs. previous)
+
+if [ $# -eq 0 ]; then
+  ref="$(git current-branch)"
+else
+  ref="$1"; shift
+fi
+
+if [ $# -gt 0 ]; then
+  start_idx="$1"; shift
+else
+  start_idx=1
+fi
+
+if [ $# -gt 0 ]; then
+  end_idx="$1"; shift
+else
+  end_idx=0
+fi
+
+git diff "${ref}@{${start_idx}}" "${ref}@{${end_idx}}"

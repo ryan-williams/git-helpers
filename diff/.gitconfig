@@ -2,6 +2,8 @@
   d    = diff
   da   = diff-pipe
   das  = diff-pipe sort
+  db   = diff-branch-reflog
+  dbr  = diff-branch-reflog
   dp   = diff-pipe
   dph  = diff HEAD^..HEAD
   dps  = diff-pipe sort

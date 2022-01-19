@@ -3,6 +3,8 @@
 alias gd="g d"
 alias gda="g da"
 alias gdas="g das"
+alias gdb="g db"
+alias gdbr="g dbr"
 alias gdft="g dft"
 alias gdc="g dc"
 alias gdcss="g dcss"
