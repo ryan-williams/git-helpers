@@ -1,5 +1,7 @@
 [alias]
   ps    = !git pull --rebase && git submodule update --init --recursive
+  sac   = submodule-auto-commit
+  smac  = submodule-auto-commit
   sm    = submodule
   sma   = submodule add --quiet
   smc   = submodule-commits

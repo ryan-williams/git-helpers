@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+diffs="$(comm -12 <(git diff --cached --name-only | sort) <(git ls-tree HEAD | awk '$2=="commit" {print $4}' | sort))"
+#echo "Changed submodules: $diffs" >&2
+
+msg=
+for sm in $diffs; do
+    before="$(git ls-tree HEAD "$sm" | awk '{ print $3 }')"
+    after="$(git x "$sm" full-hash)"
+    subjects="$(git x "$sm" log --format=%s "$before..$after" | perl -pe 'chomp if eof; s/\n/, /')"
+    msg="${msg:+$msg, }"
+    msg="${msg}$sm: $subjects"
+done
+
+git commit -m "$msg"
