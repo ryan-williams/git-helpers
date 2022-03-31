@@ -1,6 +1,32 @@
 #!/usr/bin/env bash
 
-diffs="$(comm -12 <(git diff --cached --name-only | sort) <(git ls-tree HEAD | awk '$2=="commit" {print $4}' | sort))"
+set -e
+
+usage() {
+    echo "Usage: git submodule-auto-commit [-a]" >&2
+    exit 1
+}
+
+all=
+if [ $# -eq 1 ]; then
+    if [ $1 != "-a" ]; then
+        usage
+    fi
+    all=1
+    shift
+elif [ $# -gt 1 ]; then
+    usage
+fi
+
+if [ -n "$all" ]; then
+    diff_args=()
+    commit_args=(-a)
+else
+    diff_args=(--cached)
+    commit_args=()
+fi
+
+diffs="$(comm -12 <(git diff "${diff_args[@]}" --name-only | sort) <(git ls-tree HEAD | awk '$2=="commit" {print $4}' | sort))"
 #echo "Changed submodules: $diffs" >&2
 
 msg=
@@ -12,4 +38,4 @@ for sm in $diffs; do
     msg="${msg}$sm: $subjects"
 done
 
-git commit -m "$msg" "$@"
+git commit -m "$msg" "${commit_args[@]}" "$@"
