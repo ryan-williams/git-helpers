@@ -1,21 +1,35 @@
 #!/usr/bin/env bash
+#
+# Reset a branch to a given ref, and optionally `checkout` it.
+#
+# Usage:
+#
+# $ git branch-reset [-c|--checkout] [branch=main [ref=HEAD]]
+
+set -e
+
+checkout=
+if [ "$1" == "-c" ] || [ "$1" == "--checkout" ]; then
+    checkout=1
+    shift
+fi
 
 if [ $# -gt 0 ]; then
   branch="$1"
   shift
 else
-  branch=master
+  branch=main
 fi
 
 if [ $# -gt 0 ]; then
-  dest="$1"
+  ref="$1"
   shift
 else
-  dest=HEAD
+  ref=HEAD
 fi
 
-git branch -f "$branch" "$dest"
+git branch -f "$branch" "$ref"
 
-if [ "$dest" == "HEAD" ]; then
+if [ -n "$checkout" ]; then
   git checkout "$branch"
 fi

@@ -37,6 +37,7 @@
   ln8 = list-n 8
   ln9 = list-n 9
   ln20 = list-n 20
+  msg = log -n 1 --format=%s
   sha = hash
   shas = hash
   fh = full-hash
