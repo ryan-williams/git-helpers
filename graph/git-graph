@@ -1,10 +1,33 @@
 #!/usr/bin/env bash
 
 # Show a pretty `git log` with a graph.
+#
+# Usage:
+#
+# $ git graph [-a] [-l] ...
+#
+# -a: print "author" datetimes (default: "committer")
+# -l: print "local" datetimes (default: "relative")
+#
+# Other args are passed through to `git log`
+
+ARGS=()
+date_type='%cd'
+date_fmt="relative"
+while [ $# -gt 0 ]; do
+    arg="$1"; shift
+    case "$arg" in
+    -a) date_type="%ad" ;;
+    -l) date_fmt="local" ;;
+    *) ARGS+=("$arg") ;;
+    esac
+done
+
+set -- "${ARGS[@]}"
 
 git log \
   --graph \
-  --format="%C(auto)%h %C(blue)%cd %C(red)%an%C(reset)%C(reset)%C(auto)%d %s" \
-  --date=relative \
+  "--format=%C(auto)%h %C(blue)${date_type} %C(red)%an%C(reset)%C(reset)%C(auto)%d %s" \
+  "--date=$date_fmt" \
   --date-order \
   "$@"

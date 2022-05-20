@@ -5,7 +5,10 @@
   ssf = show-sha-file
   shh = show-sha-file HEAD
   shp = show-sha-file HEAD^
+  shl = show --submodule=log
   shs = show --stat
+  shsl = show --submodule=log
+  shss = show --submodule=short
   sn = show-names
   sln = show-local-names
   snl = show-local-names
