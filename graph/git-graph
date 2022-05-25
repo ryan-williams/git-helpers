@@ -11,6 +11,8 @@
 #
 # Other args are passed through to `git log`
 
+set -e
+
 ARGS=()
 date_type='%cd'
 date_fmt="relative"

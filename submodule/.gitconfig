@@ -19,6 +19,8 @@
   sf    = submodule foreach --recursive --quiet
   sfv   = submodule foreach --recursive
   smf   = submodule foreach --recursive --quiet
+  srl   = submodule-rebase-log.py
+  srlv  = submodule-rebase-log.py -v
   ssh   = submodule-shas
   sst   = submodule-shas
   smu   = submodule update
