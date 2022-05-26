@@ -5,6 +5,7 @@
   ssf = show-sha-file
   shh = show-sha-file HEAD
   shp = show-sha-file HEAD^
+  shd = show --submodule=diff
   shl = show --submodule=log
   shs = show --stat
   shsl = show --submodule=log

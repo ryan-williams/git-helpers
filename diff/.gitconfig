@@ -8,6 +8,8 @@
   dph  = diff HEAD^..HEAD
   dps  = diff-pipe sort
   dc   = diff --cached
+  dcd  = diff --cached --submodule=diff
+  dcp  = diff --cached --submodule=diff
   dcss = diff --cached --submodule=short
   df   = diff
   dft  = difftool
