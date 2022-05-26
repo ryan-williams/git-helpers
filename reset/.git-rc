@@ -3,6 +3,7 @@
 alias grsp="g rsp"
 alias gr.="g reset ."
 alias grs.="g reset ."
+alias grss="g rss"
 alias grp="g rp"
 alias grh="g rh"
 alias grhh="g rhh"
