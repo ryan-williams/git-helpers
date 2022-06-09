@@ -8,9 +8,9 @@
   smc   = submodule-commits
   smd   = submodule deinit
   smi   = submodule init
-  sg  = submodule-log
-  slg  = submodule-log
-  smg  = submodule-log
+  sg    = submodule-log
+  slg   = submodule-log
+  smg   = submodule-log
   smlg  = submodule-log
   sms   = submodules
   smst  = submodule status
@@ -25,6 +25,8 @@
   sst   = submodule-shas
   smr   = !git reset . && git submodule update --recursive
   smrs  = !git reset . && git submodule update --recursive && git status
+  sr    = !git reset . && git submodule update --recursive
+  srs   = !git reset . && git submodule update --recursive && git status
   smir  = !git submodule init && git submodule update --recursive
   smh   = submodule-sha
   smid  = submodule-sha
