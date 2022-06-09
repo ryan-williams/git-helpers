@@ -2,6 +2,9 @@
   d    = diff
   dd   = diff --submodule=diff
   dsd  = diff --submodule=diff
+  dl   = diff --submodule=log
+  dsl  = diff --submodule=log
+  dss  = diff --submodule=short
   da   = diff-pipe
   das  = diff-pipe sort
   db   = diff-branch-reflog
@@ -26,7 +29,6 @@
   dsh  = diff --stat HEAD
   dsp  = diff --stat HEAD^
   dsph = diff --stat HEAD^..HEAD
-  dss  = diff --submodule=short
   dsu  = diff-stat-parent
   dt   = diff-tree
   dtp  = diff-tree -p

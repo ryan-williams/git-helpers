@@ -23,6 +23,8 @@
   srlv  = submodule-rebase-log.py -v
   ssh   = submodule-shas
   sst   = submodule-shas
+  smr   = !git reset . && git submodule update --recursive
+  smrs  = !git reset . && git submodule update --recursive && git status
   smu   = submodule update
   smir  = !git submodule init && git submodule update --recursive
   smh   = submodule-sha
