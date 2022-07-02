@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
 
-git log -n1 --format=%B "$(git rebase-head)"
+rebase_head="$(git rebase-head)"
+if [ -z "$rebase_head" ]; then
+	exit 1
+fi
+
+git log -n 1 --format=%s "$rebase_head"

@@ -21,6 +21,7 @@
   rd      = rebase-diff
   ri      = rebase -i
   rx      = rebase -i -x
+  rhm     = rebase-head-message
   rim     = rebase -i master
   rq      = rebase-sequence
   arc     = add-rebase-continue
@@ -29,4 +30,5 @@
   shoc    = show-original-commit
   shoh    = show-original-head
   shrh    = show-rebase-head
+  shrm    = rebase-head-message
   sqsq    = squash-sequence
