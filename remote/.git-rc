@@ -17,6 +17,7 @@ defn glpr g lpr
 defn gmr g mr
 defn gup g up
 defn gamr g amr
+defn grcp g rcp
 defn grgu g rgu
 defn grr g rr
 defn grmv g rmv

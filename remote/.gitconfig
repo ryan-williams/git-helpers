@@ -13,6 +13,8 @@
   rat       = remote-add.py -i
   rau       = remote add upstream
 
+  rcp       = remote-copy
+
   re        = remote-exists
   is-remote = remote-exists
   ir        = is-remote

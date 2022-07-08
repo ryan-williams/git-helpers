@@ -45,8 +45,6 @@
 
         allow-pushes = config receive.denyCurrentBranch ignore
         aps = allow-pushes
-        receive-pushes = allow-pushes
-        rcp = receive-pushes
 
         sid = set-id
         sgid = set-id -g
