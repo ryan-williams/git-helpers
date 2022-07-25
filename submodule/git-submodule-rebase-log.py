@@ -54,7 +54,10 @@ def lines(*args):
 
 
 def get_shas_for_head(parent_sha, submodule):
-    child = re.split('\s+', output('git', 'ls-tree', parent_sha, submodule), 3)[2]
+    line = output('git', 'ls-tree', parent_sha, submodule).strip()
+    if not line:
+        return None
+    child = re.split('\s+', line, 3)[2]
     return dict(
         parent=parent_sha,
         child=child,
@@ -122,6 +125,9 @@ def main(submodule, verbose):
         tags = []
         try:
             for name, shas in heads.items():
+                if not shas:
+                    print(f'Skipping {name}, no shas found')
+                    continue
                 tag = f'parent/{name}'
                 parent_sha = shas['parent']
                 child_sha = shas['child']
