@@ -112,10 +112,10 @@ def gist_dir(
 
         if push_history:
             run('git','branch',branch,prev_sha)
-            run('git','branch','-u',f'{remote}/master',branch)
+            run('git','branch','-u',f'{remote}/main',branch)
         else:
             run('git','branch',branch)
-            run('git','branch','-u',f'{remote}/master',branch)
+            run('git','branch','-u',f'{remote}/main',branch)
             run('git','reset',branch)
 
             # add the local dir's contents (including only specific files if necessary)
@@ -137,7 +137,7 @@ def gist_dir(
             run('git','commit','--amend','--allow-empty','-m','initial commit')
 
         # overwrite the gist (and its history) with the single real commit we want to be present
-        run('git','push', remote, '--force', f'{branch}:master')
+        run('git','push', remote, '--force', f'{branch}:main')
 
         print(f"Updated gist: {url}")
         if open_gist:
@@ -155,8 +155,8 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('paths', nargs='*', help='Either a list of directories to create GitHub gists of, or a list of files to add to a gist from the current directory (binary files work in both cases!)')
-    parser.add_argument('-b', '--branch', default='gist', help="Name for new local branch that will track the new Gist's \"master\" branch")
-    parser.add_argument('-B', '--restore_branch', default=False, action='store_true', help="Move back to current branch at end of execution (by default, a new local branch tracking the new Gist's \"master\" branch is checked out when `gist-dir` is finished running")
+    parser.add_argument('-b', '--branch', default='gist', help="Name for new local branch that will track the new Gist's \"main\" branch")
+    parser.add_argument('-B', '--restore_branch', default=False, action='store_true', help="Move back to current branch at end of execution (by default, a new local branch tracking the new Gist's \"main\" branch is checked out when `gist-dir` is finished running")
     parser.add_argument('-c', '--copy', default=False, action='store_true', help="Copy the resulting gist's URL to the clipboard")
     parser.add_argument('-d', '--dir', required=False, help="Specify a single directory to make a gist from; any positional arguments must point to files in this directory")
     parser.add_argument('-e', '--enterprise_host', help="Use a GitHub Enterprise host (defaults to $GITHUB_URL, when set)")
