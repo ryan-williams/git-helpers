@@ -7,27 +7,30 @@ usage() {
     exit 1
 }
 
-all=
-if [ $# -eq 1 ]; then
-    if [ $1 != "-a" ]; then
-        usage
-    fi
-    all=1
+include_unstaged=
+if [ $1 == "-a" ]; then
+    include_unstaged=1
     shift
-elif [ $# -gt 1 ]; then
-    usage
 fi
 
-if [ -n "$all" ]; then
-    diff_args=()
-    commit_args=(-a)
-else
+all=
+if [ $# -eq 0 ]; then
+    all=1
+fi
+
+if [ -z "$include_unstaged" ] && [ "$all" == "1" ]; then
     diff_args=(--cached)
-    commit_args=()
+else
+    diff_args=()
 fi
 
-diffs="$(comm -12 <(git diff "${diff_args[@]}" --name-only | sort) <(git ls-tree HEAD | awk '$2=="commit" {print $4}' | sort))"
-#echo "Changed submodules: $diffs" >&2
+diffs="$(comm -12 <(git diff "${diff_args[@]}" --name-only "$@" | sort) <(git ls-tree HEAD "$@" | awk '$2=="commit" { print $4 }' | sort))"
+echo "Changed submodules: $diffs" >&2
+
+if [ "${#diffs[@]}" == "0" ]; then
+    echo "No changed submodules found" >&2
+    exit 1
+fi
 
 msg=
 for sm in $diffs; do
@@ -36,6 +39,7 @@ for sm in $diffs; do
     subjects="$(git x "$sm" log --format=%s "$before..$after" | perl -pe 'chomp if eof; s/\n/, /')"
     msg="${msg:+$msg, }"
     msg="${msg}$sm: $subjects"
+    git add "$sm"
 done
 
-git commit -m "$msg" "${commit_args[@]}" "$@"
+git commit -m "$msg" "$@"

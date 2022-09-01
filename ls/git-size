@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+human_readable=
+# Support -h or -H; the former sometimes trigger an automatic "git help" flow…
+if [ "$1" == "-h" ] || [ "$1" == "-H" ]; then
+    human_readable=1
+    shift
+fi
+
+s=0
+while read -r line; do
+    for num in $line; do
+        let s=$s+$num
+    done
+done < <(git sizes "$@" | awk '{ print $1 }')
+
+if [ -z "$human_readable" ]; then
+    echo $s
+else
+    echo $s | numfmt --to=iec
+fi

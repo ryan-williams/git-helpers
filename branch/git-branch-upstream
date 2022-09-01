@@ -5,7 +5,7 @@
 #   $ git branch-upstream [upstream ref] <branch>
 
 if [ $# -eq 0 ]; then
-  upstream="$(git default-remote)/master"
+  upstream="$(git default-remote)/main"
 else
   upstream="$1"
   shift

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ $# -eq 1 ]; then
+    ref="$1"; shift
+elif [ $# -eq 0 ]; then
+    ref=HEAD
+else
+    echo "Usage: $0 [ref=HEAD]" >&2
+    exit 1
+fi
+
+git cat-file -p "$ref" | grep '^parent' | awk '{ print $2 }'

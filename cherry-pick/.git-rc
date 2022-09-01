@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 alias gcp="g cp"
-alias gcpc="g cpc"
 alias gcpa="g cpa"
+alias gcpc="g cpc"
+alias gcps="g cps"
 alias gacpc="g acpc"

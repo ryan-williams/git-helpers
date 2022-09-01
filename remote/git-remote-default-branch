@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <remote>" >&2
+    exit 1
+fi
+
+git remote show "$@" | sed -n '/HEAD branch/s/.*: //p'

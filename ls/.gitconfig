@@ -78,3 +78,10 @@
 
   list-deleted = list-status ' D'
   ld = list-status ' D'
+
+  sz  = size
+  szh = size -H
+  szs = sizes
+  total-size = size
+  ts  = total-size
+  tsz = total-size

@@ -3,6 +3,8 @@
   rv        = remote -vv
 
   dfr       = default-remote
+  drb       = remote-default-branch
+  rdb       = remote-default-branch
 
   gor       = get-only-remote
 

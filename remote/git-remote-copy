@@ -8,3 +8,4 @@ src="$1"; shift
 dst="$1"; shift
 
 git remote add "$dst" "$(git remote get-url "$src")"
+git fetch --recurse-submodules "$dst"

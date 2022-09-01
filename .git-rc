@@ -88,6 +88,7 @@ export h="HEAD"
 
 # Parent commit aliases
 export p="HEAD^"
+export pp="HEAD^2"
 export p2="HEAD~2"
 export p3="HEAD~3"
 export p4="HEAD~4"

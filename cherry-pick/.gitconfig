@@ -1,5 +1,6 @@
 [alias]
   cp   = cherry-pick
-  cpc  = cherry-pick --continue
   cpa  = cherry-pick --abort
+  cpc  = cherry-pick --continue
+  cps  = cherry-pick --skip
   acpc = add-and-cherry-pick-continue

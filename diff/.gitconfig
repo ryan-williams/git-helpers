@@ -16,7 +16,9 @@
   dcd  = diff --cached --submodule=diff
   dcp  = diff --cached --submodule=diff
   dcss = diff --cached --submodule=short
-  df   = diff
+  df   = diff-filter
+  dfm  = diff-filter M
+  ddf  = diff-filter
   dft  = difftool
   dh   = diff HEAD
   dn   = diff --name-status
@@ -40,11 +42,11 @@
   has-no-changes = is-clean
   hc = has-changes
   hnc = has-no-changes
-  is-clean = diff --quiet --exit-code HEAD
+  is-clean = diff --quiet HEAD
   is-dirty = ! ! git is-clean
   ic = is-clean
   id = is-dirty
-  no-diff = diff --quiet --exit-code HEAD
+  no-diff = diff --quiet HEAD
 
 [diff]
   submodule = diff

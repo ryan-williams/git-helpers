@@ -20,6 +20,7 @@
   rc      = rebase --continue
   rd      = rebase-diff
   ri      = rebase -i
+  rir     = rebase -i --root
   rx      = rebase -i -x
   rhm     = rebase-head-message
   rim     = rebase -i master

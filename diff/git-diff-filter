@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+filter="$1"; shift
+
+git diff --diff-filter="$filter" "$@"

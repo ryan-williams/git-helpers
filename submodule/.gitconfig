@@ -38,6 +38,7 @@
   smuf  = submodule update --recursive --rebase
   smuq  = submodule update --quiet
   smur  = submodule update --recursive --init
+  smurf = submodule update --recursive --init -f
   smurq = submodule update --recursive --quiet
   smurr = submodule update --recursive --rebase
   smus  = submodule update

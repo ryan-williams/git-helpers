@@ -2,6 +2,8 @@
 
 # Show "number of commits ahead/behind" relationship between two refs.
 
+set -e
+
 from=
 to=
 if [ $# -eq 2 ]; then
@@ -29,5 +31,3 @@ subtract="$(git commits-behind "$to..$from")"
 add="$(git commits-behind "$from..$to")"
 
 echo -"$subtract" +"$add"
-
-

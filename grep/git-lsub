@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Apply a literal string find+replace substitution to all (or some) Git-tracked files
+#
+# $ git replace <find> <replace>  # replace <find> with <replace> in entire repo
+#
+# Excludes symbolic links
+
+if [ $# -lt 2 ]; then
+    echo "Usage: $0 <find> <replace> [args...]" >&2
+    exit 1
+fi
+
+export find="$1"; shift
+export replace="$1"; shift
+
+git ls-files -z --recurse-submodules "$@" | \
+perl -0 -lne 'print if lstat && -f _' | \
+xargs -0 ruby -p -i -e "gsub(ENV['find'], ENV['replace'])"
