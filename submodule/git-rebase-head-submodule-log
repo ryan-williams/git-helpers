@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ $# -eq 0 ]; then
+    readarray -t conflicts <<<"$(git diff --name-only --diff-filter=UU)"
+    if [ "${#conflicts[@]}" == "1" ]; then
+        submodule="${conflicts[0]}"
+        echo "Using long conflicting submodule: $submodule" >&2
+    else
+        echo "Found ${#conflicts[@]} conflicting submodules: ${conflicts[*]}" >&2
+        exit 2
+    fi
+elif [ $# -eq 1 ]; then
+    submodule="$1"; shift
+else
+    echo "Usage: $0 [submodule]"  >&2
+    exit 1
+fi
+
+git log -p --color=always -n1 "$(git rebase-head)" --submodule=log -- "$submodule" | sed '1,/^Submodule/d'

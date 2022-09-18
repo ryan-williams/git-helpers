@@ -23,7 +23,8 @@
   lggp = log -p -S
   lgs = log --stat
   lst = log --stat
-  lp = log -p
+  lp  = log -p
+  lpp = log -p --
   lg1 = log-oneline
   lh = log-hash
   ln = list-n

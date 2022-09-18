@@ -93,6 +93,11 @@ export p2="HEAD~2"
 export p3="HEAD~3"
 export p4="HEAD~4"
 export p5="HEAD~5"
+export p6="HEAD~6"
+export p7="HEAD~7"
+export p8="HEAD~8"
+export p9="HEAD~9"
+export p1="HEAD~10"
 
 # Reflog history aliases
 export h1="HEAD@{1}"

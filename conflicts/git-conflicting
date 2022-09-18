@@ -2,4 +2,4 @@
 
 # Print conflicting file paths.
 
-git status -s | sed -n "s/^[AUD][AUD] //p"
+git diff --name-only --diff-filter=UU "$@"

@@ -8,7 +8,7 @@ usage() {
 }
 
 include_unstaged=
-if [ $1 == "-a" ]; then
+if [ "$1" == "-a" ]; then
     include_unstaged=1
     shift
 fi
@@ -20,11 +20,13 @@ fi
 
 if [ -z "$include_unstaged" ] && [ "$all" == "1" ]; then
     diff_args=(--cached)
+    awk_cmd='$0 ~ /^M/ {print $2}'
 else
     diff_args=()
+    awk_cmd='$0 ~ /^ M/ {print $2}'
 fi
 
-diffs="$(comm -12 <(git diff "${diff_args[@]}" --name-only "$@" | sort) <(git ls-tree HEAD "$@" | awk '$2=="commit" { print $4 }' | sort))"
+diffs="$(comm -12 <(git status --short | awk "$awk_cmd" | sort) <(git ls-tree HEAD "$@" | awk '$2=="commit" { print $4 }' | sort))"
 echo "Changed submodules: $diffs" >&2
 
 if [ "${#diffs[@]}" == "0" ]; then

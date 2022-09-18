@@ -32,6 +32,7 @@ alias grq="g rq"
 alias grx="g rx"
 
 alias garc='g arc'
+alias garcn='g arcn'
 
 alias goc="g oc"
 alias goh="g oh"

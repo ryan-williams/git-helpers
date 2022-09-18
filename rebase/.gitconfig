@@ -26,6 +26,7 @@
   rim     = rebase -i master
   rq      = rebase-sequence
   arc     = add-rebase-continue
+  arcn    = add-rebase-continue-no-edit
   oc      = original-commit
   oh      = original-head
   shoc    = show-original-commit

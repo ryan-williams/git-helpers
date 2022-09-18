@@ -1,3 +1,14 @@
 #!/usr/bin/env bash
 
-cat "$(git dir)"/REBASE_HEAD
+set -e
+
+head="$(cat "$(git dir)"/REBASE_HEAD)"
+
+if [ -z "$head" ]; then
+    head="$(cat .git/CHERRY_PICK_HEAD)"
+    if [ -z "$head" ]; then
+	    exit 1
+    fi
+fi
+
+echo "$head"

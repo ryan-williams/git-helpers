@@ -1,5 +1,6 @@
 [alias]
   ps    = !git pull --rebase && git submodule update --init --recursive
+  rhsl  = rebase-head-submodule-log
   sac   = submodule-auto-commit
   saca  = submodule-auto-commit -a
   smac  = submodule-auto-commit
@@ -57,3 +58,4 @@
   ism   = is-submodule
   is    = is-submodule
   ftd   = filter-to-dir
+  src   = submodule-rebase-continue.py

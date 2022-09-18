@@ -15,3 +15,5 @@
   snl = show-local-names
   snr = show-remote-names
   srn = show-remote-names
+  shhf = show-head-file
+  chf = show-head-file

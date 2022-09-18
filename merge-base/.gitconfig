@@ -3,3 +3,4 @@
   mbo = merge-base --octopus
   mbp = merge-base-parents
   bp = branch-point
+  shmb = show-merge-base

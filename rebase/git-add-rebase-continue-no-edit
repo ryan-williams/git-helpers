@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# `git add` files whose conflicts have been resolved, and continue rebasing.
+
+export GIT_EDITOR=true
+git add -u "${@:-.}" && git rebase --continue

@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-rebase_head="$(git rebase-head)"
-if [ -z "$rebase_head" ]; then
-	exit 1
+set -e
+
+head="$(git rebase-head)"
+if [ -z "$head" ]; then
+    exit 1
 fi
 
-git show "$@" "$rebase_head"
+git show "$@" "$head"
