@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#
+# Reset one or more branches to point at its upstream/tracking branch
+
+if [ "$1" == "-f" ]; then
+    force=1
+    shift
+else
+    force=
+fi
+
+fail=
+for b in "$@"; do
+    u="$(git tracking-branch "$b")"
+    commits_behind="$(git rev-list --count $b..$u)"
+    commits_ahead="$(git rev-list --count $u..$b)"
+    if [ "$commits_ahead" != "0" ]; then
+        if [ -z "$force" ]; then
+            echo "Branch $b is $commits_ahead of $u" >&2
+            fail=1
+            continue
+        fi
+    fi
+    bs="$(git log -1 --format=%h "$b")"
+    us="$(git log -1 --format=%h "$u")"
+    if [ "$commits_behind" == "0" ]; then
+        echo "$b == $u ($bs / $us), skipping" >&2
+        continue
+    fi
+    cur="$(git current-branch)"
+    echo "$b: fast-forwarding $commits_behind commits to $u ($bs..$us)" >&2
+    if [ "$cur" == "$b" ]; then
+        if ! git is-clean; then
+            echo "Refusing to reset --hard current branch $b with uncommitted changes" >&2
+            fail=1
+            continue
+        fi
+        git reset --hard "$u"
+    else
+        git branch -f "$b" "$u"
+    fi
+done
+
+if [ -n "$fail" ]; then
+    exit 1
+fi

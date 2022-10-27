@@ -3,4 +3,6 @@
   cpa  = cherry-pick --abort
   cpc  = cherry-pick --continue
   cps  = cherry-pick --skip
+  cpsh = cherry-pick-show-head
+  shch = cherry-pick-show-head
   acpc = add-and-cherry-pick-continue

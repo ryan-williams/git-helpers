@@ -33,7 +33,7 @@
 
   lb = local-branches
   nb = new-branch
-  ub = update-branch
+  rbb = rebase-branch
 
   bd = branch -d
   bdf = branch -D
@@ -48,3 +48,7 @@
   ab = all-branches
 
   be = branch-exists
+  tb = tracking-branch
+  upstream-branch = tracking-branch
+  ub = upstream-branch
+  bru = branch-reset-upstream

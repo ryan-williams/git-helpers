@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+CHERRY_PICK_HEAD="$(cat .git/CHERRY_PICK_HEAD)"
+git show "$@" "$CHERRY_PICK_HEAD"

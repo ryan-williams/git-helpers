@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+    b=
+elif [ $# -eq 1 ]; then
+    b="$1"; shift
+else
+    echo "Usage: $0 [branch]" >&2
+    exit 1
+fi
+
+git rev-parse --abbrev-ref --symbolic-full-name "${b}@{u}"

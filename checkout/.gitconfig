@@ -1,8 +1,10 @@
 [alias]
-  co  = checkout
-  cob = checkout -b
-  cof = checkout -f
-  coh = checkout HEAD --
-  cop = checkout-previous-branch
-  cor = checkout --recurse-submodules
+  co   = checkout
+  cob  = checkout -b
+  cof  = checkout -f
+  coh  = checkout HEAD --
+  com  = checkout main
+  con  = checkout --no-recurse-submodules
+  cop  = checkout-previous-branch
+  cor  = checkout --recurse-submodules
   corf = checkout --recurse-submodules -f
