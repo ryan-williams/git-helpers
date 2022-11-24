@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Update to a branch to match its tracking branch, then `checkout` it
+
+branch="${@:(($#))}"
+git branch-reset-upstream "$@"
+git checkout "$branch"

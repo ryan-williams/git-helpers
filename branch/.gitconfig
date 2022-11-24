@@ -52,3 +52,4 @@
   upstream-branch = tracking-branch
   ub = upstream-branch
   bru = branch-reset-upstream
+  bruc = branch-reset-upstream-checkout
