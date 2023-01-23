@@ -9,3 +9,7 @@ defn ghdss github-docs-snapshot -s
 
 defn hds github-docs-snapshot
 defn hdss github-docs-snapshot -s
+
+defn ghh "$(which gh)"
+defn gha "ghh api"
+defn ghj 'ghh api -H "Accept: application/vnd.github+json"'

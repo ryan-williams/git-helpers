@@ -78,6 +78,7 @@ def main(before_ref, after_ref, delay, force, out_path, no_open, paths):
                 else:
                     raise RuntimeError(f'--output {out_path} exists; pass -f/--force to overwrite')
 
+            makedirs(dirname(out_path), exist_ok=True)
             run('convert', '-delay', delay, before_path, after_path, out_path)
             out_paths.append(out_path)
 

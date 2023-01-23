@@ -60,6 +60,7 @@
 
   list-mode = list-status
   lm = list-mode
+  lmm = list-mode ' M'
 
   deleted-by-them = list-status UD
   dbt = list-status UD

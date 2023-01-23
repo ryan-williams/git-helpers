@@ -20,9 +20,12 @@
   dfm  = diff-filter M
   dg   = diff-gif.py
   dgif = diff-git.py
+  dj   = diff-json.py
   ddf  = diff-filter
   dft  = difftool
   dh   = diff HEAD
+  dh1  = diff HEAD^..HEAD
+  dh2  = diff HEAD^2..HEAD
   dn   = diff --name-status
   dno  = diff --name-only
   dns  = diff --name-status
