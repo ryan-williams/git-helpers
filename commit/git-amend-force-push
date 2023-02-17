@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -ex
+
+last="${@:(($#))}"
+set -- "${@:1:$(($#-1))}"
+
+git commit -u --amend --no-edit "$@"
+git push -f "$last"

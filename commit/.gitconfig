@@ -1,5 +1,9 @@
 [alias]
   acm   = add-and-commit-msg
+  afp   = amend-force-push
+  aafp  = amend-force-push -a
+  apf   = amend-force-push
+  aapf  = amend-force-push -a
   c     = commit
   ca    = commit -a
   caa   = commit -a --amend

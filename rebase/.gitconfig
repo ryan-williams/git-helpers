@@ -34,3 +34,7 @@
   shrh    = show-rebase-head
   shrm    = rebase-head-message
   sqsq    = squash-sequence
+  tw      = throw.py
+  twa     = throw.py -a
+  twp     = throw.py HEAD^
+  twap     = throw.py -a HEAD^

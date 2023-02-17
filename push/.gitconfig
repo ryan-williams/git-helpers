@@ -13,6 +13,7 @@
   pn = push -n
   pnt = push -n --tags
   pt = push --tags
+  ptn = push --tags -n
   pon = push -n origin
   pno = push -n origin
   pun = push -n upstream

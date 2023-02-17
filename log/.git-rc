@@ -45,3 +45,8 @@ alias glsc="g lsc"
 alias gfiles="g files"
 
 alias grwa="g rwa"
+
+alias g1="g l1"
+alias gl1="g l1"
+alias g1f="g l1f"
+alias gl1f="g l1f"

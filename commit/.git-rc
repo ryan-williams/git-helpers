@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 alias gacm="g acm"
+alias gafp="g afp"
+alias gaafp="g aafp"
+alias gapf="g apf"
+alias gaapf="g aapf"
 alias gc="g c"
 alias gca="g ca"
 alias gcam="g cam"
