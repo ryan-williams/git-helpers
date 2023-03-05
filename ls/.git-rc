@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+alias gl="g l"
 alias glm="g lm"
 alias glr="g lr"
 alias gls="g ls"
@@ -9,6 +10,7 @@ alias glthr="g lthr"
 alias glthn="g lthn"
 alias gltr="g ltr"
 alias gltrn="g ltrn"
+alias glz="g lz"
 
 alias gfn="g fn"
 
@@ -19,6 +21,8 @@ alias gfs="g fs"
 alias gfns="g fns"
 
 alias glo="g lo"
+alias glzo="g lzo"
+alias gloz="g loz"
 alias glso="g lso"
 
 alias gla="g la"

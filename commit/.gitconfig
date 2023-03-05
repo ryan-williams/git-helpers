@@ -3,7 +3,9 @@
   afp   = amend-force-push
   aafp  = amend-force-push -a
   apf   = amend-force-push
+  apfu  = amend-force-push u
   aapf  = amend-force-push -a
+  aapfu = amend-force-push -a u
   c     = commit
   ca    = commit -a
   caa   = commit -a --amend

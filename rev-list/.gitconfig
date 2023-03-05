@@ -1,6 +1,7 @@
 [alias]
   rvl = rev-list
   rla = rev-list --all
+  rlc = rev-list --count
   rlfp = rev-list-first-parents
   ac = all-commits
   ah = all-hashes

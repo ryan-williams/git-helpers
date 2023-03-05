@@ -33,7 +33,9 @@
         global-config-file = config --get-all --global include.path
 
         cfig = config --get-all core.excludesfile
+        cfef = config --get-all core.excludesfile
         cgig = config --get-all --global core.excludesfile
+        cgef = config --get-all --global core.excludesfile
         cfis = config core.excludesfile
         cgis = config --global core.excludesfile
         cfia = config --add core.excludesfile

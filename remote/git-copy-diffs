@@ -59,7 +59,6 @@ class CmdFileToCopy(FileToCopy):
     def cleanup(self):
         os.remove(self.path)
 
-
     def write(self):
         with open(self.path, 'w') as fd:
             subprocess.Popen(
