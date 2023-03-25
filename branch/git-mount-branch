@@ -4,7 +4,6 @@
 sha="$(git log -1 --format=%h)"
 
 mapfile -t refs < <(git local-branch-shas | awk "\$1 == \"$sha\" { print \$2 }")
-echo "${#refs[@]} refs: ${refs[*]}"
 
 n=${#refs[@]}
 if [ $n -gt 1 ]; then
@@ -15,5 +14,5 @@ elif [ $n -eq 0 ]; then
 fi
 
 ref="${refs[0]}"
-echo "Checking out $ref" >&2
+echo "Checking out $ref (at existing SHA $sha)" >&2
 git checkout "$ref"
