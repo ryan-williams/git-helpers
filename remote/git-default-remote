@@ -28,4 +28,4 @@ if [ -n "$DEFAULT_REMOTE" ]; then
   exit 0
 fi
 
-echo "$origin"
+echo origin

@@ -33,6 +33,9 @@ alias gus="g us"
 alias gsb="g sb"
 
 alias glb="g lb"
+alias glbs="g lbs"
+alias gbls="g bls"
+alias glbl="g lbl"
 
 alias gab="g ab"
 alias gbk="g bk"
@@ -40,6 +43,7 @@ alias gpb="g pb"
 
 alias gbe="g be"
 alias grbb="g rbb"
+alias grbe="g rbe"
 
 alias gtb="g tb"
 alias gub="g ub"

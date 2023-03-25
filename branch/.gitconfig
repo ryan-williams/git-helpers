@@ -32,6 +32,10 @@
   dmbr = delete-merged-branches --remote
 
   lb = local-branches
+  lbs = local-branch-shas
+  branch-list = local-branch-shas
+  bls = local-branch-shas
+  lbl = local-branch-shas
   nb = new-branch
   rbb = rebase-branch
 
@@ -48,6 +52,7 @@
   ab = all-branches
 
   be = branch-exists
+  rbe = remote-branch-exists
   tb = tracking-branch
   upstream-branch = tracking-branch
   ub = upstream-branch

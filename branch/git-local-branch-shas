@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+git for-each-ref --format='%(objectname:short) %(refname:short)' refs/heads/

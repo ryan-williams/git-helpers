@@ -5,6 +5,8 @@
   dfr       = default-remote
   drb       = remote-default-branch
   rdb       = remote-default-branch
+  remote-get-head = remote-default-branch
+  rgh       = remote-default-branch
 
   gor       = get-only-remote
 

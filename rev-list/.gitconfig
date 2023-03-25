@@ -10,3 +10,6 @@
   rvp = rev-parse
   commits-behind = rev-list --count
   cbh = commits-behind
+  parents = !git-parents.py
+  pts = !git-parents.py
+  prnts = !git-parents.py
