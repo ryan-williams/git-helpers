@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+# Print all local branches, in "<sha> <branchname>" format, from most to least recently committed date
 
-git for-each-ref --format='%(objectname:short) %(refname:short)' refs/heads/
+git for-each-ref --sort=-committerdate --format='%(objectname:short) %(refname:short)' refs/heads/

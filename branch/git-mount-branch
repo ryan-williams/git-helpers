@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Checkout the most-recently committed local branch that points to the current SHA
+
+sha="$(git log -1 --format=%h)"
+
+mapfile -t refs < <(git local-branch-shas | awk "\$1 == \"$sha\" { print \$2 }")
+echo "${#refs[@]} refs: ${refs[*]}"
+
+n=${#refs[@]}
+if [ $n -gt 1 ]; then
+    echo "Found $n eligible refs: ${refs[*]}" >&2
+elif [ $n -eq 0 ]; then
+    echo "No branches found with SHA $sha" >&2
+    exit 1
+fi
+
+ref="${refs[0]}"
+echo "Checking out $ref" >&2
+git checkout "$ref"

@@ -39,6 +39,8 @@
   nb = new-branch
   rbb = rebase-branch
 
+  mtb = mount-branch
+
   bd = branch -d
   bdf = branch -D
   bD = branch -D
