@@ -38,7 +38,11 @@
   ln8 = list-n 8
   ln9 = list-n 9
   ln20 = list-n 20
-  msg = log -n 1 --format=%s
+  hash-message = log -1 '--format=%h %s'
+  hm = log -1 '--format=%h %s'
+  shm = log -1 '--format=%h %s'
+  msg = log -1 --format=%s
+  sbj = log -1 --format=%s
   l1 = log -1
   l1f = log-1-format
   sha = hash
