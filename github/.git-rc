@@ -10,7 +10,15 @@ defn ghdss github-docs-snapshot -s
 defn hds github-docs-snapshot
 defn hdss github-docs-snapshot -s
 
+# `gh` is already aliased as `git help` and I use that a lot, so GitHub is `ghh` 🤷‍♂️
 defn ghh "$(which gh)"
 defn gha "ghh api"
 defn ghj 'ghh api -H "Accept: application/vnd.github+json"'
 defn ghw github-workflows.py
+
+defn ghow ghh repo view --web
+github_open_web_branch() {
+    ghh repo view --web -b "$(git current-branch)"
+}
+export -f github_open_web_branch
+defn ghob github_open_web_branch

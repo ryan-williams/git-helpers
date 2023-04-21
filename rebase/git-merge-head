@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+head="$(cat "$(git dir)"/MERGE_HEAD)"
+
+if [ -z "$head" ]; then
+    exit 1
+fi
+
+echo "$head"

@@ -38,6 +38,7 @@
   ln8 = list-n 8
   ln9 = list-n 9
   ln20 = list-n 20
+  lnw = log --no-walk
   hash-message = log -1 '--format=%h %s'
   hm = log -1 '--format=%h %s'
   shm = log -1 '--format=%h %s'

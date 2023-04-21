@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+head="$(git merge-head)"
+if [ -z "$head" ]; then
+    exit 1
+fi
+
+git show "$@" "$head"

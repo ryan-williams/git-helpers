@@ -11,8 +11,11 @@
   carb    = checkout-and-rebase
   corb    = checkout-and-rebase
   crbh    = commit-rebase-head
+  mh      = merge-head
   rbh     = rebase-head
   rbhm    = rebase-head-message
+  rebase-dag = rebase-dag.py
+  rbd     = rebase-dag.py
   rbp     = rebase-parent
   rbo     = rebase --onto
   rbm     = rebase-head-message
@@ -30,6 +33,7 @@
   oc      = original-commit
   oh      = original-head
   shoc    = show-original-commit
+  shmh    = show-merge-head
   shoh    = show-original-head
   shrh    = show-rebase-head
   shrm    = rebase-head-message
