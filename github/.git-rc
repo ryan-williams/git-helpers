@@ -22,3 +22,9 @@ github_open_web_branch() {
 }
 export -f github_open_web_branch
 defn ghob github_open_web_branch
+
+defn ghrl ghh run list
+defn ghrv ghh run view
+defn ghrvj ghh run view --job
+defn ghrvl ghh run view --log
+defn ghrvlj ghh run view --log --job

@@ -1,5 +1,7 @@
 [alias]
   rvl = rev-list
+  rlp = rev-list --parents
+  rlp1 = rev-list --parents -n1
   rla = rev-list --all
   rlc = rev-list --count
   rlfp = rev-list-first-parents
