@@ -60,3 +60,5 @@
   ub = upstream-branch
   bru = branch-reset-upstream
   bruc = branch-reset-upstream-checkout
+
+  ur = update-ref
