@@ -16,9 +16,11 @@
   caan  = commit -a -u --amend --no-edit
   caane = commit -a -u --amend --no-edit
   cbn   = commit-basename
-  cbns   = commit-basenames
+  cbns  = commit-basenames
   cfn   = commit-filename
-  cfns   = commit-filenames
+  cfns  = commit-filenames
+  cae   = commit --allow-empty
+  caem  = commit --allow-empty -m
   cm    = commit -m
   cne   = commit --no-edit
   cmp   = commit-multiple-parents
