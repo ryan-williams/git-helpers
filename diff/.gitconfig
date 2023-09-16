@@ -28,6 +28,8 @@
   dh2  = diff HEAD^2..HEAD
   dn   = diff --name-status
   dno  = diff --name-only
+  dcno = diff --name-only --cached
+  dnoc = diff --name-only --cached
   dns  = diff --name-status
   dq   = diff --quiet
   ds   = diff --stat

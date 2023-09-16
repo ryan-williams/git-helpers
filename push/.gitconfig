@@ -8,6 +8,7 @@
   pf = push -f
   pfo = push -f origin
   pfu = push -f upstream
+  pl = pull
   px = push-x
   ph = push-head
   pn = push -n

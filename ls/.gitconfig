@@ -14,6 +14,8 @@
   lthn = ls-tree -r --name-only HEAD
   ltr = ls-tree -r
   ltrn = ls-tree -r --name-only
+  lts = ls-tree --abbrev
+  ltsh = ls-tree --abbrev HEAD
 
   tree-full-id = log -n1 --format=%T
   tfi = tree-full-id
