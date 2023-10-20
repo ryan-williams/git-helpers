@@ -20,6 +20,7 @@ defn gup g up
 defn gamr g amr
 defn grcp g rcp
 defn grgu g rgu
+defn ggu g gu
 defn grr g rr
 defn grmv g rmv
 defn grrm g rrm

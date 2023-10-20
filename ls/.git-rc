@@ -2,6 +2,7 @@
 
 alias gl="g l"
 alias glm="g lm"
+alias glmm="g lmm"
 alias glr="g lr"
 alias gls="g ls"
 alias glt="g lt"
