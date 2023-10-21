@@ -5,9 +5,9 @@
   fa  = fetch --tags --all
   fta = fetch --tags --all
   fo  = fetch --tags origin
-  fu  = fetch --tags upstream
+  fu  = fetch --tags u
   fr  = fetch --tags --recurse-submodules
   fro = fetch --tags --recurse-submodules origin
-  fru = fetch --tags --recurse-submodules upstream
+  fru = fetch --tags --recurse-submodules u
   for = fetch --tags --recurse-submodules origin
-  fur = fetch --tags --recurse-submodules upstream
+  fur = fetch --tags --recurse-submodules u

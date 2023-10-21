@@ -15,7 +15,7 @@
   rah       = remote-add.py --https
   ras       = remote-add.py --ssh
   rat       = remote-add.py -i
-  rau       = remote add upstream
+  rau       = remote add u
 
   rcp       = remote-copy
 
