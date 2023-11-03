@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+alias grm="g rm"
 alias grmc="g rmc"
 alias grmr="g rmr"
 alias grmu="g rmu"
