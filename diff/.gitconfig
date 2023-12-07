@@ -50,9 +50,13 @@
   hc = has-changes
   hnc = has-no-changes
   is-clean = diff --quiet HEAD
+  is-clean-cached = diff --cached --quiet HEAD
   is-dirty = ! ! git is-clean
+  is-dirty = ! ! git is-clean-cached
   ic = is-clean
+  icc = is-clean-cached
   id = is-dirty
+  idc = is-dirty-cached
   no-diff = diff --quiet HEAD
 
 [diff]

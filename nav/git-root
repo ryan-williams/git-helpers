@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# Prints the root directory of this git repo.
-
-git rev-parse --show-toplevel

@@ -148,7 +148,7 @@ root_setup() {
   # Source this repository's `.gitconfig` file from your global `.gitconfig`.
   git add-global-config-file "$dir"/config/.gitconfig
 
-  export PYTHONPATH="$PYTHONPATH:$dir/util"
+  export PYTHONPATH="${PYTHONPATH}${PYTHONPATH:+:}$dir/util"
 }
 
 root_setup
