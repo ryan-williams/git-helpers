@@ -1,7 +1,8 @@
 [alias]
   g = graph-all
-  ga = graph-all
+  ga = graph-all -a
   gr = graph
+  gra = graph -a
   grd = graph --date=iso
   grdh = grd -n 10
   grdn = grd -n
