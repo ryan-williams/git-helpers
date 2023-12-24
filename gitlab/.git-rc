@@ -1,0 +1,7 @@
+gitlab_api() {
+    glab api --hostname "$GITLAB_HOST" "$@"
+}
+export -f gitlab_api
+defn glapi gitlab_api
+
+alias glob="glab repo view --web"

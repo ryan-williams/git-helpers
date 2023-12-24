@@ -65,7 +65,7 @@ append_subdir_to_path \
   describe diff \
   fetch \
   git-filter-repo \
-  gist github graph grep \
+  gist github gitlab graph grep \
   help \
   lfs log ls \
   merge merge-base mv \
