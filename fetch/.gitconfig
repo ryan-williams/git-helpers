@@ -5,6 +5,7 @@
   fa  = fetch --tags --all
   fta = fetch --tags --all
   fo  = fetch --tags origin
+  fpr = fetch --prune
   fu  = fetch --tags u
   fr  = fetch --tags --recurse-submodules
   fro = fetch --tags --recurse-submodules origin
