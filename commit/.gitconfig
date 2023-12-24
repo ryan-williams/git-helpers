@@ -12,9 +12,9 @@
   caam  = commit -a --amend -m
   cam   = commit -a -m
   can   = commit --amend --no-edit
-  cane  = commit --amend --no-edit
+  cane  = commit --amend --no-edit --allow-empty
   caan  = commit -a -u --amend --no-edit
-  caane = commit -a -u --amend --no-edit
+  caane = commit -a -u --amend --no-edit --allow-empty
   cbn   = commit-basename
   cbns  = commit-basenames
   cfn   = commit-filename
