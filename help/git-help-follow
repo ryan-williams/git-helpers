@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
+# Follows config aliases and shows help for the aliased command.
 git "$@" --help
