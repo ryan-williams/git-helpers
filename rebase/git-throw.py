@@ -18,7 +18,8 @@ def stderr(msg=''):
 @click.option('-n', '--dry-run', count=True, help="1x: commit changes, print rebase todo list; 2x: don't commit changes, show simulated rebase todo list")
 @click.argument('dst')
 def main(all, message, dry_run, dst):
-    dst = check_output([ 'git', 'log', '-1', '--format=%h', dst ]).decode().rstrip('\n')
+    dst = check_output([ 'git', 'log', '-1', '--format=%H', dst ]).decode().rstrip('\n')
+    root = check_output([ 'git', 'rev-list', '--max-parents=0', 'HEAD' ]).decode().rstrip('\n')
     if not message:
         message = f'Temporary commit, to be squashed into {dst}'
 
@@ -28,9 +29,15 @@ def main(all, message, dry_run, dst):
     else:
         stderr(f'Would run: {shlex.join(commit_cmd)}')
 
+    if root == dst:
+        rebase_args = [ '--root' ]
+        log_args = []
+    else:
+        rebase_args = [ f'{dst}^' ]
+        log_args = [ f'{dst}^..HEAD' ]
     shas = list(reversed([
         line.rstrip('\n')
-        for line in check_output([ 'git', 'log', '--format=%h', f'{dst}^..HEAD' ]).decode().split('\n')
+        for line in check_output([ 'git', 'log', '--format=%h', *log_args ]).decode().split('\n')
         if line
     ]))
     if dry_run >= 2:
@@ -49,7 +56,7 @@ def main(all, message, dry_run, dst):
     ]
     todo_list = '\n'.join(lines)
     todo_contents = 'echo "%s" >' % todo_list
-    rebase_cmd = [ 'git', 'rebase', '-i', f'{dst}^' ]
+    rebase_cmd = [ 'git', 'rebase', '-i', *rebase_args, ]
     if dry_run:
         stderr(f'Would run: `{shlex.join(rebase_cmd)}` with GIT_SEQUENCE_EDITOR containing:\n{todo_contents}')
     else:
