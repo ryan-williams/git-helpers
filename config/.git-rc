@@ -32,6 +32,8 @@ alias grcp="g rcp"
 
 alias gsid="g sid"
 alias gsgid="g sgid"
+alias ggsid="g gsid"
+alias gsidg="g sidg"
 alias ggid="g gid"
 alias gggid="g ggid"
 

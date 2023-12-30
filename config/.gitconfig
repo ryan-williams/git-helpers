@@ -51,6 +51,8 @@
 
         sid = set-id
         sgid = set-id -g
+        gsid = set-id -g
+        sidg = set-id -g
         gid = get-id
         ggid = get-id -g
         ue = config user.email
