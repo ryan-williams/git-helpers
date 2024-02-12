@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-alias gh="g h"
 alias ghh="g hh"
 
 alias gce="g ce"

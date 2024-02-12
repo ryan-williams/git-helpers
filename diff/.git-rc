@@ -44,6 +44,11 @@ alias gdtp="g dtp"
 alias gdu="g du"
 alias gdw="g dw"
 
+alias gd-="g d-"
+alias gdw-="g dw-"
+alias gdc-="g dc-"
+alias gdcw-="g dcw-"
+
 alias ghc="g hc"
 alias ghnc="g hnc"
 alias gic="g ic"

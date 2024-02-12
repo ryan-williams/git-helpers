@@ -44,6 +44,10 @@
   du   = diff -u
   dw   = diff -w
   d1   = diff-no-context
+  d-   = diff --
+  dw-  = diff -w --
+  dc-  = diff --cached --
+  dcw- = diff --cached -w --
 
   has-changes = is-dirty
   has-no-changes = is-clean
