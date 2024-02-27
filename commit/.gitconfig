@@ -11,6 +11,8 @@
   caa   = commit -a --amend
   caam  = commit -a --amend -m
   cam   = commit -a -m
+  camt  = !git-commit-and-tag.sh -a
+  camtf = !git-commit-and-tag.sh -a -f
   can   = commit --amend --no-edit
   cane  = commit --amend --no-edit --allow-empty
   caan  = commit -a -u --amend --no-edit
@@ -22,6 +24,8 @@
   cae   = commit --allow-empty
   caem  = commit --allow-empty -m
   cm    = commit -m
+  cmt   = !git-commit-and-tag.sh
+  cmtf  = !git-commit-and-tag.sh -f
   cne   = commit --no-edit
   cmp   = commit-multiple-parents
   scm   = squashed-commit-message
