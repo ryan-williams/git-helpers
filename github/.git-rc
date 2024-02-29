@@ -10,19 +10,19 @@ defn ghdss github-docs-snapshot -s
 defn hds github-docs-snapshot
 defn hdss github-docs-snapshot -s
 
-defn gha "ghh api"
-defn ghj 'ghh api -H "Accept: application/vnd.github+json"'
+defn gha "gh api"
+defn ghj 'gh api -H "Accept: application/vnd.github+json"'
 defn ghw github-workflows.py
 
-defn ghow ghh repo view --web
+defn ghow gh repo view --web
 github_open_web_branch() {
-    ghh repo view --web -b "$(git current-branch)"
+    gh repo view --web -b "$(git current-branch)"
 }
 export -f github_open_web_branch
 defn ghob github_open_web_branch
 
-defn ghrl ghh run list
-defn ghrv ghh run view
-defn ghrvj ghh run view --job
-defn ghrvl ghh run view --log
-defn ghrvlj ghh run view --log --job
+defn ghrl gh run list
+defn ghrv gh run view
+defn ghrvj gh run view --job
+defn ghrvl gh run view --log
+defn ghrvlj gh run view --log --job
