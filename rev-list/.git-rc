@@ -2,6 +2,7 @@
 
 alias gac="g ac '%h'"
 alias gah="g ah"
+alias gcbh="g cbh"
 alias grla="g rla"
 alias grlc="g rlc"
 alias grvl="g rvl"

@@ -2,6 +2,7 @@
   bs = bisect
   bsg = bisect good
   bsb = bisect bad
+  bsl = bisect log
   brr = bisect-reverse-run
   bsr = bisect run
   bss = bisect start
