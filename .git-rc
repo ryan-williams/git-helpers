@@ -71,7 +71,7 @@ append_subdir_to_path \
   merge merge-base mv \
   nav \
   push \
-  rebase reflog remote reset rev-list rm \
+  rebase reflog remote reset rev-list rm_ \
   show stash status submodule \
   tag \
   version \
