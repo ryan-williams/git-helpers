@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+sha="$(git commit-tree "$@")"
+if [ -z "$sha" ]; then
+    exit 2
+fi
+
+git reset --hard "$sha"

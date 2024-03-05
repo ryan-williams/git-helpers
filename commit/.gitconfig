@@ -28,6 +28,8 @@
   cmtf  = !git-commit-and-tag.sh -f
   cne   = commit --no-edit
   cmp   = commit-multiple-parents
+  cmtr  = commit-tree
+  cmtrr = commit-tree-reset
   scm   = squashed-commit-message
   cn    = commit --amend
   cnm   = commit --amend -m
@@ -41,6 +43,8 @@
   cppa  = commit-push-parents -a
   cppam = commit-push-parents -a -m
   cppm  = commit-push-parents -m
+  ctr   = commit-tree
+  ctrr  = commit-tree-reset
   fua   = fixup-author
   om    = octomerge
   pp    = commit-push-parents
