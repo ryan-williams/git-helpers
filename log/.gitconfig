@@ -40,12 +40,16 @@
   ln20 = list-n 20
   lnw = log --no-walk
   hash-message = log -1 '--format=%h %s'
-  hm = log -1 '--format=%h %s'
-  shm = log -1 '--format=%h %s'
-  msg = log -1 --format=%s
-  sbj = log -1 --format=%s
-  l1 = log -1
-  l1f = log-1-format
+  hm = !git --no-pager log -1 '--format=%h %s'
+  shm = !git --no-pager log -1 '--format=%h %s'
+  msg = !git --no-pager log -1 --format=%s
+  sbj = !git --no-pager log -1 --format=%s
+  l1 = !git --no-pager log -1
+  l1f = !git --no-pager log-1-format
+  l1ft = !git --no-pager log-1-format t
+  l1fT = !git --no-pager log-1-format T
+  l1t = l1ft
+  l1T = l1fT
   sha = hash
   shas = hash
   fh = full-hash

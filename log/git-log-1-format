@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
 
 fmt="$1"; shift
+if ! [[ fmt =~ ^% ]] && [ ${#fmt} -eq 1 ]; then
+  fmt="%$fmt"
+fi
 git log -1 "--format=$fmt" "$@"
