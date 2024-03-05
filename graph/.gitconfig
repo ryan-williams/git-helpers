@@ -1,6 +1,10 @@
 [alias]
   g = graph-all
-  ga = graph-all -a
+  ga = graph-all
+  gaa = graph-all -a
+  gaal = graph-all -a -l
+  gal = graph-all -l
+  gala = graph-all -l -a
   gr = graph
   gra = graph -a
   grd = graph --date=iso
