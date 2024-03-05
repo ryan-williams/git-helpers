@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+cat \
+| perl -pe 's/^[^@]*@//' \
+| perl -pe 's/:/\//' \
+| perl -pe 's/\.git$//' \
+| perl -pe 's/^/https:\/\//'

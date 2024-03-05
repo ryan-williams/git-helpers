@@ -33,6 +33,7 @@
   amr       = add-mirror-remote
 
   rr        = remote-rename
+  ruh       = remote-url-to-https
   rmv       = remote-rename
   rrm       = remote remove
 
