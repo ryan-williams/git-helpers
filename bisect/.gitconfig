@@ -1,6 +1,7 @@
 [alias]
   bs = bisect
   bsg = bisect good
+  bhs = bisect-head
   bsb = bisect bad
   bsl = bisect log
   brr = bisect-reverse-run
