@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+if [ -z "$GIT_USER_BRANCH_PREFIX" ]; then
+    echo "\$GIT_USER_BRANCH_PREFIX is not set" >&2
+    exit 1
+fi
+
+src="$(git current-branch)"
+dst="$GIT_USER_BRANCH_PREFIX/$src"
+
+args=()
+flags=()
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -n|--dry-run)
+            flags+=("$1")
+            ;;
+        -f|--force)
+            flags+=("$1")
+            ;;
+        -t|--tags)
+            flags+=("$1")
+            ;;
+        *)
+            args+=("$1")
+            ;;
+    esac
+    shift
+done
+set -- "${args[@]}"
+
+if [ $# -eq 0 ]; then
+    tracking_branch="$(git rev-parse --abbrev-ref --symbolic-full-name "$src@{upstream}")"
+    if [ -n "$tracking_branch" ]; then
+        remote="${tracking_branch%%/*}"
+        echo "Pushing to tracked remote $remote" >&2
+        set -- "$remote"
+    else
+        echo "No tracking branch found for $src" >&2
+        exit 2
+    fi
+fi
+
+cmd=(git push "${flags[@]}" "$@" "$src:$dst")
+echo "Running: ${cmd[*]}" >&2
+"${cmd[@]}"
