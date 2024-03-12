@@ -58,3 +58,6 @@ alias gppam="g ppam"
 alias gppm="g ppm"
 alias gppr="g ppr"
 alias gpps="g pps"
+
+alias get="g et"
+alias gtr0="g tr0"

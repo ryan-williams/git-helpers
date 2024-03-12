@@ -53,3 +53,6 @@
   ppm   = commit-push-parents -m
   ppr   = push-parents
   pps   = push-parents
+  empty-tree = hash-object -t tree /dev/null
+  et = empty-tree
+  tr0 = empty-tree
