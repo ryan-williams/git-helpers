@@ -43,6 +43,7 @@ alias gdt="g dt"
 alias gdtp="g dtp"
 alias gdu="g du"
 alias gdw="g dw"
+alias gdwc="g dwc"
 
 alias gd-="g d-"
 alias gdw-="g dw-"

@@ -43,6 +43,7 @@
   dtp  = diff-tree -p
   du   = diff -u
   dw   = diff -w
+  dwc  = diff -w --cached
   d1   = diff-no-context
   d-   = diff --
   dw-  = diff -w --
