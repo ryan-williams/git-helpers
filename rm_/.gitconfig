@@ -2,6 +2,7 @@
   rmc   = rm --cached
   rmd   = rm-deleted
   rmr   = rm -r
+  rmrc  = rm -r --cached
   rmlo  = rm-untracked
   rmlso = rm-untracked
   rmu   = rm-untracked
