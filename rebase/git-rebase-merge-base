@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+onto="$(git rebase-onto)"
+original_head="$(git original-head)"
+
+git merge-base "$onto" "$original_head"

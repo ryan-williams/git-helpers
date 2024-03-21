@@ -16,8 +16,10 @@
   rbhm    = rebase-head-message
   rebase-dag = rebase-dag.py
   rbd     = rebase-dag.py
-  rbp     = rebase-parent
+  rbmb    = rebase-merge-base
   rbo     = rebase --onto
+  rbot    = rebase-onto
+  rbp     = rebase-parent
   rbm     = rebase-head-message
   rbs     = rebase --skip
   rc      = rebase --continue

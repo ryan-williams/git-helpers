@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [ $# -gt 0 ]; then
+    echo "Usage: $0" >&2
+    exit 1
+fi
+
+cat "$(git root)"/.git/rebase-merge/onto
