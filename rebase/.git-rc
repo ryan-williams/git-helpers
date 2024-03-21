@@ -27,6 +27,8 @@ alias grbot="g rbot"
 alias grbp="g rbp"
 alias rbo="g rbo"
 alias grbs="g rbs"
+alias grbud="g rbud"
+alias grud="g rud"
 
 alias grc="g rc"
 alias gri="g ri"

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+merge_base="$(git rebase-merge-base)"
+onto="$(git rebase-onto)"
+git diff "$merge_base..$onto" -- "$@"
