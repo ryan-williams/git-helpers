@@ -1,5 +1,6 @@
 [alias]
   rmc   = rm --cached
+  rmcf  = rm --cached -f
   rmd   = rm-deleted
   rmr   = rm -r
   rmrc  = rm -r --cached
