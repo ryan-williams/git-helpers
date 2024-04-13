@@ -15,6 +15,7 @@
   camtf = !git-commit-and-tag.sh -a -f
   can   = commit --amend --no-edit
   cane  = commit --amend --no-edit --allow-empty
+  canea = commit --amend --no-edit --allow-empty --author
   caan  = commit -a -u --amend --no-edit
   caane = commit -a -u --amend --no-edit --allow-empty
   cbn   = commit-basename
