@@ -1,4 +1,5 @@
 
+alias gaut="g aut"
 alias gcf="g cf"
 alias gcg="g cg"
 alias gcfa="g cfa"
@@ -35,6 +36,7 @@ alias gsgid="g sgid"
 alias ggsid="g gsid"
 alias gsidg="g sidg"
 alias ggid="g gid"
+alias ggidg="g gidg"
 alias gggid="g ggid"
 
 alias gue="g ue"
@@ -42,5 +44,7 @@ alias gun="g un"
 alias ggue="g gue"
 alias ggun="g gun"
 
+alias gsau="g sau"
+alias gsaut="g saut"
 alias gsdbm="g sdbm"
 alias gshc="g shc"

@@ -11,6 +11,7 @@
        meta = yellow bold
 
 [alias]
+        aut  = author
         cf   = config
         cg   = config --global
         cfa  = config --add
@@ -54,10 +55,13 @@
         gsid = set-id -g
         sidg = set-id -g
         gid = get-id
+        gidg = getid -g
         ggid = get-id -g
         ue = config user.email
         un = config user.name
         gue = config --global user.email
         gun = config --global user.name
 
+        sau = set-author
+        saut = set-author
         shc = ssh-command
