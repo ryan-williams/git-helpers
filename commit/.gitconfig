@@ -44,6 +44,7 @@
   cppa  = commit-push-parents -a
   cppam = commit-push-parents -a -m
   cppm  = commit-push-parents -m
+  csp   = set-parents
   ctr   = commit-tree
   ctrr  = commit-tree-reset
   fua   = fixup-author

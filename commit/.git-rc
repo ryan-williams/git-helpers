@@ -46,6 +46,7 @@ alias gcpp="g cpp"
 alias gcppa="g cppa"
 alias gcppam="g cppam"
 alias gcppm="g cppm"
+alias gcsp="g csp"
 alias gctr="g ctr"
 alias gctrr="g ctrr"
 

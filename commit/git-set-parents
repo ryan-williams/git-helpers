@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e
+
+parent_args=()
+for arg in "$@"; do
+    parent_args+=(-p "$arg")
+done
+
+tree="$(git log -1 --format=%T)"
+
+commit="$(git log -1 --format=%B | git commit-tree "$tree" "${parent_args[@]}" -F-)"
+
+git reset --hard "$commit"
