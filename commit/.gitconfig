@@ -47,6 +47,7 @@
   csp   = set-parents
   ctr   = commit-tree
   ctrr  = commit-tree-reset
+  ctrs  = commit-tree-reset
   fua   = fixup-author
   om    = octomerge
   pp    = commit-push-parents
