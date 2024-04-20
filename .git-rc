@@ -40,7 +40,11 @@ append_to_path() {
 
 append_subdir_to_path() {
   for name in "$@"; do
-    local module="$GIT_HELPERS_HOME/$name"
+    if [ "${name#/}" != "$name" ]; then
+      local module="$name"
+    else
+      local module="$GIT_HELPERS_HOME/$name"
+    fi
     append_to_path "$module" "$module/aliases"
 
     local gitrc="$module/.git-rc"
