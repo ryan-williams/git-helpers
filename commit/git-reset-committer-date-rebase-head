@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# During a rebase, the committer date gets set to the current date (after the first modified
+# commit). This script can be invoked by a script passed to `git rebase -x <script>`, to reset
+# the current commit's committer date to match that of the original commit being applied.
+
+rebase_head="$(git rebase-head)"
+if [ -z "$rebase_head" ]; then
+    echo "No rebase detected (.git/REBASE_HEAD missing, no relevant SHA recognized in .git/rebase-merge/done)" >&2
+    exit 1
+fi
+
+cd="$(git log -1 --format=%cd "$rebase_head")"
+echo "Resetting committer date to $cd" >&2
+GIT_COMMITTER_DATE="$cd" git commit --amend --no-edit

@@ -59,3 +59,4 @@
   empty-tree = hash-object -t tree /dev/null
   et = empty-tree
   tr0 = empty-tree
+  rcdrbh = reset-committer-date-rebase-head
