@@ -1,20 +1,26 @@
 [alias]
+  adi1 = !git --no-pager log --format=%ad --date=iso -1
   blob-hash = blob-sha
   bh = blob-hash
   bhi = blob-hash -i
   bhis = blob-hash -is
   bhs = blob-hash -s
+  cdi1 = !git --no-pager log --format=%cd --date=iso -1
+  dates = log '--format=%ad %cd'
+  dts = dates
+  dts1 = !git --no-pager dates -1
+  ds1 = !git --no-pager dates -1 --date=iso
   hash-blob = blob-sha
   hb = blob-hash
   hbi = blob-hash -i
   hbis = blob-hash -is
   hbs = blob-hash -s
-  cur     = log -1 --oneline
-  files   = diff-tree --no-commit-id --name-only -r
-  lf      = diff-tree --no-commit-id --name-only -r
-  lsc     = diff-tree --no-commit-id --name-only -r
+  cur = log -1 --oneline
+  files = diff-tree --no-commit-id --name-only -r
+  lsf = diff-tree --no-commit-id --name-only -r
+  lsc = diff-tree --no-commit-id --name-only -r
   history = log --full-diff -p
-  L       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset%n%n%B' --date=relative
+  L = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset%n%n%B' --date=relative
   hashes = hash
   hsh = full-hash
   l1 = log-oneline
@@ -45,15 +51,21 @@
   msg = !git --no-pager log -1 --format=%s
   sbj = !git --no-pager log -1 --format=%s
   l1 = !git --no-pager log -1
-  l1f = !git --no-pager log-1-format
-  l1ft = !git --no-pager log-1-format t
-  l1fT = !git --no-pager log-1-format T
   l1t = l1ft
   l1T = l1fT
   sha = hash
   shas = hash
   fh = full-hash
-  fm = format
+  fm = log-format
+  lf = log-format
+  lgf = log-format
+  l1f = !git --no-pager log-1-format
+  l1ft = !git --no-pager log-1-format t
+  l1fT = !git --no-pager log-1-format T
+  log-format-1 = !git --no-pager log-1-format
+  fm1 = !git --no-pager log-1-format
+  lf1 = !git --no-pager log-1-format
+  lgf1 = !git --no-pager log-1-format
   rwa = rewrite-author
   subject = log -n1 --format=%s
   sj = log -n1 --format=%s

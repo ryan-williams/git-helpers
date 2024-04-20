@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
 
+alias gadi1="g adi1"
+alias gcdi1="g cdi1"
 alias gbh="g bh"
 alias gbhi="g bhi"
 alias gbhis="g bhis"
 alias gbhs="g bhs"
+
+alias gdts="g dts"
+alias gdts1="g dts1"
+alias gds1="g ds1"
+
 alias ghb="g hb"
 alias ghbi="g hbi"
 alias ghbis="g hbis"
 alias ghbs="g hbs"
 
+alias glsf="g lsf"
 alias glgg="g lgg"
 alias glgpg="g lgpg"
 alias glggp="g lggp"
@@ -32,7 +40,14 @@ alias glnw="g lnw"
 alias glp="g lp"
 alias glpp="g lpp"
 alias gfh="g fh"
+
 alias gfm="g fm"
+alias glf="g lf"
+alias glgf="g lgf"
+alias gfm1="g fm1"
+alias glf1="g lf1"
+alias glgf1="g lgf1"
+
 alias ghm="g hm"
 alias gshm="g shm"
 alias gmsg="g msg"
