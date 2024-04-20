@@ -1,14 +1,57 @@
 #!/usr/bin/env bash
+#
+# While a rebase or cherry-pick is paused due to conflicts, this helper prints the SHA of the
+# commit being rebased or cherry-picked.
+#
+# In such a conflicted state, HEAD will typically point to the most recently applied commit,
+# which does not exist in the original branch, and corresponds to the parent of the commit
+# currently being applied.
 
 set -e
 
-head="$(cat "$(git dir)"/REBASE_HEAD)"
-
-if [ -z "$head" ]; then
-    head="$(cat .git/CHERRY_PICK_HEAD)"
-    if [ -z "$head" ]; then
-	    exit 1
-    fi
+git_dir="$(git dir)"
+rebase_head="$git_dir/REBASE_HEAD"
+if [ -f "$rebase_head" ]; then
+    cat "$rebase_head"
+    exit 0
 fi
 
-echo "$head"
+cherry_pick_head="$git_dir/CHERRY_PICK_HEAD"
+if [ -f "$cherry_pick_head" ]; then
+    cat "$cherry_pick_head"
+    exit 0
+fi
+
+# During an `exec` phase (e.g. via `git rebase -x <cmd> …`), REBASE_HEAD is not present, but we can
+# parse the last `pick`ed SHA from `.git/rebase-merge-done`.
+rebase_done="$git_dir/rebase-merge/done"
+if ! [ -f "$rebase_done" ]; then
+    echo "No REBASE_HEAD, CHERRY_PICK_HEAD, or rebase-merge-done found in Git dir $git_dir" >&2
+    exit 11
+fi
+
+# Last two lines of .git/rebase-merge/done should look like:
+# ```
+# pick 1234567 commit message
+# exec <cmd>
+# ```
+# We want to extract the SHA from the `pick` line.
+lines=()
+while IFS=$'\n' read -r line; do
+    lines+=("$line")
+done < <(tail -n 2 "$rebase_done")
+pick_line="${lines[0]}"
+exec_line="${lines[1]}"
+
+if [ "${exec_line#exec }" == "$exec_line" ]; then
+    echo "Unrecognized exec line: $exec_line" >&2
+    exit 22
+fi
+
+if [ "${pick_line#pick }" == "$pick_line" ]; then
+    echo "Unrecognized pick line: $pick_line" >&2
+    exit 33
+else
+    sha="$(echo "$pick_line" | awk -F' ' '{print $2}')"
+    echo "$sha"
+fi

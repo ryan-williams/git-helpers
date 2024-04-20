@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#
+# Parse the reflog to find the
+
+git reflog '--format=%H %gs' \
+| grep -m1 -A1 'rebase (start)' \
+| tail -n 1 \
+| awk '{print $1}'

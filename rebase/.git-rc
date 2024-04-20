@@ -10,8 +10,9 @@ alias gdtc="g dtc"
 alias gdth="g dth"
 alias gdthc="g dthc"
 
-alias gpr="g pr"
+alias ghblr="g hblr"
 alias gmh="g mh"
+alias gpr="g pr"
 
 alias grb="g rb"
 alias grbd="g rbd"
@@ -36,6 +37,7 @@ alias grir="g rir"
 alias grim="g rim"
 alias grq="g rq"
 alias grx="g rx"
+alias grix="g rix"
 
 alias garc='g arc'
 alias garcn='g arcn'

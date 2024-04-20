@@ -2,6 +2,7 @@
   dtc     = diff-theirs-conflicting
   dth     = diff-theirs
   dthc    = diff-theirs-conflicting
+  hblr    = head-before-last-rebase
   pr      = pull --rebase
   rb      = rebase
   rba     = rebase --abort
@@ -28,7 +29,8 @@
   ri      = rebase -i
   rir     = rebase -i --root
   rud     = rebase-upstream-diff
-  rx      = rebase -i -x
+  rix     = rebase -i -x
+  rx      = rebase -x
   rhm     = rebase-head-message
   rim     = rebase -i master
   rq      = rebase-sequence
