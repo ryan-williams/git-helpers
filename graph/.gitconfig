@@ -11,6 +11,7 @@
   gra = graph -a
   grac = graph -ac
   gracd = graph -ac -d
+  gracl = graph -ac -l
   grad = graph -a -d
   grd = graph -d
   grd10 = grd -n 10
