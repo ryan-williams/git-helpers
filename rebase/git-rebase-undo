@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+prev="$(git head-before-last-rebase)"
+if [ -z "$prev" ]; then
+  echo "Error fetching head-before-last-rebase" >&2
+  exit 1
+fi
+
+git reset --hard "$prev"

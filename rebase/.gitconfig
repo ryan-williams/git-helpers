@@ -23,6 +23,7 @@
   rbot    = rebase-onto
   rbp     = rebase-parent
   rbs     = rebase --skip
+  rbu     = rebase-undo
   rbud    = rebase-upstream-diff
   rc      = rebase --continue
   rd      = rebase-diff
