@@ -27,7 +27,8 @@ else
   exit 1
 fi
 
-subtract="$(git commits-behind "$to..$from")"
-add="$(git commits-behind "$from..$to")"
+mb="$(git merge-base "$from" "$to")"
+sub="$(git rev-list --count --ancestry-path "$mb..$from")"
+add="$(git rev-list --count --ancestry-path "$mb..$to")"
 
-echo -"$subtract" +"$add"
+echo -"$sub" +"$add"
