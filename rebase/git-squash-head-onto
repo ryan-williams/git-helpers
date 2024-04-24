@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+if [ "$1" == "-n" ]; then
+    dry_run=1
+    shift
+else
+    dry_run=
+fi
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 [-n] <dst>" >&2
+    exit 1
+fi
+dst="$1"; shift
+
+if [ -n "$dry_run" ]; then
+    cmd=cat
+else
+    cmd="git-rebase-stdin ${dst}^"
+fi
+
+(
+    git --no-pager log -1 '--format=p %h %s' $dst^..$dst && \
+    git --no-pager log -1 '--format=f %h %s' HEAD && \
+    git --no-pager log '--format=p %h %s' $dst..HEAD^ | tac
+) | $cmd

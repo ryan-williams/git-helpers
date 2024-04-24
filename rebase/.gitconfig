@@ -44,6 +44,8 @@
   arcn    = add-rebase-continue-no-edit
   oc      = original-commit
   oh      = original-head
+  sho     = squash-head-onto
+  shon    = squash-head-onto -n
   shoc    = show-original-commit
   shmh    = show-merge-head
   shoh    = show-original-head
@@ -52,7 +54,10 @@
   sqsq    = squash-sequence
   tw      = throw.py
   twa     = throw.py -a
-  twp     = throw.py HEAD^
   twap     = throw.py -a HEAD^
   twap2    = throw.py -a HEAD~2
   twap3    = throw.py -a HEAD~3
+  throw-head = squash-head-onto
+  twh     = throw-head
+  twhn    = throw-head -n
+  twp     = throw.py HEAD^
