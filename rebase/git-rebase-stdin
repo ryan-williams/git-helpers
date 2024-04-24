@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if [ "$1" == "-n" ]; then
+    dry_run=-n
+    shift
+else
+    dry_run=
+fi
+
+cmd=(git rebase -i "$@")
+
+if [ -n "$dry_run" ]; then
+    echo "Would run ${cmd[@]}:" >&2
+    cat
+    exit
+else
+    echo "Running ${cmd[@]}" >&2
+fi
+
+GIT_SEQUENCE_EDITOR="echo '$(cat)' >" "${cmd[@]}"

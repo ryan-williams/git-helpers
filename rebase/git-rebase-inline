@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+if [ "$1" == "-n" ]; then
+    dry_run=1
+    shift
+else
+    dry_run=
+fi
+
+usage() {
+    cat >&2 <<EOF
+Rebase a series of commits interactively.
+
+Usage: $0 [-n] <ref> <cmd> <sha> [...[<cmd> <sha>]]
+
+Example: rearrange last two commits:
+
+    $0 HEAD~2 p HEAD p HEAD^
+
+Read that as:
+- Start an interactive rebase "onto" HEAD~2 (two commits ago)
+- Pick ("p") the current HEAD commit (similar to cherry-picking HEAD onto HEAD~2)
+- Pick the commit before that (cherry-pick the original HEAD^ commit onto the new HEAD from the previous step)
+
+Use -n to "dry run" (inspect the steps that will be run, without running them):
+
+    $0 -n HEAD~2 p HEAD p HEAD^
+
+EOF
+    exit 1
+}
+
+if [ $# -eq 0 ]; then
+    usage
+fi
+
+since="$1"; shift
+rebase_todo=
+while [ $# -gt 0 ]; do
+    cmd="$1"; shift
+    if [ $# -eq 0 ]; then
+        echo "Error: missing ref for rebase command '$cmd'" >&2
+        exit 1
+    fi
+    ref="$1"; shift
+    sha_subj="$(git log -1 "--format=%h %s" "$ref")"
+    line="$cmd $sha_subj"
+
+    if [ -n "$rebase_todo" ]; then
+        rebase_todo="$rebase_todo"$'\n'
+    fi
+    rebase_todo="$rebase_todo$line"
+done
+
+if [ -z "$rebase_todo" ]; then
+    echo "Error: no rebase commands provided" >&2
+    exit 1
+fi
+
+if [ -n "$dry_run" ]; then
+    echo "$rebase_todo"
+    exit 0
+fi
+
+echo "$rebase_todo" | git-rebase-stdin -i "$since"

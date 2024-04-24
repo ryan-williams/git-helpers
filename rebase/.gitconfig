@@ -17,6 +17,11 @@
   rbhm    = rebase-head-message
   rebase-dag = rebase-dag.py
   rbd     = rebase-dag.py
+  rbi     = rebase-inline
+  rbsi    = rebase-stdin
+  rbsin   = rebase-stdin -n
+  rsi     = rebase-stdin
+  rsin    = rebase-stdin -n
   rbm     = rebase-head-message
   rbmb    = rebase-merge-base
   rbo     = rebase --onto
