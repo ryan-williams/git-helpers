@@ -44,6 +44,8 @@
   arcn    = add-rebase-continue-no-edit
   oc      = original-commit
   oh      = original-head
+  roc     = reorder-commits
+  rocn    = reorder-commits -n
   sho     = squash-head-onto
   shon    = squash-head-onto -n
   shoc    = show-original-commit

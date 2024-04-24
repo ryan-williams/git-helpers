@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+if [ "$1" == "-n" ]; then
+    dry_run=-n
+    shift
+else
+    dry_run=
+fi
+
+max_commit_idx=0
+args=()
+for commit_idx in "$@"; do
+    if [ $commit_idx -gt $max_commit_idx ]; then
+        max_commit_idx=$commit_idx
+    fi
+    args+=(p HEAD~$commit_idx)
+done
+
+let onto_idx=max_commit_idx+1
+cmd=(git rebase-inline $dry_run HEAD~$onto_idx "${args[@]}")
+echo "Running ${cmd[@]}" >&2
+"${cmd[@]}"
