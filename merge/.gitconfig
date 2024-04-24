@@ -3,11 +3,13 @@
   ma = merge --abort
   mf = merge --ff-only
   mff = merge --ff-only
-  mm = merge master
-  mmne = merge master --no-edit
+  mm = merge -m
+  mmne = merge main --no-edit
   mn = merge --no-edit
+  mnm = merge --no-edit -m
   mne = merge --no-edit
   mnf = merge --no-ff
+  mnef = merge --no-edit --no-ff
   mnnf = merge --no-edit --no-ff
   mt = mergetool -t meld -y
   mu = merge upstream/HEAD

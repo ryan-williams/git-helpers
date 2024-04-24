@@ -49,3 +49,5 @@
   twa     = throw.py -a
   twp     = throw.py HEAD^
   twap     = throw.py -a HEAD^
+  twap2    = throw.py -a HEAD~2
+  twap3    = throw.py -a HEAD~3

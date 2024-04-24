@@ -6,10 +6,12 @@ alias gmt="g mt"
 alias gmf="g mf"
 alias gmff="g mff"
 alias gmnf="g mnf"
+alias gmnef="g mnef"
 alias gmnnf="g mnnf"
 
 alias gmm="g mm"
 alias gmn="g mn"
+alias gmnm="g mnm"
 alias gmne="g mne"
 alias gmmne="g mmne"
 
