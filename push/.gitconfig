@@ -10,10 +10,13 @@
   pfu = push -f upstream
   pl = pull
   px = push-x
-  ph = push-head
+  ph = push-head-to
+  pht = push-head-to
+  phu = push-head-upstream
   pn = push -n
   pnt = push -n --tags
-  pt = push --tags
+  pt = push-x -t
+  pto = push --tags
   ptf = push --tags -f
   pft = push -f --tags
   ptn = push --tags -n

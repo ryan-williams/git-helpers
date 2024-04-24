@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#
+# Push current head to a provided remote branch
+
+dst="${@: -1}"
+set -- "${@:1:$#-1}"
+
+git push-x "$@" "HEAD:$dst"

@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+#
+# Push to one or more remotes (comma-separated), including tags
+
+if [ "$1" == "-t" ]; then
+    tags=1
+else
+    tags=
+fi
 
 if [ $# -gt 0 ]; then
   IFS=, read -ra remotes <<< "$1"
@@ -12,5 +20,7 @@ fi
 
 for remote in "${remotes[@]}"; do
   git push "$remote" "$@"
-  git push --tags "$remote" "$@"
+  if [ -n "$tags" ]; then
+    git push --tags "$remote" "$@"
+  fi
 done
