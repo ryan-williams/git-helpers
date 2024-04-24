@@ -8,19 +8,19 @@ else
     tags=
 fi
 
+push() {
+  git push "$@"
+  if [ -n "$tags" ]; then
+    git push --tags "$@"
+  fi
+}
+
 if [ $# -gt 0 ]; then
   IFS=, read -ra remotes <<< "$1"
   shift
+  for remote in "${remotes[@]}"; do
+    push "$remote" "$@"
+  done
 else
-  remotes=()
-  while read -r remote; do
-    remotes+=("$remote")
-  done < <(git remote)
+  push "$@"
 fi
-
-for remote in "${remotes[@]}"; do
-  git push "$remote" "$@"
-  if [ -n "$tags" ]; then
-    git push --tags "$remote" "$@"
-  fi
-done
