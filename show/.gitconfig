@@ -1,10 +1,13 @@
 [alias]
   eq = equal
   sh = show
+  sfh = show-sha-file HEAD
   shf = show-sha-file
+  shfp = show-sha-file HEAD^
   ssf = show-sha-file
-  shh = show-sha-file HEAD
-  shp = show-sha-file HEAD^
+  shp = show HEAD^
+  shp2 = show HEAD~2
+  shp3 = show HEAD~3
   shd = show --submodule=diff
   shl = show --submodule=log
   shs = show --stat
