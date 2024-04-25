@@ -13,6 +13,9 @@
   ph = push-head-to
   pht = push-head-to
   phu = push-head-upstream
+  phuf = push-head-upstream -f
+  phufn = push-head-upstream -f -n
+  phun = push-head-upstream -n
   pn = push -n
   pnt = push -n --tags
   pt = push-x -t
