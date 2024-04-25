@@ -17,4 +17,9 @@ else
     echo "Running ${cmd[@]}" >&2
 fi
 
-GIT_SEQUENCE_EDITOR="echo '$(cat)' >" "${cmd[@]}"
+stdin="$(cat)"
+trimmed_input="$(echo "$stdin" | awk '{ print $1,$2 }')"
+echo "Rebase plan:" >&2
+echo "$trimmed_input" >&2
+
+GIT_SEQUENCE_EDITOR="echo '$trimmed_input' >" "${cmd[@]}"
