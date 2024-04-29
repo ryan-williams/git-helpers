@@ -5,9 +5,9 @@
   gaal = graph-all -a -l
   gal = graph-all -l
   gala = graph-all -l -a
+  ghu = graph -u HEAD
   gr = graph
   gr10 = gr -n 10
-  grh = graph HEAD
   gra = graph -a
   grac = graph -ac
   gracd = graph -ac -d
@@ -16,5 +16,8 @@
   grd = graph -d
   grd10 = grd -n 10
   grdn = grd -n
+  grh = graph HEAD
+  grhu = graph -u HEAD
   grl = graph -l
   grn = graph -n
+  gru = graph -u

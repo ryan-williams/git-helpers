@@ -15,9 +15,10 @@
 
 set -e
 
-ARGS=()
+args=()
 date_type='%cd'
 date_fmt="relative"
+include_upstream=
 while [ $# -gt 0 ]; do
     arg="$1"; shift
     case "$arg" in
@@ -25,11 +26,16 @@ while [ $# -gt 0 ]; do
     -ac) date_type="%ad %C(green)%cd" ;;
     -d) date_fmt="iso" ;;
     -l) date_fmt="local" ;;
-    *) ARGS+=("$arg") ;;
+    -u) include_upstream=1 ;;
+    *) args+=("$arg") ;;
     esac
 done
 
-set -- "${ARGS[@]}"
+if [ -n "$include_upstream" ]; then
+    args+=("$(git tracked-branch)")
+fi
+
+set -- "${args[@]}"
 
 git log \
   --graph \
