@@ -55,8 +55,8 @@
 
   be = branch-exists
   rbe = remote-branch-exists
-  tb = tracking-branch
-  upstream-branch = tracking-branch
+  tb = tracked-branch
+  upstream-branch = tracked-branch
   ub = upstream-branch
   bru = branch-reset-upstream
   bruc = branch-reset-upstream-checkout

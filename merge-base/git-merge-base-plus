@@ -4,7 +4,14 @@
 
 from=
 if [ $# -lt 1 ]; then
-  from="$DEFAULT_REMOTE"/HEAD
+  from="$(git tracked-branch)"
+  if [ -z "$from" ]; then
+    if [ -z "$DEFAULT_REMOTE" ]; then
+      echo "No tracked-branch found, and \$DEFAULT_REMOTE not set" >&2
+      exit 1
+    fi
+    from="$DEFAULT_REMOTE/HEAD"
+  fi
 else
   from="$1"
   shift

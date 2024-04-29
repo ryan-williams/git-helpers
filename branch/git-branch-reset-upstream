@@ -11,7 +11,7 @@ fi
 
 fail=
 for b in "$@"; do
-    u="$(git tracking-branch "$b")"
+    u="$(git tracked-branch "$b")"
     commits_behind="$(git rev-list --count $b..$u)"
     commits_ahead="$(git rev-list --count $u..$b)"
     if [ "$commits_ahead" != "0" ]; then

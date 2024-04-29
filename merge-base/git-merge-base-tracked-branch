@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+upstream="$(git tracked-branch)"
+if [ -z "$upstream" ]; then
+  echo "No upstream branch found" >&2
+  exit 1
+fi
+
+git merge-base HEAD "$upstream"
