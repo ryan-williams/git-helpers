@@ -3,8 +3,7 @@ from __future__ import print_function
 """Helpers for "pieces" of formatted output linked to certain format specifiers."""
 
 from color import color as C, color_symbol, clen
-from datetime import datetime
-from dateutil.parser import parse as parse_datetime
+from datetime import datetime as dt
 import re
 from regexs import refname_or_tag_regex
 from reldate_util import shorten_reldate
@@ -73,11 +72,11 @@ class CommitDatePiece(Piece):
         super(CommitDatePiece, self).__init__('date', '%ci', color=color)
 
     def parse(self, s):
-        return parse_datetime(s)
+        return dt.strptime(s, '%Y-%m-%d %H:%M:%S %z')
 
 
     def render(self, dt):
-        return datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
+        return dt.strftime(dt, '%Y-%m-%d %H:%M:%S')
 
 
 class ReldatePiece(Piece):

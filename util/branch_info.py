@@ -3,8 +3,7 @@ __author__ = 'ryan'
 """Encapsulates info about one git branch."""
 
 from color import clen, color
-from datetime import datetime
-from dateutil.parser import parse
+from datetime import datetime as dt
 from regexs import refname_regex, captured_whitespace_regex, hash_regex
 from reldate_util import shorten_reldate
 import re
@@ -132,7 +131,7 @@ class BranchInfo(object):
         return self.to_string()
 
     def set_dates(self, date, reldate):
-        self.datetime = parse(date)
+        self.datetime = dt.strptime(date, '%Y-%m-%d %H:%M:%S %z')
 
-        self.date = datetime.strftime(self.datetime, '%Y-%m-%d %H:%M:%S')
+        self.date = dt.strftime(self.datetime, '%Y-%m-%d %H:%M:%S')
         self.reldate = shorten_reldate(reldate)
