@@ -58,5 +58,7 @@
   pps   = push-parents
   empty-tree = hash-object -t tree /dev/null
   et = empty-tree
+  scd = set-committer-date
+  sds = set-dates
   tr0 = empty-tree
   rcdrbh = reset-committer-date-rebase-head

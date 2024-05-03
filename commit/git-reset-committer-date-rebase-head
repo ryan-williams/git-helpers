@@ -10,6 +10,4 @@ if [ -z "$rebase_head" ]; then
     exit 1
 fi
 
-cd="$(git log -1 --format=%cd "$rebase_head")"
-echo "Resetting committer date to $cd" >&2
-GIT_COMMITTER_DATE="$cd" git commit --amend --no-edit
+git set-committer-date "$rebase_head"
