@@ -2,7 +2,7 @@
 import shlex
 import sys
 from os import environ, makedirs
-from os.path import splitext, exists, dirname
+from os.path import splitext, exists, dirname, isdir
 from subprocess import check_call, DEVNULL, CalledProcessError, check_output
 from tempfile import TemporaryDirectory
 
@@ -36,9 +36,17 @@ def check(*cmd, stdout=DEVNULL, stderr=DEVNULL, **kwargs):
         return False
 
 
+def get_changed_imgs(refspec, *paths):
+    return [
+        path
+        for path in check_output(['git', 'diff', '--name-only', refspec, '--', *paths]).decode().split('\n')
+        if splitext(path)[-1] in DEFAULT_EXTENSIONS
+    ]
+
+
 @click.command()
 @click.option('-a', '--after', 'after_ref', help='Git ref for the "after" image; default: current worktree file')
-@click.option('-b', '--before', 'before_ref', default='HEAD^', help='Git ref for the "before" image; default: `HEAD^`')
+@click.option('-b', '--before', 'before_ref', help='Git ref for the "before" image; default: `HEAD`')
 @click.option('-d', '--delay', default='100', help='Gif delay between frames, in 1/100ths of a second')
 @click.option('-f', '--force', is_flag=True, help='Overwrite an existing .gif at the --output path')
 @click.option('-o', '--output', 'out_path', help="Write resulting .gif(s) here. By default, they're written to a tempdir, and cleaned up on program exit. If more than one <path> is passed, this is interpreted as a directory, .gif paths are relativized inside it, and their extensions are replaced with `.gif`")
@@ -46,17 +54,22 @@ def check(*cmd, stdout=DEVNULL, stderr=DEVNULL, **kwargs):
 @click.argument('paths', nargs=-1)  # Paths to Git-tracked image to make diff-gifs of
 def main(before_ref, after_ref, delay, force, out_path, no_open, paths):
     if after_ref:
+        if not before_ref:
+            before_ref = f'{after_ref}^'
         refspec = f'{before_ref}..{after_ref}'
     else:
         if not before_ref:
-            raise ValueError(f'-b/--before and -a/--after are both empty')
+            before_ref = 'HEAD'
         refspec = before_ref
-    if not paths:
+
+    if paths:
         paths = [
-            path
-            for path in check_output(['git', 'diff', '--name-only', refspec]).decode().split('\n')
-            if splitext(path)[-1] in DEFAULT_EXTENSIONS
+            expanded_path
+            for path in paths
+            for expanded_path in (get_changed_imgs(refspec, path) if isdir(path) else [path])
         ]
+    else:
+        paths = get_changed_imgs(refspec)
 
     out_dir = None
     tmp_out_paths = True
