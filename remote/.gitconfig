@@ -26,6 +26,7 @@
   lgp       = load-github-prs
   lpr       = load-github-prs
   lsr       = ls-remote
+  lsrt      = ls-remote --tags
   lrh       = ls-remote --heads
   lrt       = ls-remote --tags
   mr        = mirror-remote
