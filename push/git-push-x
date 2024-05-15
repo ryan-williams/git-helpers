@@ -4,6 +4,7 @@
 
 if [ "$1" == "-t" ]; then
     tags=1
+    shift
 else
     tags=
 fi
