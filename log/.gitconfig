@@ -1,10 +1,12 @@
 [alias]
   adi1 = !git --no-pager log --format=%ad --date=iso -1
-  blob-hash = blob-sha
   bh = blob-hash
   bhi = blob-hash -i
   bhis = blob-hash -is
   bhs = blob-hash -s
+  blob-hash = blob-sha
+  body = !git --no-pager log -1 --format=%B
+  by = body
   cdi1 = !git --no-pager log --format=%cd --date=iso -1
   dates = log '--format=%ad %cd'
   dts = dates

@@ -21,6 +21,8 @@ alias gcfn="g cfn"
 alias gcfns="g cfns"
 
 alias gcm="g cm"
+alias gcmab="g cmab"
+alias gcmb="g cmb"
 alias gcmp="g cmp"
 alias gcmt="g cmt"
 alias gcmtf="g cmtf"

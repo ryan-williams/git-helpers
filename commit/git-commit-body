@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# `git commit` with the same "body" as a given commit.
+
+if [ $# -eq 0 ]; then
+  echo "Usage: git commit-body [...options] <ref>" >&2
+  exit 1
+fi
+ref="${@:(($#))}"
+set -- "${@:1:$(($#-1))}"
+
+git body "$ref" | git commit "$@" -F-
