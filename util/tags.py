@@ -31,5 +31,5 @@ def print_recent_tags(n=None):
         exit(0)
 
     pieces = Pieces()
-    pieces.parse_log(["--no-walk"] + tags)
-    pieces.pretty_print()
+    results = pieces.parse_log(["--no-walk"] + tags)
+    pieces.pretty_print(results)

@@ -43,5 +43,5 @@ if len(non_numbers) > 1:
 branch = non_numbers[0] if len(non_numbers) else 'HEAD'
 
 pieces = Pieces()
-pieces.parse_log(['-n', number, branch])
-pieces.pretty_print()
+results = pieces.parse_log(['-n', number, branch])
+pieces.pretty_print(results)

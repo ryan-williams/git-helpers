@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+from functools import cached_property
+
 """Helpers for "pieces" of formatted output linked to certain format specifiers."""
 
 from color import color as C, color_symbol, clen
@@ -19,14 +21,11 @@ class Piece(object):
     def __call__(self, segment):
         return C(self.color, self.render(self.parse(segment)))
 
-
     def parse(self, s):
         return s
 
-
     def render(self, segment):
         return segment
-
 
     def __init__(self, name, git_format, fix_width=True, color='clear'):
         self.name = name
@@ -52,18 +51,18 @@ class RefnamesPiece(Piece):
                 )
             )
 
-
     def __init__(self, color='Yellow'):
         super(RefnamesPiece, self).__init__('refnames', '%d', color=color)
 
     def parse(self, s):
-        match = re.match('^\((?P<names>(?:%s, )*%s)\)$' %
-                         (refname_or_tag_regex, refname_or_tag_regex), s)
-        if (match):
+        match = re.match(
+            r'^\((?P<names>(?:%s, )*%s)\)$' %
+            (refname_or_tag_regex, refname_or_tag_regex), s
+        )
+        if match:
             return match.group('names').split(', ')
         else:
             return []
-
 
 
 class CommitDatePiece(Piece):
@@ -74,16 +73,14 @@ class CommitDatePiece(Piece):
     def parse(self, s):
         return dt.strptime(s, '%Y-%m-%d %H:%M:%S %z')
 
-
     def render(self, dt):
-        return dt.strftime(dt, '%Y-%m-%d %H:%M:%S')
+        return dt.strftime('%Y-%m-%d %H:%M:%S')
 
 
 class ReldatePiece(Piece):
 
     def __init__(self, color='IGreen'):
         super(ReldatePiece, self).__init__('reldate', '%cr', color=color)
-
 
     def render(self, dt):
         return shorten_reldate(dt)
@@ -98,6 +95,7 @@ default_pieces = [
     Piece('description', '%s', fix_width=False)
 ]
 
+
 class Pieces(object):
 
     def __init__(self, *pieces):
@@ -108,40 +106,35 @@ class Pieces(object):
         else:
             self.add(pieces)
 
-
     def __getitem__(self, item):
         return self._pieces_map[item]
 
-
     def __setitem__(self, key, value):
         self._pieces_map[key] = value
-
 
     def add(self, *pieces):
         for piece in pieces:
             self._pieces_map[piece.name] = piece
         self._pieces += pieces
 
-
     delimiter = '|||'
-    def parse_log(self, args):
+
+    def results(self, args):
         format_str = self.delimiter.join(
             [piece.git_format for piece in self._pieces]
         )
         cmd = [
-            'git',
-            'log',
-            '--format=%s' % format_str
-        ] + args + [ '--' ]
+                  'git',
+                  'log',
+                  '--format=%s' % format_str
+              ] + args + [ '--' ]
 
         out, err = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
         if err:
             raise Exception(err.decode())
 
         lines = out.decode('utf8').splitlines()
-
-        self.results = []
-
+        results = []
         for line in lines:
             segments = line.strip().split(self.delimiter)
             if len(segments) != len(self._pieces):
@@ -156,11 +149,16 @@ class Pieces(object):
             values = {}
             for piece, segment in zip(self._pieces, segments):
                 values[piece.name] = piece(segment)
-            self.results.append(values)
+            results.append(values)
+
+        return results
+
+    def parse_log(self, args):
+        results = self.results(args)
 
         def compute_max_width_for_piece(piece):
             piece.max_width = max(
-                [clen(values[piece.name]) for values in self.results]
+                [clen(values[piece.name]) for values in results]
             )
 
         [
@@ -170,10 +168,12 @@ class Pieces(object):
             if piece.fix_width
         ]
 
-    def pretty_print(self):
+        return results
+
+    def pretty_print(self, results):
         try:
             print('')
-            for values in self.results:
+            for values in results:
                 for piece in self._pieces:
                     if piece.fix_width:
                         print(fixed(piece.max_width, values[piece.name]), end=' ')
