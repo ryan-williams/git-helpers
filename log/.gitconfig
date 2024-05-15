@@ -1,4 +1,5 @@
 [alias]
+  ad = !git --no-pager log --format=%ad -1
   adi1 = !git --no-pager log --format=%ad --date=iso -1
   bh = blob-hash
   bhi = blob-hash -i
@@ -71,4 +72,8 @@
   rwa = rewrite-author
   subject = log -n1 --format=%s
   sj = log -n1 --format=%s
+  time-author = !git --no-pager log --format=%ad -1
+  ta = time-author
+  time-committer = !git --no-pager log --format=%cd -1
+  tc = time-committer
   tree = log --no-walk --format=%T

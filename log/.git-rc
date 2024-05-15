@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+alias gad="g ad"
 alias gadi1="g adi1"
 alias gcdi1="g cdi1"
 alias gbh="g bh"
@@ -72,3 +73,6 @@ alias gl1ft="g l1ft"
 alias gl1fT="g l1fT"
 alias gl1t="g l1t"
 alias gl1T="g l1T"
+
+alias gta="g ta"
+alias gtc="g tc"
