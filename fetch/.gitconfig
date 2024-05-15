@@ -1,5 +1,6 @@
 [alias]
   f   = fetch --tags
+  f1  = fetch --depth 1
   fd  = fetch --depth
   fd1 = fetch --depth 1
   fd2 = fetch --depth 2
