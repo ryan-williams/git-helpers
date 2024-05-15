@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+    git show
+else
+    file="${@: -1}"
+    set -- "${@:1:(($#-1))}"
+    git show "$@" "HEAD:$file"
+fi
