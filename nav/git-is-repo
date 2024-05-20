@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <dir>"
+    exit 1
+fi
+
+git -C "$1" rev-parse 2>/dev/null

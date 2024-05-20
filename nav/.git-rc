@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+alias gig="g ig"
+alias gisr="g isr"
 alias grt='cd $(git root)'
 alias gdir='g dir'
 alias gdr='g dr'
