@@ -2,6 +2,8 @@
   cp   = cherry-pick
   cpa  = cherry-pick --abort
   cpc  = cherry-pick --continue
+  cpn  = cherry-pick -n
+  cppcd = cherry-pick-preserve-commit-date
   cps  = cherry-pick --skip
   cpsh = cherry-pick-show-head
   shch = cherry-pick-show-head

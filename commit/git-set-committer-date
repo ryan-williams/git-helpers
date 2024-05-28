@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 <commit>" >&2
+if [ $# -gt 1 ]; then
+    echo "Usage: $0 [commit]" >&2
     exit 1
+elif [ $# -eq 1 ]; then
+    cd="$(git log -1 --format=%cd "$1")"
+else
+    cd="$(git log -1 --format=%ad HEAD)"
 fi
 
-cd="$(git log -1 --format=%cd "$1")"
 echo "Setting committer date to $cd" >&2
 GIT_COMMITTER_DATE="$cd" git commit --amend --no-edit

@@ -34,16 +34,15 @@ tree="$(git log -n 1 --format='%T' "$base")"
 
 parent_args=()
 add_parents() {
-  for arg in "${ARGS[@]}"; do
+  for arg in "$@"; do
     parent_args+=( "-p" "$arg" )
   done
 }
 
-add_parents "$@"
-
-if [ $# -eq 1 ]; then
+if [ ${#ARGS[@]} -eq 1 ]; then
   add_parents HEAD
 fi
+add_parents "${ARGS[@]}"
 
 commit="$(git commit-tree "$tree" "${parent_args[@]}" -m "$msg")"
 
