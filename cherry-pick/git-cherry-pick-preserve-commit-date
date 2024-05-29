@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+for arg in "$@"; do
+    git cherry-pick "$arg"
+    git set-committer-date "$arg"
+done

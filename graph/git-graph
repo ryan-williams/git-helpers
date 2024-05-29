@@ -16,20 +16,40 @@
 set -e
 
 args=()
-date_type='%cd'
-date_fmt="relative"
+author_fmt="%an"
+show_committer=
+show_email=
+email_color=cyan
+date_fmt='%cd'
+date_style="relative"
 include_upstream=
 while [ $# -gt 0 ]; do
     arg="$1"; shift
     case "$arg" in
-    -a) date_type="%ad" ;;
-    -ac) date_type="%ad %C(green)%cd" ;;
-    -d) date_fmt="iso" ;;
-    -l) date_fmt="local" ;;
+    -a) date_fmt="%ad" ;;
+    -ac) date_fmt="%ad %C(green)%cd" ;;
+    -C) show_committer=1 ;;
+    -d) date_style="iso" ;;
+    -e) show_email=1 ;;
+    -l) date_style="local" ;;
     -u) include_upstream=1 ;;
     *) args+=("$arg") ;;
     esac
 done
+
+if [ -n "$show_committer" ]; then
+    if [ -n "$show_email" ]; then
+        author_fmt="%cn %C($email_color)<%ce>"
+    else
+        author_fmt="%cn"
+    fi
+else
+    if [ -n "$show_email" ]; then
+        author_fmt="%an %C($email_color)<%ae>"
+    else
+        author_fmt="%an"
+    fi
+fi
 
 if [ -n "$include_upstream" ]; then
     args+=("$(git tracked-branch)")
@@ -39,7 +59,7 @@ set -- "${args[@]}"
 
 git log \
   --graph \
-  "--format=%C(auto)%h %C(blue)${date_type} %C(red)%an%C(reset)%C(reset)%C(auto)%d %s" \
-  "--date=$date_fmt" \
+  "--format=%C(auto)%h %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(reset)%C(auto)%d %s" \
+  "--date=$date_style" \
   --date-order \
   "$@"

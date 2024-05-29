@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+preserve_committer_date=
+case "$1" in
+    -p | --preserve-committer-date)
+        preserve_committer_date=1
+        shift
+        ;;
+esac
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 [-p|--preserve-committer-date] <ref>" >&2
+    exit 1
+fi
+
+ref="$1"; shift
+author="$(git author "$ref")"
+if [ "$preserve_committer_date" ]; then
+    export GIT_COMMITTER_DATE="$(git log -1 --format=%cd)"
+    echo "Preserving committer date: $GIT_COMMITTER_DATE" >&2
+fi
+
+cmd=(git commit --amend --no-edit --allow-empty --author "$author")
+echo "Running: ${cmd[*]}" >&2
+"${cmd[@]}"

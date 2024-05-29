@@ -6,6 +6,8 @@
   apfu  = amend-force-push u
   aapf  = amend-force-push -a
   aapfu = amend-force-push -a u
+  author = !git --no-pager log -1 '--format=%an <%ae>'
+  aut   = author
   c     = commit
   ca    = commit -a
   caa   = commit -a --amend
@@ -35,6 +37,7 @@
   cn    = commit --amend
   cne   = commit --no-edit
   cnm   = commit --amend -m
+  cpau  = copy-author
   cap   = commit-push
   caap  = commit-push -a
   cpm   = commit-push -m
@@ -64,6 +67,8 @@
   empty-tree = hash-object -t tree /dev/null
   et    = empty-tree
   sad   = set-author-date
+  sau   = set-author
+  saut  = set-author
   scd   = set-committer-date
   scm   = squashed-commit-message
   sds   = set-dates

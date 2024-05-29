@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+preserve_committer_date=
+case "$1" in
+    -p | --preserve-committer-date)
+        preserve_committer_date=1
+        shift
+        ;;
+esac
+
+if [ $# -eq 0 ]; then
+    author="$(git user)"
+    echo "Setting author: $author" >&2
+elif [ $# -eq 1 ]; then
+    author="$1"; shift
+elif [ $# -eq 2 ]; then
+    name="$1"; shift
+    email="$1"; shift
+    author="$name <$email>"
+    echo "Setting author: $author" >&2
+else
+    echo "Usage: git set-author [-p|--preserve-committer-date] [name <email>]" >&2
+    echo "Usage: git set-author [-p|--preserve-committer-date] <name> <email>" >&2
+    exit 1
+fi
+
+if [ "$preserve_committer_date" ]; then
+    export GIT_COMMITTER_DATE="$(git log -1 --format=%cd)"
+    echo "Preserving committer date: $GIT_COMMITTER_DATE" >&2
+fi
+
+cmd=(git commit --amend --no-edit --allow-empty --author "$author")
+echo "Running: ${cmd[*]}" >&2
+"${cmd[@]}"

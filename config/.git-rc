@@ -1,5 +1,6 @@
 
-alias gaut="g aut"
+alias gagi="g agi"
+alias gaps="g aps"
 alias gcf="g cf"
 alias gcg="g cg"
 alias gcfa="g cfa"
@@ -26,9 +27,7 @@ alias gcfda="g cfda"
 alias gcgda="g cgda"
 alias gcfua="g cfua"
 alias gcgua="g cgua"
-alias gagi="g agi"
 
-alias gaps="g aps"
 alias grcp="g rcp"
 
 alias gsid="g sid"
@@ -39,12 +38,16 @@ alias ggid="g gid"
 alias ggidg="g gidg"
 alias gggid="g ggid"
 
-alias gue="g ue"
-alias gun="g un"
+alias gfue="g fue"
+alias gfun="g fun"
+alias gfune="g fune"
 alias ggue="g gue"
 alias ggun="g gun"
 
-alias gsau="g sau"
-alias gsaut="g saut"
 alias gsdbm="g sdbm"
 alias gshc="g shc"
+
+alias gue="g ue"
+alias gun="g un"
+alias gune="g une"
+alias gusr="g usr"

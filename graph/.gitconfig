@@ -14,6 +14,8 @@
   gracl = graph -ac -l
   grad = graph -a -d
   grd = graph -d
+  gre = graph -e
+  grec = graph -e -C
   grd10 = grd -n 10
   grdn = grd -n
   grh = graph HEAD

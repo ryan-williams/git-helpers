@@ -16,4 +16,4 @@ else
   exit 1
 fi
 
-git commit --amend --author="${author} <${email}>)" --no-edit
+git commit --amend --author="${author} <${email}>" --no-edit
