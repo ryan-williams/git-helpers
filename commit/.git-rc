@@ -74,6 +74,7 @@ alias gscd="g scd"
 alias gsds="g sds"
 alias gtr0="g tr0"
 
+alias grcd="g rcd"
 alias grcdrbh="g rcdrbh"
 alias gsau="g sau"
 alias gsaut="g saut"

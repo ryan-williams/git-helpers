@@ -12,6 +12,7 @@
   grac = graph -ac
   gracd = graph -ac -d
   gracl = graph -ac -l
+  gracle = graph -ac -l -e
   grad = graph -a -d
   grd = graph -d
   gre = graph -e
