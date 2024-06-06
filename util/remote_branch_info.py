@@ -9,12 +9,11 @@ from regexs import hash_regex, named
 class RemoteBranchInfo(BranchInfo):
 
     regex_pieces = [
-        " \((?P<names>[^)]+)\) ",
+        r" \((?P<names>[^)]+)\) ",
         "%s " % hash_regex,
-        "%s " % named(
-            "date", "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"),
-        "[\-+][0-9]{4} ",
-        "\(%s\) " % named("reldate", "[^)]+"),
+        "%s " % named("date", "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"),
+        r"[\-+][0-9]{4} ",
+        r"\(%s\) " % named("reldate", "[^)]+"),
         named("description", ".*")
     ]
 

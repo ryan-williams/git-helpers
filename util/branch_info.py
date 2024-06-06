@@ -16,17 +16,17 @@ def fixed(width, s, left_justified=False):
 
 class BranchInfo(object):
 
-    line_begin_regex = "(?P<line_begin>^(?:(?P<is_active>\*)| ) )"
+    line_begin_regex = r"(?P<line_begin>^(?:(?P<is_active>\*)| ) )"
 
     ahead_regex = "ahead (?P<ahead>[0-9]+)"
     behind_regex = "behind (?P<behind>[0-9]+)"
     ahead_behind_regex = "(?:%s)?(?:, )?(?:%s)?" % (
         ahead_regex, behind_regex)
     upstream_gone_regex = '(?P<gone>gone)'
-    tracking_info_regex = "(?:\s\[%s(?:: %s|%s)?\])?" % (
+    tracking_info_regex = r"(?:\s\[%s(?:: %s|%s)?\])?" % (
         refname_regex('tracking_name'), ahead_behind_regex, upstream_gone_regex)
 
-    description_regex = "\s(?P<description>.*)"
+    description_regex = r"\s(?P<description>.*)"
 
     regex_pieces = [
         line_begin_regex,
@@ -41,7 +41,7 @@ class BranchInfo(object):
         return ''.join(self.regex_pieces)
 
     def get(self, key, default=''):
-        return self.dict[key] if key in self.dict and self.dict[key] != None else default
+        return self.dict[key] if key in self.dict and self.dict[key] is not None else default
 
     def colors(self):
         return {
@@ -79,10 +79,10 @@ class BranchInfo(object):
 
         self.remote = self.get('tracking_name')
 
-        self.ahead = int(self.get('ahead', 0))
+        self.ahead = int(self.get('ahead', '0'))
         self.ahead_str = "+%d" % self.ahead if self.ahead else ''
 
-        self.behind = int(self.get('behind', 0))
+        self.behind = int(self.get('behind', '0'))
         self.behind_str = "-%d" % self.behind if self.behind else ''
 
         self.pre_remote = ''  # '[' if self.remote else ' '
@@ -131,7 +131,10 @@ class BranchInfo(object):
         return self.to_string()
 
     def set_dates(self, date, reldate):
-        self.datetime = dt.strptime(date, '%Y-%m-%d %H:%M:%S %z')
+        try:
+            self.datetime = dt.strptime(date, '%Y-%m-%d %H:%M:%S %z')
+        except ValueError:
+            self.datetime = dt.strptime(date, '%Y-%m-%d %H:%M:%S')
 
         self.date = dt.strftime(self.datetime, '%Y-%m-%d %H:%M:%S')
         self.reldate = shorten_reldate(reldate)
