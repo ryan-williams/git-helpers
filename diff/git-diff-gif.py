@@ -40,7 +40,7 @@ def get_changed_imgs(refspec, *paths):
     return [
         path
         for path in check_output(['git', 'diff', '--name-only', refspec, '--', *paths]).decode().split('\n')
-        if splitext(path)[-1] in DEFAULT_EXTENSIONS
+        if splitext(path)[-1] in DEFAULT_EXTENSIONS and exists(path)
     ]
 
 
