@@ -1,5 +1,10 @@
 gitlab_api() {
-    glab api --hostname "$GITLAB_HOST" "$@"
+    if [ -n "$GITLAB_HOST" ]; then
+        args=(--hostname "$GITLAB_HOST")
+    else
+        args=()
+    fi
+    glab api "${args[@]}" "$@"
 }
 export -f gitlab_api
 defn glapi gitlab_api
