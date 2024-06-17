@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 fmt="$1"; shift
-git log-format "$fmt" -1 "$@"
+git log-format "$fmt" --no-walk "$@"
