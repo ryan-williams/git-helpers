@@ -49,6 +49,7 @@
   cppam = commit-push-parents -a -m
   cppm  = commit-push-parents -m
   csp   = set-parents
+  sps   = set-parents
   ctr   = commit-tree
   ctrr  = commit-tree-reset
   ctrs  = commit-tree-reset
