@@ -3,6 +3,7 @@
 alias gcp="g cp"
 alias gcpa="g cpa"
 alias gcpc="g cpc"
+alias gcph="g cph"
 alias gcpn="g cpn"
 alias gcppcd="g cppcd"
 alias gcps="g cps"
