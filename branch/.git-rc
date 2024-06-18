@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+alias gbb="g bb"
 alias gbd="g bd"
 alias gbD="g bD"
 alias gbdf="g bdf"
@@ -19,6 +20,7 @@ alias gbmv="g bmv"
 alias gb="g b"
 alias gbu="g bu"
 alias gbr="g br"
+alias gbrg="g brg"
 
 alias gcb="g cb"
 alias gib="g ib"
