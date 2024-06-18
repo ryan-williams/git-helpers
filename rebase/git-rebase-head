@@ -7,7 +7,7 @@
 # which does not exist in the original branch, and corresponds to the parent of the commit
 # currently being applied.
 
-set -e
+set -eo pipefail
 
 git_dir="$(git dir)"
 rebase_head="$git_dir/REBASE_HEAD"
@@ -30,28 +30,7 @@ if ! [ -f "$rebase_done" ]; then
     exit 11
 fi
 
-# Last two lines of .git/rebase-merge/done should look like:
-# ```
-# pick 1234567 commit message
-# exec <cmd>
-# ```
-# We want to extract the SHA from the `pick` line.
-lines=()
-while IFS=$'\n' read -r line; do
-    lines+=("$line")
-done < <(tail -n 2 "$rebase_done")
-pick_line="${lines[0]}"
-exec_line="${lines[1]}"
-
-if [ "${exec_line#exec }" == "$exec_line" ]; then
-    echo "Unrecognized exec line: $exec_line" >&2
-    exit 22
-fi
-
-if [ "${pick_line#pick }" == "$pick_line" ]; then
-    echo "Unrecognized pick line: $pick_line" >&2
-    exit 33
-else
-    sha="$(echo "$pick_line" | awk -F' ' '{print $2}')"
-    echo "$sha"
-fi
+# Extract the SHA from the last `pick` line.
+pick_line="$(cat "$rebase_done" | grep '^pick' | tail -n1)"
+sha="$(echo "$pick_line" | awk -F' ' '{print $2}')"
+echo "$sha"
