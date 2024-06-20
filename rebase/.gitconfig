@@ -33,7 +33,8 @@
   rc      = rebase --continue
   rd      = rebase-diff
   ri      = rebase -i
-  rir     = rebase -i --root
+  rir     = rebase -i -r
+  rit     = rebase -i --root
   rud     = rebase-upstream-diff
   rix     = rebase -i -x
   rx      = rebase -x
