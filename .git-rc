@@ -24,7 +24,7 @@ define_function() {
     echo "Usage: $0 <alias name> <aliased function> [args...]" >&2
     return 1
   fi
-  unalias "$name" &>/dev/null
+  unalias "$name" &>/dev/null || true
   eval "$name() { $@ \"\$@\"; }"
   export -f "$name" > /dev/null
 }
