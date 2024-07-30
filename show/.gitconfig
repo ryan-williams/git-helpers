@@ -1,6 +1,9 @@
 [alias]
   eq = equal
   sh = show
+  shno = show --name-only
+  shns = show --name-status
+  shadr = show --diff-filter=ADR --name-status
   sfh = show-sha-file HEAD
   shf = show-sha-file
   shfp = show-sha-file HEAD^

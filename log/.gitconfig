@@ -27,6 +27,9 @@
   hashes = hash
   hsh = full-hash
   l1 = log-oneline
+  ladr = log --name-status --diff-filter=ADR
+  lno = log --name-only
+  lns = log --name-status
   lgg = log -S
   lgpg = log -p -S
   lggp = log -p -S
