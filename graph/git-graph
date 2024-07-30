@@ -17,6 +17,7 @@ set -e
 
 args=()
 author_fmt="%an"
+date_order=--date-order
 show_committer=
 show_email=
 email_color=cyan
@@ -28,6 +29,7 @@ while [ $# -gt 0 ]; do
     case "$arg" in
     -a) date_fmt="%ad" ;;
     -ac) date_fmt="%ad %C(green)%cd" ;;
+    -A) date_order=--author-date-order ;;
     -C) show_committer=1 ;;
     -d) date_style="iso" ;;
     -e) show_email=1 ;;
@@ -61,5 +63,5 @@ git log \
   --graph \
   "--format=%C(auto)%h %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(reset)%C(auto)%d %s" \
   "--date=$date_style" \
-  --date-order \
+  "$date_order" \
   "$@"

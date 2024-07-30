@@ -3,6 +3,8 @@
   ga = graph-all
   gaa = graph-all -a
   gaal = graph-all -a -l
+  gad = graph -A
+  gadh = graph -A HEAD
   gal = graph-all -l
   gala = graph-all -l -a
   ghu = graph -u HEAD
