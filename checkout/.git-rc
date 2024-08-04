@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 alias gco="g co"
+alias gco-="g co-"
 alias gcob="g cob"
 alias gcof="g cof"
 alias gcoh="g coh"

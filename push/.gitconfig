@@ -6,9 +6,11 @@
   p = push-x
   pd = push --delete
   pf = push -f
+  pfn = push -f -n
   pfo = push -f origin
   pfu = push -f upstream
   pl = pull
+  pnf = push -n -f
   px = push-x
   ph = push-head-to
   pht = push-head-to
