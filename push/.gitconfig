@@ -8,7 +8,8 @@
   pf = push -f
   pfn = push -f -n
   pfo = push -f origin
-  pfu = push -f upstream
+  pft = push -f --tags
+  pfu = push -f u
   pl = pull
   pnf = push -n -f
   px = push-x
@@ -23,7 +24,6 @@
   pt = push-x -t
   pto = push --tags
   ptf = push --tags -f
-  pft = push -f --tags
   ptn = push --tags -n
   pon = push -n origin
   pno = push -n origin
