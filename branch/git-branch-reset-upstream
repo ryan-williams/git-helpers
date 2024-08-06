@@ -16,7 +16,7 @@ for b in "$@"; do
     commits_ahead="$(git rev-list --count $u..$b)"
     if [ "$commits_ahead" != "0" ]; then
         if [ -z "$force" ]; then
-            echo "Branch $b is $commits_ahead of $u" >&2
+            echo "Branch $b is $commits_ahead ahead of $u; git-branch-reset-upstream only supports fast-forward resets" >&2
             fail=1
             continue
         fi

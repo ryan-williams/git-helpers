@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#
+# Wrapper around `git reset --hard` that stashes any uncommitted changes first
 
 if ! git is-clean; then
   git stash save "Resetting --hard: ${@:-$(git sha)}"

@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-cat .git/CHERRY_PICK_HEAD
+git_dir="$(git rev-parse --git-dir)"
+cat "$git_dir/CHERRY_PICK_HEAD"
