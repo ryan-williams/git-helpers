@@ -5,6 +5,7 @@
   rss = !git reset . && git submodule update --recursive && git status
   rp = reset -p
   rh = reset-hard
+  rh1 = reset-hard HEAD@{1}
   rhh = reset --hard HEAD
   rhp = reset --hard HEAD^
   rrs = reverse-reset
