@@ -26,3 +26,10 @@ defn ghrv gh run view
 defn ghrvj gh run view --job
 defn ghrvl gh run view --log
 defn ghrvlj gh run view --log --job
+
+gh_workflow_run() {
+    name="${1%.yml}"; shift
+    gh workflow run $name.yml "$@"
+}
+export -f gh_workflow_run
+defn ghwr gh_workflow_run
