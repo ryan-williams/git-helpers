@@ -21,11 +21,31 @@ github_open_web_branch() {
 export -f github_open_web_branch
 defn ghob github_open_web_branch
 
+defn ghr gh run
+defn ghrh gh run --help
 defn ghrl gh run list
+defn ghrlh gh run list --help
 defn ghrv gh run view
+defn ghrvh gh run view --help
 defn ghrvj gh run view --job
+gh_run_view_jobs() {
+    gh run view "$@" --json jobs
+}
+export -f gh_run_view_jobs
+defn ghrvjs gh_run_view_jobs
 defn ghrvl gh run view --log
 defn ghrvlj gh run view --log --job
+gh_run_view_url() {
+    ghrv "$@" --json url | jr .url
+}
+export -f gh_run_view_url
+defn ghrvu gh_run_view_url
+gh_run_open() {
+    url="$(gh_run_view_url "$@")"
+    open "$url"
+}
+export -f gh_run_open
+defn ghro gh_run_open
 
 gh_workflow_run() {
     name="${1%.yml}"; shift
@@ -33,3 +53,5 @@ gh_workflow_run() {
 }
 export -f gh_workflow_run
 defn ghwr gh_workflow_run
+
+defn ghwl gh workflow list
