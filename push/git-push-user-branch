@@ -5,42 +5,45 @@ if [ -z "$GIT_USER_BRANCH_PREFIX" ]; then
     exit 1
 fi
 
-src="$(git current-branch)"
-dst="$GIT_USER_BRANCH_PREFIX/$src"
-
-args=()
+remote=
+branches=()
 flags=()
 while [ $# -gt 0 ]; do
     case "$1" in
-        -n|--dry-run)
-            flags+=("$1")
-            ;;
-        -f|--force)
-            flags+=("$1")
-            ;;
-        -t|--tags)
-            flags+=("$1")
-            ;;
-        *)
-            args+=("$1")
-            ;;
+        -n|--dry-run) flags+=("$1") ;;
+        -f|--force) flags+=("$1") ;;
+        -r|--remote) remote="$2"; shift ;;
+        -t|--tags) flags+=("$1") ;;
+        *) branches+=("$1") ;;
     esac
     shift
 done
-set -- "${args[@]}"
+set -- "${branches[@]}"
 
 if [ $# -eq 0 ]; then
-    tracking_branch="$(git rev-parse --abbrev-ref --symbolic-full-name "$src@{upstream}")"
-    if [ -n "$tracking_branch" ]; then
-        remote="${tracking_branch%%/*}"
-        echo "Pushing to tracked remote $remote" >&2
-        set -- "$remote"
-    else
-        echo "No tracking branch found for $src" >&2
+    set -- "$(git current-branch)"
+fi
+
+specs=()
+for ref in "$@"; do
+    specs+=("$ref:$GIT_USER_BRANCH_PREFIX/$ref")
+done
+
+if [ -z "$remote" ]; then
+    for ref in "$@"; do
+        tracking_branch="$(git rev-parse --abbrev-ref --symbolic-full-name "$ref@{upstream}")"
+        if [ -n "$tracking_branch" ]; then
+            remote="${tracking_branch%%/*}"
+            echo "Pushing to tracked remote $remote" >&2
+            break
+        fi
+    done
+    if [ -z "$remote" ]; then
+        echo "No tracking branch found for $@" >&2
         exit 2
     fi
 fi
 
-cmd=(git push "${flags[@]}" "$@" "$src:$dst")
+cmd=(git push "${flags[@]}" "$remote" "${specs[@]}")
 echo "Running: ${cmd[*]}" >&2
 "${cmd[@]}"
