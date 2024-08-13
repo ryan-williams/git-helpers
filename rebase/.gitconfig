@@ -25,6 +25,10 @@
   rbm     = rebase-head-message
   rbmb    = rebase-merge-base
   rbo     = rebase --onto
+  rbro    = rebase -r --onto
+  rbrio   = rebase -r -i --onto
+  rbor    = rebase -r --onto
+  rbori   = rebase -r -i --onto
   rbot    = rebase-onto
   rbp     = rebase-parent
   rbs     = rebase --skip
@@ -33,8 +37,13 @@
   rc      = rebase --continue
   rd      = rebase-diff
   ri      = rebase -i
+  rio     = rebase -i --onto
   rir     = rebase -i -r
   rit     = rebase -i --root
+  ro      = rebase --onto
+  rri     = rebase -r -i
+  rrio    = rebase -r -i --onto
+  rro     = rebase -r --onto
   rud     = rebase-upstream-diff
   rix     = rebase -i -x
   rx      = rebase -x
