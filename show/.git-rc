@@ -2,6 +2,8 @@
 
 alias geq="g eq"
 alias gsh="g sh"
+alias gshmr="g shmr"
+alias gshms="g shms"
 alias gshno="g shno"
 alias gshns="g shns"
 alias gshadr="g shadr"

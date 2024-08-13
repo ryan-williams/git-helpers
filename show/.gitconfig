@@ -1,6 +1,8 @@
 [alias]
   eq = equal
   sh = show
+  shmr = show --diff-merges=remerge
+  shms = show --diff-merges=separate
   shno = show --name-only
   shns = show --name-status
   shadr = show --diff-filter=ADR --name-status
