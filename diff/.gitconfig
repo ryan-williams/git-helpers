@@ -32,6 +32,8 @@
   dcno = diff --name-only --cached
   dnoc = diff --name-only --cached
   dns  = diff --name-status
+  dp1 = diff-vs-parent 1
+  dp2 = diff-vs-parent 2
   dq   = diff --quiet
   ds   = diff --stat
   dsc  = diff --stat --cached

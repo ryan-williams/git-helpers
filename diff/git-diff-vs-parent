@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <parent index> [...diff args]" >&2
+    exit 1
+fi
+
+spec=$1; shift
+if [[ "$spec" =~ ^[0-9]+$ ]]; then
+    arg="HEAD^$spec..HEAD"
+else
+    base="${spec%^*}"
+    arg="$spec..$base"
+fi
+
+git diff "$@" "$arg"
