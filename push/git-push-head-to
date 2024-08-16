@@ -10,4 +10,4 @@ fi
 dst="${@: -1}"
 set -- "${@:1:$(($#-1))}"
 echo "$@"
-#git push-x "$@" "HEAD:$dst"
+git push "$@" "HEAD:$dst"
