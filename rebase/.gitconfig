@@ -25,6 +25,7 @@
   rbm     = rebase-head-message
   rbmb    = rebase-merge-base
   rbo     = rebase --onto
+  rbr     = rebase -r
   rbro    = rebase -r --onto
   rbrio   = rebase -r -i --onto
   rbor    = rebase -r --onto
