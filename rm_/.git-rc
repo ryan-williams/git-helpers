@@ -3,6 +3,7 @@
 alias grm="g rm"
 alias grmc="g rmc"
 alias grmcf="g rmcf"
+alias grmf="g rmf"
 alias grmr="g rmr"
 alias grmrc="g rmrc"
 alias grmu="g rmu"
