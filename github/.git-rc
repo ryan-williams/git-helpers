@@ -28,6 +28,7 @@ defn ghrlh gh run list --help
 defn ghrv gh run view
 defn ghrvh gh run view --help
 defn ghrvj gh run view --job
+defn ghrvw gh run view --web
 gh_run_view_jobs() {
     gh run view "$@" --json jobs
 }
@@ -47,11 +48,37 @@ gh_run_open() {
 export -f gh_run_open
 defn ghro gh_run_open
 
+gh_last_workflow_run() {
+    gh run list -L 1 --json databaseId | jq -r .[0].databaseId
+}
+export -f gh_last_workflow_run
+defn ghlw gh_last_workflow_run
+defn ghlwr gh_last_workflow_run
+
 gh_workflow_run() {
     name="${1%.yml}"; shift
     gh workflow run $name.yml "$@"
 }
 export -f gh_workflow_run
 defn ghwr gh_workflow_run
+gh_workflow_run_current_branch() {
+    name="${1%.yml}"; shift
+    gh workflow run $name.yml --ref "$(git current-branch)" "$@"
+}
+export -f gh_workflow_run_current_branch
+defn ghwrc gh_workflow_run_current_branch
 
 defn ghwl gh workflow list
+
+gh_run_list_in_progress() {
+    gh run list -s in_progress "$@"
+}
+export -f gh_run_list_in_progress
+defn ghwip gh_run_list_in_progress
+
+gh_open_last() {
+    run="$(gh_last_workflow_run)"
+    gh run view --web $run
+}
+export -f gh_open_last
+defn ghol gh_open_last
