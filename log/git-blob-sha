@@ -10,50 +10,50 @@
 
 set -e
 
-declare -a ARGS
 index=
 short_sha=
-while [ $# -gt 0 ]
-do
-    unset OPTIND
-    unset OPTARG
-    while getopts "is" opt
-    do
-      case "$opt" in
-        i) index=1;;
-        s) short=1;;
-        *) ;;
-      esac
-    done
-    shift $((OPTIND-1))
-    ARGS+=("$1")
-    if [ $# -gt 0 ]; then
-      shift
-    fi
+OPTIND=1
+while getopts "is" opt; do
+  case "$opt" in
+    i) index=1 ;;
+    s) short_sha=1 ;;
+    *) ;;
+  esac
 done
+shift $((OPTIND-1))
 
-if [ ${#ARGS[@]} -eq 1 ]; then
-  ref="${ARGS[0]}"
-  sha="${ref%%:*}"
-  if [ "$sha" == "$ref" ]; then
+usage() {
+  echo "Usage: $0 [-i] [-s] [<tree>:<path> | <tree> <path>]" >&2
+  exit 1
+}
+
+no_index() {
+  if [ -n "$index" ]; then
+    echo "Can't specify both -i (index) and a <tree>" >&2
+    usage
+  fi
+}
+
+if [ $# -eq 1 ]; then
+  spec="$1"; shift
+  sha="${spec%%:*}"
+  if [ "$sha" == "$spec" ]; then
     sha=HEAD
   else
-    if [ -n "$index" ]; then
-      echo "Can't specify both -i (index) and a <tree>" >&2
-      echo "Usage: $0 [-i] [-s] [<tree>:]<path>" >&2
-      exit 1
-    fi
+    no_index
   fi
-  path="${ref#*:}"
+  path="${spec#*:}"
+elif [ $# -eq 2 ]; then
+  no_index
+  sha="$1"; shift
+  path="$1"; shift
 else
-  echo "Usage: $0 [-i] [-s] [<tree>:]<path>" >&2
-  exit 1
+  usage
 fi
 
-if [ -n "$short" ]; then
-  flags=( "--abbrev" )
-else
-  flags=()
+flags=()
+if [ -n "$short_sha" ]; then
+  flags+=( "--abbrev" )
 fi
 
 if [ -n "$index" ]; then
