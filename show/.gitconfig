@@ -18,6 +18,7 @@
   shs = show --stat
   shsl = show --submodule=log
   shss = show --submodule=short
+  shw = show -w
   sn = show-names
   sln = show-local-names
   snl = show-local-names
