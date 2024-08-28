@@ -89,6 +89,8 @@
   list-deleted = list-status ' D'
   ld = list-status ' D'
 
+  laf = ls-new-files
+  lnf = ls-new-files
   sz  = size
   szh = size -H
   szs = sizes

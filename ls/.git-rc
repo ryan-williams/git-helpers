@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 alias gl="g l"
+alias glaf="g laf"
+alias glnf="g lnf"
 alias glm="g lm"
 alias glmm="g lmm"
 alias glr="g lr"
