@@ -18,3 +18,91 @@ gitlab_open_jobs() {
 export -f gitlab_open_jobs
 defn globj gitlab_open_jobs
 defn gloj gitlab_open_jobs
+
+defn gitlab_remote git-find-only-remote gitlab\.com
+defn glrn gitlab_remote
+
+gitlab_remote_path() {
+    git remote-path "$@" "$(gitlab_remote)"
+}
+export -f gitlab_remote_path
+defn glrp gitlab_remote_path
+defn glrpe gitlab_remote_path -e
+
+gitlab_parse_remote_and_branch() {
+  if [ $# -eq 0 ]; then
+    echo "Usage: gitlab_parse_remote_and_branch <caller name> [-n] [remote] <branch>" >&2
+    return 1
+  fi
+  caller="$1"; shift
+  dry_run=
+  if [ "$1" == "-n" ]; then
+    dry_run=1
+    shift
+  fi
+  if [ $# -eq 1 ]; then
+    branch="$1"; shift
+    remote="$(gitlab_remote)"
+    if [ -z "$remote" ]; then
+      return 1
+    fi
+  elif [ $# -eq 2 ]; then
+    remote="$1"; shift
+    branch="$1"; shift
+  else
+    echo "Usage: $caller [-n] [remote] <branch>" >&2
+    return 1
+  fi
+  project_id="$(git remote-path -e "$remote")"
+}
+export -f gitlab_parse_remote_and_branch
+
+gitlab_maybe_api() {
+  cmd=(glab api "$@")
+  if [ -n "$dry_run" ]; then
+    echo "Would run: ${cmd[@]}" >&2
+    return
+  else
+    echo "Running: ${cmd[@]}" >&2
+    "${cmd[@]}"
+  fi
+}
+export -f gitlab_maybe_api
+
+gitlab_protect_branch() {
+  local remote=
+  local branch=
+  local project_id=
+  if ! gitlab_parse_remote_and_branch gitlab_protect_branch "$@"; then
+    return 1
+  fi
+  gitlab_maybe_api "projects/$project_id/protected_branches" -F "name=$branch"
+}
+export -f gitlab_protect_branch
+defn glpb gitlab_protect_branch
+defn glpbn gitlab_protect_branch -n
+
+gitlab_unprotect_branch() {
+  local remote=
+  local branch=
+  local project_id=
+  if ! gitlab_parse_remote_and_branch gitlab_unprotect_branch "$@"; then
+    return 1
+  fi
+  gitlab_maybe_api "projects/$project_id/protected_branches/$branch" -X DELETE
+}
+export -f gitlab_unprotect_branch
+defn glub gitlab_unprotect_branch
+defn glubn gitlab_unprotect_branch -n
+
+gitlab_set_default_branch() {
+  local remote=
+  local branch=
+  local project_id=
+  if ! gitlab_parse_remote_and_branch gitlab_set_default_branch "$@"; then
+    return 1
+  fi
+  gitlab_maybe_api "projects/$project_id" -X PUT -F "default_branch=$branch"
+}
+export -f gitlab_set_default_branch
+defn glsdb gitlab_set_default_branch

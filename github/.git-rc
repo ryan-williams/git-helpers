@@ -95,3 +95,64 @@ gh_open_last() {
 }
 export -f gh_open_last
 defn ghol gh_open_last
+
+defn github_remote git-find-only-remote github\.com
+defn ghrn github_remote
+
+github_remote_path() {
+    git remote-path "$@" "$(github_remote)"
+}
+export -f github_remote_path
+defn ghrp github_remote_path
+
+github_parse_remote_and_branch() {
+  if [ $# -eq 0 ]; then
+    echo "Usage: github_parse_remote_and_branch <caller name> [-n] [remote] <branch>" >&2
+    return 1
+  fi
+  caller="$1"; shift
+  dry_run=
+  if [ "$1" == "-n" ]; then
+    dry_run=1
+    shift
+  fi
+  if [ $# -eq 1 ]; then
+    branch="$1"; shift
+    remote="$(github_remote)"
+    if [ -z "$remote" ]; then
+      return 1
+    fi
+  elif [ $# -eq 2 ]; then
+    remote="$1"; shift
+    branch="$1"; shift
+  else
+    echo "Usage: $caller [-n] [remote] <branch>" >&2
+    return 1
+  fi
+  project_id="$(git remote-path "$remote")"
+}
+export -f github_parse_remote_and_branch
+
+github_maybe_api() {
+  cmd=(gh api "$@")
+  if [ -n "$dry_run" ]; then
+    echo "Would run: ${cmd[@]}" >&2
+    return
+  else
+    echo "Running: ${cmd[@]}" >&2
+    "${cmd[@]}"
+  fi
+}
+export -f github_maybe_api
+
+github_set_default_branch() {
+  local remote=
+  local branch=
+  local project_id=
+  if ! github_parse_remote_and_branch github_set_default_branch "$@"; then
+    return 1
+  fi
+  github_maybe_api "repos/$project_id" -X PATCH -F "default_branch=$branch"
+}
+export -f github_set_default_branch
+defn ghsdb github_set_default_branch
