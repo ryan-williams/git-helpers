@@ -11,7 +11,8 @@
   mnf = merge --no-ff
   mnef = merge --no-edit --no-ff
   mnnf = merge --no-edit --no-ff
-  mt = mergetool -t meld -y
+  mt = mergetool -y -t
+  mtnb = mergetool -y -t nbdime
   mu = merge upstream/HEAD
   mun = merge upstream/HEAD --no-edit
   mune = merge upstream/HEAD --no-edit
