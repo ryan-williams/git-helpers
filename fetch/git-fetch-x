@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#
+# Wrapper around `git fetch` that interprets the last argument as a comma-delimited list of remote names, and fetches
+# from each one
+
+# pop last arg
+last=${!#}
+set -- "${@:1:$(($#-1))}"
+
+# split last arg by commas
+IFS=',' read -r -a remotes <<< "$last"
+
+if which parallel &>/dev/null; then
+  parallel -j0 -k --env PATH git fetch "$@" ::: "${remotes[@]}"
+else
+  for remote in "${remotes[@]}"; do
+      git fetch "$@" "$remote"
+  done
+fi
