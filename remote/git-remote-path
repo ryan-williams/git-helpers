@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+url_encode=
+if [ "$1" == "-e" ]; then
+  url_encode=1
+  shift
+fi
+
+if [ $# -ne 1 ]; then
+  echo "Usage: git remote-path [-e] <remote>" >&2
+  exit 1
+fi
+
+path="$(git remote get-url "$1" | cut -d: -f2- | perl -pe 's/\.git$//')"
+if [ -n "$url_encode" ]; then
+  path="$(echo "$path" | python3 -c "import sys, urllib.parse as ul; print(ul.quote(sys.stdin.read().rstrip('\n'), safe=''))")"
+fi
+
+echo "$path"

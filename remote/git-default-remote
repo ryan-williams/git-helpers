@@ -3,6 +3,11 @@
 skip_existing=
 if [ "$1" == "-n" ]; then
   skip_existing=1
+  shift
+fi
+
+if [ $# -gt 0 ]; then
+
 fi
 
 remote="$(git config remote.default)"

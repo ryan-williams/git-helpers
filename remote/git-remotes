@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# List each remote name and URL, once each (dedupe "(fetch)" and "(push)" lines)
+git remote -v "$@" | awk '{print $1, $2}' | uniq

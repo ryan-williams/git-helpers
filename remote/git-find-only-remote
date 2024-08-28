@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ $# -eq 0 ]; then
+  echo "Usage: gitlab_find_remote <grep args...>" >&2
+  return 1
+fi
+
+remote=
+err=
+lines="$(git remotes | grep "$@")"
+while IFS= read -r line; do
+  if [ -n "$remote" ]; then
+    if [ -z "$err" ]; then
+      echo "Multiple remotes found:" >&2
+      echo "  $remote" >&2
+      err=1
+    fi
+    echo "  $line" >&2
+  else
+    remote="$(echo "$line" | awk '{ print $1 }')"
+  fi
+done <<< "$lines"
+if [ -z "$remote" ]; then
+  echo "No gitlab.com remote found" >&2
+  return 1
+fi
+if [ -n "$err" ]; then
+  return 1
+fi
+echo "$remote"
