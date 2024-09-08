@@ -11,7 +11,7 @@ defn hds github-docs-snapshot
 defn hdss github-docs-snapshot -s
 
 defn gha "gh api"
-defn ghj 'gh api -H "Accept: application/vnd.github+json"'
+defn ghaj 'gh api -H "Accept: application/vnd.github+json"'
 defn ghw github-workflows.py
 
 github_url() {
@@ -24,7 +24,6 @@ github_open_actions() {
 }
 export -f github_open_actions
 defn ghoa github_open_actions
-defn ghoj github_open_actions
 
 defn ghow gh repo view --web
 
@@ -38,6 +37,13 @@ defn ghr gh run
 defn ghrh gh run --help
 defn ghrl gh run list
 defn ghrlh gh run list --help
+
+gh_last_run_id() {
+    gh run list -L 1 --json databaseId | jq -r .[0].databaseId
+}
+export -f gh_last_run_id
+defn ghlr gh_last_run_id
+
 defn ghrv gh run view
 defn ghrvh gh run view --help
 defn ghrvj gh run view --job
@@ -95,6 +101,65 @@ gh_open_last() {
 }
 export -f gh_open_last
 defn ghol gh_open_last
+
+gh_run_and_job() {
+    if [ $# -gt 0 ]; then
+        run="$1"; shift
+    else
+        run="$(gh_last_workflow_run)"
+    fi
+    if [ $# -gt 0 ]; then
+        job_idx="$1"; shift
+    else
+        job_idx=-1
+    fi
+    if [ $# -gt 0 ]; then
+        echo 'Usage: gh_run_and_job [run_id [job_idx]]' >&2
+        return 1
+    fi
+    gh run view "$run" --json databaseId,jobs | jq "{ run_id: .databaseId, job: .jobs[$job_idx] }"
+}
+export -f gh_run_and_job
+defn ghraj gh_run_and_job
+
+gh_job() {
+    gh_run_and_job "$@" | jq ".job"
+}
+export -f gh_job
+defn ghj gh_job
+
+gh_job_id() {
+    gh_last_job "$@" | jq -r .databaseId
+}
+export -f gh_job_id
+defn ghji gh_job_id
+
+gh_job_ids() {
+    if [ $# -gt 0 ]; then
+        run="$1"; shift
+    else
+        run="$(gh_last_workflow_run)"
+    fi
+    if [ $# -gt 0 ]; then
+        echo 'Usage: gh_job_ids [run_id [job_idx]]' >&2
+        return 1
+    fi
+    gh run view "$run" --json databaseId,jobs | jq -r '.databaseId as $run_id | .jobs | map([ $run_id, .databaseId ] | join(" "))[]'
+}
+export -f gh_job_ids
+defn ghjis gh_job_ids
+
+gh_job_url() {
+    gh_job "$@" | jq -r .url
+}
+export -f gh_job_url
+defn ghju gh_job_url
+
+gh_open_job() {
+    open "$(gh_job_url "$@")"
+}
+export -f gh_open_job
+defn ghoj gh_open_job
 
 defn github_remote git-find-only-remote github\.com
 defn ghrn github_remote
