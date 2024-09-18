@@ -1,9 +1,5 @@
-[![Build Status](https://travis-ci.org/ryan-williams/git-helpers.svg)](https://travis-ci.org/ryan-williams/git-helpers)
-
-git-helpers
-===========
-
-A few helpers for augmenting and prettifying existing git functionality.
+# git-helpers
+Bash helpers for augmenting and prettifying existing git functionality.
 
 These were written alongside other bash and python helpers that I may not have ported; let me know if you see anything missing or broken.
 
