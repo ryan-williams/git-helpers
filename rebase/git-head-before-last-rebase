@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 #
-# Parse the reflog to find the
+# Parse the reflog to find the HEAD commit before the last rebase.
 
-git reflog '--format=%H %gs' \
-| grep -m1 -A1 'rebase (start)' \
-| tail -n 1 \
-| awk '{print $1}'
+set -e
+
+git pre-rebase-head-log "$@" | head -n1

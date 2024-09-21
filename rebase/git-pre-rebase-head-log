@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# Parse the reflog, print a reverse-chron list of HEADs before rebases were initiated
+
+set -eo pipefail
+
+if [ $# -gt 0 ]; then
+  format="$@"
+else
+  format='%H'
+fi
+
+git reflog "--format=$format %gs" | \
+grep -A1 'rebase (start)' | \
+sed '/rebase (start)/d; /^--$/d' | \
+awk 'NF {print $1}'

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -e
+
+head="$(git log -1 --format=%h)"
+to="$(git head-before-last-rebase %h)"
+
+echo "Resetting: $head -> $to" >&2
+git reset --hard "$to"
