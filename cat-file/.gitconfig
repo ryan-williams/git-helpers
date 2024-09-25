@@ -1,5 +1,5 @@
 [alias]
-  ct = cat-file
   cfp = cat-file -p
   ctp = cat-file -p
+  cft = cat-file -t
   ho = hash-object
