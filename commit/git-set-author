@@ -9,10 +9,29 @@ case "$1" in
 esac
 
 if [ $# -eq 0 ]; then
-    author="$(git user)"
+    name="$(git config user.name)"
+    email="$(git config user.email)"
+    author="$$name <$email>"
     echo "Setting author: $author" >&2
 elif [ $# -eq 1 ]; then
-    author="$1"; shift
+    if [[ "$1" == *' '* ]]; then
+        # If the argument has more than one word, assume it's the author's name.
+        name="$1"; shift
+        email="$(git log -1 --format=%ae)"
+        author="$name <$email>"
+        echo "Updating author name: $author" >&2
+    elif git cat-file -t "$1" &>/dev/null; then
+        # Otherwise, check whether it's a Git "ref", and copy that author name/email if so
+        ref="$1"; shift
+        author="$(git show -s --format='%an <%ae>' "$ref")"
+        echo "Updating author from commit $ref: $author" >&2
+    else
+        # Otherwise, assume we're updating the author's email address
+        email="$1"; shift
+        name="$(git log -1 --format=%an)"
+        author="$name <$email>"
+        echo "Updating author email: $author" >&2
+    fi
 elif [ $# -eq 2 ]; then
     name="$1"; shift
     email="$1"; shift
@@ -25,7 +44,8 @@ else
 fi
 
 if [ "$preserve_committer_date" ]; then
-    export GIT_COMMITTER_DATE="$(git log -1 --format=%cd)"
+    GIT_COMMITTER_DATE="$(git log -1 --format=%cd)"
+    export GIT_COMMITTER_DATE
     echo "Preserving committer date: $GIT_COMMITTER_DATE" >&2
 fi
 
