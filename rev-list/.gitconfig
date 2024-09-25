@@ -8,6 +8,9 @@
   ac = all-commits
   ah = all-hashes
   cc = count-commits
+  root-commits = rev-list --max-parents=0
+  rtc = root-commits
+  rtch = root-commits HEAD
   tail = rev-list --max-parents=0 HEAD
   rvp = rev-parse
   rvph = rev-parse HEAD
