@@ -6,7 +6,7 @@
   bk = branch-back
 
   bpa = branch --points-at
-  bpar = branch --points-at -r
+  bpar = branch -r --points-at
 
   previous-branch = checkout-previous-branch
   pb = previous-branch
