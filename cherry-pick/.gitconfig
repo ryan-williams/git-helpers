@@ -1,5 +1,7 @@
 [alias]
   cp   = cherry-pick
+  cp1  = cherry-pick -m1
+  cp2  = cherry-pick -m2
   cpa  = cherry-pick --abort
   cpc  = cherry-pick --continue
   cph  = cherry-pick-head
