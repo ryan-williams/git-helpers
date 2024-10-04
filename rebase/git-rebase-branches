@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -ex
+
+original_branch="$(git rev-parse --abbrev-ref HEAD)"
+
+for branch in "$@"; do
+    git checkout "$branch"
+    git rebase
+done
+
+git checkout "$original_branch"

@@ -26,6 +26,7 @@
   rbsin   = rebase-stdin -n
   rsi     = rebase-stdin
   rsin    = rebase-stdin -n
+  rbb     = rebase-branches
   rbm     = rebase-head-message
   rbmb    = rebase-merge-base
   rbo     = rebase --onto
