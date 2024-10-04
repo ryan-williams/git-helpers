@@ -35,6 +35,7 @@ defn ggru g gru
 defn gsru g sru
 
 defn glsr g lsr
+defn glsrh g lsrh
 defn glsrt g lsrt
 defn glrh g lrh
 defn glrt g lrt
