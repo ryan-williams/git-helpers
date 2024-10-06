@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+#
+# Update the author of the last commit.
+#
+# Usage:
+#
+#     # 0 args ⟹ read author name and email from Git config
+#     git set-author [-p|--preserve-committer-date]
+#
+#     # If 1 arg is provided:
+#     # - If it contains a space, treat it as a name
+#     # - If it matches an existing "ref" (branch/tag/SHA), copy author info from the corresponding commit
+#     # - Otherwise, treat it as an email address
+#     git set-author [-p|--preserve-committer-date] <name|email|ref>
+#
+#     # 2 args ⟹ name, email
+#     git set-author [-p|--preserve-committer-date] <name> <email>
 
 preserve_committer_date=
 case "$1" in
