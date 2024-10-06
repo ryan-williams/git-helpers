@@ -23,26 +23,29 @@ do
     shift
 done
 
+if [ ${#ARGS[@]} -eq 1 ]; then
+  set -- HEAD
+else
+  set -- "${ARGS[@]}"
+fi
+
 if [ -z "$msg" ]; then
-  msg="Octo-merge:"
-  for arg in "${ARGS[@]}"; do
-    msg="$msg $arg"
-  done
+  if [ "$base" = "HEAD" ]; then
+    msg="Octo-merge:"
+    for arg in "${ARGS[@]}"; do
+      msg="$msg $arg"
+    done
+  else
+    msg="$(git log -1 --format=%B "$base")"
+  fi
 fi
 
 tree="$(git log -n 1 --format='%T' "$base")"
 
 parent_args=()
-add_parents() {
-  for arg in "$@"; do
-    parent_args+=( "-p" "$arg" )
-  done
-}
-
-if [ ${#ARGS[@]} -eq 1 ]; then
-  add_parents HEAD
-fi
-add_parents "${ARGS[@]}"
+for arg in "$@"; do
+  parent_args+=( "-p" "$arg" )
+done
 
 commit="$(git commit-tree "$tree" "${parent_args[@]}" -m "$msg")"
 
