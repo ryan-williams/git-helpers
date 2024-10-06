@@ -4,12 +4,13 @@ Bash functions and aliases for augmenting Git.
 <!-- toc -->
 - [Setup](#setup)
 - [Commands](#commands)
-    - [`ggr` (`git-graph`), `gg` (`git-graph-all`)](#ggr)
-    - [`gb` (`git branches`)](#gb)
+    - [Inspect commit graph](#graphs)
+    - [Summarize local/remote branches](#branches)
     - [Inspect commits being rebased/cherry-picked](#gshrh)
+    - [Rebase](#rebase)
+    - [Diff](#diff)
     - [Update commit parents](#parents)
-    - [Rebasing](#rebase)
-    - [`gcd` (`git copy-diffs`): push repo state to remote](#copy-diffs)
+    - [Push repo state to remote](#copy-diffs)
 <!-- /toc -->
 
 Histogram of my most-used Git aliases:
@@ -57,8 +58,8 @@ This will load all aliases, and add relevant directories to `$PATH`. `pip instal
 ## Commands <a id="commands"></a>
 More details about aliases/commands I use frequently:
 
-### `ggr` (`git-graph`), `gg` (`git-graph-all`) <a id="ggr"></a>
-My preferred way to visualize Git branches and history.
+### Inspect commit graph <a id="graphs"></a>
+`ggr` (`git-graph`) and `gg` (`git-graph-all`) are my preferred ways to visualize Git branches and history.
 
 Example output from this repo:
 
@@ -76,9 +77,9 @@ I develop on `gh-all`, and cherry-pick commits over to `gh-server`, `gl-all`, an
 
 ![](img/gg-git.png)
 
-### `gb` (`git branches`) <a id="gb"></a>
+### Summarize local/remote branches <a id="branches"></a>
 
-Improved version of `git branch -vv`:
+`gb` (`git branches`) is an improved version of `git branch -vv`:
 - Branches output in reverse-chron order of last modification (instead of alphabetically)
 - Nice colors for each field
 - Concise "commits ahead/behind" counts
@@ -95,6 +96,22 @@ Improved version of `git branch -vv`:
 - `grbh` (`git-rebase-head`) and `gch` (`git-cherry-pick-head`) print the SHA of the commit currently being rebased or cherry-picked.
 - `gshrh` (`git-show-rebase-head`) and `gshch` (`git-show-cherry-pick-head`) pass that to `git show`.
 
+### Rebase <a id="rebase"></a>
+- `rb <N>`: interactive rebase over the last `N` commits.
+- `groc` (`git-reorder-commits`): reorder ancestor commits, by index.
+  - e.g. `groc 0 1` swaps the last two commits, effectively a `rebase HEAD~2` that "picks" `HEAD~0` then `HEAD~1`.
+- `grbcd` (`git-rebase-preserve-commit-dates`): rebase, but inject `-x git rcd` (`reset-committer-date-rebase-head`) after each commit, so that the committer time is preserved.
+- `grd` (`git-rebase-diff`): compute most recent pre-rebase SHA (`ghblr` / `git-head-before-last-rebase`), diff that vs. current worktree.
+  - Useful to ensure a rebase didn't change the final work-tree, e.g. when combining or rearranging commits.
+- `gtw` (`git-throw`): squash uncommitted changes onto an arbitrary previous commit.
+  - `gtwp` (`git throw HEAD^`): squash staged changes onto the previous commit.
+
+### Diff <a id="diff"></a>
+- `gdg` (`git-diff-gif.py`): create a GIF of an image at two commits, open in browser
+- `gdj` (`git-diff-json.py`): diff two JSON files, after pretty-printing
+- `gdc` (`git diff --cached`): show staged changes only
+- `gds` (`git diff --stat`): show file/line add/remove stats
+
 ### Update commit parents <a id="parents"></a>
 Create a commit with a given tree and parents:
 - `gcmp` (`git-commit-multiple-parents`): takes an optional commit message (`-m`) and commit (`-b`) whose tree to use
@@ -106,19 +123,9 @@ Create a commit with a given tree and parents:
 - `gscd` (`git-set-committer-date`): update `HEAD` committer date; match another commit's, or `HEAD`'s author date.
 - `gsid` (`git-set-id`), `ggsid` (`git-set-id -g`): set `user.{name,email}` configs.
 
-### Rebasing <a id="rebase"></a>
-- `rb <N>`: interactive rebase over the last `N` commits.
-- `groc` (`git-reorder-commits`): reorder ancestor commits, by index.
-  - e.g. `groc 0 1` swaps the last two commits, effectively a `rebase HEAD~2` that "picks" `HEAD~0` then `HEAD~1`.
-- `grbcd` (`git-rebase-preserve-commit-dates`): rebase, but inject `-x git rcd` (`reset-committer-date-rebase-head`) after each commit, so that the committer time is preserved.
-- `grd` (`git-rebase-diff`): compute most recent pre-rebase SHA (`ghblr` / `git-head-before-last-rebase`), diff that vs. current worktree.
-  - Useful to ensure a rebase didn't change the final work-tree, e.g. when combining or rearranging commits.
-- `gtw` (`git-throw`): squash uncommitted changes onto an arbitrary previous commit.
-  - `gtwp` (`git throw HEAD^`): squash staged changes onto the previous commit.
+### Push repo state to remote <a id="copy-diffs"></a>
 
-### `gcd` (`git copy-diffs`): push repo state to remote <a id="copy-diffs"></a>
-
-`gcd` pushes the state of your local repository to a "mirror" remote, preserving:
+`gcd` (`git copy-diffs`) pushes the state of your local repository to a "mirror" remote, preserving:
 * existing branches / `HEAD` pointer, upstreams
 * staged changes
 * unstaged changes
