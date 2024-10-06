@@ -72,11 +72,9 @@
   shrm    = rebase-head-message
   sqsq    = squash-sequence
   tw      = throw.py
-  twa     = throw.py -a
-  twap     = throw.py -a HEAD^
-  twap2    = throw.py -a HEAD~2
-  twap3    = throw.py -a HEAD~3
+  twp     = throw.py HEAD^
+  twp2    = throw.py HEAD~2
+  twp3    = throw.py HEAD~3
   throw-head = squash-head-onto
   twh     = throw-head
   twhn    = throw-head -n
-  twp     = throw.py HEAD^

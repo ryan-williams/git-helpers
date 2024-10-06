@@ -13,17 +13,16 @@ def stderr(msg=''):
 
 
 @click.command('git-throw')
-@click.option('-a', '--all', is_flag=True, help='Commit unstaged as well as staged changes.')
 @click.option('-m', '--message', help='Optional message to use for ephemeral commit (before it is squashed onto the commit pointed to by `dst`).')
 @click.option('-n', '--dry-run', count=True, help="1x: commit changes, print rebase todo list; 2x: don't commit changes, show simulated rebase todo list")
 @click.argument('dst')
-def main(all, message, dry_run, dst):
+def main(message, dry_run, dst):
     dst = check_output([ 'git', 'log', '-1', '--format=%H', dst ]).decode().rstrip('\n')
     root = check_output([ 'git', 'rev-list', '--max-parents=0', 'HEAD' ]).decode().rstrip('\n')
     if not message:
         message = f'Temporary commit, to be squashed into {dst}'
 
-    commit_cmd = [ 'git', 'commit', *(['-a'] if all else []), '-m', message ]
+    commit_cmd = [ 'git', 'commit', '-a', '-m', message ]
     if dry_run < 2:
         check_call(commit_cmd)
     else:
