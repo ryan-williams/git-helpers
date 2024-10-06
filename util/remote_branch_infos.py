@@ -28,5 +28,6 @@ class RemoteBranchInfos(BranchInfos):
             'reldate'
         ]
 
+
 if __name__ == "__main__":
     RemoteBranchInfos(fileinput.input())

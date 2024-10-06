@@ -1,5 +1,7 @@
 __author__ = 'ryan'
 
+import sys
+
 """Functionality for parsing and manipulating data about git branches."""
 
 from branch_info import BranchInfo
@@ -85,7 +87,8 @@ class BranchInfos:
 
         [self.set_max(field) for field in self.maxed_fields()]
 
-        print('')
-        for bi in self.branches:
-            print(bi.to_string(self.maxs))
-        print('')
+        try:
+            for bi in self.branches:
+                print(bi.to_string(self.maxs))
+        except BrokenPipeError:
+            sys.stderr.close()
