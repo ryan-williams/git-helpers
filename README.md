@@ -1,51 +1,124 @@
 # git-helpers
-Bash helpers for augmenting and prettifying existing git functionality.
+Bash functions and aliases for augmenting Git.
 
-These were written alongside other bash and python helpers that I may not have ported; let me know if you see anything missing or broken.
+<!-- toc -->
+- [Setup](#setup)
+- [Commands](#commands)
+    - [`ggr` (`git-graph`), `gg` (`git-graph-all`)](#ggr)
+    - [`gb` (`git branches`)](#gb)
+    - [Inspect commits being rebased/cherry-picked](#gshrh)
+    - [Update commit parents](#parents)
+    - [Rebasing](#rebase)
+    - [`gcd` (`git copy-diffs`): push repo state to remote](#copy-diffs)
+<!-- /toc -->
 
-### Setup
-* `source .git-rc` from your `.bashrc`. This will give you lots of helpful aliases!
-    * You might want to make sure it's not clobbering ones you already have/use.
-    * It will also put several relevant directories from this repo on your `$PATH`
-* `pip install -r requirements.txt`; currently just makes sure you have `dateutil` available, which some scripts here need. These dependencies are ones that should be available globally for `git-helpers` scripts to import, as opposed to e.g. living in a virtualenv.
+Histogram of my most-used Git aliases:
+```bash
+history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
+#    2776 gst     # `git status -uno` (tracked files only)
+#    2734 gd      # `git diff`
+#    2092 ggr     # `git graph`: wrapper for `git log --graph`, with nice colorization and formatting options
+#    2062 gs      # `git status`
+#     626 gcam    # `git commit -am`
+#     587 gp      # `git push-x`: `push` to one or more remotes (comma-delimited)
+#     538 gap     # `git add -p` (add interactively, in chunks)
+#     519 gcm     # `git commit -m`
+#     470 gsh     # `git show`
+#     463 gco     # `git checkout`
+#     448 ghh     # `git help`
+#     433 gb      # `git branches` (pretty-print Git branches)
+#     425 gr      # `git remote -vv`
+#     404 gau     # `git add -u` (restrict to already-tracked files)
+#     402 gdc     # `git diff --cached` ("staged" changes only)
+#     376 gf      # `git fetch-x --tags`: fetch ≥1 remotes in parallel (comma-delimited), include tags
+#     370 gg      # `git graph-all` (graph all branches)
+#     242 gcaan   # `git commit --amend --no-edit`: squash uncommitted changes onto HEAD commit
+#     217 ggracl  # `git graph -a -c -l`: Git branch graph, displaying author and committer dates as relative times (e.g. "3 days ago")
+#     208 gcp     # `git cherry-pick`
+#     194 ga      # `git add`
+#     192 ggp     # `git grep --recurse-submodules`
+#     175 g       # `git`
+#     174 gpf     # `git push -f`
+#     131 ggrh    # `git graph HEAD` (Graph of HEAD commit, plus subsequent arg branches)
+#     118 gl      # `git ls-files`
+#     113 grb     # `git rebase`
+#     111 glg     # `git log -p --follow`, restricted to paths matching a substring argument
+#     109 garc    # `git-add-rebase-continue`: mark conflicted files resolved, continue rebase
+```
 
-### "git branches" (`git b`) ###
+## Setup <a id="setup"></a>
+Source [`.git-rc`](./.git-rc) in your `.bashrc`:
+```bash
+echo ". $PWD/.git-rc" >> ~/.bashrc  # Configure new shells to load `git-helpers`
+. .bash-rc                          # "source" .bashrc, for immediate effect in existing shells
+```
+This will load all aliases, and add relevant directories to `$PATH`. `pip install -r requirements.txt` also ensures `python-dateutil` is installed available, which some scripts here require.
 
-I have this aliased to `gb` and it is one of my most commonly typed commands. It is basically a prettier and more useful version of `git branch -vv`.
+## Commands <a id="commands"></a>
+More details about aliases/commands I use frequently:
 
-Before:
+### `ggr` (`git-graph`), `gg` (`git-graph-all`) <a id="ggr"></a>
+My preferred way to visualize Git branches and history.
 
-![git branch -vv](http://f.cl.ly/items/3G3E123m293R2w3q0b36/Screen%20Shot%202014-09-08%20at%2010.29.21%20AM.png)
+Example output from this repo:
 
-After:
+![](img/gg-git-helpers.png)
 
-![gb](http://f.cl.ly/items/1w310Q0S3n0a3f1K1u29/Screen%20Shot%202014-09-08%20at%2010.29.46%20AM.png)
+The first line shows that local branch `main` is checked out (`HEAD -> main`), and up to date with remote branches `gh/main` and `gl/main` (GitHub and GitLab, resp., but that's just a convention I use).
 
-Things to note:
-* It sorts branches in reverse-chron order of last modification, instead of alphabetically
-* It has nice colors for each field
-* It has quick, at-a-glance "# commits ahead" and "# commits behind"
-* It shows abbreviated "time since last commit"
+[runsascoded/.rc] shows several parallel branch lineages I maintain:
 
+![](img/gg-rc.png)
 
-#### Related: "git remote-branches" (`git br`) ####
+I develop on `gh-all`, and cherry-pick commits over to `gh-server`, `gl-all`, and `gl-server`.
 
-A cousin of `git b` is `git br`, which basically does the same thing for remote branches / `git remote -v`:
+[git/git] shows wide merge lineages
 
-Before:
+![](img/gg-git.png)
 
-![git branch -r -vv](http://f.cl.ly/items/0T2W0t3g0n2S3N240l33/Screen%20Shot%202014-09-08%20at%2010.40.02%20AM.png)
+### `gb` (`git branches`) <a id="gb"></a>
 
-After:
+Improved version of `git branch -vv`:
+- Branches output in reverse-chron order of last modification (instead of alphabetically)
+- Nice colors for each field
+- Concise "commits ahead/behind" counts
+- Abbreviated "time since last commit"
 
-![git remote-branches](http://f.cl.ly/items/2z1l0M1R3m2I2C3k1l2e/Screen%20Shot%202014-09-08%20at%2010.40.23%20AM.png)
+[TileDB-SOMA] example:
 
+![gb](img/gb-tdbs.png)
 
-### Push Repository State to Remote: `git copy-diffs` (`git cd`) ###
+`gbr` (`git-remote-branches`) is similar, but summarizes remotes' branches.
 
-I have this aliased to `gcd` and for some workflows use it very frequently.
+### Inspect commits being rebased/cherry-picked <a id="gshrh"></a>
 
-`git-cd` pushes the state of your local repository to a "mirror" remote, preserving:
+- `grbh` (`git-rebase-head`) and `gch` (`git-cherry-pick-head`) print the SHA of the commit currently being rebased or cherry-picked.
+- `gshrh` (`git-show-rebase-head`) and `gshch` (`git-show-cherry-pick-head`) pass that to `git show`.
+
+### Update commit parents <a id="parents"></a>
+Create a commit with a given tree and parents:
+- `gcmp` (`git-commit-multiple-parents`): takes an optional commit message (`-m`) and commit (`-b`) whose tree to use
+- `gsp` (`git-set-parents`) uses the current `HEAD`s message and tree
+
+### Author/Committer/User metadata
+- `gsau` (`git-set-author`): update `HEAD` author, either from Git configs, an existing commit, or literal name/email arguments.
+- `gsad` (`git-set-author-date`): update `HEAD` author date; match another commit's, or `HEAD`'s committer date.
+- `gscd` (`git-set-committer-date`): update `HEAD` committer date; match another commit's, or `HEAD`'s author date.
+- `gsid` (`git-set-id`), `ggsid` (`git-set-id -g`): set `user.{name,email}` configs.
+
+### Rebasing <a id="rebase"></a>
+- `rb <N>`: interactive rebase over the last `N` commits.
+- `groc` (`git-reorder-commits`): reorder ancestor commits, by index.
+  - e.g. `groc 0 1` swaps the last two commits, effectively a `rebase HEAD~2` that "picks" `HEAD~0` then `HEAD~1`.
+- `grbcd` (`git-rebase-preserve-commit-dates`): rebase, but inject `-x git rcd` (`reset-committer-date-rebase-head`) after each commit, so that the committer time is preserved.
+- `grd` (`git-rebase-diff`): compute most recent pre-rebase SHA (`ghblr` / `git-head-before-last-rebase`), diff that vs. current worktree.
+  - Useful to ensure a rebase didn't change the final work-tree, e.g. when combining or rearranging commits.
+- `gtw` (`git-throw`): squash uncommitted changes onto an arbitrary previous commit.
+  - `gtwp` (`git throw HEAD^`): squash staged changes onto the previous commit.
+
+### `gcd` (`git copy-diffs`): push repo state to remote <a id="copy-diffs"></a>
+
+`gcd` pushes the state of your local repository to a "mirror" remote, preserving:
 * existing branches / `HEAD` pointer, upstreams
 * staged changes
 * unstaged changes
@@ -58,7 +131,7 @@ I've been shocked to not find support for this in `git` itself, or in any other 
 * `rsync` the entire directory
     * It's important to not push `.gitignore`d files, as this will frequently contain compilation outputs and the like.
     * One approach would be to pipe e.g. the output of `git ls-files` to `rsync` in a way that `rsync` can digest.
-        * This leaves out all the other state that `git` tracks; what branch you're on, what commits all branches are on, etc. I want these things copied too. 
+        * This leaves out all the other state that `git` tracks; what branch you're on, what commits all branches are on, etc. I want these things copied too.
 
 I've implemented it here in 3 steps:
 1. `rsync` the entire `.git` directory
@@ -74,102 +147,20 @@ Simply create a remote using the `add-mirror-remote` command:
 
     $ git add-mirror-remote my-dev-box ryan@dev-box:path/to/repo
 
-Then you can say:
+Then you can run:
 
     $ git copy-diffs dev-box
     $ gcd dev-box  # for short
 
-And all of your state will be pushed to your remote, **clobbering whatever was there previously**.
+And all local state will be pushed to the remote, **clobbering whatever was there previously**.
 
 As a shortcut, you can set environment variable `$MIRROR_REMOTES` to a comma-seperated list of remote names for `git copy-diffs` to look for by default:
 
     $ export MIRROR_REMOTES=dev-box1,dev-box2
     $ git copy-diffs  # will push to the first remote named dev-box1 or dev-box2 found in your "remotes" list
 
-### "g" wrapper for `git`
 
-Self-explanatory! Who has time for that extra "it" all the time?
-
-### "rb": interactive rebase
-
-Usage:
-
-    $ rb 10  # interactive rebase over the last 10 commits
-
-Short for `git rebase -i HEAD~<n>..HEAD`, or interactive rebase over the last `n` commits.
-
-### git safe-push-force (`git spf`)
-
-Typing `git push -f` is terrifying (rightly so)! Even when you *know* you're just force-pushing a feature branch that is ok to clobber, you are mere characters away from disaster.
-
-`git safe-push` (a.k.a. `g spf`) will:
-* try a non-force push
-* if that fails, it will:
-    * dry-run a force-push so that you can see what you're about to do,
-    * tell you how many commits [what you're about to push] and [what you're about to overwrite] are away from one another,
-    * ask whether you want to proceed,
-    * if "Y" (default), then it will execute the `push -f` you've requested.
-
-Sample output:
-```
-    # Inspect local branches; I have rearranged the order of the top two commits on `master`, and want to force-push that.
-    $ gb
-    * master 62a4888 origin/master +2 -2 18s 2014-09-08 15:03:57 some maven compile helpers
-      test   4915c28 origin/master    -5  5d 2014-09-03 20:06:25 add `git-local-branches` helper
-
-    # safe-push to the rescue!
-    $ g spf master
-    Safe-pushing master to origin/master (origin master)
-    Non-fast-forward push? Dry-running -f: git push -f -n 'origin' 'master'
-    To git@github.com:ryan-williams/bootstrap.git
-     + 62f6ac4...62a4888 master -> master (forced update)
-
-    	Merge base: 8479c0e
-    	master: +2 commits
-    	origin/master: +2 commits
-
-    Continue? [Y/n]:
-    git push -f 'origin' 'master'
-    Counting objects: 10, done.
-    Delta compression using up to 4 threads.
-    Compressing objects: 100% (4/4), done.
-    Writing objects: 100% (4/4), 521 bytes | 0 bytes/s, done.
-    Total 4 (delta 2), reused 0 (delta 0)
-    To git@github.com:ryan-williams/bootstrap.git
-     + 62f6ac4...62a4888 master -> master (forced update)
-```
-
-It also has some handy refspec parsing, so all of the following are equivalent:
-    $ g spf feature-branch ryan-feature-branch
-    $ g spf origin feature-branch ryan-feature-branch
-    $ g spf origin feature-branch:ryan-feature-branch
-    $ g spf feature-branch:ryan-feature-branch
-
-(if there is name ambiguity between a remote and a local branch, it will error out).
-
-### "g lg" (pretty `git log -n`)
-
-I have this aliased to `gln`.
-
-Before:
-
-![git log -n 4](http://f.cl.ly/items/1l3e020Q0r2c3u33253X/Screen%20Shot%202014-09-08%20at%2011.15.40%20AM.png)
-
-After:
-
-![gln 4](http://f.cl.ly/items/0v3X241T1i2O2f070D0h/Screen%20Shot%202014-09-08%20at%2011.15.24%20AM.png)
-
-### Testing
-`./run-tests` will run the bash and python tests in this repository, and is what Travis runs.
-
-The python tests require some configuration to run locally:
-
-```bash
-virtualenv env
-source env/bin/activate
-pip -r requirements.dev.txt
-nosetests
-```
-
-This is not necessary if you just want to use the scripts!
-
+[runsascoded/.rc]: https://github.com/runsascoded/.rc
+[git/git]: https://github.com/git/git
+[hammerlab/guacamole]: https://github.com/hammerlab/guacamole
+[TileDB-SOMA]: https://github.com/TileDB-Inc/TileDB-SOMA
