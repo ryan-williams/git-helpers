@@ -1,5 +1,5 @@
 # git-helpers
-Bash functions and aliases for augmenting Git.
+Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -13,7 +13,7 @@ Bash functions and aliases for augmenting Git.
     - [Push repo state to remote](#copy-diffs)
 <!-- /toc -->
 
-Histogram of my most-used Git aliases:
+Annotated histogram of my most-used Git aliases:
 ```bash
 history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 #    2776 gst     # `git status -uno` (tracked files only)
@@ -46,6 +46,8 @@ history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 #     111 glg     # `git log -p --follow`, restricted to paths matching a substring argument
 #     109 garc    # `git-add-rebase-continue`: mark conflicted files resolved, continue rebase
 ```
+
+There are over 900 possible 2-character Bash commands (`[a-z][a-z\d]`) and 30k+ 3-characters; a goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
 
 ## Setup <a id="setup"></a>
 Source [`.git-rc`](./.git-rc) in your `.bashrc`:
