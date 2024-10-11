@@ -9,6 +9,7 @@
   pfn = push -f -n
   pfo = push -f origin
   pft = push -f --tags
+  pftn = push -f --tags -n
   pfu = push -f u
   pl = pull
   pnf = push -n -f
