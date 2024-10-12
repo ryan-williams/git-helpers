@@ -1,0 +1,66 @@
+#!/bin/bash -i
+#
+# Compare the outputs of `compgen -c` from before and after installing git-helpers.
+# - Default behavior: print counts of "completions" (Bash scripts, aliases, and functions)
+#   available before and after installing git-helpers.
+# - `-v` (verbose) flag: also print the new completions added by git-helpers.
+
+set -e
+
+verbose=
+counts=
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -v) verbose=1 ; shift ;;
+    -c) counts=1 ; shift ;;
+     *) break ;;
+  esac
+done
+
+excludes=(
+  # Vars/functions provided by `.gitcomplete`
+  '^_'
+  # Helper scripts, not Git related
+  append_subdir_to_path
+  append_to_path
+  define_function
+  defn
+)
+exclude_args=()
+for exclude in "${excludes[@]}"; do
+  exclude_args+=(-e "$exclude")
+done
+
+cmd=(grep -v "${exclude_args[@]}")
+
+_comm() {
+  comm "$@" <("${cmd[@]}" before/compgen-c) <("${cmd[@]}" after/compgen-c)
+}
+
+comm_count() {
+  _comm "$@" | wc -l
+}
+
+rms="$(comm_count -23)"      # Present before, not after
+adds="$(comm_count -13)"     # Present after, not before
+boths="$(comm_count -12)"    # Present before and after
+(( afters = adds + boths ))  # Total completions available, "after"
+
+if [ -n "$verbose" ]; then
+  echo "$adds new completions:"
+  _comm -13
+  echo "$boths completions present before and after installing git-helpers"
+  echo "$adds completions added by installing git-helpers ($rms removed, $afters total)"
+else
+  echo "$adds completions added by installing git-helpers"
+fi
+if [ -n "$counts" ]; then
+  completions="$(_comm -13)"
+  num2="$(echo "$completions" | grep '^g.$' | wc -l)"
+  num3="$(echo "$completions" | grep '^g..$' | wc -l)"
+  num4="$(echo "$completions" | grep '^g...$' | wc -l)"
+  echo "By length:"
+  echo "- 2 chars: $num2"
+  echo "- 3 chars: $num3"
+  echo "- 4 chars: $num4"
+fi
