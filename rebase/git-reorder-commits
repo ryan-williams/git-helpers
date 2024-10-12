@@ -1,22 +1,29 @@
 #!/usr/bin/env bash
 
-if [ "$1" == "-n" ]; then
-    dry_run=-n
-    shift
-else
-    dry_run=
-fi
+dry_run=()
+exec=
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -n) shift; dry_run=(-n) ;;
+    -p) shift; exec="git reset-committer-date-rebase-head" ;;
+    -x) shift; exec="$1"; shift ;;
+     *) break ;;
+  esac
+done
 
 max_commit_idx=0
 args=()
 for commit_idx in "$@"; do
-    if [ $commit_idx -gt $max_commit_idx ]; then
-        max_commit_idx=$commit_idx
+    if (( "$commit_idx" > "$max_commit_idx" )); then
+      max_commit_idx=$commit_idx
     fi
-    args+=(p HEAD~$commit_idx)
+    args+=(p "HEAD~$commit_idx")
+    if [ -n "$exec" ]; then
+      args+=(exec "$exec")
+    fi
 done
 
-let onto_idx=max_commit_idx+1
-cmd=(git rebase-inline $dry_run HEAD~$onto_idx "${args[@]}")
-echo "Running ${cmd[@]}" >&2
+(( "onto_idx" = "$max_commit_idx" + 1 ))
+cmd=(git rebase-inline "${dry_run[@]}" "HEAD~$onto_idx" "${args[@]}")
+echo "Running ${cmd[*]}" >&2
 "${cmd[@]}"

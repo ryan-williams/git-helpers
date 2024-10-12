@@ -9,7 +9,7 @@ fi
 
 usage() {
     cat >&2 <<EOF
-Rebase a series of commits interactively.
+Rebase a series of commits non-interactively.
 
 Usage: $0 [-n] <ref> <cmd> <sha> [...[<cmd> <sha>]]
 
@@ -42,9 +42,17 @@ while [ $# -gt 0 ]; do
         echo "Error: missing ref for rebase command '$cmd'" >&2
         exit 1
     fi
-    ref="$1"; shift
-    sha_subj="$(git log -1 "--format=%h %s" "$ref")"
-    line="$cmd $sha_subj"
+    arg="$1"; shift
+    if [ "$cmd" = "p" ]; then
+        cmd="pick"
+        sha_subj="$(git log -1 "--format=%h %s" "$arg")"
+        line="$cmd $sha_subj"
+    else
+        if [ "$cmd" = "x" ]; then
+            cmd="exec"
+        fi
+        line="$cmd $arg"
+    fi
 
     if [ -n "$rebase_todo" ]; then
         rebase_todo="$rebase_todo"$'\n'

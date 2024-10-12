@@ -8,6 +8,9 @@ Git aliases and scripts.
     - [Summarize local/remote branches](#branches)
     - [Inspect commits being rebased/cherry-picked](#gshrh)
     - [Rebase](#rebase)
+        - [`gtw` (`git-throw`)](#gtw)
+        - [`groc` (`git-reorder-commits`)](#groc)
+        - [`grbcd` (`git-rebase-preserve-commit-dates`)](#grbcd)
     - [Diff](#diff)
     - [Update commit parents](#parents)
     - [Push repo state to remote](#copy-diffs)
@@ -99,10 +102,88 @@ I develop on `gh-all`, and cherry-pick commits over to `gh-server`, `gl-all`, an
 - `gshrh` (`git-show-rebase-head`) and `gshch` (`git-show-cherry-pick-head`) pass that to `git show`.
 
 ### Rebase <a id="rebase"></a>
+
+#### `gtw` ([`git-throw`]) <a id="gtw"></a>
+"Throw" (squash) uncommitted changes onto an arbitrary previous commit.
+
+<!-- `bmdf git-throw.py -- --help` -->
+```bash
+git-throw.py --help
+# Usage: git-throw.py [OPTIONS] DST
+#
+#   "Throw" (squash) uncommitted changes onto an arbitrary previous commit.
+#
+# Options:
+#   -m, --message TEXT  Optional message to use for ephemeral commit (before it
+#                       is squashed onto the commit pointed to by `dst`).
+#   -n, --dry-run       1x: commit changes, print rebase todo list; 2x: don't
+#                       commit changes, show simulated rebase todo list
+#   --help              Show this message and exit.
+```
+
+See also:
+- `gtwp` (`git throw HEAD^`): squash staged changes onto the current commit's parent.
+- `gtwp2` (`git throw HEAD~2`): squash staged changes onto the current commit's grandparent.
+
+#### `groc` (`git-reorder-commits`) <a id="groc"></a>
+- Reorder commits by index (0-based, counting backwards from `HEAD`)
+- The rebase starts just before the largest index provided, and "picks" commits in the order provided.
+
+Examples:
+
+##### Swap order of last two commits
+```bash
+groc 0 1
+```
+This rebases the last **2** commits (one more than the maximum index provided, i.e. **1**), according to the plan "0 1":
+- "pick" `HEAD~0` (current `HEAD`, whose rebased parent becomes `HEAD~2`)
+- "pick" `HEAD~1` (originally the parent of `HEAD`, now rebased on top of the commit from the previous step)
+
+##### `-n`: view a rebase "plan" without executing it
+```bash
+groc -n 0 1
+# pick 3d2e3a8 `dcw="diff --cached -w"`
+# pick 2d551a6 `commit -F-` aliases
+```
+
+##### `-p`: preserve commit-dates
+```bash
+groc -p -n 0 1
+# pick 3d2e3a8 `dcw="diff --cached -w"`
+# exec git reset-committer-date-rebase-head
+# pick 2d551a6 `commit -F-` aliases
+# exec git reset-committer-date-rebase-head
+```
+Here you calls to [`git-reset-committer-date-rebase-head`] inserted after each "pick"ed commit. The `rebase` `-x` flag is also directly available, this does the same as the above:
+
+```bash
+git roc -n -x 'g rcd' 0 1
+# pick 3d2e3a8 `dcw="diff --cached -w"`
+# exec g rcd
+# pick 2d551a6 `commit -F-` aliases
+# exec g rcd
+```
+
+(`g rcd` is an alias for [`git reset-committer-date-rebase-head`])
+
+##### No-op rotations
+Running it twice is a no-op (assuming there are no rebase conflicts):
+```bash
+groc -p 0 1  # Reverse order of last two commits
+groc -p 0 1  # Reverse back, original commit SHA
+```
+
+Similarly, here's a no-op 3-rotation:
+```bash
+groc -p 0 2 1  # Put current HEAD before prior two commits
+groc -p 0 2 1  # Repeat; current state same as `groc -p 1 0 2`
+groc -p 0 2 1  # Original commit is restored (including SHA)
+```
+
+#### `grbcd` (`git-rebase-preserve-commit-dates`) <a id="grbcd"></a>
+Rebase, but inject `-x git rcd` ([`git-reset-committer-date-rebase-head`]) after each commit, so that the committer-time is preserved.
+
 - `rb <N>`: interactive rebase over the last `N` commits.
-- `groc` (`git-reorder-commits`): reorder ancestor commits, by index.
-  - e.g. `groc 0 1` swaps the last two commits, effectively a `rebase HEAD~2` that "picks" `HEAD~0` then `HEAD~1`.
-- `grbcd` (`git-rebase-preserve-commit-dates`): rebase, but inject `-x git rcd` (`reset-committer-date-rebase-head`) after each commit, so that the committer time is preserved.
 - `grd` (`git-rebase-diff`): compute most recent pre-rebase SHA (`ghblr` / `git-head-before-last-rebase`), diff that vs. current worktree.
   - Useful to ensure a rebase didn't change the final work-tree, e.g. when combining or rearranging commits.
 - `gtw` (`git-throw`): squash uncommitted changes onto an arbitrary previous commit.
@@ -173,3 +254,6 @@ As a shortcut, you can set environment variable `$MIRROR_REMOTES` to a comma-sep
 [git/git]: https://github.com/git/git
 [hammerlab/guacamole]: https://github.com/hammerlab/guacamole
 [TileDB-SOMA]: https://github.com/TileDB-Inc/TileDB-SOMA
+
+[`git-reset-committer-date-rebase-head`]: commit/git-reset-committer-date-rebase-head
+[`git-throw`]: rebase/git-throw.py

@@ -17,6 +17,7 @@ def stderr(msg=''):
 @click.option('-n', '--dry-run', count=True, help="1x: commit changes, print rebase todo list; 2x: don't commit changes, show simulated rebase todo list")
 @click.argument('dst')
 def main(message, dry_run, dst):
+    """"Throw" (squash) uncommitted changes onto an arbitrary previous commit."""
     dst = check_output([ 'git', 'log', '-1', '--format=%H', dst ]).decode().rstrip('\n')
     root = check_output([ 'git', 'rev-list', '--max-parents=0', 'HEAD' ]).decode().rstrip('\n')
     if not message:
