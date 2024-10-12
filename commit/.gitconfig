@@ -12,6 +12,8 @@
   ca    = commit -a
   caa   = commit -a --amend
   caam  = commit -a --amend -m
+  cae   = commit --allow-empty
+  caem  = commit --allow-empty -m
   cam   = commit -a -m
   camt  = !git-commit-and-tag.sh -a
   camtf = !git-commit-and-tag.sh -a -f
@@ -26,8 +28,6 @@
   cmfa  = commit -aF-
   cfn   = commit-filename
   cfns  = commit-filenames
-  cae   = commit --allow-empty
-  caem  = commit --allow-empty -m
   cm    = commit -m
   cmab  = commit-body -a
   cmb   = commit-body

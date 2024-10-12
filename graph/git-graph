@@ -8,8 +8,12 @@
 #
 # -a: print "author" datetimes (default: "committer")
 # -ac: print "author" and "committer" datetimes
+# -A: order commits by author date (default: committer date)
+# -C: show committer name and email (default: author)
 # -d: render ISO datetimes (default: "relative")
-# -l: render local datetimes (default: "relative")
+# -e: show author/committer email (default: name)
+# -l: render "local" datetimes (default: "relative")
+# -u: include upstream ("tracked") branch
 #
 # Other args are passed through to `git log`
 
@@ -59,8 +63,16 @@ fi
 
 set -- "${args[@]}"
 
+style=--graph
+for arg in "$@"; do
+  if [ "$arg" = "--no-walk" ]; then
+    style=--no-walk
+    break
+  fi
+done
+
 git log \
-  --graph \
+  "$style" \
   "--format=%C(auto)%h %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(reset)%C(auto)%d %s" \
   "--date=$date_style" \
   "$date_order" \
