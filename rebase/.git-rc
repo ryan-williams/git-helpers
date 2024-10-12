@@ -65,8 +65,10 @@ alias grq="g rq"
 alias grx="g rx"
 alias grix="g rix"
 
+alias gar="gar"
 alias garc='g arc'
 alias garcn='g arcn'
+alias garn="g arn"
 
 alias goc="g oc"
 alias goh="g oh"
