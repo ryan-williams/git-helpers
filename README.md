@@ -11,12 +11,12 @@ Git aliases and scripts.
         - [`gtw` (`git-throw`)](#gtw)
         - [`groc` (`git-reorder-commits`)](#groc)
         - [`grbcd` (`git-rebase-preserve-commit-dates`)](#grbcd)
-    - [Diff](#diff)
+    - [Diff helpers, GIFs, JSON](#diff)
     - [Update commit parents](#parents)
     - [Push repo state to remote](#copy-diffs)
 <!-- /toc -->
 
-Annotated histogram of my most-used Git aliases:
+Here's an annotated histogram of my most-used Git aliases:
 ```bash
 history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 #    2776 gst     # `git status -uno` (tracked files only)
@@ -189,7 +189,7 @@ Rebase, but inject `-x git rcd` ([`git-reset-committer-date-rebase-head`]) after
 - `gtw` (`git-throw`): squash uncommitted changes onto an arbitrary previous commit.
   - `gtwp` (`git throw HEAD^`): squash staged changes onto the previous commit.
 
-### Diff <a id="diff"></a>
+### Diff helpers, GIFs, JSON <a id="diff"></a>
 - `gdg` (`git-diff-gif.py`): create a GIF of an image at two commits, open in browser
 - `gdj` (`git-diff-json.py`): diff two JSON files, after pretty-printing
 - `gdc` (`git diff --cached`): show staged changes only
