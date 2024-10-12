@@ -9,3 +9,4 @@
   cop  = checkout-previous-branch
   cor  = checkout --recurse-submodules
   corf = checkout --recurse-submodules -f
+  rw = restore-workflow
