@@ -52,9 +52,8 @@
   cppm  = commit-push-parents -m
   csp   = set-parents
   sps   = set-parents
-  ctr   = commit-tree
-  ctrr  = commit-tree-reset
-  ctrs  = commit-tree-reset
+  ct    = commit-tree
+  ctr   = commit-tree-reset
   fua   = fixup-author
   get-author-date = !git --no-pager log -1 --format=%ad
   get-committer-date = !git --no-pager log -1 --format=%cd

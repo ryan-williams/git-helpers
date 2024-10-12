@@ -1,5 +1,4 @@
 [alias]
-  ct = !$SRCDIR/git-conflicting-checkout-theirs.sh
   cl = conflict-lines
   coo = checkout --ours --
   cot = checkout --theirs --
