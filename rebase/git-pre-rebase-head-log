@@ -5,12 +5,13 @@
 set -eo pipefail
 
 if [ $# -gt 0 ]; then
-  format="$@"
+  cmd=(xargs git log "$@")
 else
-  format='%H'
+  cmd=(cat)
 fi
 
-git reflog "--format=$format %gs" | \
+git reflog "--format=%H %gs" | \
 grep -A1 'rebase (start)' | \
 sed '/rebase (start)/d; /^--$/d' | \
-awk 'NF {print $1}'
+awk 'NF {print $1}' | \
+"${cmd[@]}"

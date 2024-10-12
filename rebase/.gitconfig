@@ -16,7 +16,10 @@
   corb    = checkout-and-rebase
   crbh    = commit-rebase-head
   mh      = merge-head
-  prhl    = pre-rebase-head-log
+  prhl    = pre-rebase-head-log-pretty
+  prhlh   = pre-rebase-head-log
+  rhl     = pre-rebase-head-log-pretty
+  rhlh    = pre-rebase-head-log
   rbh     = rebase-head
   rbhm    = rebase-head-message
   rebase-dag = rebase-dag.py
