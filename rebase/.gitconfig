@@ -73,6 +73,8 @@
   rhm     = rebase-head-message
   rim     = rebase -i master
   rq      = rebase-sequence
+  reword-commit = edit-commit -r
+  rwc     = reword-commit
   ar      = add-rebase-continue
   arc     = add-rebase-continue
   arcn    = add-rebase-continue-no-edit
