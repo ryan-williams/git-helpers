@@ -2,6 +2,17 @@
   dtc     = diff-theirs-conflicting
   dth     = diff-theirs
   dthc    = diff-theirs-conflicting
+  ec      = edit-commit
+  ecn     = edit-commit -n
+  ecnp    = edit-commit -n -p
+  ecnx    = edit-commit -n -x
+  ecp     = edit-commit -p
+  ecr     = edit-commit -r
+  ecrn    = edit-commit -r -n
+  ecrp    = edit-commit -r -p
+  ecrpn   = edit-commit -r -p -n
+  ecx     = edit-commit -x
+  ecxn    = edit-commit -n -x
   hblr    = head-before-last-rebase
   hblrs   = head-before-last-rebase %h
   pr      = pull --rebase

@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+#
+# Run a rebase to `edit` or `reword` a specific commit:
+#
+# ```bash
+# # Open the 3th commit back from HEAD, in rebase "edit" mode.
+# # A subsequent `rebase --continue` will rebase the remaining 3 commits on top of it.
+# git edit-commit HEAD~3
+#
+# # "Dry run" of the above:
+# git edit-commit -n HEAD~3
+# # Would run git rebase -i d6aae97^:
+# # edit d6aae97 rm orphaned(?) `commit-filename{,s}` aliases
+# # pick ed9447b `cmba="commit-body -a"`, `cnb="commit-body --amend"`
+# # pick df33af4 `git-diff-json.py` fixes
+# # pick 3c166c3 `dtl`/`details`: commit details
+#
+# # Same as above, but preserve the "committer dates" of `HEAD^` and `HEAD` (`g rcd` = `git reset-committer-date-rebase-head`)
+# git edit-commit -r "new message" -x "g rcd" HEAD^
+#
+# # As a demonstration, this is effectively a no-op (same HEAD SHA before and after).
+# # `gby = git body = git log -1 --format=%B`, so this rewrites the parent commit with the same
+# # message, and preserves its committer date.
+# git edit-commit -r "`gby HEAD^`" -x "g rcd" HEAD^
+# ```
+
+dry_run=()
+exec=
+reword=
+reword_file=
+cmd=edit
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -n) shift; dry_run=(-n) ;;
+        -p) shift; exec="git reset-committer-date-rebase-head" ;;
+        -r) shift; reword="$1"; reword_file="$(mktemp)"; cmd=pick; shift ;;
+        -x) shift; exec="$1"; shift ;;
+         *) break ;;
+    esac
+done
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 [-n] [-p | -x <cmd>] [-r] <commit>" >&2
+    echo "  -n: dry run" >&2
+    echo "  -p: preserve committer date" >&2
+    echo "  -r: reword commit message (default: \"edit\" commit" >&2
+    echo "  -x: execute command after each commit" >&2
+    exit 1
+fi
+
+ref="$1"; shift
+ref="$(git log -1 --format=%h "$ref")"
+sbj="$(git log -1 --format=%s "$ref")"
+
+exec_line() {
+    if [ -n "$exec" ]; then
+        echo "exec $exec"
+    fi
+}
+
+(
+    echo "$cmd $ref $sbj"
+    if [ -n "$reword" ]; then
+        echo "$reword" > "$reword_file"
+        echo "exec git commit --amend -F$reword_file"
+    fi
+    exec_line
+    git log --reverse "--format=%h %s" "$ref..HEAD" | \
+    while IFS= read -r line; do
+        echo "pick $line"
+        exec_line
+    done
+) | git rebase-stdin "${dry_run[@]}" "$ref^"
+
+cleanup() {
+    if [ -n "$reword_file" ]; then
+        rm -f "$reword_file"
+    fi
+}
+trap cleanup EXIT
