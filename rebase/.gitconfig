@@ -77,6 +77,7 @@
   arc     = add-rebase-continue
   arcn    = add-rebase-continue-no-edit
   arn     = add-rebase-continue-no-edit
+  rn      = add-rebase-continue-no-edit
   oc      = original-commit
   oh      = original-head
   roc     = reorder-commits
