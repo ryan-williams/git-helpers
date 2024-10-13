@@ -7,4 +7,4 @@ fi
 source=$1
 shift
 
-git restore "--source=$source" "$@"
+git restore "--source=$source" "${@:-.}"
