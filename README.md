@@ -1513,5 +1513,5 @@ As a shortcut, you can set environment variable `$MIRROR_REMOTES` to a comma-sep
 [hammerlab/guacamole]: https://github.com/hammerlab/guacamole
 [TileDB-SOMA]: https://github.com/TileDB-Inc/TileDB-SOMA
 
-[`git-reset-committer-date-rebase-head`]: commit/git-reset-committer-date-rebase-head
+[`git-reset-committer-date-rebase-head`]: rebase/git-reset-committer-date-rebase-head
 [`git-throw`]: rebase/git-throw.py

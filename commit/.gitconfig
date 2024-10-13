@@ -75,5 +75,3 @@
   scm   = squashed-commit-message
   sds   = set-dates
   tr0   = empty-tree
-  rcd    = reset-committer-date-rebase-head
-  rcdrbh = reset-committer-date-rebase-head

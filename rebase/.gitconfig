@@ -55,6 +55,8 @@
   rbu     = rebase-undo
   rbud    = rebase-upstream-diff
   rc      = rebase --continue
+  rcd     = reset-committer-date-rebase-head
+  rcdrbh  = reset-committer-date-rebase-head
   rd      = rebase-diff
   ri      = rebase -i
   rio     = rebase -i --onto
