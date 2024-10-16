@@ -26,8 +26,6 @@
   cbns  = commit-basenames
   cmf   = commit -F-
   cmfa  = commit -aF-
-  cfn   = commit-filename
-  cfns  = commit-filenames
   cm    = commit -m
   cmab  = commit-body -a
   cmb   = commit-body
