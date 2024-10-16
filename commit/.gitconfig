@@ -29,12 +29,14 @@
   cm    = commit -m
   cmab  = commit-body -a
   cmb   = commit-body
+  cmba  = commit-body -a
   cmt   = !git-commit-and-tag.sh
   cmtf  = !git-commit-and-tag.sh -f
   cmp   = commit-multiple-parents
   cmtr  = commit-tree
   cmtrr = commit-tree-reset
   cn    = commit --amend
+  cnb   = commit-body --amend
   cne   = commit --no-edit
   cnm   = commit --amend -m
   cpau  = copy-author
