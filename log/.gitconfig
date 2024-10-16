@@ -10,6 +10,9 @@
   by = body
   cdi1 = !git --no-pager log --format=%cd --date=iso -1
   dates = log '--format=%ad %cd'
+  details = log '--format=%H %T%n%an <%ae> (%ad)%n%cn <%ce> (%cd)%n%B'
+  dtl = details
+  dt1 = details -1
   dts = dates
   dts1 = !git --no-pager dates -1
   ds1 = !git --no-pager dates -1 --date=iso
