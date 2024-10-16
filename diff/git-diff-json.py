@@ -23,7 +23,7 @@ def main(before, after, path):
     with TemporaryDirectory() as tmpdir:
         before_path = f'{tmpdir}/before.json'
         with open(before_path, 'w') as f:
-            json.dumps(json.loads(check_output(['git', 'show', f'{before}:{path}'])), f, indent=4)
+            json.dump(json.loads(check_output(['git', 'show', f'{before}:{path}'])), f, indent=4)
 
         after_path = f'{tmpdir}/after.json'
         with open(after_path, 'w') as f:
@@ -32,7 +32,7 @@ def main(before, after, path):
             else:
                 with open(path, 'r') as worktree:
                     after_json = json.load(worktree)
-            json.dumps(after_json, f, indent=4)
+            json.dump(after_json, f, indent=4)
 
         diff = Popen(['diff', before_path, after_path])
         diff.wait()
