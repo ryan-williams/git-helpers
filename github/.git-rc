@@ -10,15 +10,17 @@ defn ghdss github-docs-snapshot -s
 defn hds github-docs-snapshot
 defn hdss github-docs-snapshot -s
 
-defn gha "gh api"
+defn gha gh api
 defn ghaj 'gh api -H "Accept: application/vnd.github+json"'
+defn ghax gh api -X
+defn ghx gh api -X
 defn ghw github-workflows.py
 
 github_url() {
     gh repo view --json url | jq -r '.url'
 }
 export -f github_url
-defn ghou github_url
+defn ghu github_url
 github_open_actions() {
     open "$(github_url)/actions"
 }
@@ -28,10 +30,50 @@ defn ghoa github_open_actions
 defn ghow gh repo view --web
 
 github_open_web_branch() {
-    gh repo view --web -b "$(git current-branch)"
+    remote="$(github_remote "$@")"
+    branch="$(git current-branch)"
+    remote_branch="$(
+        git branch -r --points-at "$branch" \
+        | perl -ne "print if s/^ *$remote\///" | head -n1
+    )"
+    cmd=(gh repo view --web -b "$remote_branch")
+    echo "Running: ${cmd[*]}" >&2
+    "${cmd[@]}"
 }
 export -f github_open_web_branch
 defn ghob github_open_web_branch
+
+github_open_web_ref() {
+    if [ $# -eq 0 ]; then
+        ref="$(git sha)"
+    elif [ $# -eq 1 ]; then
+        ref="$1"; shift
+    else
+        echo "Usage: github_open_web_ref [ref]" >&2
+        return 1
+    fi
+    gh repo view --web -b "$ref"
+}
+export -f github_open_web_ref
+defn ghor github_open_web_ref
+
+github_open_web_commit() {
+    if [ $# -eq 0 ]; then
+        commit="$(git sha)"
+    elif [ $# -eq 1 ]; then
+        commit="$1"; shift
+    else
+        echo "Usage: github_open_web_commit [commit]" >&2
+        return 1
+    fi
+    remote="$(github_remote "$@")"
+    path="$(git remote-path "$remote")"
+    url="https://github.com/$path/commit/$commit"
+    open "$url"
+    #gh repo view --web -c "$commit"
+}
+export -f github_open_web_commit
+defn ghoc github_open_web_commit
 
 defn ghr gh run
 defn ghrh gh run --help
@@ -221,3 +263,31 @@ github_set_default_branch() {
 }
 export -f github_set_default_branch
 defn ghsdb github_set_default_branch
+
+github_unprotect_branch() {
+  local remote=
+  local branch=
+  local project_id=
+  if ! github_parse_remote_and_branch github_unprotect_branch "$@"; then
+    return 1
+  fi
+  github_maybe_api -X DELETE "/repos/$project_id/branches/$branch/protection"
+}
+export -f github_unprotect_branch
+defn ghub github_unprotect_branch
+defn ghubn github_unprotect_branch -n
+
+github_protected_branches() {
+  if [ $# -eq 0 ]; then
+    remote="$(github_remote)"
+  elif [ $# -eq 1 ]; then
+    remote="$1"; shift
+  else
+    echo "Usage: github_protected_branches [remote]" >&2
+    return 1
+  fi
+  path="$(git remote-path "$remote")"
+  gh api "repos/$path/branches?protected=true"
+}
+export -f github_protected_branches
+defn ghpbs github_protected_branches
