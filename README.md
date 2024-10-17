@@ -1,5 +1,5 @@
 # git-helpers
-[1,231](#count-completions) Git aliases and scripts.
+[1,261](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Stats](#stats)
@@ -35,11 +35,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1231 completions added by installing git-helpers
+# 1261 completions added by installing git-helpers
 # By length:
 # - 2 chars: 15
-# - 3 chars: 221
-# - 4 chars: 455
+# - 3 chars: 225
+# - 4 chars: 466
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -50,7 +50,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1231 new completions:
+1261 new completions:
 clone_org.py
 copy-diffs-script
 g
@@ -175,8 +175,6 @@ gcfia
 gcfig
 gcfis
 gcfl
-gcfn
-gcfns
 gcfp
 gcfs
 gcft
@@ -204,6 +202,7 @@ gcln
 gcm
 gcmab
 gcmb
+gcmba
 gcmf
 gcmfa
 gcmp
@@ -212,6 +211,7 @@ gcmtf
 gcmtr
 gcmtrr
 gcn
+gcnb
 gcne
 gcnm
 gco
@@ -319,9 +319,11 @@ gdss
 gdsu
 gdsw
 gdt
+gdt1
 gdtc
 gdth
 gdthc
+gdtl
 gdtp
 gdts
 gdts1
@@ -330,6 +332,17 @@ gdw
 gdw-
 gdwc
 gdws
+gec
+gecn
+gecnp
+gecnx
+gecp
+gecr
+gecrn
+gecrp
+gecrpn
+gecx
+gecxn
 geq
 ger
 get
@@ -436,6 +449,7 @@ gh_workflow_run
 gh_workflow_run_current_branch
 gha
 ghaj
+ghax
 ghb
 ghbi
 ghbis
@@ -459,10 +473,12 @@ ghnc
 gho
 ghoa
 ghob
+ghoc
 ghoj
 ghol
-ghou
+ghor
 ghow
+ghpbs
 ghr
 ghraj
 ghrh
@@ -481,11 +497,15 @@ ghrvu
 ghrvw
 ghsdb
 ghsh
+ghu
+ghub
+ghubn
 ghw
 ghwip
 ghwl
 ghwr
 ghwrc
+ghx
 gib
 gic
 gicc
@@ -570,8 +590,10 @@ git-diff-theirs
 git-diff-theirs-conflicting
 git-diff-then-maybe-add
 git-diff-vs-parent
+git-edit-commit
 git-equal
 git-fetch-x
+git-filter-repo
 git-filter-to-dir
 git-find
 git-find-broken-links
@@ -734,6 +756,7 @@ git-version-greater-than-or-equal-to
 git-watchman-copy-diffs
 git-watchman-copy-diffs-stop
 git_dir_curry
+git_filter_repo.py
 git_set_sha
 github
 github-api-url
@@ -746,10 +769,14 @@ github-workflows.py
 github_maybe_api
 github_open_actions
 github_open_web_branch
+github_open_web_commit
+github_open_web_ref
 github_parse_remote_and_branch
+github_protected_branches
 github_remote
 github_remote_path
 github_set_default_branch
+github_unprotect_branch
 github_url
 gitlab_api
 gitlab_maybe_api
@@ -1024,6 +1051,7 @@ grmrc
 grmu
 grmut
 grmv
+grn
 grne
 grneh
 grnh
@@ -1064,6 +1092,8 @@ grvt
 grvth
 grw
 grwa
+grwc
+grwt
 grx
 gs
 gsa
@@ -1283,7 +1313,7 @@ repos.py
 root_dir
 root_setup
 1033 completions present before and after installing git-helpers
-1231 completions added by installing git-helpers (0 removed, 2264 total)
+1261 completions added by installing git-helpers (0 removed, 2294 total)
 ```
 </details>
 
