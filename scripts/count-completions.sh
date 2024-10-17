@@ -2,7 +2,7 @@
 
 set -e
 
-cd "$(dirname "${BASH_SOURCE[0]}")/../test/docker"
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-docker build -t git-helpers -f git-helpers.dockerfile . 2>/dev/null
+docker build -t git-helpers -f test/docker/git-helpers.dockerfile . 2>/dev/null
 docker run --rm -it --name git-helpers git-helpers "$@"

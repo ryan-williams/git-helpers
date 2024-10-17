@@ -10,13 +10,12 @@ WORKDIR before
 RUN compgen -c | sort > compgen-c
 
 WORKDIR ..
-RUN git clone https://github.com/ryan-williams/git-helpers \
- && echo 'source ~/git-helpers/.git-rc' >> .bashrc
+COPY . git-helpers
+RUN echo 'source ~/git-helpers/.git-rc' >> .bashrc
 
 WORKDIR after
 RUN compgen -c | sort > compgen-c
 
 WORKDIR ..
-COPY diff-compgens ./
 
-ENTRYPOINT [ "./diff-compgens" ]
+ENTRYPOINT [ "git-helpers/test/docker/diff-compgens" ]
