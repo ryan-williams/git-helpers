@@ -3,9 +3,11 @@
   rhsl  = rebase-head-submodule-log
   sac   = submodule-auto-commit
   saca  = submodule-auto-commit -a
-  smac  = submodule-auto-commit
+  saf   = submodule add -f
   sm    = submodule
   sma   = submodule add --quiet
+  smac  = submodule-auto-commit
+  smaf  = submodule add -f
   smc   = submodule-commits
   smd   = submodule deinit
   smi   = submodule init
