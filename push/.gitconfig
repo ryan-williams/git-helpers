@@ -1,4 +1,11 @@
 [alias]
+  cpd = config push.default
+  cpdc = config push.default current
+  cpdu = config push.default upstream
+  cfpd = config push.default
+  cgpd = config --global push.default
+  cgpdc = config --gloabl push.default current
+  cgpdu = config --gloabl push.default upstream
   mp = me-push
   mpf = me-push-force
   pm = push-to-master

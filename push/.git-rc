@@ -1,3 +1,10 @@
+alias gcpd="g cpd"
+alias gcpdc="g cpdc"
+alias gcpdu="g cpdu"
+alias gcfpd="g cfpd"
+alias gcgpd="g cgpd"
+alias gcgpdc="g cgpdc"
+alias gcgpdu="g cgpdu"
 
 alias gp="g p"
 alias gpd="g pd"
