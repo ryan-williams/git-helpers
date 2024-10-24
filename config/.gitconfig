@@ -32,7 +32,10 @@
         cgu  = config --unset --global
         cfua = config --unset-all
         cgua = config --unset-all --global
+        cgdb = config --global init.defaultBranch
+        dbm = config --global init.defaultBranch main
         gdb = config --global init.defaultBranch
+        gdbm = config --global init.defaultBranch main
         set-default-branch-main = config --global init.defaultBranch main
         sdbm = set-default-branch-main
         cfi = config --get-all include.path
