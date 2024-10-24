@@ -4,5 +4,7 @@
     rnh = revert --no-edit HEAD
     rvne = revert --no-edit
     rvneh = revert --no-edit HEAD
+    rvn = revert --no-edit
     rvt = revert
     rvth = revert HEAD
+    rvtn = revert --no-edit
