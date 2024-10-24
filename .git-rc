@@ -28,7 +28,9 @@ define_function() {
   eval "$name() { $@ \"\$@\"; }"
   export -f "$name" > /dev/null
 }
-alias defn=define_function
+defn() {
+  define_function "$@"
+}
 
 append_to_path() {
   for arg in "$@"; do
