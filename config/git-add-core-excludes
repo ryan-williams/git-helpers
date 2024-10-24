@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [ "$1" == -g ] || [ "$1" == --global ]; then
+  global=(--global); shift
+else
+  global=()
+fi
+
+excludesfile="$(git config "${global[@]}" core.excludesfile)"
+if [ -z "$excludesfile" ]; then
+  echo 'No `core.excludesfile` found; set via: `git config '"${global[*]}"' core.excludesfile <path>`' >&2
+  exit 1
+fi
+for exclude in "$@"; do
+  echo "$excludesfile: appending $exclude" >&2
+  echo "$exclude" >> "$excludesfile"
+done

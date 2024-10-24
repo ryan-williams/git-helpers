@@ -11,6 +11,11 @@
        meta = yellow bold
 
 [alias]
+        ace  = add-core-excludes -g
+        ae   = add-core-excludes -g
+        aeg  = add-core-excludes -g
+        ael   = add-core-excludes
+        age  = add-core-excludes -g
         cf   = config
         cg   = config --global
         cfa  = config --add
@@ -34,10 +39,14 @@
         cgi = config --get-all --global include.path
         global-config-file = config --get-all --global include.path
 
-        cfig = config --get-all core.excludesfile
-        cfef = config --get-all core.excludesfile
-        cgig = config --get-all --global core.excludesfile
-        cgef = config --get-all --global core.excludesfile
+        cfig = config core.excludesfile
+        cfigs = config --get-all core.excludesfile
+        cfef = config core.excludesfile
+        cfefs = config --get-all core.excludesfile
+        cgig = config --global core.excludesfile
+        cgigs = config --get-all --global core.excludesfile
+        cgef = config --global core.excludesfile
+        cgefs = config --get-all --global core.excludesfile
         cfis = config core.excludesfile
         cgis = config --global core.excludesfile
         cfia = config --add core.excludesfile
