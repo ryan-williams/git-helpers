@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+alias gch="g ch"
 alias gcp="g cp"
 alias gcp1="g cp1"
 alias gcp2="g cp2"
@@ -12,3 +13,6 @@ alias gcps="g cps"
 alias gacpc="g acpc"
 alias gcpsh="g cpsh"
 alias gshch="g shch"
+alias gshwc="g shwc"
+alias gshwch="g shwch"
+alias gswc="g swc"

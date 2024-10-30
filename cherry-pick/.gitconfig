@@ -1,4 +1,6 @@
 [alias]
+  acpc = add-and-cherry-pick-continue
+  ch   = cherry-pick-head
   cp   = cherry-pick
   cp1  = cherry-pick -m1
   cp2  = cherry-pick -m2
@@ -10,4 +12,6 @@
   cps  = cherry-pick --skip
   cpsh = cherry-pick-show-head
   shch = cherry-pick-show-head
-  acpc = add-and-cherry-pick-continue
+  shwc = cherry-pick-show-head -w
+  shwch = cherry-pick-show-head -w
+  swc = cherry-pick-show-head -w
