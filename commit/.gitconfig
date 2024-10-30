@@ -13,8 +13,10 @@
   caa   = commit -a --amend
   caam  = commit -a --amend -m
   cae   = commit --allow-empty
+  caf   = commit -aF-
   caem  = commit --allow-empty -m
   cam   = commit -a -m
+  camf  = commit -aF-
   camt  = !git-commit-and-tag.sh -a
   camtf = !git-commit-and-tag.sh -a -f
   can   = commit --amend --no-edit
