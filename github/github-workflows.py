@@ -3,7 +3,7 @@ import json
 import re
 import shlex
 from os.path import basename
-from subprocess import check_output, check_call, PIPE
+from subprocess import check_output, check_call, PIPE, CalledProcessError
 from sys import stderr
 
 from click import group, pass_context, option, argument
@@ -16,25 +16,33 @@ def get_github_repo(remote=None):
     if remote:
         remotes = [remote]
     else:
-        remotes = [ remote for remote in check_output(['git', 'remote']).decode().split('\n') if remote ]
+        remotes = [
+            remote
+            for remote in check_output(['git', 'remote']).decode().split('\n')
+            if remote
+        ]
 
-    github_repos = set()
+    github_repos = {}
     for remote in remotes:
         url = check_output(['git', 'remote', 'get-url', remote]).decode().rstrip('\n')
         m = SSH_REMOTE_URL_RGX.fullmatch(url)
         if m:
-            github_repos.add(m['repo'])
+            github_repos[remote] = m['repo']
         else:
             m = HTTPS_REMOTE_URL_RGX.fullmatch(url)
             if m:
-                github_repos.add(m['repo'])
+                github_repos[remote] = m['repo']
 
     if len(github_repos) == 1:
-        return list(github_repos)[0]
-    elif not github_repos:
+        return list(github_repos.values())[0]
+    if not github_repos:
         stderr.write(f"Found no GitHub repo remote URLs\n")
         return None
-    else:
+    try:
+        tracked_branch = check_output([ 'git', 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}' ]).decode().rstrip('\n')
+        remote, *_ = tracked_branch.split('/')
+        return github_repos[remote]
+    except CalledProcessError:
         stderr.write(f'Found {len(github_repos)} GitHub repo remote URLs: {github_repos}\n')
         return None
 
@@ -62,7 +70,7 @@ def github_workflows(ctx, remote, repo):
 @pass_context
 def github_workflows_list(ctx):
     repo = ctx.obj
-    workflows = json.loads(check_output(['gh', 'api', f'https://api.github.com/repos/{repo}/actions/workflows']).decode())['workflows']
+    workflows = json.loads(check_output(['gh', 'api', f'/repos/{repo}/actions/workflows']).decode())['workflows']
     workflow_names = [ basename(workflow['path']) for workflow in workflows ]
     for workflow_name in workflow_names:
         print(workflow_name)
