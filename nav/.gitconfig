@@ -1,6 +1,7 @@
 [alias]
   ig = is-repo
   isr = is-repo
+  rel = relpath
   root = rev-parse --show-toplevel
   rt = root
   dir = rev-parse --git-dir
