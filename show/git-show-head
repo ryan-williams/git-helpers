@@ -4,6 +4,7 @@ if [ $# -eq 0 ]; then
     git show
 else
     file="${@: -1}"
+    file="$(git relpath "$file")"
     set -- "${@:1:(($#-1))}"
     git show "$@" "HEAD:$file"
 fi
