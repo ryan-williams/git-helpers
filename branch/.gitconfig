@@ -5,8 +5,10 @@
   branch-back = checkout-previous-branch
   bk = branch-back
 
-  bpa = branch --points-at
-  bpar = branch -r --points-at
+  bpa = branch --format '%(refname:short)' --points-at
+  bpar = branch --format '%(refname:short)' -r --points-at
+  nbl = !git --no-pager branch --format '%(refname:short)' --points-at
+  nbr = !git --no-pager branch --format '%(refname:short)' -r --points-at
 
   previous-branch = checkout-previous-branch
   pb = previous-branch
