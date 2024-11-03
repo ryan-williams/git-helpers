@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-watchman trigger-del "$(git root)" copy-diffs
