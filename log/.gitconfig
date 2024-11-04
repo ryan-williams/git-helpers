@@ -62,26 +62,28 @@
   msg = !git --no-pager log -1 --format=%s
   sbj = !git --no-pager log -1 --format=%s
   l1 = !git --no-pager log -1
+  l1f = !git --no-pager log-1-format
+  l1ft = !git --no-pager log-1-format t
+  l1fT = !git --no-pager log-1-format T
   l1t = l1ft
   l1T = l1fT
-  sha = hash
-  shas = hash
   fh = full-hash
   fm = log-format
   lf = log-format
   lgf = log-format
-  l1f = !git --no-pager log-1-format
-  l1ft = !git --no-pager log-1-format t
-  l1fT = !git --no-pager log-1-format T
   log-format-1 = !git --no-pager log-1-format
   fm1 = !git --no-pager log-1-format
   lf1 = !git --no-pager log-1-format
   lgf1 = !git --no-pager log-1-format
   rwa = rewrite-author
-  subject = log -n1 --format=%s
+  sha = hash
+  shas = hash
   sj = log -n1 --format=%s
-  time-author = !git --no-pager log --format=%ad -1
+  subject = log -n1 --format=%s
   ta = time-author
-  time-committer = !git --no-pager log --format=%cd -1
   tc = time-committer
+  time-author = !git --no-pager log --format=%ad -1
+  time-committer = !git --no-pager log --format=%cd -1
   tree = log --no-walk --format=%T
+  wh = l1t
+  wt = l1t
