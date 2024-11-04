@@ -41,6 +41,8 @@
         cfi = config --get-all include.path
         cgi = config --get-all --global include.path
         global-config-file = config --get-all --global include.path
+        global-git-ignore = add-core-excludes -g
+        ggi = global-git-ignore
 
         cfig = config core.excludesfile
         cfigs = config --get-all core.excludesfile
