@@ -33,11 +33,16 @@
         cfua = config --unset-all
         cgua = config --unset-all --global
         cgdb = config --global init.defaultBranch
+        cgdr = config --global clone.defaultRemoteName
         dbm = config --global init.defaultBranch main
         gdb = config --global init.defaultBranch
         gdbm = config --global init.defaultBranch main
         set-default-branch-main = config --global init.defaultBranch main
         sdbm = set-default-branch-main
+        set-default-remote = config --global clone.defaultRemoteName
+        sdr = set-default-remote-u
+        set-default-remote-u = config --global clone.defaultRemoteName u
+        sdru = set-default-remote-u
         cfi = config --get-all include.path
         cgi = config --get-all --global include.path
         global-config-file = config --get-all --global include.path
@@ -48,6 +53,7 @@
         cfigs = config --get-all core.excludesfile
         cfef = config core.excludesfile
         cfefs = config --get-all core.excludesfile
+        cgif = config --global core.excludesfile
         cgig = config --global core.excludesfile
         cgigs = config --get-all --global core.excludesfile
         cgef = config --global core.excludesfile
@@ -68,6 +74,7 @@
         sgid = set-id -g
         gsid = set-id -g
         sidg = set-id -g
+        sig = set-id -g
         gid = get-id
         gidg = getid -g
         ggid = get-id -g
