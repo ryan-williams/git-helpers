@@ -1,8 +1,8 @@
 [alias]
   a  = add
   af = add -f
+  ai = add -N
   an = add -n
-  aN = add -N
   ap = add -p
   dma = diff-then-maybe-add
   au = add -u
