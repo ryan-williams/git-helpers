@@ -48,7 +48,7 @@ boths="$(comm_count -12)"    # Present before and after
 
 if [ -n "$verbose" ]; then
   echo "$adds new completions:"
-  _comm -13
+  _comm -13 | parallel -k -j+0 'echo -n "{} "; echo {} | wc -c' | sort -nk2 | cut -d' ' -f1
   echo "$boths completions present before and after installing git-helpers"
   echo "$adds completions added by installing git-helpers ($rms removed, $afters total)"
 else

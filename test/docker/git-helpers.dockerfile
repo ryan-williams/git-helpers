@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
 RUN apt-get update -y \
- && apt-get install -y git wget
+ && apt-get install -y git parallel wget
 
 WORKDIR /root
 SHELL ["/bin/bash", "-ic"]
