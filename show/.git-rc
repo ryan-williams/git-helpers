@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 alias geq="g eq"
+alias gnsh="g nsh"
+alias gnshs="g nshs"
 alias gsh="g sh"
 alias gshmr="g shmr"
 alias gshms="g shms"

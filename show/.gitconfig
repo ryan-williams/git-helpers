@@ -1,5 +1,7 @@
 [alias]
   eq = equal
+  nsh = !git --no-pager show
+  nshs = !git --no-pager show
   sh = show
   shmr = show --diff-merges=remerge
   shms = show --diff-merges=separate
