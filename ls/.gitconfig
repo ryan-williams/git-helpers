@@ -12,6 +12,7 @@
   lth = ls-tree HEAD
   lthr = ls-tree -r HEAD
   lthn = ls-tree -r --name-only HEAD
+  ltn = ls-tree --name-only
   ltr = ls-tree -r
   tr = ls-tree
   trh = ls-tree HEAD
