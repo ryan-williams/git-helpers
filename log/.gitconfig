@@ -42,6 +42,7 @@
   lpp = log -p --
   lg1 = log-oneline
   lh = log-hash
+  nlh = !git --no-pager log-hash
   ln = list-n
   ln1 = list-n 1
   ln2 = list-n 2
