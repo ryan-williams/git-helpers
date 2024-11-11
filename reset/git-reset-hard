@@ -2,9 +2,14 @@
 #
 # Wrapper around `git reset --hard` that stashes any uncommitted changes first
 
+# Last arg
+end=("${@: -1}"); last="${end[0]}"
+sha="$(git sha "$last")"
+set -- "${@:1:$#-1}"
+
+cmd=(git reset --hard "$@" "$sha")
 if ! git is-clean; then
-  git stash save "Resetting --hard: ${@:-$(git sha)}"
+  git stash save "Stash before: ${cmd[*]}"
 fi
 
-git reset --hard "$@"
-
+"${cmd[@]}"
