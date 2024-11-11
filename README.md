@@ -35,11 +35,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1305 completions added by installing git-helpers
+# 1320 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 230
-# - 4 chars: 488
+# - 4 chars: 498
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -50,7 +50,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1305 new completions:
+1320 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -332,12 +332,14 @@ gauf       = g add -uf
 gaup       = g add -u -p
 gaus       = !git add -u && git status
 gaut       = g author
+gawt       = g amend-worktree
 gbdf       = g branch -D
 gbeb       = git bisect-earliest-bad
 gbfc       = g branch-reset -c
 gbhi       = g blob-hash -i
 gbhs       = g blob-hash -s
 gblg       = git bisect-latest-good
+gblr       = g head-before-last-rebase
 gbls       = g local-branch-shas
 gbmv       = g branch -m
 gbpa       = g branch --format '%(refname:short)' --points-at
@@ -417,6 +419,7 @@ gcsp       = g set-parents
 gctg       = g current-tags
 gctp       = g cat-file -p
 gctr       = g commit-tree-reset
+gcwt       = g checkout-worktree
 gdas       = g diff-pipe sort
 gdbm       = g config --global init.defaultBranch main
 gdbr       = g diff-branch-reflog
@@ -676,6 +679,7 @@ grla       = g rev-list --all
 grlc       = g rev-list --count
 grlh       = !git reflog | head
 grlp       = g rev-list --parents
+grls       = g reflog '--format=%C(green)%gd %C(yellow)%h %C(blue)%as %C(red)%an %C(auto)%gs'
 grlt       = !git reflog | head -n 20
 grmc       = g rm --cached
 grmf       = g rm -f
@@ -697,6 +701,7 @@ grsh       = g remote-set-head
 grsi       = g rebase-stdin
 grsp       = g reset HEAD^
 grss       = !git reset . && git submodule update --recursive && git status
+grst       = g reflog --stat
 grsu       = g remote-set-url
 grtc       = g root-commits
 grud       = g rebase-upstream-diff
@@ -708,6 +713,8 @@ grvt       = g revert
 grwa       = g rewrite-author
 grwc       = g reword-commit
 grwt       = g restore-worktree
+grxs       = g rebase-exec-step
+grxx       = g rebase-exec-step
 gsac       = g submodule-auto-commit
 gsad       = g set-author-date
 gsaf       = g submodule add -f
@@ -750,7 +757,9 @@ gsms       = g submodules
 gsmt       = g submodule status
 gsmu       = g submodule update --recursive
 gsnl       = g show-local-names
+gsno       = !git --no-pager log -1 --format= --name-only
 gsnr       = g show-remote-names
+gsns       = !git --no-pager log -1 --format= --name-status
 gsp1       = g stash pop 'stash@{1}'
 gsp2       = g stash pop 'stash@{2}'
 gsp3       = g stash pop 'stash@{3}'
@@ -794,6 +803,7 @@ gtsz       = g total-size
 gtwh       = g throw-head
 gtwp       = g throw.py HEAD^
 gune       = g user
+gurb       = g undo-rebase
 gusi       = g update-server-info
 gusr       = g user
 gxca       = <git repo dir> ['git ca' args...]
@@ -969,6 +979,8 @@ grvph      = g rev-parse HEAD
 grvth      = g revert HEAD
 grvtn      = g revert --no-edit
 gsaca      = g submodule-auto-commit -a
+gsadr      = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
+gsard      = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
 gsaut      = g set-author
 gsdbm      = g set-default-branch-main
 gsdru      = g set-default-remote-u
@@ -1121,7 +1133,7 @@ github-submodule-check-commits = git-helpers/submodule/github-submodule-check-co
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 1345 completions present before and after installing git-helpers
-1305 completions added by installing git-helpers (0 removed, 2650 total)
+1320 completions added by installing git-helpers (0 removed, 2665 total)
 ```
 </details>
 
