@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+if ! [ -d .git/rebase-merge ] && ! [ -d .git/rebase-apply ]; then
+  echo "$0 can only be run during a rebase" >&2
+  exit 1
+fi
+
+if ! git diff --exit-code; then
+  echo "$0 requires a clean worktree" >&2
+  exit 1
+fi
+
+echo "$0 executing: $*" >&2
+"$@"
+
+if ! git diff --exit-code; then
+  sha="$(git log -1 --format=%h)"
+  echo "$sha: found updated files; amending" >&2
+  git commit -a --amend --no-edit
+else
+  echo "$sha: no updated files found" >&2
+fi
