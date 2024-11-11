@@ -1,5 +1,5 @@
 [alias]
-  ps    = !git pull --rebase && git submodule update --init --recursive
+  ps    = !git pull --rebase && git submodule update --init --rebase --recursive
   rhsl  = rebase-head-submodule-log
   sac   = submodule-auto-commit
   saca  = submodule-auto-commit -a
