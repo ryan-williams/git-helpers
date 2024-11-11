@@ -13,6 +13,7 @@
   ecrpn   = edit-commit -r -p -n
   ecx     = edit-commit -x
   ecxn    = edit-commit -n -x
+  blr     = head-before-last-rebase
   hblr    = head-before-last-rebase
   hblrs   = head-before-last-rebase %h
   pr      = pull --rebase

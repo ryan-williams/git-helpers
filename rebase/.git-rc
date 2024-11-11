@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+alias gblr="g blr"
 alias gcrb="g crb"
 alias gcrh="g crh"
 alias gcrbh="g crbh"
