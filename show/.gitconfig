@@ -8,6 +8,10 @@
   shno = show --name-only
   shns = show --name-status
   shadr = show --diff-filter=ADR --name-status
+  sno = !git --no-pager log -1 --format= --name-only
+  sns = !git --no-pager log -1 --format= --name-status
+  sadr = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
+  sard = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
   sfh = show-sha-file HEAD
   shf = show-sha-file
   shfp = show-sha-file HEAD^
