@@ -73,7 +73,7 @@ done
 
 git log \
   "$style" \
-  "--format=%C(auto)%h %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(reset)%C(auto)%d %s" \
+  "--format=%C(auto)%h %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(auto)%d %s" \
   "--date=$date_style" \
   "$date_order" \
   "$@"

@@ -9,4 +9,4 @@ else
     exit 1
 fi
 
-git rev-parse --abbrev-ref --symbolic-full-name "${b}@{u}"
+git rev-parse --abbrev-ref "${b}@{u}"
