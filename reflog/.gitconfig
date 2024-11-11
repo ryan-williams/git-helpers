@@ -4,6 +4,7 @@
   rls = reflog '--format=%C(green)%gd %C(yellow)%h %C(blue)%as %C(red)%an %C(auto)%gs'
   rlh = !git reflog | head
   rlt = !git reflog | head -n 20
+  rst = reflog --stat
 
   fe = for-each-ref
   fer = for-each-ref

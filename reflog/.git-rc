@@ -1,7 +1,9 @@
 
 alias grl="g rl"
 alias grlh="g rlh"
+alias grls="g rls"
 alias grlt="g rlt"
+alias grst="g rst"
 
 alias gfe="g fe"
 alias gfer="g fer"
