@@ -1,7 +1,8 @@
 FROM ubuntu:22.04
 
 RUN apt-get update -y \
- && apt-get install -y git parallel wget
+ && apt-get install -y bzip2 git man-db parallel wget \
+ && yes | unminimize
 
 WORKDIR /root
 SHELL ["/bin/bash", "-ic"]
