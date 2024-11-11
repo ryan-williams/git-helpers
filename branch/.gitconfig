@@ -5,10 +5,12 @@
   branch-back = checkout-previous-branch
   bk = branch-back
 
-  bpa = branch --format '%(refname:short)' --points-at
-  bpar = branch --format '%(refname:short)' -r --points-at
-  nbl = !git --no-pager branch --format '%(refname:short)' --points-at
-  nbr = !git --no-pager branch --format '%(refname:short)' -r --points-at
+  branch-points-at = branch --format '%(refname:short)' --points-at
+  bpa = branch-points-at
+  branch-points-at-r = branch --format '%(refname:short)' -r --points-at
+  bpar = branch-points-at-r
+  nbl = !git --no-pager branch-points-at
+  nbr = !git --no-pager branch-points-at-r
 
   previous-branch = checkout-previous-branch
   pb = previous-branch
@@ -55,6 +57,11 @@
 
   all-branches = for-each-ref --format='%(refname:short)'
   ab = all-branches
+  bn = !gn branch --format '%(refname:short)' --list
+  bno = !gn branch --format '%(refname:short)' --list
+  bnor = !gn branch --format '%(refname:short)' -r --list
+  bnr = !gn branch --format '%(refname:short)' -r --list
+  ; git --no-pager branch '--format=%(color:brightblue)%(authordate:format:%Y-%m-%d %H:%M) %(color:brightred)%(objectname:short) %(color:brightwhite)%(align:25)%(refname:short)%(end) %(color:yellow)%(align:10)%(push:short)%(end) %(color:brightblue)%(ahead) %(color:magenta)%(behind) %(color:reset)%(subject)' '--sort=-authordate'
 
   be = branch-exists
   rbe = remote-branch-exists
