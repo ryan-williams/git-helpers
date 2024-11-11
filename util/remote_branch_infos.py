@@ -1,7 +1,5 @@
 """Info about remote branches."""
 
-__author__ = 'ryan'
-
 import sys
 
 if __name__ == '__main__':
@@ -14,7 +12,7 @@ import fileinput
 
 class RemoteBranchInfos(BranchInfos):
 
-    def branchInfoClass(self):
+    def branch_info_class(self):
         return RemoteBranchInfo
 
     def run_secondary_cmd(self):
@@ -30,4 +28,4 @@ class RemoteBranchInfos(BranchInfos):
 
 
 if __name__ == "__main__":
-    RemoteBranchInfos(fileinput.input())
+    RemoteBranchInfos(lines=fileinput.input(), patterns=sys.argv[1:])

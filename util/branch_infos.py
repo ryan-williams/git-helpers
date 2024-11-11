@@ -1,6 +1,6 @@
-__author__ = 'ryan'
-
 import sys
+from fnmatch import fnmatch
+from typing import Sequence
 
 """Functionality for parsing and manipulating data about git branches."""
 
@@ -27,7 +27,7 @@ class BranchInfos:
     def cmd(self):
         return ["git", "branch", "-vv"]
 
-    def branchInfoClass(self):
+    def branch_info_class(self):
         return BranchInfo
 
     def get_lines(self):
@@ -61,7 +61,11 @@ class BranchInfos:
              True), 'remote', 'ahead_str', 'behind_str', 'reldate', 'hash'
         ]
 
-    def __init__(self, lines=None):
+    def __init__(
+        self,
+        lines: Sequence[str] | None = None,
+        patterns: Sequence[str] | None = None,
+    ):
         self.maxs = {}
 
         lines = self.get_lines() if not lines else list(lines)
@@ -70,7 +74,9 @@ class BranchInfos:
         self.branches_by_hash = {}
 
         for line in lines:
-            info = self.branchInfoClass()(line)
+            info = self.branch_info_class()(line)
+            if patterns and not all(fnmatch(info.name, pattern) for pattern in patterns):
+                continue
             self.branches_by_name[info.name] = info
             if info.hash not in self.branches_by_hash:
                 self.branches_by_hash[info.hash] = []

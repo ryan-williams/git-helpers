@@ -2,7 +2,7 @@
 
 # Pretty-print remote branch info.
 
-git branch -rvv | \
+git branch -rvv --list "$@" | \
 awk -F' ' '{print $1}' | \
 xargs git --no-pager show -s --format="%d %h %ci (%cr) %s" | \
 sed -n "s/\(.\)/\1/p" | \

@@ -13,4 +13,4 @@ if __name__ == '__main__':
 
 from util.branch_infos import BranchInfos
 
-BranchInfos()
+BranchInfos(patterns=sys.argv[1:])
