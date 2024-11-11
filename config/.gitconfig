@@ -35,6 +35,8 @@
         cgdb = config --global init.defaultBranch
         cgdr = config --global clone.defaultRemoteName
         dbm = config --global init.defaultBranch main
+        e = expand-alias
+        ea = expand-alias
         gdb = config --global init.defaultBranch
         gdbm = config --global init.defaultBranch main
         set-default-branch-main = config --global init.defaultBranch main

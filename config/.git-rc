@@ -37,6 +37,8 @@ alias gcfda="g cfda"
 alias gcgda="g cgda"
 alias gcfua="g cfua"
 alias gcgua="g cgua"
+alias ge="g e"
+alias gea="g ea"
 alias gggi="g ggi"
 
 alias grcp="g rcp"
@@ -69,3 +71,129 @@ alias gue="g ue"
 alias gun="g un"
 alias gune="g une"
 alias gusr="g usr"
+
+git_expand_alias() {
+    log() {
+        return 0
+    }
+    if [ "$1" = "-v" ]; then
+        shift
+        log() {
+            echo "$@" >&2
+        }
+    fi
+    if [ $# -ne 1 ]; then
+      echo "Usage: ${FUNCNAME[0]} [-v] <alias>" >&2
+      return 1
+    fi
+
+    local pre=()
+    if alias "$1" &>/dev/null; then
+      log "found alias $1" >&2
+      set -- $(alias "$1" | perl -pe "s/alias [^=]+='(.*)'$/\1/")
+      log "$# new args: $*"
+      if [ "$1" = g ] || [ "$1" = git ] || [ "$1" = gn ]; then
+        pre+=("$1")
+        shift
+      else
+        echo "$@"
+        return 0
+      fi
+    elif declare -F "$1" &>/dev/null; then
+      log "found function $1" >&2
+      local fline=
+      local multiline=
+      while read -r line; do
+        log "function line: $line"
+        local usage="$(echo "$line" | perl -ne 'print if s/^.*Usage: \S+ (.*)["'"'"'] 1?>&2;?$/$1/')"
+        if [ -n "$usage" ]; then
+          echo "$usage"
+          return 0
+        fi
+        local comment="$(echo "$line" | perl -ne 'print if s/^\s*# (.*)$/$1/')"
+        if [ -n "$comment" ]; then
+          echo "# $comment"
+          return 0
+        fi
+        if [ -z "$fline" ]; then
+          fline="$line"
+          log "fline: $fline"
+        elif [ -n "$fline" ]; then
+          multiline=1
+        fi
+      done < <(type "$1" | perl -ne 'print if s/^    //')
+      if [ -n "$multiline" ]; then
+        fline=
+      fi
+      log "got fline: $fline"
+      if [ -z "$fline" ]; then
+        # type "$1" | perl -ne 'print if s/^    //' | tr '\n' ';'
+        return 1
+      fi
+      set -- $(echo "$fline" | perl -pe 's/^(.*?)(?: "\$@")?$/$1/')
+      log "$# new args: $*"
+      if [ "$1" = g ] || [ "$1" = git ]; then
+        if [ $# -eq 1 ]; then
+          echo "$1"
+          return 0
+        else
+          pre+=("$1")
+          shift
+        fi
+      else
+        echo "$@"
+        return 0
+      fi
+    else
+      log "looking for cmd $1"
+      local which="$(which "$1" 2>/dev/null)"
+      if [ -n "$which" ]; then
+        which="${which#$PWD/}"
+        log "found command $1" >&2
+        local comment="$(grep -m1 '^# ' "$which")"
+        local out="$which"
+        if [ -n "$comment" ]; then
+          out="$out  $comment"
+        fi
+        echo "$out"
+        return 0
+      fi
+    fi
+    log "Looking up git alias: $*" >&2
+    if [ "$1" = --no-pager ]; then
+      pre+=("$1")
+      shift
+    fi
+    local post=()
+    if [ $# -gt 0 ]; then
+      local git_alias="$1"; shift
+      post=("$@")
+      local git_alias2="$(git help "$git_alias" | head -n1 | perl -ne "print if s/.* is aliased to '(.*)'.*/\$1/")"
+      log "$git_alias -> $git_alias2"
+      if [ -n "$git_alias2" ]; then
+        git_alias="$git_alias2"
+      fi
+      set -- $git_alias
+      log "$# new args via git help: $*"
+      if [[ $1 == "!"* ]]; then
+        log "git shell config: $*"
+        echo "$@"
+        return 0
+      else
+        local pre_str=
+        for arg in "${pre[@]}"; do
+          pre_str="$pre_str${pre_str:+ }$arg"
+        done
+        echo "$pre_str" "$@" "${post[@]}"
+      fi
+    else
+      local pre_str=
+      for arg in "${pre[@]}"; do
+        pre_str="$pre_str${pre_str:+ }$arg"
+      done
+      echo "$pre_str" "$@"
+    fi
+}
+export -f git_expand_alias
+defn gea git_expand_alias
+defn geav git_expand_alias -v

@@ -1,0 +1,7 @@
+#!/bin/bash -l
+#
+# Expand a Git alias or Bash alias, function, or script.
+# Wraps the function for ease of accessing Bash aliases; `bash -i` shebang enables that above, but slows down
+# invocation time.
+
+git_expand_alias "$@"
