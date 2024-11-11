@@ -32,6 +32,33 @@ defn ghow gh repo view --web
 defn github_default_remote git-find-only-remote github\.com
 defn ghrn github_default_remote
 
+github_owner_name() {
+    local remote
+    if [ $# -eq 1 ]; then
+        remote="$1"; shift
+    elif [ $# -eq 0 ]; then
+        remote="$(github_default_remote)"
+        if [ -z "$remote" ]; then
+            echo "Failed to find a suitable GitHub remote" >&2
+            return 1
+        fi
+    else
+        echo "Usage: ${FUNCNAME[0]} [remote name]" >&2
+        return 1
+    fi
+    url0="$(git remote get-url "$remote")"
+    url="${url0#https://github.com/}"
+    url="${url#git@github.com:}"
+    if [ "$url" = "$url0" ]; then
+        echo "Remote $remote doesn't appear to be a GitHub repo: $url0" >&2
+        return 1
+    fi
+    url="${url%.git}"
+    echo "$url"
+}
+export -f github_owner_name
+defn ghon github_owner_name
+
 github_open_web_branch() {
     remote="$(github_default_remote "$@")"
     branch="$(git current-branch)"
