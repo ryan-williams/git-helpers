@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+git checkout "$@" -- .
+git commit -a --amend --no-edit
