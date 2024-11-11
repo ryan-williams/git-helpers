@@ -29,8 +29,11 @@ defn ghoa github_open_actions
 
 defn ghow gh repo view --web
 
+defn github_default_remote git-find-only-remote github\.com
+defn ghrn github_default_remote
+
 github_open_web_branch() {
-    remote="$(github_remote "$@")"
+    remote="$(github_default_remote "$@")"
     branch="$(git current-branch)"
     remote_branch="$(
         git branch -r --points-at "$branch" \
@@ -66,7 +69,7 @@ github_open_web_commit() {
         echo "Usage: github_open_web_commit [commit]" >&2
         return 1
     fi
-    remote="$(github_remote "$@")"
+    remote="$(github_default_remote)"
     path="$(git remote-path "$remote")"
     url="https://github.com/$path/commit/$commit"
     open "$url"
@@ -203,11 +206,8 @@ gh_open_job() {
 export -f gh_open_job
 defn ghoj gh_open_job
 
-defn github_remote git-find-only-remote github\.com
-defn ghrn github_remote
-
 github_remote_path() {
-    git remote-path "$@" "$(github_remote)"
+    git remote-path "$@" "$(github_default_remote)"
 }
 export -f github_remote_path
 defn ghrp github_remote_path
@@ -225,7 +225,7 @@ github_parse_remote_and_branch() {
   fi
   if [ $# -eq 1 ]; then
     branch="$1"; shift
-    remote="$(github_remote)"
+    remote="$(github_default_remote)"
     if [ -z "$remote" ]; then
       return 1
     fi
@@ -279,7 +279,7 @@ defn ghubn github_unprotect_branch -n
 
 github_protected_branches() {
   if [ $# -eq 0 ]; then
-    remote="$(github_remote)"
+    remote="$(github_default_remote)"
   elif [ $# -eq 1 ]; then
     remote="$1"; shift
   else
