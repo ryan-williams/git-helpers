@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+sha="$(git head-before-last-rebase)"
+echo "Resetting to $sha" >&2
+git reset --hard "$sha"

@@ -100,3 +100,4 @@
   throw-head = squash-head-onto
   twh     = throw-head
   twhn    = throw-head -n
+  urb     = undo-rebase
