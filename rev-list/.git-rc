@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-alias gac="g ac '%h'"
+alias gac="g ac"
+alias gach="g ach"
 alias gah="g ah"
 alias gcbh="g cbh"
 alias grla="g rla"

@@ -214,7 +214,7 @@ defn ghrp github_remote_path
 
 github_parse_remote_and_branch() {
   if [ $# -eq 0 ]; then
-    echo "Usage: github_parse_remote_and_branch <caller name> [-n] [remote] <branch>" >&2
+    echo "Usage: ${FUNCNAME[0]} <caller name> [-n] [remote] <branch>" >&2
     return 1
   fi
   caller="$1"; shift

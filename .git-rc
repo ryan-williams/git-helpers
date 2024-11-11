@@ -9,19 +9,18 @@ root_dir() {
   else
     dir="$(dirname "${BASH_SOURCE[0]}")"
   fi
-
   dir="$(cd "$dir" && echo "$PWD")"
   echo "$dir"
 }
-
 export GIT_HELPERS_HOME="$(root_dir)"
+unset -f root_dir
 
 # Function-definition helper used in subdirectories
 define_function() {
   name="$1"
   shift
   if [ $# -eq 0 ]; then
-    echo "Usage: $0 <alias name> <aliased function> [args...]" >&2
+    echo "Usage: ${FUNCNAME[0]} <alias name> <aliased function> [args...]" >&2
     return 1
   fi
   unalias "$name" &>/dev/null || true
@@ -155,8 +154,8 @@ root_setup() {
 
   export PYTHONPATH="${PYTHONPATH}${PYTHONPATH:+:}$dir/util"
 }
-
 root_setup
+unset -f root_setup
 
 defn p parallel -k -j+0 --env PATH
 

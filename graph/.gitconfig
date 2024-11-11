@@ -19,8 +19,9 @@
   grd = graph -d
   gre = graph -e
   grec = graph -e -C
-  grd10 = grd -n 10
-  grdn = grd -n
+  grd10 = graph -d -n 10
+  grdh = graph -d HEAD
+  grdn = graph -d -n
   grh = graph HEAD
   grhu = graph -u HEAD
   grl = graph -l

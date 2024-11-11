@@ -8,10 +8,18 @@ defn gx git-git-dir
 #defn gxs git-git-dir
 
 function git_dir_curry() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: git_dir_curry <exported_function_name> <git-git-dir_param1> <git-git-dir_param2> ..." >&2
+        return 1
+    fi
     exportfun=$1; shift
     #fun=$1; shift
     params=$*
     cmd=$"function $exportfun() {
+        if [ \$# -eq 0 ]; then
+            echo \"Usage: $exportfun <git repo dir> ['git $params' args...]\" >&2;
+            return 1;
+        fi;
         IFS=, read -ra dirs <<< \"\$1\";
         shift;
         more_params=\$*;

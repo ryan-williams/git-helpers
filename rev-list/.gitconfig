@@ -1,13 +1,14 @@
 [alias]
+  ac = all-commits
+  ach = all-commits %h
+  ah = all-hashes
+  cc = count-commits
   rvl = rev-list
   rlp = rev-list --parents
   rlp1 = rev-list --parents -n1
   rla = rev-list --all
   rlc = rev-list --count
   rlfp = rev-list-first-parents
-  ac = all-commits
-  ah = all-hashes
-  cc = count-commits
   root-commits = rev-list --max-parents=0
   rtc = root-commits
   rtch = root-commits HEAD
