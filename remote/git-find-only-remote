@@ -3,30 +3,40 @@
 set -e
 
 if [ $# -eq 0 ]; then
-  echo "Usage: gitlab_find_remote <grep args...>" >&2
-  return 1
+  echo "Usage: $0 <grep args...>" >&2
+  exit 1
 fi
 
+_last=("${@: -1}")
+last="${_last[0]}"
 remote=
+remote_line=
 err=
 lines="$(git remotes | grep "$@")"
 while IFS= read -r line; do
   if [ -n "$remote" ]; then
     if [ -z "$err" ]; then
       echo "Multiple remotes found:" >&2
-      echo "  $remote" >&2
+      echo "  $remote_line" >&2
       err=1
     fi
     echo "  $line" >&2
   else
-    remote="$(echo "$line" | awk '{ print $1 }')"
+    remote="$(echo "$line" | awk '{print $1}')"
+    remote_line="$line"
   fi
 done <<< "$lines"
 if [ -z "$remote" ]; then
-  echo "No gitlab.com remote found" >&2
-  return 1
+  echo "No $last remote found" >&2
+  err=1
 fi
 if [ -n "$err" ]; then
-  return 1
+  upstream="$(git rev-parse --abbrev-ref "@{u}")"
+  if [ -z "$upstream" ]; then
+    echo "No tracked branch found" >&2
+    exit 1
+  fi
+  remote="${upstream%%/*}"
+  echo "Parsed remote $remote from tracked branch $upstream" >&2
 fi
 echo "$remote"
