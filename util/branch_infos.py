@@ -1,8 +1,10 @@
+"""Functionality for parsing and manipulating data about git branches."""
+
+from __future__ import annotations
+
 import sys
 from fnmatch import fnmatch
-from typing import Sequence
-
-"""Functionality for parsing and manipulating data about git branches."""
+from typing import Sequence, Optional
 
 from branch_info import BranchInfo
 from color import clen
@@ -36,12 +38,13 @@ class BranchInfos:
         return out.decode('utf8').splitlines()
 
     def run_secondary_cmd(self):
-        hashes = [bi.hash for bi in list(self.branches_by_name.values())]#map(lambda bi: bi.hash, self.branches_by_name.values())
-        cmd = ['git', 'show',
-               # NOTE(ryan): seems to omit 'master' branch in Git 1.7.1; doesn't seem to be necessary in general.
-               #'--quiet',
-               '-s',
-               '--format=%h\t%ci\t%cr'] + hashes
+        hashes = [bi.hash for bi in list(self.branches_by_name.values())]
+        cmd = [
+            'git', 'show',
+            '-s',
+            '--format=%h\t%ci\t%cr',
+            *hashes,
+        ]
         out, err = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
 
         lines = out.decode().splitlines()
@@ -63,8 +66,8 @@ class BranchInfos:
 
     def __init__(
         self,
-        lines: Sequence[str] | None = None,
-        patterns: Sequence[str] | None = None,
+        lines: Optional[Sequence[str]] = None,
+        patterns: Optional[Sequence[str]] = None,
     ):
         self.maxs = {}
 
