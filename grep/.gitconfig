@@ -4,6 +4,7 @@
   gl = grep --recurse-submodules -l
   gn = grep --recurse-submodules -n
   gp = grep --recurse-submodules
+  gpp = grep --recurse-submodules -P
   gpi = grep --recurse-submodules -i
   gpl = grep --recurse-submodules -l
   gpn = grep --recurse-submodules -n
