@@ -4,11 +4,15 @@
   cpdu = config push.default upstream
   cfpd = config push.default
   cgpd = config --global push.default
-  cgpdc = config --gloabl push.default current
-  cgpdu = config --gloabl push.default upstream
+  cgpdc = config --global push.default current
+  cgpdu = config --global push.default upstream
   mp = me-push
   mpf = me-push-force
   pm = push-to-master
+  pdc = config push.default current
+  pdcg = config push.default current
+  pdu = config push.default upstream
+  pdug = config push.default upstream
   po = push-to-remote-branch origin
   p = push-x
   pd = push --delete
