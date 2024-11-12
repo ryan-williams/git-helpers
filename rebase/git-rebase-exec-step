@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+#
+# During a rebase, execute a command, and commit its contents (or amend the previous commit, with `-a`/`--amend`).
+#
+# e.g.:
+# ```bash
+# Rebase last 5 commits, run `ruff` linter, amend changes to each.
+# grx 'g rxsa ruff format .' HEAD~5
+# ```
+
+set -e
 
 if ! [ -d .git/rebase-merge ] && ! [ -d .git/rebase-apply ]; then
   echo "$0 can only be run during a rebase" >&2
@@ -10,13 +20,25 @@ if ! git diff --exit-code; then
   exit 1
 fi
 
-echo "$0 executing: $*" >&2
+amend=
+if [ "$1" = -a ] || [ "$1" = --amend ]; then
+  amend=1
+  shift
+fi
+
+echo "$(basename "$0") executing: $*" >&2
 "$@"
 
 if ! git diff --exit-code; then
   sha="$(git log -1 --format=%h)"
-  echo "$sha: found updated files; amending" >&2
-  git commit -a --amend --no-edit
+  echo -n "$sha: found updated files; " >&2
+  if [ -n "$amend" ]; then
+    echo "amending" >&2
+    git commit -a $amend --no-edit
+  else
+    echo "committing" >&2
+    git commit -a -m '`'"$*"'`'
+  fi
 else
   echo "$sha: no updated files found" >&2
 fi

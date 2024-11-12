@@ -76,8 +76,11 @@
   rq      = rebase-sequence
   reword-commit = edit-commit -r
   rwc     = reword-commit
+  rxa     = rebase-exec-step -a
   rxs     = rebase-exec-step
+  rxsa    = rebase-exec-step -a
   rxx     = rebase-exec-step
+  rxxa    = rebase-exec-step -a
   ar      = add-rebase-continue
   arc     = add-rebase-continue
   arcn    = add-rebase-continue-no-edit
