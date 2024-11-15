@@ -55,6 +55,12 @@
   dw-  = diff -w --
   dc-  = diff --cached --
   dcw- = diff --cached -w --
+  ; pip install qmdx
+  dx = !git-diff-x
+  dxc = !git-diff-x -c
+  dxcr = !git-diff-x -c -r
+  dxr = !git-diff-x -r
+  dxw = !git-diff-x -w
 
   has-changes = is-dirty
   has-no-changes = is-clean
