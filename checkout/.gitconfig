@@ -9,6 +9,8 @@
   cop  = checkout-previous-branch
   cor  = checkout --recurse-submodules
   corf = checkout --recurse-submodules -f
+  cow  = checkout-worktree
+  cw   = checkout-worktree
   cwt  = checkout-worktree
   rw   = restore-worktree
   rwt  = restore-worktree
