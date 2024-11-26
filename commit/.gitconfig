@@ -27,6 +27,8 @@
   caane = commit -a -u --amend --no-edit --allow-empty
   cbn   = commit-basename
   cbns  = commit-basenames
+  ccb   = commit-body
+  ccba  = commit-body -a
   cmf   = commit -F-
   cmfa  = commit -aF-
   cm    = commit -m
