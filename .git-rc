@@ -84,8 +84,8 @@ append_subdir_to_path \
 export o="origin"
 export oh="origin/HEAD"
 
-export u="upstream"
-export uh="upstream/HEAD"
+export u='@{u}'
+export uh="$u..HEAD"
 
 export DEFAULT_REMOTE="${DEFAULT_REMOTE:-origin}"
 
