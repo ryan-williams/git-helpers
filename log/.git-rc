@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 alias gad="g ad"
+alias gadl="g adl"
 alias gadi1="g adi1"
 alias gcdi1="g cdi1"
 alias gbh="g bh"

@@ -1,5 +1,6 @@
 [alias]
   ad = !git --no-pager log --format=%ad -1
+  adl = !git --no-pager log --format=%ad
   adi1 = !git --no-pager log --format=%ad --date=iso -1
   bh = blob-hash
   bhi = blob-hash -i
