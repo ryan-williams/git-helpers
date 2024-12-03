@@ -56,7 +56,7 @@ class BranchInfo(object):
         }
 
     def __getattr__(self, item):
-        if re.match('\s+$', item):
+        if re.match(r'\s+$', item):
             return item
         return super(BranchInfo, self).__getattribute__(item)
 

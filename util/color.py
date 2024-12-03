@@ -50,7 +50,7 @@ colors = {
     "On_Cyan": "\x1b[46m",        # Cyan
     "On_White": "\x1b[47m",       # White
 
-    # High Intensty
+    # High Intensity
     "IBlack": "\x1b[0;90m",       # Black
     "IRed": "\x1b[0;91m",         # Red
     "IGreen": "\x1b[0;92m",       # Green
@@ -60,7 +60,7 @@ colors = {
     "ICyan": "\x1b[0;96m",        # Cyan
     "IWhite": "\x1b[0;97m",       # White
 
-    # Bold High Intensty
+    # Bold High Intensity
     "BIBlack": "\x1b[1;90m",      # Black
     "BIRed": "\x1b[1;91m",        # Red
     "BIGreen": "\x1b[1;92m",      # Green
@@ -70,7 +70,7 @@ colors = {
     "BICyan": "\x1b[1;96m",       # Cyan
     "BIWhite": "\x1b[1;97m",      # White
 
-    # High Intensty backgrounds
+    # High Intensity backgrounds
     "On_IBlack": "\x1b[0;100m",   # Black
     "On_IRed": "\x1b[0;101m",     # Red
     "On_IGreen": "\x1b[0;102m",   # Green
@@ -89,13 +89,14 @@ def color_symbol(name):
 
 
 def color(name, s=None, cond=True):
-    if s == None:
+    if s is None:
         return color_symbol(name)
     if cond:
         return color_symbol(name) + s + color_symbol('COff')
     return s
 
-color_char_regex = '\x1b' + '\[(?:[0-9];)?[0-9]+m'
+
+color_char_regex = '\x1b' + r'\[(?:[0-9];)?[0-9]+m'
 
 
 def clen(s):
