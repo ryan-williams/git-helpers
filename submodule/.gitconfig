@@ -20,6 +20,8 @@
   smt   = submodule status
   fes   = submodule foreach --recursive --quiet
   sf    = submodule foreach --recursive --quiet
+  sfe   = submodule foreach
+  sfq   = submodule foreach --quiet
   sfv   = submodule foreach --recursive
   smf   = submodule foreach --recursive --quiet
   srl   = submodule-rebase-log.py
