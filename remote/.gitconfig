@@ -1,5 +1,6 @@
 [alias]
   r         = remote -vv
+  r0        = remote
   rv        = remote -vv
 
   rmp       = remote-path
@@ -7,9 +8,11 @@
 
   dfr       = default-remote
   drb       = remote-default-branch
+  drt       = default-remote
   rdb       = remote-default-branch
   remote-get-head = remote-default-branch
   rgh       = remote-default-branch
+  rshw      = remote show
 
   gor       = get-only-remote
 

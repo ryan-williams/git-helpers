@@ -41,10 +41,12 @@
         gdbm = config --global init.defaultBranch main
         set-default-branch-main = config --global init.defaultBranch main
         sdbm = set-default-branch-main
-        set-default-remote = config --global clone.defaultRemoteName
-        sdr = set-default-remote-u
-        set-default-remote-u = config --global clone.defaultRemoteName u
-        sdru = set-default-remote-u
+        config-default-remote = config --global clone.defaultRemoteName
+        cdr = config-default-remote
+        gdr = config-default-remote
+        sdr = config-default-remote
+        config-default-remote-u = config --global clone.defaultRemoteName u
+        sdru = config-default-remote-u
         cfi = config --get-all include.path
         cgi = config --get-all --global include.path
         global-config-file = config --get-all --global include.path

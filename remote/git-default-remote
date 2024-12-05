@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
+#
+# Infer a Git remote to consider as "default":
+# - Common case: if there's just one remote, return that
+# - Optional override: `git config default.remote`
+# - Optional fallback: `$DEFAULT_REMOTE` env var
 
 skip_existing=
 if [ "$1" == "-n" ]; then
   skip_existing=1
   shift
-fi
-
-if [ $# -gt 0 ]; then
-
 fi
 
 remote="$(git config remote.default)"
@@ -17,15 +18,17 @@ if [ -n "$remote" ]; then
 fi
 
 if [ -z "$skip_existing" ]; then
-  remotes=()
-  while read -r remote; do
-    remotes+=("$remote")
-  done < <(git remote)
-
+  IFS=$'\n' read -r -a remotes < <(git remote)
   if [ ${#remotes[@]} -eq 1 ]; then
     echo "${remotes[0]}"
     exit 0
   fi
+fi
+
+remote="$(git config clone.defaultRemoteName)"
+if [ -n "$remote" ]; then
+  echo "$remote"
+  exit 0
 fi
 
 if [ -n "$DEFAULT_REMOTE" ]; then

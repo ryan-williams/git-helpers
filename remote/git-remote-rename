@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# -eq 0 ]; then
-  from=origin
+  from="$(git default-remote)"
 else
   from="$1"
   shift
@@ -24,4 +24,11 @@ if [ -z "$to" ]; then
   exit 1
 fi
 
-git remote rename "$from" "$to"
+if [ "$from" == "$to" ]; then
+  echo "No change inferred ($from)" >&2
+  exit 1
+fi
+
+cmd=(git remote rename "$from" "$to")
+echo "${cmd[*]}" >&2
+"${cmd[@]}"
