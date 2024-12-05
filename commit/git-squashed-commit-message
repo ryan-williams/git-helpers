@@ -17,12 +17,10 @@
 # TODO(ryan): do smart wrapping on the body at 70-chars, per official guidance!
 
 if [ $# -eq 0 ]; then
-  args="$(git default-remote)/HEAD..HEAD"
-else
-  args="$@"
+  set -- "$(git default-remote)/HEAD..HEAD"
 fi
 
-for sha in $(git rev-list --reverse $args); do
+for sha in $(git rev-list --reverse "$@"); do
   echo -n '- '
   gn log --format="%s" -n 1 $sha
   body="$(gn log --format=%b -n 1 $sha | indent | trim)"

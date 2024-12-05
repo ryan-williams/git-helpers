@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Squash all commits since a given upstream (default $DEFAULT_REMOTE/HEAD); open $EDITOR with all commit
-# messages nicely formatted/bulletted.
+# messages nicely formatted/bulleted.
 
 set -e
 source "$GIT_HELPERS_HOME"/config/.helpers-rc
@@ -18,7 +18,7 @@ elif [ $# -eq 1 ]; then
 elif [ $# -eq 2 ]; then
   args="$1..$2"
 else
-  echo <<EOF
+  cat >&2 <<EOF
   Usage:
 
       $0               # squash from $remote/HEAD to HEAD
