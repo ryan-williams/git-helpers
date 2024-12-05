@@ -21,3 +21,8 @@
   parents = !git-parents.py
   pts = !git-parents.py
   prnts = !git-parents.py
+  syq = symbolic-ref -q
+  syr = symbolic-ref
+  sys = symbolic-ref --short
+  sysq = symbolic-ref --short -q
+  ssq = symbolic-ref --short -q
