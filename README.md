@@ -2,9 +2,6 @@
 [1,348](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
-- [Stats](#stats)
-    - [Count aliases](#count-completions)
-    - [Most-used aliases](#aliases)
 - [Setup](#setup)
 - [Commands](#commands)
     - [Inspect commit graph](#graphs)
@@ -26,11 +23,216 @@
         - [`gdg` (`git-diff-gif.py`)](#gdg)
         - [`gdj` (`git-diff-json.py`)](#gdj)
     - [Update commit parents](#parents)
+- [Meta](#meta)
+    - [Alias count](#count-completions)
+    - [Alias histogram](#aliases)
 <!-- /toc -->
 
-## Stats <a id="stats"></a>
+## Setup <a id="setup"></a>
+Source [`.git-rc`](./.git-rc) in your `.bashrc`:
+```bash
+echo ". $PWD/.git-rc" >> ~/.bashrc  # Configure new shells to load `git-helpers`
+. .bash-rc                          # "source" .bashrc, for immediate effect in existing shells
+```
+This will load all aliases, and add relevant directories to `$PATH`. `pip install -r requirements.txt` also ensures `python-dateutil` is installed available, which some scripts here require.
 
-### Count aliases <a id="count-completions"></a>
+## Commands <a id="commands"></a>
+Some aliases/commands I use frequently:
+
+### Inspect commit graph <a id="graphs"></a>
+`ggr` ([`git-graph`]) and `gg` ([`git-graph-all`]) are my preferred ways to visualize Git branches and history.
+
+#### `ggr` ([`git-graph`]) <a id="ggr"></a>
+
+Example output from this repo:
+
+![](img/gg-git-helpers.png)
+
+The first line shows that local branch `main` is checked out (`HEAD -> main`), and up to date with remote branches `gh/main` and `gl/main` (GitHub and GitLab, resp., but that's just a convention I use).
+
+#### `gg` ([`git-graph-all`]) <a id="gg"></a>
+Same as [`ggr`](#ggr), but includes all branches (not just the current one).
+
+e.g., [runsascoded/.rc] shows several parallel branch lineages I maintain:
+
+![](img/gg-rc.png)
+
+I develop on `gh-all`, and cherry-pick commits over to `gh-server`, `gl-all`, and `gl-server`.
+
+[git/git] shows wide merge lineages
+
+![](img/gg-git.png)
+
+### Summarize local/remote branches <a id="branches"></a>
+
+#### `gb` ([`git branches`]) <a id="gb"></a>
+
+Improved version of `git branch -vv`:
+- Branches output in reverse-chron order of last modification (instead of alphabetically)
+- Nice colors for each field
+- Concise "commits ahead/behind" counts
+- Abbreviated "time since last commit"
+
+[TileDB-SOMA] example:
+
+![gb](img/gb-tdbs.png)
+
+#### `gbr` ([`git-remote-branches`]) <a id="gbr"></a>
+
+Similar to [`gb`](#gb), but summarizes remotes' branches.
+
+### Inspect commits being rebased/cherry-picked <a id="gshrh"></a>
+
+#### `grbh` ([`git-rebase-head`]), `gcph` ([`git-cherry-pick-head`]) <a id="grbh"></a>
+Print the SHA of the commit currently being rebased or cherry-picked.
+
+#### `gshrh` ([`git-show-rebase-head`]), `gshch` ([`git-show-cherry-pick-head`]) <a id="gshrh"></a>
+Pass the above SHAs to `git show`.
+
+### Rebase <a id="rebase"></a>
+
+#### `gtw` ([`git-throw`]) <a id="gtw"></a>
+"Throw" (squash) uncommitted changes onto an arbitrary previous commit.
+
+<!-- `bmdf git-throw.py -- --help` -->
+```bash
+git-throw.py --help
+# Usage: git-throw.py [OPTIONS] DST
+#
+#   "Throw" (squash) uncommitted changes onto an arbitrary previous commit.
+#
+# Options:
+#   -m, --message TEXT  Optional message to use for ephemeral commit (before it
+#                       is squashed onto the commit pointed to by `dst`).
+#   -n, --dry-run       1x: commit changes, print rebase todo list; 2x: don't
+#                       commit changes, show simulated rebase todo list
+#   --help              Show this message and exit.
+```
+
+See also:
+- `gtwp` (`git throw HEAD^`): squash staged changes onto the current commit's parent.
+- `gtwp2` (`git throw HEAD~2`): squash staged changes onto the current commit's grandparent.
+
+#### `groc` ([`git-reorder-commits`]) <a id="groc"></a>
+- Reorder commits by index (0-based, counting backwards from `HEAD`)
+- The rebase starts just before the largest index provided, and "picks" commits in the order provided.
+
+Examples:
+
+##### Swap order of last two commits
+```bash
+groc 0 1
+```
+This rebases the last **2** commits (one more than the maximum index provided, i.e. **1**), according to the plan "0 1":
+- "pick" `HEAD~0` (current `HEAD`, whose rebased parent becomes `HEAD~2`)
+- "pick" `HEAD~1` (originally the parent of `HEAD`, now rebased on top of the commit from the previous step)
+
+##### `-n`: view a rebase "plan" without executing it
+```bash
+groc -n 0 1
+# pick 3d2e3a8 `dcw="diff --cached -w"`
+# pick 2d551a6 `commit -F-` aliases
+```
+
+##### `-p`: preserve commit-dates
+```bash
+groc -p -n 0 1
+# pick 3d2e3a8 `dcw="diff --cached -w"`
+# exec git reset-committer-date-rebase-head
+# pick 2d551a6 `commit -F-` aliases
+# exec git reset-committer-date-rebase-head
+```
+In this case, calls to [`git reset-committer-date-rebase-head`] are inserted after each `pick`ed commit.
+
+The `rebase -x` flag is also directly available; this does the same as the above:
+
+```bash
+git roc -n -x 'g rcd' 0 1
+# pick 3d2e3a8 `dcw="diff --cached -w"`
+# exec g rcd
+# pick 2d551a6 `commit -F-` aliases
+# exec g rcd
+```
+
+(`g rcd` is an alias for [`git reset-committer-date-rebase-head`])
+
+##### No-op rotations
+Running it twice is a no-op (assuming there are no rebase conflicts):
+```bash
+groc -p 0 1  # Reverse order of last two commits
+groc -p 0 1  # Reverse back, original commit SHA
+```
+
+Similarly, here's a no-op 3-rotation:
+```bash
+groc -p 0 2 1  # Put current HEAD before prior two commits
+groc -p 0 2 1  # Repeat; current state same as `groc -p 1 0 2`
+groc -p 0 2 1  # Original commit is restored (including SHA)
+```
+
+#### `grbcd` ([`git-rebase-preserve-commit-dates`]) <a id="grbcd"></a>
+Rebase, but inject `-x git rcd` ([`git reset-committer-date-rebase-head`]) after each commit, so that the committer-time is preserved.
+
+#### `gec` ([`git-edit-commit`]) <a id="gec"></a>
+Run a rebase to `edit` or `reword` a specific commit:
+
+```bash
+# Open the 3th commit back from HEAD, in rebase "edit" mode.
+# A subsequent `rebase --continue` will rebase the remaining 3 commits on top of it.
+git edit-commit HEAD~3
+
+# "Dry run" of the above:
+git edit-commit -n HEAD~3
+# Would run git rebase -i d6aae97^:
+# edit d6aae97 rm orphaned(?) `commit-filename{,s}` aliases
+# pick ed9447b `cmba="commit-body -a"`, `cnb="commit-body --amend"`
+# pick df33af4 `git-diff-json.py` fixes
+# pick 3c166c3 `dtl`/`details`: commit details
+
+# Change the parent commit's message, rebase HEAD on top of it (noninteractive)
+git edit-commit -r "new message" HEAD^
+
+# Same as above, but preserve the "committer dates" of `HEAD^` and `HEAD` (`g rcd` = `git reset-committer-date-rebase-head`)
+git edit-commit -r "new message" -x "g rcd" HEAD^
+
+# As a demonstration, this is effectively a no-op (same HEAD SHA before and after).
+# `gby = git body = git log -1 --format=%B`, so this rewrites the parent commit with the same
+# message, and preserves its committer date.
+git edit-commit -r "`gby HEAD^`" -x "g rcd" HEAD^
+```
+
+#### Other <a id="rebase-other"></a>
+- `rb <N>`: interactive rebase over the last `N` commits.
+- `grd` ([`git-rebase-diff`]): compute most recent pre-rebase SHA (`ghblr` / [`git-head-before-last-rebase`]), diff that vs. current worktree.
+  - Useful to ensure a rebase didn't change the final work-tree, e.g. when combining or rearranging commits.
+
+### Diff helpers, GIFs, JSON <a id="diff"></a>
+- `gdc` (`git diff --cached`): show staged changes only
+- `gds` (`git diff --stat`): show file/line add/remove stats
+- `gdw` (`git diff -w`): diff, ignoring whitespace changes
+
+Most combos of the above also exist, e.g. `gdcs`, `gdsw`, etc.
+
+#### `gdg` ([`git-diff-gif.py`]) <a id="gdg"></a>
+Create a GIF of an image at two commits, open in browser.
+
+#### `gdj` ([`git-diff-json.py`]) <a id="gdj"></a>
+Pretty-print JSON files, before diffing them.
+
+### Update commit parents <a id="parents"></a>
+Create a commit with a given tree and parents:
+- `gcmp` ([`git-commit-multiple-parents`]): takes an optional commit message (`-m`) and commit (`-b`) whose tree to use
+- `gsp` ([`git-set-parents`]) uses the current `HEAD`s message and tree
+
+### Author/Committer/User metadata
+- `gsau` ([`git-set-author`]): update `HEAD` author, either from Git configs, an existing commit, or literal name/email arguments.
+- `gsad` ([`git-set-author-date`]): update `HEAD` author date; match another commit's, or `HEAD`'s committer date.
+- `gscd` ([`git-set-committer-date`]): update `HEAD` committer date; match another commit's, or `HEAD`'s author date.
+- `gsid` ([`git-set-id`]), `ggsid` (`git-set-id -g`): set `user.{name,email}` configs.
+
+## Meta <a id="meta"></a>
+
+### Alias count <a id="count-completions"></a>
 Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scripts/count-completions.sh) counts them:
 <!-- `bmdf -- scripts/count-completions.sh -c` -->
 ```bash
@@ -1164,7 +1366,7 @@ gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 ```
 </details>
 
-### Most-used aliases <a id="aliases"></a>
+### Alias histogram <a id="aliases"></a>
 Here's a recent snapshot of my most-used Git aliases (annotated with their expansions):
 ```bash
 history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
@@ -1198,209 +1400,6 @@ history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 #     111 glg     # `git log -p --follow`, restricted to paths matching a substring argument
 #     109 garc    # `git-add-rebase-continue`: mark conflicted files resolved, continue rebase
 ```
-
-## Setup <a id="setup"></a>
-Source [`.git-rc`](./.git-rc) in your `.bashrc`:
-```bash
-echo ". $PWD/.git-rc" >> ~/.bashrc  # Configure new shells to load `git-helpers`
-. .bash-rc                          # "source" .bashrc, for immediate effect in existing shells
-```
-This will load all aliases, and add relevant directories to `$PATH`. `pip install -r requirements.txt` also ensures `python-dateutil` is installed available, which some scripts here require.
-
-## Commands <a id="commands"></a>
-More details about aliases/commands I use frequently:
-
-### Inspect commit graph <a id="graphs"></a>
-`ggr` ([`git-graph`]) and `gg` ([`git-graph-all`]) are my preferred ways to visualize Git branches and history.
-
-#### `ggr` ([`git-graph`]) <a id="ggr"></a>
-
-Example output from this repo:
-
-![](img/gg-git-helpers.png)
-
-The first line shows that local branch `main` is checked out (`HEAD -> main`), and up to date with remote branches `gh/main` and `gl/main` (GitHub and GitLab, resp., but that's just a convention I use).
-
-#### `gg` ([`git-graph-all`]) <a id="gg"></a>
-Same as [`ggr`](#ggr), but includes all branches (not just the current one).
-
-e.g., [runsascoded/.rc] shows several parallel branch lineages I maintain:
-
-![](img/gg-rc.png)
-
-I develop on `gh-all`, and cherry-pick commits over to `gh-server`, `gl-all`, and `gl-server`.
-
-[git/git] shows wide merge lineages
-
-![](img/gg-git.png)
-
-### Summarize local/remote branches <a id="branches"></a>
-
-#### `gb` ([`git branches`]) <a id="gb"></a>
-
-Improved version of `git branch -vv`:
-- Branches output in reverse-chron order of last modification (instead of alphabetically)
-- Nice colors for each field
-- Concise "commits ahead/behind" counts
-- Abbreviated "time since last commit"
-
-[TileDB-SOMA] example:
-
-![gb](img/gb-tdbs.png)
-
-#### `gbr` ([`git-remote-branches`]) <a id="gbr"></a>
-
-Similar to [`gb`](#gb), but summarizes remotes' branches.
-
-### Inspect commits being rebased/cherry-picked <a id="gshrh"></a>
-
-#### `grbh` ([`git-rebase-head`]), `gcph` ([`git-cherry-pick-head`]) <a id="grbh"></a>
-Print the SHA of the commit currently being rebased or cherry-picked.
-
-#### `gshrh` ([`git-show-rebase-head`]), `gshch` ([`git-show-cherry-pick-head`]) <a id="gshrh"></a>
-Pass the above SHAs to `git show`.
-
-### Rebase <a id="rebase"></a>
-
-#### `gtw` ([`git-throw`]) <a id="gtw"></a>
-"Throw" (squash) uncommitted changes onto an arbitrary previous commit.
-
-<!-- `bmdf git-throw.py -- --help` -->
-```bash
-git-throw.py --help
-# Usage: git-throw.py [OPTIONS] DST
-#
-#   "Throw" (squash) uncommitted changes onto an arbitrary previous commit.
-#
-# Options:
-#   -m, --message TEXT  Optional message to use for ephemeral commit (before it
-#                       is squashed onto the commit pointed to by `dst`).
-#   -n, --dry-run       1x: commit changes, print rebase todo list; 2x: don't
-#                       commit changes, show simulated rebase todo list
-#   --help              Show this message and exit.
-```
-
-See also:
-- `gtwp` (`git throw HEAD^`): squash staged changes onto the current commit's parent.
-- `gtwp2` (`git throw HEAD~2`): squash staged changes onto the current commit's grandparent.
-
-#### `groc` ([`git-reorder-commits`]) <a id="groc"></a>
-- Reorder commits by index (0-based, counting backwards from `HEAD`)
-- The rebase starts just before the largest index provided, and "picks" commits in the order provided.
-
-Examples:
-
-##### Swap order of last two commits
-```bash
-groc 0 1
-```
-This rebases the last **2** commits (one more than the maximum index provided, i.e. **1**), according to the plan "0 1":
-- "pick" `HEAD~0` (current `HEAD`, whose rebased parent becomes `HEAD~2`)
-- "pick" `HEAD~1` (originally the parent of `HEAD`, now rebased on top of the commit from the previous step)
-
-##### `-n`: view a rebase "plan" without executing it
-```bash
-groc -n 0 1
-# pick 3d2e3a8 `dcw="diff --cached -w"`
-# pick 2d551a6 `commit -F-` aliases
-```
-
-##### `-p`: preserve commit-dates
-```bash
-groc -p -n 0 1
-# pick 3d2e3a8 `dcw="diff --cached -w"`
-# exec git reset-committer-date-rebase-head
-# pick 2d551a6 `commit -F-` aliases
-# exec git reset-committer-date-rebase-head
-```
-In this case, calls to [`git reset-committer-date-rebase-head`] are inserted after each `pick`ed commit.
-
-The `rebase -x` flag is also directly available; this does the same as the above:
-
-```bash
-git roc -n -x 'g rcd' 0 1
-# pick 3d2e3a8 `dcw="diff --cached -w"`
-# exec g rcd
-# pick 2d551a6 `commit -F-` aliases
-# exec g rcd
-```
-
-(`g rcd` is an alias for [`git reset-committer-date-rebase-head`])
-
-##### No-op rotations
-Running it twice is a no-op (assuming there are no rebase conflicts):
-```bash
-groc -p 0 1  # Reverse order of last two commits
-groc -p 0 1  # Reverse back, original commit SHA
-```
-
-Similarly, here's a no-op 3-rotation:
-```bash
-groc -p 0 2 1  # Put current HEAD before prior two commits
-groc -p 0 2 1  # Repeat; current state same as `groc -p 1 0 2`
-groc -p 0 2 1  # Original commit is restored (including SHA)
-```
-
-#### `grbcd` ([`git-rebase-preserve-commit-dates`]) <a id="grbcd"></a>
-Rebase, but inject `-x git rcd` ([`git reset-committer-date-rebase-head`]) after each commit, so that the committer-time is preserved.
-
-#### `gec` ([`git-edit-commit`]) <a id="gec"></a>
-Run a rebase to `edit` or `reword` a specific commit:
-
-```bash
-# Open the 3th commit back from HEAD, in rebase "edit" mode.
-# A subsequent `rebase --continue` will rebase the remaining 3 commits on top of it.
-git edit-commit HEAD~3
-
-# "Dry run" of the above:
-git edit-commit -n HEAD~3
-# Would run git rebase -i d6aae97^:
-# edit d6aae97 rm orphaned(?) `commit-filename{,s}` aliases
-# pick ed9447b `cmba="commit-body -a"`, `cnb="commit-body --amend"`
-# pick df33af4 `git-diff-json.py` fixes
-# pick 3c166c3 `dtl`/`details`: commit details
-
-# Change the parent commit's message, rebase HEAD on top of it (noninteractive)
-git edit-commit -r "new message" HEAD^
-
-# Same as above, but preserve the "committer dates" of `HEAD^` and `HEAD` (`g rcd` = `git reset-committer-date-rebase-head`)
-git edit-commit -r "new message" -x "g rcd" HEAD^
-
-# As a demonstration, this is effectively a no-op (same HEAD SHA before and after).
-# `gby = git body = git log -1 --format=%B`, so this rewrites the parent commit with the same
-# message, and preserves its committer date.
-git edit-commit -r "`gby HEAD^`" -x "g rcd" HEAD^
-```
-
-#### Other <a id="rebase-other"></a>
-- `rb <N>`: interactive rebase over the last `N` commits.
-- `grd` ([`git-rebase-diff`]): compute most recent pre-rebase SHA (`ghblr` / [`git-head-before-last-rebase`]), diff that vs. current worktree.
-  - Useful to ensure a rebase didn't change the final work-tree, e.g. when combining or rearranging commits.
-
-### Diff helpers, GIFs, JSON <a id="diff"></a>
-- `gdc` (`git diff --cached`): show staged changes only
-- `gds` (`git diff --stat`): show file/line add/remove stats
-- `gdw` (`git diff -w`): diff, ignoring whitespace changes
-
-Most combos of the above also exist, e.g. `gdcs`, `gdsw`, etc.
-
-#### `gdg` ([`git-diff-gif.py`]) <a id="gdg"></a>
-Create a GIF of an image at two commits, open in browser.
-
-#### `gdj` ([`git-diff-json.py`]) <a id="gdj"></a>
-Pretty-print JSON files, before diffing them.
-
-### Update commit parents <a id="parents"></a>
-Create a commit with a given tree and parents:
-- `gcmp` ([`git-commit-multiple-parents`]): takes an optional commit message (`-m`) and commit (`-b`) whose tree to use
-- `gsp` ([`git-set-parents`]) uses the current `HEAD`s message and tree
-
-### Author/Committer/User metadata
-- `gsau` ([`git-set-author`]): update `HEAD` author, either from Git configs, an existing commit, or literal name/email arguments.
-- `gsad` ([`git-set-author-date`]): update `HEAD` author date; match another commit's, or `HEAD`'s committer date.
-- `gscd` ([`git-set-committer-date`]): update `HEAD` committer date; match another commit's, or `HEAD`'s author date.
-- `gsid` ([`git-set-id`]), `ggsid` (`git-set-id -g`): set `user.{name,email}` configs.
-
 
 [runsascoded/.rc]: https://github.com/runsascoded/.rc
 [git/git]: https://github.com/git/git
