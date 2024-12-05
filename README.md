@@ -1,5 +1,5 @@
 # git-helpers
-[1,305](#count-completions) Git aliases and scripts.
+[1,348](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Stats](#stats)
@@ -35,11 +35,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1320 completions added by installing git-helpers
+# 1348 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
-# - 3 chars: 230
-# - 4 chars: 498
+# - 3 chars: 233
+# - 4 chars: 513
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -50,7 +50,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1320 new completions:
+1348 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -92,6 +92,7 @@ gbe        = g branch-exists
 gbf        = g branch-reset
 gbh        = g blob-hash
 gbk        = g branch-back
+gbn        = !gn branch --format '%(refname:short)' --list
 gbp        = g branch-point
 gbr        = g remote-branches
 gbs        = g bisect
@@ -111,6 +112,7 @@ gcn        = g commit --amend
 gco        = g checkout
 gcp        = g cherry-pick
 gct        = g commit-tree
+gcw        = g checkout-worktree
 gd-        = g diff --
 gda        = g diff-pipe
 gdb        = g diff-branch-reflog
@@ -129,6 +131,7 @@ gds        = g diff --stat
 gdt        = g diff-tree
 gdu        = g diff -u
 gdw        = g diff -w
+gdx        = g diff-x
 gea        = git_expand_alias
 gec        = g edit-commit
 geq        = g equal
@@ -223,7 +226,7 @@ gpn        = g push -n
 gpo        = g push-to-remote-branch origin
 gpp        = g commit-push-parents
 gpr        = g pull --rebase
-gps        = !git pull --rebase && git submodule update --init --recursive
+gps        = !git pull --rebase && git submodule update --init --rebase --recursive
 gpt        = g push-x -t
 gpu        = g push-to-remote-branch upstream
 gpx        = g push-x
@@ -315,6 +318,7 @@ gabu       = g list-status AU
 gace       = g add-core-excludes -g
 gach       = g all-commits %h
 gacm       = g add-and-commit-msg
+gadl       = !git --no-pager log --format=%ad
 gaeg       = g add-core-excludes -g
 gael       = g add-core-excludes
 gafp       = g amend-force-push
@@ -342,7 +346,9 @@ gblg       = git bisect-latest-good
 gblr       = g head-before-last-rebase
 gbls       = g local-branch-shas
 gbmv       = g branch -m
-gbpa       = g branch --format '%(refname:short)' --points-at
+gbno       = !gn branch --format '%(refname:short)' --list
+gbnr       = !gn branch --format '%(refname:short)' -r --list
+gbpa       = g branch-points-at
 gbrg       = !git-branches.py -r
 gbrh       = g branch-reset
 gbrm       = g list-status DD
@@ -364,6 +370,7 @@ gcan       = g commit --amend --no-edit
 gcap       = g commit-push
 gcbh       = g commits-behind
 gcbn       = g commit-basename
+gccb       = g commit-body
 gccd       = . git-clone-and-cd
 gcfa       = g config --add
 gcfd       = g config --unset
@@ -401,6 +408,7 @@ gcoo       = g checkout --ours --
 gcop       = g checkout-previous-branch
 gcor       = g checkout --recurse-submodules
 gcot       = g checkout --theirs --
+gcow       = g checkout-worktree
 gcp1       = g cherry-pick -m1
 gcp2       = g cherry-pick -m2
 gcpa       = g cherry-pick --abort
@@ -463,6 +471,9 @@ gdts       = g dates
 gdw-       = g diff -w --
 gdwc       = g diff -w --cached
 gdws       = g diff -w --stat
+gdxc       = g diff-x -c
+gdxr       = g diff-x -r
+gdxw       = g diff-x -w
 geav       = git_expand_alias -v
 gecn       = g edit-commit -n
 gecp       = g edit-commit -p
@@ -498,6 +509,7 @@ ggid       = g get-id
 ggpi       = g grep --recurse-submodules -i
 ggpl       = g grep --recurse-submodules -l
 ggpn       = g grep --recurse-submodules -n
+ggpp       = g grep --recurse-submodules -P
 ggpq       = g grep -q
 ggra       = g graph -a
 ggrd       = g graph -d
@@ -523,11 +535,12 @@ ghob       = github_open_web_branch
 ghoc       = github_open_web_commit
 ghoj       = gh_open_job
 ghol       = gh_open_last
+ghon       = github_owner_name
 ghor       = github_open_web_ref
 ghow       = gh repo view --web
 ghrh       = gh run --help
 ghrl       = gh run list
-ghrn       = github_remote
+ghrn       = github_default_remote
 ghro       = gh_run_open
 ghrp       = github_remote_path
 ghrv       = gh run view
@@ -604,8 +617,8 @@ gmnm       = g merge --no-edit -m
 gmsg       = !git --no-pager log -1 --format=%s
 gmtb       = g mount-branch
 gmun       = g merge upstream/HEAD --no-edit
-gnbl       = !git --no-pager branch --format '%(refname:short)' --points-at
-gnbr       = !git --no-pager branch --format '%(refname:short)' -r --points-at
+gnbl       = !git --no-pager branch-points-at
+gnbr       = !git --no-pager branch-points-at-r
 gndc       = gn diff --cached
 gndh       = gn diff HEAD
 gnfm       = gn log-format
@@ -613,6 +626,8 @@ gngp       = gn grep --recurse-submodules
 gnlh       = !git --no-pager log-hash
 gnsh       = !git --no-pager show
 gpbd       = g patch-branch-diff
+gpdc       = g config push.default current
+gpdu       = g config push.default upstream
 gpfn       = g push -f -n
 gpfo       = g push -f origin
 gpft       = g push -f --tags
@@ -713,6 +728,7 @@ grvt       = g revert
 grwa       = g rewrite-author
 grwc       = g reword-commit
 grwt       = g restore-worktree
+grxa       = g rebase-exec-step -a
 grxs       = g rebase-exec-step
 grxx       = g rebase-exec-step
 gsac       = g submodule-auto-commit
@@ -725,7 +741,9 @@ gsdc       = !git status && git diff --cached
 gsdh       = !git status && git diff HEAD
 gsdr       = g set-default-remote-u
 gsds       = g set-dates
+gsfe       = g submodule foreach
 gsfh       = g show-sha-file HEAD
+gsfq       = g submodule foreach --quiet
 gsfv       = g submodule foreach --recursive
 gsha       = g hash
 gshc       = g ssh-command
@@ -820,7 +838,8 @@ gaup.      = g add -u -p .
 gbcag      = git bisect-commits-ahead-good
 gbcbb      = git bisect-commits-behind-bad
 gbhis      = g blob-hash -is
-gbpar      = g branch --format '%(refname:short)' -r --points-at
+gbnor      = !gn branch --format '%(refname:short)' -r --list
+gbpar      = g branch-points-at-r
 gbruc      = g branch-reset-upstream-checkout
 gbssr      = g bisect-start-run
 gcaam      = g commit -a --amend -m
@@ -833,6 +852,7 @@ gcane      = g commit --amend --no-edit --allow-empty
 gcapm      = g commit-push -a -m
 gcarb      = g checkout-and-rebase
 gcbns      = g commit-basenames
+gccba      = g commit-body -a
 gcdi1      = !git --no-pager log --format=%cd --date=iso -1
 gcfda      = g config --unset-all
 gcfef      = g config core.excludesfile
@@ -862,6 +882,7 @@ gcorf      = g checkout --recurse-submodules -f
 gcpam      = g commit-push -a -m
 gcpau      = g copy-author
 gcpdc      = g config push.default current
+gcpdd      = g config --unset push.default
 gcpdu      = g config push.default upstream
 gcppa      = g commit-push-parents -a
 gcppm      = g commit-push-parents -m
@@ -880,6 +901,7 @@ gdsca      = g describe --all
 gdsph      = g diff --stat HEAD^..HEAD
 gdthc      = g diff-theirs-conflicting
 gdts1      = !git --no-pager dates -1
+gdxcr      = g diff-x -c -r
 gecnp      = g edit-commit -n -p
 gecnx      = g edit-commit -n -x
 gecrn      = g edit-commit -r -n
@@ -942,6 +964,8 @@ gmnnf      = g merge --no-edit --no-ff
 gmtnb      = g mergetool -y -t nbdime
 gmune      = g merge upstream/HEAD --no-edit
 gnshs      = !git --no-pager show
+gpdcg      = g config push.default current
+gpdug      = g config push.default upstream
 gpftn      = g push -f --tags -n
 gphfn      = g push-head-to -f -n
 gphuf      = g push-head-upstream -f
@@ -978,6 +1002,8 @@ grvne      = g revert --no-edit
 grvph      = g rev-parse HEAD
 grvth      = g revert HEAD
 grvtn      = g revert --no-edit
+grxsa      = g rebase-exec-step -a
+grxxa      = g rebase-exec-step -a
 gsaca      = g submodule-auto-commit -a
 gsadr      = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
 gsard      = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
@@ -1039,8 +1065,8 @@ gcfefs     = g config --get-all core.excludesfile
 gcfigs     = g config --get-all core.excludesfile
 gcgefs     = g config --get-all --global core.excludesfile
 gcgigs     = g config --get-all --global core.excludesfile
-gcgpdc     = g config --gloabl push.default current
-gcgpdu     = g config --gloabl push.default upstream
+gcgpdc     = g config --global push.default current
+gcgpdu     = g config --global push.default upstream
 gcmtrr     = g commit-tree-reset
 gcococ     = g conflicting-checkout-ours-and-continue
 gcoctc     = g conflicting-checkout-theirs-and-continue
@@ -1090,7 +1116,6 @@ git_set_sha = export sha="$(git sha)"
 clone_org.py = git-helpers/github/clone_org.py
 gh_open_last
 git_dir_curry = <exported_function_name> <git-git-dir_param1> <git-git-dir_param2> ...
-github_remote = git-find-only-remote github.com
 gitlab_remote = git-find-only-remote gitlab.com
 hash-files.py = git-helpers/github/hash-files.py  # Standalone script that mimics GitHub Actions' hashFiles helper
 gh_last_run_id = gh run list -L 1 --json databaseId | jq -r .[0].databaseId
@@ -1105,9 +1130,10 @@ github_maybe_api
 gitlab_maybe_api
 gitlab_open_jobs
 parse-github-url = git-helpers/github/parse-github-url
+github_owner_name = [remote name]
 git_filter_repo.py = git-helpers/git-filter-repo/git_filter_repo.py  # Internal globals
 github_remote_pathNo manual entry for git-remote-path
- = git remote-path "$@" "$(github_remote)"
+ = git remote-path "$@" "$(github_default_remote)"
 gitlab_remote_pathNo manual entry for git-remote-path
  = git remote-path "$@" "$(gitlab_remote)"
 init-mirror-remote = git-helpers/remote/init-mirror-remote
@@ -1117,10 +1143,11 @@ github_open_web_ref = [ref]
 gh_last_workflow_run = gh run list -L 1 --json databaseId | jq -r .[0].databaseId
 github-docs-snapshot = git-helpers/github/github-docs-snapshot
 pop_commit_from_file = git-helpers/cherry-pick/pop_commit_from_file  # Cherry-pick a commit from a file; if successful, remove it from the file.
+github_default_remote = git-find-only-remote github.com
 gitlab_protect_branch
 github-commit-api-urls = git-helpers/submodule/github-commit-api-urls
 github-commit-web-urls = git-helpers/submodule/github-commit-web-urls
-github_open_web_branch
+github_open_web_branch = [[-r remote] <branch> | <remote> <branch>]
 github_open_web_commit = [commit]
 gh_run_list_in_progress = gh run list -s in_progress
 github_unprotect_branch
@@ -1133,7 +1160,7 @@ github-submodule-check-commits = git-helpers/submodule/github-submodule-check-co
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 1345 completions present before and after installing git-helpers
-1320 completions added by installing git-helpers (0 removed, 2665 total)
+1348 completions added by installing git-helpers (0 removed, 2693 total)
 ```
 </details>
 
