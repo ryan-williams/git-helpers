@@ -3,4 +3,4 @@
 set -e
 
 git clone --recurse-submodules --single-branch --branch "$@"
-cd "$(last-updated-dir)"
+cd "$(last-updated-dir)"  # ls-helpers

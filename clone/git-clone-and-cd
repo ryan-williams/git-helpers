@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
-git clone --recurse-submodules "$@" && \
-cd "$(last-updated-dir)" || \
-return 1
+set -e
+
+git clone --recurse-submodules "$@"
+cd "$(last-updated-dir)"  # ls-helpers
