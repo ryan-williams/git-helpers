@@ -1,4 +1,5 @@
 [alias]
+    rhn = revert --no-edit HEAD
     rne = revert --no-edit
     rneh = revert --no-edit HEAD
     rnh = revert --no-edit HEAD
