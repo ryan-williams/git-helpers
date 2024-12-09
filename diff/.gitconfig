@@ -15,6 +15,7 @@
   dc   = diff --cached
   dcd  = diff --cached --submodule=diff
   dcp  = diff --cached --submodule=diff
+  dcq  = diff --cached --quiet
   dcss = diff --cached --submodule=short
   dcw  = diff --cached -w
   df   = diff-filter
@@ -36,6 +37,7 @@
   dp1 = diff-vs-parent 1
   dp2 = diff-vs-parent 2
   dq   = diff --quiet
+  dqc  = diff --quiet --cached
   ds   = diff --stat
   dsc  = diff --stat --cached
   dcs  = diff --stat --cached
