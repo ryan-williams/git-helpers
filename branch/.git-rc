@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 alias gbb="g bb"
+alias gbcc="g bcc"
+alias gcbc="g cbc"
 alias gbd="g bd"
 alias gbD="g bD"
 alias gbdf="g bdf"

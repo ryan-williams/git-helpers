@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <new branch> [old branch]" >&2
+    exit 1
+fi
+
+new="$1"; shift
+
+if [ $# -gt 0 ]; then
+    old="$1"; shift
+else
+    old="$(git symbolic-ref -q --short HEAD)"
+fi
+
+if [ $# -gt 0 ]; then
+    echo "Usage: $0 <new branch> [old branch]" >&2
+    exit 1
+fi
+
+set -x
+git branch -c "$old" "$new"
+git checkout "$new"

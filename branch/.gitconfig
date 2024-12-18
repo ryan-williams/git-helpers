@@ -1,6 +1,8 @@
 [alias]
   b = branches
   bb = !git-branches.py -b
+  bcc = copy-branch-checkout
+  cbc = copy-branch-checkout
   brg = !git-branches.py -r
   branch-back = checkout-previous-branch
   bk = branch-back
