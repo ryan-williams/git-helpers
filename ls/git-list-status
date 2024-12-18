@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-arg="$1"
-shift
-
-git status -s "$@" | perl -ne "print if s/^$arg //"
+if [ $# -eq 0 ]; then
+  git status -s
+else
+  arg="$(echo "$1" | tr '[:lower:]' '[:upper:]')"; shift
+  git status -s "$@" | perl -ne "print if s/^$arg //"
+fi
