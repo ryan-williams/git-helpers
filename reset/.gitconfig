@@ -8,5 +8,6 @@
   rh1 = reset-hard HEAD@{1}
   rhh = reset --hard HEAD
   rhp = reset --hard HEAD^
+  rhp2 = reset --hard HEAD~2
   rrs = reverse-reset
   rsf = checkout HEAD --
