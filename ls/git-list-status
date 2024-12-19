@@ -3,6 +3,11 @@
 if [ $# -eq 0 ]; then
   git status -s
 else
-  arg="$(echo "$1" | tr '[:lower:]' '[:upper:]')"; shift
-  git status -s "$@" | perl -ne "print if s/^$arg //"
+  grep_args=()
+  if [ "$1" == -i ]; then
+    grep_args=(-i)
+    shift
+  fi
+  arg="$1"; shift
+  git status -s "$@" | grep "${grep_args[@]}" "^$arg " | cut -c4-
 fi

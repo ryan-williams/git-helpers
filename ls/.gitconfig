@@ -70,6 +70,8 @@
 
   list-mode = list-status
   lm = list-mode
+  lmim = list-mode -i ' M'
+  lim = list-mode -i ' M'
   lmm = list-mode ' M'
 
   deleted-by-them = list-status UD
