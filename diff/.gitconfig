@@ -78,5 +78,10 @@
   idc = is-dirty-cached
   no-diff = diff --quiet HEAD
 
+  nd = !git --no-pager diff
+  ndc = nd --cached
+  ndh = nd HEAD
+  ndn = nd --name-only
+
 [diff]
   submodule = diff
