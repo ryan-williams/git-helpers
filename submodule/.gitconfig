@@ -53,6 +53,7 @@
   sur   = submodule update --recursive
   sus   = submodule update
   surq  = submodule update  --recursive --quiet
+  scc   = submodule-count-commits
   smcc  = submodule-count-commits
   sml   = submodule foreach --quiet --recursive 'echo $displaypath'
   smn   = submodule foreach --quiet 'echo $name'
