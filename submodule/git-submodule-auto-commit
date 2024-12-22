@@ -3,16 +3,21 @@
 set -e
 
 usage() {
-  echo "Usage: git submodule-auto-commit [-a] [-n]" >&2
+  echo "Usage: git submodule-auto-commit [-a] [-m] [-n]" >&2
+  echo "  -a: include unstaged changes" >&2
+  echo "  -m: print generated commit message only" >&2
+  echo "  -n: dry run" >&2
   exit 1
 }
 
 include_unstaged=
 commit=()
+msg_only=
 dry_run=()
-while getopts "an" opt; do
+while getopts "amn" opt; do
   case $opt in
     a) include_unstaged=1; commit=(-a) ;;
+    m) msg_only=1 ;;
     n) dry_run=(--dry-run) ;;
     *) usage ;;
   esac
@@ -33,7 +38,7 @@ else
 fi
 
 diffs="$(comm -12 <(git status --short | awk "$awk_cmd" | sort) <(git ls-tree HEAD "$@" | awk '$2=="commit" { print $4 }' | sort))"
-echo "Changed submodules: $diffs" >&2
+# echo "Changed submodules: $diffs" >&2
 
 if [ "${#diffs[@]}" == "0" ]; then
   echo "No changed submodules found" >&2
@@ -41,8 +46,13 @@ if [ "${#diffs[@]}" == "0" ]; then
 fi
 
 run() {
-  echo "$*" >&2
-  "$@"
+  if [ -n "$msg_only" ]; then
+    true
+    # echo "Skipping $*" >&2
+  else
+    echo "$*" >&2
+    "$@"
+  fi
 }
 
 subj=
@@ -59,11 +69,27 @@ for sm in $diffs; do
 
   before="$(git ls-tree HEAD "$sm" | awk '{ print $3 }')"
   after="$(git x "$sm" full-hash)"
-  spec="$before..$after"
-  body+=("- $sm: $spec")
-  while read -r line; do
-    body+=("  - $line")
-  done < <(git x "$sm" log --format="%h: %s" "$spec")
+  bef="$(git x "$sm" log -1 --format=%h "$before")"
+  aft="$(git x "$sm" log -1 --format=%h "$after")"
+  if [ "$back" -gt 0 ]; then
+    body+=("- $sm:")
+    spec="$bef..$aft"
+    body+=("  - Gained $spec:")
+    while read -r line; do
+      body+=("    - $line")
+    done < <(git x "$sm" log --format="%h: %s" "$spec")
+    spec="$aft..$bef"
+    body+=("  - Lost $spec:")
+    while read -r line; do
+      body+=("    - $line")
+    done < <(git x "$sm" log --format="%h: %s" "$spec")
+  else
+    spec="$bef..$aft"
+    body+=("- $sm: $spec")
+    while read -r line; do
+      body+=("  - $line")
+    done < <(git x "$sm" log --format="%h: %s" "$spec")
+  fi
   run git add "${dry_run[@]}" "$sm"
 done
 
@@ -73,4 +99,8 @@ done
   for line in "${body[@]}"; do
     echo "$line"
   done
-) | tee /dev/stderr | run git commit "${dry_run[@]}" "${commit[@]}" -F-
+) | if [ -n "$msg_only" ]; then
+  cat
+else
+  tee /dev/stderr | run git commit "${dry_run[@]}" "${commit[@]}" -F-
+fi
