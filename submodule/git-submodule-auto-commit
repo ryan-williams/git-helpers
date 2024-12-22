@@ -3,45 +3,74 @@
 set -e
 
 usage() {
-    echo "Usage: git submodule-auto-commit [-a]" >&2
-    exit 1
+  echo "Usage: git submodule-auto-commit [-a] [-n]" >&2
+  exit 1
 }
 
 include_unstaged=
-if [ "$1" == "-a" ]; then
-    include_unstaged=1
-    shift
-fi
+commit=()
+dry_run=()
+while getopts "an" opt; do
+  case $opt in
+    a) include_unstaged=1; commit=(-a) ;;
+    n) dry_run=(--dry-run) ;;
+    *) usage ;;
+  esac
+done
 
-all=
-if [ $# -eq 0 ]; then
-    all=1
+# Remove processed options from arguments
+shift $((OPTIND-1))
+
+all=1  # Default to all if no paths specified
+if [ $# -gt 0 ]; then
+  all=
 fi
 
 if [ -z "$include_unstaged" ] && [ "$all" == "1" ]; then
-    diff_args=(--cached)
-    awk_cmd='$0 ~ /^M/ {print $2}'
+  awk_cmd='$0 ~ /^M/ { print $2 }'
 else
-    diff_args=()
-    awk_cmd='$0 ~ /^ M/ {print $2}'
+  awk_cmd='$0 ~ /^ M/ { print $2 }'
 fi
 
 diffs="$(comm -12 <(git status --short | awk "$awk_cmd" | sort) <(git ls-tree HEAD "$@" | awk '$2=="commit" { print $4 }' | sort))"
 echo "Changed submodules: $diffs" >&2
 
 if [ "${#diffs[@]}" == "0" ]; then
-    echo "No changed submodules found" >&2
-    exit 1
+  echo "No changed submodules found" >&2
+  exit 1
 fi
 
-msg=
+run() {
+  echo "$*" >&2
+  "$@"
+}
+
+subj=
+body=()
 for sm in $diffs; do
-    before="$(git ls-tree HEAD "$sm" | awk '{ print $3 }')"
-    after="$(git x "$sm" full-hash)"
-    subjects="$(git x "$sm" log --format=%s "$before..$after" | perl -pe 'chomp if eof; s/\n/, /')"
-    msg="${msg:+$msg, }"
-    msg="${msg}$sm: $subjects"
-    git add "$sm"
+  read back fwd <<< "$(git submodule-count-commits "$sm" | tr -d '\-+')"
+  subj+="${subj:+, }$sm"
+  if [ "$back" -gt 0 ]; then
+    subj+="-$back"
+  fi
+  if [ "$fwd" -gt 0 ]; then
+    subj+="+$fwd"
+  fi
+
+  before="$(git ls-tree HEAD "$sm" | awk '{ print $3 }')"
+  after="$(git x "$sm" full-hash)"
+  spec="$before..$after"
+  body+=("- $sm: $spec")
+  while read -r line; do
+    body+=("  - $line")
+  done < <(git x "$sm" log --format="%h: %s" "$spec")
+  run git add "${dry_run[@]}" "$sm"
 done
 
-git commit -m "$msg" "$@"
+(
+  echo "$subj"
+  echo
+  for line in "${body[@]}"; do
+    echo "$line"
+  done
+) | tee /dev/stderr | run git commit "${dry_run[@]}" "${commit[@]}" -F-
