@@ -12,6 +12,8 @@
 
 [alias]
         ace  = add-core-excludes -g
+        adt = attr-diff-type
+        atd = attr-diff-type
         ae   = add-core-excludes -g
         aeg  = add-core-excludes -g
         ael   = add-core-excludes

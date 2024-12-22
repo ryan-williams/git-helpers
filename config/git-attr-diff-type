@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <path>" >&2
+    exit 1
+fi
+
+diff_driver=$(git check-attr diff "$1" | sed -E 's/.*: diff: (.*)/\1/')
+if [ "$diff_driver" != "unset" ] && [ "$diff_driver" != "unspecified" ]; then
+    echo "$diff_driver"
+    exit 0
+else
+    exit 1
+fi
