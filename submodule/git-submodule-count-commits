@@ -22,4 +22,4 @@ fi
 from="$(git submodule-sha "$parent_ref:$submodule")"
 to="$submodule_ref"
 
-git x "$submodule" count-commits "$from^" "$to"
+git x "$submodule" count-commits "$from" "$to"
