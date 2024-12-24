@@ -30,7 +30,9 @@
   ccb   = commit-body
   ccba  = commit-body -a
   cmf   = commit -F-
+  cmfn  = commit -F- --amend
   cmfa  = commit -aF-
+  cmfan = commit -aF- --amend
   cm    = commit -m
   cmab  = commit-body -a
   cmb   = commit-body
