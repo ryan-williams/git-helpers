@@ -55,7 +55,7 @@ else
   if [ -z "$include_unstaged" ] && [ "$all" == "1" ]; then
     awk_cmd='$0 ~ /^M/ { print $2 }'
   else
-    awk_cmd='$0 ~ /^ M/ { print $2 }'
+    awk_cmd='$0 ~ /^ ?M/ { print $2 }'
   fi
   diffs="$(comm -12 <(git status --short | awk "$awk_cmd" | sort) <(submodules HEAD "$@"))"
 fi
@@ -79,12 +79,17 @@ run() {
 subj=
 body=()
 for sm in $diffs; do
-  scc_args=()
+  r0="$(git submodule-sha "$from:$sm")"
+  s0="$(git x "$sm" log -1 --format=%h "$r0")"
   if [ -n "$to" ]; then
-    to_sm="$(git submodule-sha "$to:$sm")"
-    scc_args=("$from" "$to_sm")
+    r1="$(git submodule-sha "$to:$sm")"
+  elif [ -n "$include_unstaged" ]; then
+    r1="$(git x "$sm" log -1 --format=%H)"
+  else
+    r1="$(git ls-files --stage "$sm" | awk '{ print $2 }')"
   fi
-  read back fwd <<< "$(git submodule-count-commits "$sm" "${scc_args[@]}" | tr -d '\-+')"
+  s1="$(git x "$sm" log -1 --format=%h "$r1")"
+  read -r back fwd <<< "$(git x "$sm" count-commits "$r0" "$r1" | tr -d '\-+')"
   if [ "$back" -eq 0 ] && [ "$fwd" -eq 0 ]; then
     continue
   fi
@@ -96,29 +101,20 @@ for sm in $diffs; do
     subj+="+$fwd"
   fi
 
-  before="$(git ls-tree "$from" "$sm" | awk '{ print $3 }')"
-  if [ -n "$to" ]; then
-    after="$to_sm"
-  else
-    after="$(git ls-tree HEAD "$sm" | awk '{ print $3 }')"
-  fi
-  #after="$(git x "$sm" full-hash)"
-  bef="$(git x "$sm" log -1 --format=%h "$before")"
-  aft="$(git x "$sm" log -1 --format=%h "$after")"
   if [ "$back" -gt 0 ]; then
     body+=("- $sm:")
-    spec="$bef..$aft"
+    spec="$s0..$s1"
     body+=("  - Gained $spec:")
     while read -r line; do
       body+=("    - $line")
     done < <(git x "$sm" log --format="%h: %s" "$spec")
-    spec="$aft..$bef"
+    spec="$s1..$s0"
     body+=("  - Lost $spec:")
     while read -r line; do
       body+=("    - $line")
     done < <(git x "$sm" log --format="%h: %s" "$spec")
   else
-    spec="$bef..$aft"
+    spec="$s0..$s1"
     body+=("- $sm: $spec")
     while read -r line; do
       body+=("  - $line")
