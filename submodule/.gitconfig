@@ -6,6 +6,7 @@
   sacam = submodule-auto-commit -am
   sacan = submodule-auto-commit -an
   sacm  = submodule-auto-commit -m
+  sacmr = submodule-auto-commit -mr
   sacn  = submodule-auto-commit -n
   saf   = submodule add -f
   sm    = submodule

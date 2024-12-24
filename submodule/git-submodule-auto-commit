@@ -2,11 +2,14 @@
 
 set -e
 
+err() {
+  echo "$@" >&2
+}
 usage() {
-  echo "Usage: git submodule-auto-commit [-a] [-m] [-n]" >&2
-  echo "  -a: include unstaged changes" >&2
-  echo "  -m: print generated commit message only" >&2
-  echo "  -n: dry run" >&2
+  err "Usage: git submodule-auto-commit [-a] [-m] [-n]"
+  err "  -a: include unstaged changes"
+  err "  -m: print generated commit message only"
+  err "  -n: dry run"
   exit 1
 }
 
@@ -14,11 +17,13 @@ include_unstaged=
 commit=()
 msg_only=
 dry_run=()
-while getopts "amn" opt; do
+refspec=
+while getopts "amnr:" opt; do
   case $opt in
     a) include_unstaged=1; commit=(-a) ;;
     m) msg_only=1 ;;
     n) dry_run=(--dry-run) ;;
+    r) refspec="$OPTARG" ;;
     *) usage ;;
   esac
 done
@@ -31,26 +36,42 @@ if [ $# -gt 0 ]; then
   all=
 fi
 
-if [ -z "$include_unstaged" ] && [ "$all" == "1" ]; then
-  awk_cmd='$0 ~ /^M/ { print $2 }'
-else
-  awk_cmd='$0 ~ /^ M/ { print $2 }'
-fi
+submodules() {
+  git ls-tree "$@" | awk '$2=="commit" { print $4 }' | sort
+}
 
-diffs="$(comm -12 <(git status --short | awk "$awk_cmd" | sort) <(git ls-tree HEAD "$@" | awk '$2=="commit" { print $4 }' | sort))"
-# echo "Changed submodules: $diffs" >&2
+if [ -n "$refspec" ]; then
+  if [[ $refspec == *..* ]]; then
+    from="${refspec%%..*}"
+    to="${refspec##*..}"
+  else
+    from="$refspec"
+    to=HEAD
+  fi
+  diffs="$(comm -12 <(git diff --name-status "$refspec" | awk '$0 ~ /^M/ { print $2 }' | sort) <(submodules "$to" "$@"))"
+else
+  from=HEAD
+  to=
+  if [ -z "$include_unstaged" ] && [ "$all" == "1" ]; then
+    awk_cmd='$0 ~ /^M/ { print $2 }'
+  else
+    awk_cmd='$0 ~ /^ M/ { print $2 }'
+  fi
+  diffs="$(comm -12 <(git status --short | awk "$awk_cmd" | sort) <(submodules HEAD "$@"))"
+fi
+# err "Changed submodules: $diffs"
 
 if [ "${#diffs[@]}" == "0" ]; then
-  echo "No changed submodules found" >&2
+  err "No changed submodules found"
   exit 1
 fi
 
 run() {
   if [ -n "$msg_only" ]; then
     true
-    # echo "Skipping $*" >&2
+    # err "Skipping $*"
   else
-    echo "$*" >&2
+    err "$*"
     "$@"
   fi
 }
@@ -58,7 +79,15 @@ run() {
 subj=
 body=()
 for sm in $diffs; do
-  read back fwd <<< "$(git submodule-count-commits "$sm" | tr -d '\-+')"
+  scc_args=()
+  if [ -n "$to" ]; then
+    to_sm="$(git submodule-sha "$to:$sm")"
+    scc_args=("$from" "$to_sm")
+  fi
+  read back fwd <<< "$(git submodule-count-commits "$sm" "${scc_args[@]}" | tr -d '\-+')"
+  if [ "$back" -eq 0 ] && [ "$fwd" -eq 0 ]; then
+    continue
+  fi
   subj+="${subj:+, }$sm"
   if [ "$back" -gt 0 ]; then
     subj+="-$back"
@@ -67,8 +96,13 @@ for sm in $diffs; do
     subj+="+$fwd"
   fi
 
-  before="$(git ls-tree HEAD "$sm" | awk '{ print $3 }')"
-  after="$(git x "$sm" full-hash)"
+  before="$(git ls-tree "$from" "$sm" | awk '{ print $3 }')"
+  if [ -n "$to" ]; then
+    after="$to_sm"
+  else
+    after="$(git ls-tree HEAD "$sm" | awk '{ print $3 }')"
+  fi
+  #after="$(git x "$sm" full-hash)"
   bef="$(git x "$sm" log -1 --format=%h "$before")"
   aft="$(git x "$sm" log -1 --format=%h "$after")"
   if [ "$back" -gt 0 ]; then
