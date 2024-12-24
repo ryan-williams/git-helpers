@@ -47,6 +47,7 @@
   cne   = commit --no-edit
   cnf   = commit --amend -F-
   cnm   = commit --amend -m
+  cnne  = commit --amend --no-edit
   cpau  = copy-author
   cap   = commit-push
   caap  = commit-push -a
