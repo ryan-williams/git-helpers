@@ -1,6 +1,10 @@
 [alias]
   d    = diff
   dd   = diff --submodule=diff
+  de   = diff --exit-code
+  deq  = diff --exit-code --quiet
+  dex  = diff --exit-code
+  dqe  = diff --exit-code --quiet
   dsd  = diff --submodule=diff
   dl   = diff --submodule=log
   dsl  = diff --submodule=log
