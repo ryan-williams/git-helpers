@@ -60,9 +60,13 @@
   ; pip install qmdx
   dx = diff-x
   dxc = diff-x -c
-  dxcr = diff-x -c -r
-  dxr = diff-x -r
+  dxcr = diff-x -cR
+  dxcrr = diff-x -cr
+  dxr = diff-x -R
+  dxrr = diff-x -r
   dxw = diff-x -w
+  dxwr = diff-x -wR
+  dxwrr = diff-x -wr
 
   has-changes = is-dirty
   has-no-changes = is-clean
