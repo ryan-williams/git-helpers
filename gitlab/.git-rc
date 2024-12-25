@@ -9,6 +9,19 @@ gitlab_api() {
 export -f gitlab_api
 defn glapi gitlab_api
 
+gitlab_url() {
+    gh repo view --json url | jq -r .url
+}
+export -f gitlab_url
+defn gluh gitlab_url
+defn gluw gitlab_url
+
+gitlab_url_ssh() {
+    gh repo view --json sshUrl | jq -r .sshUrl
+}
+export -f gitlab_url_ssh
+defn glus gitlab_url_ssh
+
 alias glob="glab repo view --web"
 gitlab_open_jobs() {
     web_url="$(glab repo view -F json | jq -r .web_url)"

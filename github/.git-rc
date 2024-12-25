@@ -17,10 +17,19 @@ defn ghx gh api -X
 defn ghw github-workflows.py
 
 github_url() {
-    gh repo view --json url | jq -r '.url'
+    gh repo view --json url | jq -r .url
 }
 export -f github_url
 defn ghu github_url
+defn ghuw github_url
+
+github_url_ssh() {
+    gh repo view --json sshUrl | jq -r .sshUrl
+}
+export -f github_url_ssh
+defn ghus github_url_ssh
+defn ghsu github_url_ssh
+
 github_open_actions() {
     open "$(github_url)/actions"
 }
