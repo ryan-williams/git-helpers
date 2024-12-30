@@ -52,6 +52,7 @@
   smurq = submodule update --recursive --quiet
   smurr = submodule update --recursive --rebase
   smus  = submodule update
+  sss   = submodule-set-sha
   su    = submodule update --recursive
   suf   = submodule update --recursive -f
   suq   = submodule update --quiet

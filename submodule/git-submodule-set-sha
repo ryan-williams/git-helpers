@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+if [ $# -ne 2 ]; then
+    echo "Usage: git-submodule-set-sha <submodule> <ref>" >&2
+    return 1
+fi
+
+m="$1"; shift
+ref="$1"; shift
+
+sha="$(git x "$m" log -1 --format=%H "$ref")"
+
+git update-index --cacheinfo "160000,$sha,$m"
+
+echo "Set $m to $sha" >&2
