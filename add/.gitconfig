@@ -11,3 +11,5 @@
   aup = add -u -p
   apu = add -p -u
   aus = !git add -u && git status
+  ui = update-index
+  uic = update-index --cacheinfo
