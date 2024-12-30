@@ -11,6 +11,7 @@
   saf   = submodule add -f
   sm    = submodule
   sma   = submodule add --quiet
+  smab  = submodule add -b
   smac  = submodule-auto-commit
   smaf  = submodule add -f
   smc   = submodule-commits
