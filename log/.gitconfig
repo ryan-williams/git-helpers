@@ -9,6 +9,9 @@
   blob-hash = blob-sha
   body = !git --no-pager log -1 --format=%B
   by = body
+  by1 = body HEAD@{1}
+  byh1 = body HEAD@{1}
+  byp = body HEAD^
   cdi1 = !git --no-pager log --format=%cd --date=iso -1
   dates = log '--format=%ad %cd'
   details = log '--format=%H %T%n%an <%ae> (%ad)%n%cn <%ce> (%cd)%n%B'
