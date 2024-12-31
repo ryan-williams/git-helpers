@@ -36,6 +36,18 @@ github_open_actions() {
 export -f github_open_actions
 defn ghoa github_open_actions
 
+github_open_settings() {
+    open "$(github_url)/settings"
+}
+export -f github_open_settings
+defn ghos github_open_settings
+
+github_open_settings_secrets_actions() {
+    open "$(github_url)/settings/secrets/actions"
+}
+export -f github_open_settings_secrets_actions
+defn ghossa github_open_settings_secrets_actions
+
 defn ghow gh repo view --web
 
 defn github_default_remote git-find-only-remote github\.com
