@@ -30,24 +30,25 @@ exec=
 reword=
 reword_file=
 cmd=edit
-while [ $# -gt 0 ]; do
-    case "$1" in
-        -a) shift; amend=1 ;;
-        -n) shift; dry_run=(-n) ;;
-        -p) shift; exec="git reset-committer-date-rebase-head" ;;
-        -r) shift; reword="$1"; reword_file="$(mktemp)"; cmd=pick; shift ;;
-        -x) shift; exec="$1"; shift ;;
-         *) break ;;
-    esac
+while getopts "anpr:x:" opt; do
+  case "$opt" in
+    a) amend=1 ;;
+    n) dry_run=(-n) ;;
+    p) exec="git reset-committer-date-rebase-head" ;;
+    r) reword="$OPTARG"; reword_file="$(mktemp)" ;;
+    x) exec="$OPTARG" ;;
+    *) exit 1 ;;
+  esac
 done
+shift $((OPTIND-1))
 
 if [ $# -ne 1 ]; then
-    echo "Usage: $0 [-n] [-p | -x <cmd>] [-r] <commit>" >&2
-    echo "  -n: dry run" >&2
-    echo "  -p: preserve committer date" >&2
-    echo "  -r: reword commit message (default: \"edit\" commit" >&2
-    echo "  -x: execute command after each commit" >&2
-    exit 1
+  echo "Usage: $0 [-n] [-p | -x <cmd>] [-r] <commit>" >&2
+  echo "  -n: dry run" >&2
+  echo "  -p: preserve committer date" >&2
+  echo "  -r: reword commit message (default: \"edit\" commit" >&2
+  echo "  -x: execute command after each commit" >&2
+  exit 1
 fi
 
 ref="$1"; shift
@@ -55,33 +56,33 @@ ref="$(git log -1 --format=%h "$ref")"
 sbj="$(git log -1 --format=%s "$ref")"
 
 exec_line() {
-    if [ -n "$exec" ]; then
-        echo "exec $exec"
-    fi
+  if [ -n "$exec" ]; then
+    echo "exec $exec"
+  fi
 }
 
 (
-    echo "$cmd $ref $sbj"
-    if [ -n "$reword" ]; then
-        echo "$reword" > "$reword_file"
-        echo "exec git commit --amend -F$reword_file"
-    fi
+  echo "$cmd $ref $sbj"
+  if [ -n "$reword" ]; then
+    echo "$reword" > "$reword_file"
+    echo "exec git commit --amend -F$reword_file"
+  fi
+  exec_line
+  git log --reverse "--format=%h %s" "$ref..HEAD" | \
+  while IFS= read -r line; do
+    echo "pick $line"
     exec_line
-    git log --reverse "--format=%h %s" "$ref..HEAD" | \
-    while IFS= read -r line; do
-        echo "pick $line"
-        exec_line
-    done
+  done
 ) | git rebase-stdin "${dry_run[@]}" "$ref^"
 
 if [ -n "$amend" ]; then
-    git commit --amend
-    git rebase --continue
+  git commit --amend
+  git rebase --continue
 fi
 
 cleanup() {
-    if [ -n "$reword_file" ]; then
-        rm -f "$reword_file"
-    fi
+  if [ -n "$reword_file" ]; then
+    rm -f "$reword_file"
+  fi
 }
 trap cleanup EXIT
