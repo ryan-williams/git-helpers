@@ -3,6 +3,7 @@
   dth     = diff-theirs
   dthc    = diff-theirs-conflicting
   ec      = edit-commit
+  eca     = edit-commit -a
   ecn     = edit-commit -n
   ecnp    = edit-commit -n -p
   ecnx    = edit-commit -n -x

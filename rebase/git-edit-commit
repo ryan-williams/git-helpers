@@ -24,6 +24,7 @@
 # git edit-commit -r "`gby HEAD^`" -x "g rcd" HEAD^
 # ```
 
+amend=
 dry_run=()
 exec=
 reword=
@@ -31,6 +32,7 @@ reword_file=
 cmd=edit
 while [ $# -gt 0 ]; do
     case "$1" in
+        -a) shift; amend=1 ;;
         -n) shift; dry_run=(-n) ;;
         -p) shift; exec="git reset-committer-date-rebase-head" ;;
         -r) shift; reword="$1"; reword_file="$(mktemp)"; cmd=pick; shift ;;
@@ -71,6 +73,11 @@ exec_line() {
         exec_line
     done
 ) | git rebase-stdin "${dry_run[@]}" "$ref^"
+
+if [ -n "$amend" ]; then
+    git commit --amend
+    git rebase --continue
+fi
 
 cleanup() {
     if [ -n "$reword_file" ]; then
