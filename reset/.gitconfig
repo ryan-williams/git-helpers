@@ -1,7 +1,11 @@
 
 [alias]
   rs = reset
+  rsh1 = reset HEAD@{1}
+  rsh2 = reset HEAD@{2}
   rsp = reset HEAD^
+  rsp2 = reset HEAD~2
+  rsp3 = reset HEAD~3
   rss = !git reset . && git submodule update --recursive && git status
   rp = reset -p
   rh = reset-hard
