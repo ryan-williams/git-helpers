@@ -8,8 +8,10 @@ defn gfnr g fnr
 defn ggru g gru
 defn ggu g gu
 defn gir g ir
+defn glfu g lfu
 defn glgp g lgp
 defn glpr g lpr
+defn glpu g lpu
 defn gmr g mr
 defn gr g r
 defn gr0 g r0

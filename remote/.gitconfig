@@ -29,8 +29,11 @@
   is-remote = remote-exists
   ir        = is-remote
   cd        = copy-diffs
+
+  lfu       = remote-list-fetch-urls
   lgp       = load-github-prs
   lpr       = load-github-prs
+  lpu       = remote-list-push-urls
   lsr       = !ls-remote
   lsrh      = !ls-remote --heads
   lsrt      = !ls-remote --tags
