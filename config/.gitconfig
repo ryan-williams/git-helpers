@@ -82,7 +82,7 @@
         sidg = set-id -g
         sig = set-id -g
         gid = get-id
-        gidg = getid -g
+        gidg = get-id -g
         ggid = get-id -g
         fue = config user.email
         fun = config user.name

@@ -1,51 +1,70 @@
 #!/usr/bin/env bash
 
-exit=0
+set -e
 
 global=()
 global_msg=
-if [ "$1" == "-g" ] || [ "$1" == "--global" ]; then
-  global=("--global")
-  global_msg="global "
-  shift
-fi
+author_only=
+committer_only=
+while getopts "acg" opt; do
+  case "$opt" in
+    a) author_only=1 ;;
+    c) committer_only=1 ;;
+    g) global=("--global"); global_msg="global " ;;
+    \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
+  esac
+done
+shift $((OPTIND -1))
 
-if ! git config "${global[@]}" user.name; then
-  if [ -n "$GIT_COMMITTER_NAME" ] && [ -n "$GIT_AUTHOR_NAME" ]; then
-    if [ "$GIT_COMMITTER_NAME" != "$GIT_AUTHOR_NAME" ]; then
-      echo "$GIT_AUTHOR_NAME ($GIT_COMMITTER_NAME)"
-    else
-      echo "$GIT_AUTHOR_NAME"
-    fi
-  elif [ -n "$GIT_COMMITTER_NAME" ] && [ -z "$GIT_AUTHOR_NAME" ]; then
-    echo "No \`git config ${global_msg}user.name\` set, and \$GIT_AUTHOR_NAME missing (\$GIT_COMMITTER_NAME: $GIT_COMMITTER_NAME)" >&2
-    exit=1
-  elif [ -z "$GIT_COMMITTER_NAME" ] && [ -n "$GIT_AUTHOR_NAME" ]; then
-    echo "No \`git config ${global_msg}user.name\` set, and \$GIT_COMMITTER_NAME missing (\$GIT_AUTHOR_NAME: $GIT_AUTHOR_NAME)" >&2
-    exit=1
+name="$(git config "${global[@]}" user.name || true)"
+email="$(git config "${global[@]}" user.email)"
+
+if [ -z "$committer_only" ]; then
+  if [ -n "$GIT_AUTHOR_NAME" ]; then
+    author_name="$GIT_AUTHOR_NAME"
+  elif [ -z "$name" ]; then
+    echo 'No $GIT_AUTHOR_NAME or `config '"${global_msg}"'user.name` found' >&2
+    exit 1
   else
-    echo "No \`git config ${global_msg}user.name\` set, and \$GIT_AUTHOR_NAME and \$GIT_COMMITTER_NAME both missing" >&2
-    exit=1
+    author_name="$name"
   fi
-fi
-
-if ! git config "${global[@]}" user.email; then
-  if [ -n "$GIT_COMMITTER_EMAIL" ] && [ -n "$GIT_AUTHOR_EMAIL" ]; then
-    if [ "$GIT_COMMITTER_EMAIL" != "$GIT_AUTHOR_EMAIL" ]; then
-      echo "$GIT_AUTHOR_EMAIL ($GIT_COMMITTER_EMAIL)"
-    else
-      echo "$GIT_AUTHOR_EMAIL"
-    fi
-  elif [ -n "$GIT_COMMITTER_EMAIL" ] && [ -z "$GIT_AUTHOR_EMAIL" ]; then
-    echo "No \`git config ${global_msg}user.email\` set, and \$GIT_AUTHOR_EMAIL missing (\$GIT_COMMITTER_EMAIL: $GIT_COMMITTER_EMAIL)" >&2
-    exit=1
-  elif [ -z "$GIT_COMMITTER_EMAIL" ] && [ -n "$GIT_AUTHOR_EMAIL" ]; then
-    echo "No \`git config ${global_msg}user.email\` set, and \$GIT_COMMITTER_EMAIL missing (\$GIT_AUTHOR_EMAIL: $GIT_AUTHOR_EMAIL)" >&2
-    exit=1
+  if [ -n "$GIT_AUTHOR_EMAIL" ]; then
+    author_email="$GIT_AUTHOR_EMAIL"
+  elif [ -z "$email" ]; then
+    echo 'No $GIT_AUTHOR_EMAIL or `config '"${global_msg}"'user.email` found' >&2
+    exit 1
   else
-    echo "No \`git config ${global_msg}user.email\` set, and \$GIT_AUTHOR_EMAIL and \$GIT_COMMITTER_EMAIL both missing" >&2
-    exit=1
+    author_email="$email"
   fi
+  author="$author_name <$author_email>"
+fi
+if [ -z "$author_only" ]; then
+  if [ -n "$GIT_COMMITTER_NAME" ]; then
+    committer_name="$GIT_COMMITTER_NAME"
+  elif [ -z "$name" ]; then
+    echo 'No $GIT_COMMITTER_NAME or `config '"${global_msg}"'user.name` found' >&2
+    exit 1
+  else
+    committer_name="$name"
+  fi
+  if [ -n "$GIT_COMMITTER_EMAIL" ]; then
+    committer_email="$GIT_COMMITTER_EMAIL"
+  elif [ -z "$email" ]; then
+    echo 'No $GIT_COMMITTER_EMAIL or `config '"${global_msg}"'user.email` found' >&2
+    exit 1
+  else
+    committer_email="$email"
+  fi
+  committer="$committer_name <$committer_email>"
 fi
 
-exit $exit
+if [ -n "$author_only" ]; then
+  echo "$author"
+elif [ -n "$committer_only" ]; then
+  echo "$committer"
+elif [ "$author" == "$committer" ]; then
+  echo "$author"
+else
+  echo "$author"
+  echo "$committer"
+fi
