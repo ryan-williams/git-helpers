@@ -16,6 +16,9 @@
   pdug = config push.default upstream
   po = push-to-remote-branch origin
   p = push-x
+  pc = config push.default
+  pcc = config push.default current
+  pcu = config push.default upstream
   pd = push --delete
   pf = push -f
   pfn = push -f -n
@@ -23,6 +26,9 @@
   pft = push -f --tags
   pftn = push -f --tags -n
   pfu = push -f u
+  pgc = config --global push.default
+  pgcc = config --global push.default current
+  pgcu = config --global push.default upstream
   pl = pull
   pnf = push -n -f
   px = push-x
