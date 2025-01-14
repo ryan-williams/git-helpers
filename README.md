@@ -32,9 +32,9 @@
 Source [`.git-rc`](./.git-rc) in your `.bashrc`:
 ```bash
 echo ". $PWD/.git-rc" >> ~/.bashrc  # Configure new shells to load `git-helpers`
-. .bash-rc                          # "source" .bashrc, for immediate effect in existing shells
+. .bashrc                           # re-"source" your .bashrc, for immediate effect in existing shells
 ```
-This will load all aliases, and add relevant directories to `$PATH`. `pip install -r requirements.txt` also ensures `python-dateutil` is installed available, which some scripts here require.
+This will load all aliases from this repo, and add relevant directories to `$PATH`. `pip install -r requirements.txt` also ensures `python-dateutil` is installed available, which some scripts here require.
 
 ## Commands <a id="commands"></a>
 Some aliases/commands I use frequently:
