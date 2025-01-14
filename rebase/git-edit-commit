@@ -35,7 +35,7 @@ while getopts "anpr:x:" opt; do
     a) amend=1 ;;
     n) dry_run=(-n) ;;
     p) exec="git reset-committer-date-rebase-head" ;;
-    r) reword="$OPTARG"; reword_file="$(mktemp)" ;;
+    r) reword="$OPTARG"; reword_file="$(mktemp)"; cmd=pick ;;
     x) exec="$OPTARG" ;;
     *) exit 1 ;;
   esac
