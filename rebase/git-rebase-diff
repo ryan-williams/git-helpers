@@ -6,5 +6,5 @@ cur=HEAD
 # git log --graph --format="%C(auto)%h %C(blue)%ar%C(reset) %C(green)%cr%C(reset) %C(red)%an%C(reset)%C(auto)%d %s" "$prv" "$cur"
 
 if ! git diff --exit-code "$prv..$cur"; then
-  git diff "$prv..$cur"
+  git diff "$prv..$cur" "$@"
 fi
