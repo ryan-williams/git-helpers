@@ -1,5 +1,6 @@
 [alias]
   d    = diff
+  d1   = diff-no-context
   dd   = diff --submodule=diff
   de   = diff --exit-code
   deq  = diff --exit-code --quiet
@@ -32,6 +33,7 @@
   dh   = diff HEAD
   dh1  = diff HEAD^..HEAD
   dh2  = diff HEAD^2..HEAD
+  dhw  = diff -w HEAD
   dn   = diff --name-status
   dno  = diff --name-only
   dnoa = diff-name-only-all
@@ -56,7 +58,7 @@
   du   = diff -u
   dw   = diff -w
   dwc  = diff -w --cached
-  d1   = diff-no-context
+  dwh  = diff -w HEAD
   d-   = diff --
   dw-  = diff -w --
   dc-  = diff --cached --
