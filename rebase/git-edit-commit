@@ -15,39 +15,42 @@
 # # pick df33af4 `git-diff-json.py` fixes
 # # pick 3c166c3 `dtl`/`details`: commit details
 #
-# # Same as above, but preserve the "committer dates" of `HEAD^` and `HEAD` (`g rcd` = `git reset-committer-date-rebase-head`)
-# git edit-commit -r "new message" -x "g rcd" HEAD^
+# # Same as above, but preserve the "committer dates" of `HEAD^` and `HEAD`:
+# git edit-commit -p -m "new message" HEAD^
 #
-# # As a demonstration, this is effectively a no-op (same HEAD SHA before and after).
-# # `gby = git body = git log -1 --format=%B`, so this rewrites the parent commit with the same
-# # message, and preserves its committer date.
-# git edit-commit -r "`gby HEAD^`" -x "g rcd" HEAD^
+# # As an example, this should be a no-op (same HEAD SHA before and after).
+# # `gby = git body = git log -1 --format=%B`, so this rewrites the parent commit with its existing
+# # message, and preserves committer dates of both HEAD^ and HEAD.
+# git edit-commit -p -m "`gby HEAD^`" HEAD^
 # ```
 
-amend=
 dry_run=()
-exec=
-reword=
-reword_file=
+execs=()
+msg=
+msg_file=
 cmd=edit
-while getopts "anpr:x:" opt; do
+while getopts "m:nprx:" opt; do
   case "$opt" in
-    a) amend=1 ;;
+    m) msg="$OPTARG"; msg_file="$(mktemp)"; cmd=pick ;;
     n) dry_run=(-n) ;;
-    p) exec="git reset-committer-date-rebase-head" ;;
-    r) reword="$OPTARG"; reword_file="$(mktemp)"; cmd=pick ;;
-    x) exec="$OPTARG" ;;
+    p) execs+=("git reset-committer-date-rebase-head") ;;
+    r) cmd=reword ;;
+    x) execs+=("$OPTARG") ;;
     *) exit 1 ;;
   esac
 done
 shift $((OPTIND-1))
 
+err() {
+  echo "$*" >&2
+}
 if [ $# -ne 1 ]; then
-  echo "Usage: $0 [-n] [-p | -x <cmd>] [-r] <commit>" >&2
-  echo "  -n: dry run" >&2
-  echo "  -p: preserve committer date" >&2
-  echo "  -r: reword commit message (default: \"edit\" commit" >&2
-  echo "  -x: execute command after each commit" >&2
+  err "Usage: $0 [-m <message>] [-n] [-p] [-x <cmd>] <commit>"
+  err "  -m: update commit message (non-interactively)"
+  err "  -n: dry run"
+  err "  -p: preserve committer dates"
+  err "  -r: reword commit (interactively)"
+  err "  -x: execute command after each commit"
   exit 1
 fi
 
@@ -55,34 +58,33 @@ ref="$1"; shift
 ref="$(git log -1 --format=%h "$ref")"
 sbj="$(git log -1 --format=%s "$ref")"
 
-exec_line() {
-  if [ -n "$exec" ]; then
+exec_lines() {
+  for exec in "${execs[@]}"; do
     echo "exec $exec"
-  fi
+  done
 }
 
+plan_file="$(mktemp)"
 (
   echo "$cmd $ref $sbj"
-  if [ -n "$reword" ]; then
-    echo "$reword" > "$reword_file"
-    echo "exec git commit --amend -F$reword_file"
+  if [ -n "$msg" ]; then
+    echo "$msg" > "$msg_file"
+    echo "exec git commit --amend -F$msg_file"
   fi
-  exec_line
+  exec_lines
   git log --reverse "--format=%h %s" "$ref..HEAD" | \
   while IFS= read -r line; do
     echo "pick $line"
-    exec_line
+    exec_lines
   done
-) | git rebase-noninteractive "${dry_run[@]}" "$ref^"
+) > "$plan_file"
 
-if [ -n "$amend" ]; then
-  git commit --amend
-  git rebase --continue
-fi
+git rebase-noninteractive "${dry_run[@]}" -f "$plan_file" "$ref^"
 
 cleanup() {
-  if [ -n "$reword_file" ]; then
-    rm -f "$reword_file"
+  rm -f "$plan_file"
+  if [ -n "$msg_file" ]; then
+    rm -f "$msg_file"
   fi
 }
 trap cleanup EXIT

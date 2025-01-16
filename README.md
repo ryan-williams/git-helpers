@@ -190,15 +190,15 @@ git edit-commit -n HEAD~3
 # pick 3c166c3 `dtl`/`details`: commit details
 
 # Change the parent commit's message, rebase HEAD on top of it (noninteractive)
-git edit-commit -r "new message" HEAD^
+git edit-commit -m "new message" HEAD^
 
-# Same as above, but preserve the "committer dates" of `HEAD^` and `HEAD` (`g rcd` = `git reset-committer-date-rebase-head`)
-git edit-commit -r "new message" -x "g rcd" HEAD^
+# Same as above, but preserve the "committer dates" of `HEAD^` and `HEAD`
+git edit-commit -p -m "new message" HEAD^
 
-# As a demonstration, this is effectively a no-op (same HEAD SHA before and after).
-# `gby = git body = git log -1 --format=%B`, so this rewrites the parent commit with the same
-# message, and preserves its committer date.
-git edit-commit -r "`gby HEAD^`" -x "g rcd" HEAD^
+# As an example, this should be a no-op (same HEAD SHA before and after).
+# `gby = git body = git log -1 --format=%B`, so this rewrites the parent commit with its existing
+# message, and preserves committer dates of both HEAD^ and HEAD.
+git edit-commit -p -m "`gby HEAD^`" HEAD^
 ```
 
 #### Other <a id="rebase-other"></a>
