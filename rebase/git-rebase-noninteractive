@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+plan_file=
+dry_run=
+while getopts "f:n" opt; do
+  case "$opt" in
+    f) plan_file="$OPTARG" ;;
+    n) dry_run=-n ;;
+    *) exit 1 ;;
+  esac
+done
+shift $((OPTIND-1))
+
+cmd=(git rebase -i "$@")
+
+if [ -n "$plan_file" ]; then
+  plan="$(cat "$plan_file")"
+else
+  plan="$(cat)"
+fi
+echo "Rebase plan:" >&2
+echo "$plan" >&2
+
+if [ -n "$dry_run" ]; then
+  exit
+fi
+
+export GIT_SEQUENCE_EDITOR="echo '$plan' >"
+"${cmd[@]}"

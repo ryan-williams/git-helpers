@@ -73,7 +73,7 @@ exec_line() {
     echo "pick $line"
     exec_line
   done
-) | git rebase-stdin "${dry_run[@]}" "$ref^"
+) | git rebase-noninteractive "${dry_run[@]}" "$ref^"
 
 if [ -n "$amend" ]; then
   git commit --amend

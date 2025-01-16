@@ -16,7 +16,7 @@ dst="$1"; shift
 if [ -n "$dry_run" ]; then
     cmd=cat
 else
-    cmd="git-rebase-stdin ${dst}^"
+    cmd="git-rebase-noninteractive ${dst}^"
 fi
 
 (
