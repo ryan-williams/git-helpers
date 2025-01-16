@@ -1,5 +1,5 @@
 # git-helpers
-[1,421](#count-completions) Git aliases and scripts.
+[1,425](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -237,11 +237,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1421 completions added by installing git-helpers
+# 1425 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 236
-# - 4 chars: 551
+# - 4 chars: 553
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -252,7 +252,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1421 new completions:
+1425 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -659,10 +659,12 @@ gdfr       = g default-remote
 gdft       = g difftool
 gdh1       = g diff HEAD^..HEAD
 gdh2       = g diff HEAD^2..HEAD
+gdhw       = g diff -w HEAD
 gdir       = g rev-parse --git-dir
 gdma       = g diff-then-maybe-add
 gdmb       = g delete-merged-branches
 gdno       = g diff --name-only
+gdnp       = g config diff.noprefix
 gdns       = g diff --name-status
 gdp1       = g diff-vs-parent 1
 gdp2       = g diff-vs-parent 2
@@ -689,12 +691,13 @@ gdtp       = g diff-tree -p
 gdts       = g dates
 gdw-       = g diff -w --
 gdwc       = g diff -w --cached
+gdwh       = g diff -w HEAD
 gdws       = g diff -w --stat
 gdxc       = g diff-x -c
 gdxr       = g diff-x -R
 gdxw       = g diff-x -w
 geav       = git_expand_alias -v
-geca       = g edit-commit -a
+gecm       = g edit-commit -m
 gecn       = g edit-commit -n
 gecp       = g edit-commit -p
 gecr       = g edit-commit -r
@@ -905,7 +908,6 @@ grbm       = g rebase-head-message
 grbo       = g rebase --onto
 grbp       = g rebase-parent
 grbr       = g rebase -r
-grbs       = g rebase --skip
 grbu       = g rebase-undo
 grcd       = g reset-committer-date-rebase-head
 grcp       = g remote-copy
@@ -938,6 +940,7 @@ grmu       = g rm-untracked
 grmv       = g remote-rename
 grne       = g revert --no-edit
 grnh       = g revert --no-edit HEAD
+grni       = g rebase-noninteractive
 groc       = g reorder-commits
 grph       = g rev-parse HEAD
 grri       = g rebase -r -i
@@ -947,7 +950,6 @@ grrs       = g reverse-reset
 grs.       = g reset .
 grsf       = g checkout HEAD --
 grsh       = g remote-set-head
-grsi       = g rebase-stdin
 grsp       = g reset HEAD^
 grss       = !git reset . && git submodule update --recursive && git status
 grst       = g reflog --stat
@@ -1143,6 +1145,8 @@ gdgif      = g diff-git.py
 gdmbr      = g delete-merged-branches --remote
 gdnoa      = g diff-name-only-all
 gdnoc      = g diff --name-only --cached
+gdnpg      = g config --global diff.noprefix
+gdnpt      = g config diff.noprefix true
 gdsca      = g describe --all
 gdsph      = g diff --stat HEAD^..HEAD
 gdthc      = g diff-theirs-conflicting
@@ -1152,6 +1156,7 @@ gdxrr      = g diff-x -r
 gdxwr      = g diff-x -wR
 gecnp      = g edit-commit -n -p
 gecnx      = g edit-commit -n -x
+gecpm      = g edit-commit -p -m
 gecrn      = g edit-commit -r -n
 gecrp      = g edit-commit -r -p
 gecxn      = g edit-commit -n -x
@@ -1231,7 +1236,6 @@ grbmb      = g rebase-merge-base
 grbor      = g rebase -r --onto
 grbot      = g rebase-onto
 grbro      = g rebase -r --onto
-grbsi      = g rebase-stdin
 grbud      = g rebase-upstream-diff
 grhlh      = g pre-rebase-head-log
 grhp2      = g reset --hard HEAD~2
@@ -1245,13 +1249,13 @@ grmpe      = g remote-path -e
 grmrc      = g rm -r --cached
 grmut      = g rm-untracked
 grneh      = g revert --no-edit HEAD
+grnin      = g rebase-noninteractive -n
 grocn      = g reorder-commits -n
 grrio      = g rebase -r -i --onto
 grsh1      = g reset HEAD@{1}
 grsh2      = g reset HEAD@{2}
 grsha      = g remote-set-head-auto
 grshw      = g remote show
-grsin      = g rebase-stdin -n
 grsp2      = g reset HEAD~2
 grsp3      = g reset HEAD~3
 grtch      = g root-commits HEAD
@@ -1334,6 +1338,7 @@ gcococ     = g conflicting-checkout-ours-and-continue
 gcoctc     = g conflicting-checkout-theirs-and-continue
 gcppam     = g commit-push-parents -a -m
 gcppcd     = g cherry-pick-preserve-commit-date
+gdnpgt     = g config --global diff.noprefix true
 gdxcrr     = g diff-x -cr
 gdxwrr     = g diff-x -wr
 gecrpn     = g edit-commit -r -p -n
@@ -1353,7 +1358,6 @@ gprnts     = !git-parents.py
 grbcda     = g rebase-preserve-commit-dates
 grbori     = g rebase -r -i --onto
 grbrio     = g rebase -r -i --onto
-grbsin     = g rebase-stdin -n
 grmlso     = g rm-untracked
 grvneh     = g revert --no-edit HEAD
 gsacam     = g submodule-auto-commit -am
@@ -1431,8 +1435,8 @@ github-submodule-check-commits = git-helpers/submodule/github-submodule-check-co
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
-1349 completions present before and after installing git-helpers
-1421 completions added by installing git-helpers (0 removed, 2770 total)
+1345 completions present before and after installing git-helpers
+1425 completions added by installing git-helpers (0 removed, 2770 total)
 ```
 </details>
 
