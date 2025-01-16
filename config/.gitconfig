@@ -37,6 +37,10 @@
         cgdb = config --global init.defaultBranch
         cgdr = config --global clone.defaultRemoteName
         dbm = config --global init.defaultBranch main
+        dnp = config diff.noprefix
+        dnpg = config --global diff.noprefix
+        dnpgt = config --global diff.noprefix true
+        dnpt = config diff.noprefix true
         e = expand-alias
         ea = expand-alias
         gdb = config --global init.defaultBranch
