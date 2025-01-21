@@ -70,4 +70,4 @@ if [ -n "$dry_run" ]; then
     exit 0
 fi
 
-echo "$rebase_todo" | git-rebase-noninteractive -i "$since"
+echo "$rebase_todo" | git-rebase-noninteractive "$since"
