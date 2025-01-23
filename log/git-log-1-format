@@ -1,4 +1,21 @@
 #!/usr/bin/env bash
 
+usage() {
+  cat >&2 << EOF
+Usage: $0 [-r] [FORMAT] [OPTIONS] [--] [<rev>...]
+  -r: reverse order of commits
+  FORMAT: format string, e.g. "%h" or just "h" for short hashes
+EOF
+  exit 1
+}
+
+args=()
+if [ "$1" == -r ]; then
+  shift
+  if [ $# -eq 0 ]; then
+    usage
+  fi
+  args+=(--reverse)
+fi
 fmt="$1"; shift
-git log-format "$fmt" --no-walk "$@"
+git log-format "$fmt" --no-walk "${args[@]}" "$@"

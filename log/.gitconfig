@@ -70,6 +70,7 @@
   l1f = !git --no-pager log-1-format
   l1ft = !git --no-pager log-1-format t
   l1fT = !git --no-pager log-1-format T
+  l1r = !git --no-pager log-1-format -r
   l1t = l1ft
   l1T = l1fT
   fh = full-hash
