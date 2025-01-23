@@ -94,7 +94,7 @@
         gue = config --global user.email
         gun = config --global user.name
 
-        shc = ssh-command
+        sshc = ssh-command
         ue  = config user.email
         un  = config user.name
         une = user

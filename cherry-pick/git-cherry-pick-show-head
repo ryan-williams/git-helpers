@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-cherry_pick_head="$(git cherry-pick-head)"
-if [ -z "$cherry_pick_head" ]; then
-    echo "No cherry-pick-head found" >&2
-    exit 1
-fi
-git show "$@" "$cherry_pick_head"

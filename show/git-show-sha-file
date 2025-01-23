@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
 sha="$1"; shift
-file="$1"; shift
-git show "$sha:$file" "$@"
+if [ $# -gt 0 ] && [ -f "$1" ]; then
+  file="$1"; shift
+  show="$sha:$file"
+else
+  show="$sha"
+fi
+git show "$show" "$@"

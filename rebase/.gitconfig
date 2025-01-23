@@ -95,9 +95,16 @@
   shoc    = show-original-commit
   shmh    = show-merge-head
   shoh    = show-original-head
+  shr     = show-rebase-head
   shrh    = show-rebase-head
   shrm    = rebase-head-message
+  shrp    = show-rebase-parent
+  shrw    = show-rebase-head -w
   sqsq    = squash-sequence
+  srh     = show-rebase-head
+  srp     = show-rebase-parent
+  srpw    = show-rebase-parent -w
+  srw     = show-rebase-head -w
   swr     = show-rebase-head -w
   tw      = throw.py
   twp     = throw.py HEAD^

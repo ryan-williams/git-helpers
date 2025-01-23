@@ -2,5 +2,5 @@
 
 set -eo pipefail
 
-head="$(git rebase-head)"
+head="$(git rebase-head)^"
 git show-sha-file "$head" "$@"

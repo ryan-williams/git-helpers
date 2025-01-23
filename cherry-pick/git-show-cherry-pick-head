@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+cherry_pick_head="$(git cherry-pick-head)"
+git show-sha-file "$cherry_pick_head" "$@"

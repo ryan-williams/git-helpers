@@ -1,5 +1,5 @@
 # git-helpers
-[1,427](#count-completions) Git aliases and scripts.
+[1,443](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -237,12 +237,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1427 completions added by installing git-helpers
+# 1443 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 236
-# - 4 chars: 554
-# - 5 chars: 250
+# - 4 chars: 561
+# - 5 chars: 257
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -253,7 +253,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1427 new completions:
+1443 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -976,6 +976,9 @@ gsau       = g set-author
 gsbj       = !git --no-pager log -1 --format=%s
 gscc       = g submodule-count-commits
 gscd       = g set-committer-date
+gsch       = g show-cherry-pick-head
+gscp       = g show-cherry-pick-parent
+gscw       = g show-cherry-pick-head -w
 gsdc       = !git status && git diff --cached
 gsdh       = !git status && git diff HEAD
 gsdr       = g config-default-remote
@@ -987,7 +990,7 @@ gsfv       = g submodule foreach --recursive
 gsh1       = g show HEAD@{1}
 gsh2       = g show HEAD@{2}
 gsha       = g hash
-gshc       = g ssh-command
+gshc       = g show-cherry-pick-head
 gshd       = g show --submodule=diff
 gshf       = g show-sha-file
 gshh       = g show-head
@@ -995,6 +998,7 @@ gshl       = g show --submodule=log
 gshm       = !git --no-pager log -1 '--format=%h %s'
 gsho       = g squash-head-onto
 gshp       = g show HEAD^
+gshr       = g show-rebase-head
 gshs       = g show --stat
 gshw       = g show -w
 gsid       = g set-id
@@ -1027,11 +1031,14 @@ gsp5       = g stash pop 'stash@{5}'
 gspf       = g safe-push-force
 gsps       = g set-parents
 gsrc       = g submodule-rebase-continue.py
+gsrh       = g show-rebase-head
 gsrl       = g submodule-rebase-log.py
 gsrn       = g show-remote-names
+gsrp       = g show-rebase-parent
 gsrs       = !git reset . && git submodule update --recursive && git status
 gsru       = g remote-set-url
 gsrv       = g serve
+gsrw       = g show-rebase-head -w
 gssf       = g show-sha-file
 gssh       = g submodule-shas
 gssk       = g stash save -k
@@ -1051,7 +1058,7 @@ gsw0       = g stash show -p 'stash@{0}'
 gsw1       = g stash show -p 'stash@{1}'
 gsw2       = g stash show -p 'stash@{2}'
 gsw3       = g stash show -p 'stash@{3}'
-gswc       = g cherry-pick-show-head -w
+gswc       = g show-cherry-pick-head -w
 gswr       = g show-rebase-head -w
 gsyq       = g symbolic-ref -q
 gsyr       = g symbolic-ref
@@ -1138,7 +1145,7 @@ gcpdd      = g config --unset push.default
 gcpdu      = g config push.default upstream
 gcppa      = g commit-push-parents -a
 gcppm      = g commit-push-parents -m
-gcpsh      = g cherry-pick-show-head
+gcpsh      = g show-cherry-pick-head
 gcrbh      = g commit-rebase-head
 gctgs      = g current-tags
 gdcno      = g diff --name-only --cached
@@ -1274,10 +1281,13 @@ gsacn      = g submodule-auto-commit -n
 gsadr      = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
 gsard      = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
 gsaut      = g set-author
+gscpw      = g show-cherry-pick-parent -w
 gsdbm      = g set-default-branch-main
 gsdru      = g config-default-remote-u
 gsgid      = g set-id -g
-gshch      = g cherry-pick-show-head
+gshch      = g show-cherry-pick-head
+gshcp      = g show-cherry-pick-parent
+gshcw      = g show-cherry-pick-head -w
 gshfp      = g show-sha-file HEAD^
 gshhf      = g show-head-file
 gshmb      = g show-merge-base
@@ -1293,9 +1303,11 @@ gshp2      = g show HEAD~2
 gshp3      = g show HEAD~3
 gshrh      = g show-rebase-head
 gshrm      = g rebase-head-message
+gshrp      = g show-rebase-parent
+gshrw      = g show-rebase-head -w
 gshsl      = g show --submodule=log
 gshss      = g show --submodule=short
-gshwc      = g cherry-pick-show-head -w
+gshwc      = g show-cherry-pick-head -w
 gsidg      = g set-id -g
 gsmab      = g submodule add -b
 gsmac      = g submodule-auto-commit
@@ -1317,6 +1329,8 @@ gspfo      = g safe-push-force origin
 gspfu      = g safe-push-force upstream
 gsqsq      = g squash-sequence
 gsrlv      = g submodule-rebase-log.py -v
+gsrpw      = g show-rebase-parent -w
+gsshc      = g ssh-command
 gsurq      = g submodule update --recursive --quiet
 gsysq      = g symbolic-ref --short -q
 gtwhn      = g throw-head -n
@@ -1367,7 +1381,7 @@ gsacam     = g submodule-auto-commit -am
 gsacan     = g submodule-auto-commit -an
 gsacmr     = g submodule-auto-commit -mr
 gshadr     = g show --diff-filter=ADR --name-status
-gshwch     = g cherry-pick-show-head -w
+gshwch     = g show-cherry-pick-head -w
 gsmsha     = g submodule-sha
 gsmshs     = g submodule-shas
 gsmurf     = g submodule update --recursive --init -f
@@ -1439,7 +1453,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1349 completions present before and after installing git-helpers
-1427 completions added by installing git-helpers (0 removed, 2776 total)
+1443 completions added by installing git-helpers (0 removed, 2792 total)
 ```
 </details>
 
@@ -1504,4 +1518,4 @@ history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 [`git-rebase-head`]: rebase/git-rebase-head
 [`git-cherry-pick-head`]: cherry-pick/git-cherry-pick-head
 [`git-show-rebase-head`]: rebase/git-show-rebase-head
-[`git-show-cherry-pick-head`]: cherry-pick/git-cherry-pick-show-head
+[`git-show-cherry-pick-head`]: cherry-pick/git-show-cherry-pick-head
