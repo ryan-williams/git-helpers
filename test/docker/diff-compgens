@@ -1,19 +1,28 @@
 #!/bin/bash -i
-#
-# Compare the outputs of `compgen -c` from before and after installing git-helpers.
-# - Default behavior: print counts of "completions" (Bash scripts, aliases, and functions)
-#   available before and after installing git-helpers.
-# - `-v` (verbose) flag: also print the new completions added by git-helpers.
 
 set -e
 
+err() {
+  echo "$0: $*" >&2
+}
+
+usage() {
+  err "Usage: $0 [-c] [-v]"
+  err '  -c  Print histogram of added completions, grouped by length'
+  err '  -v  Print all added completions'
+  err
+  err 'Compare the files `{before,after}/compgen-c` (outputs of two runs of `compgen -c`, before and after installing "git-helpers").'
+  err 'These files are written during the `git-helpers.dockerfile` build, before this script is invoked.'
+  exit 1
+}
+
 verbose=
 counts=
-while [ $# -gt 0 ]; do
-  case "$1" in
-    -v) verbose=1 ; shift ;;
-    -c) counts=1 ; shift ;;
-     *) break ;;
+while getopts "cv" opt; do
+  case "$opt" in
+    c) counts=1 ;;
+    v) verbose=1 ;;
+    \?) usage ;;
   esac
 done
 
@@ -79,8 +88,10 @@ if [ -n "$counts" ]; then
   num2="$(echo "$completions" | grep '^g.$' | wc -l)"
   num3="$(echo "$completions" | grep '^g..$' | wc -l)"
   num4="$(echo "$completions" | grep '^g...$' | wc -l)"
+  num5="$(echo "$completions" | grep '^g....$' | wc -l)"
   echo "By length:"
   echo "- 2 chars: $num2"
   echo "- 3 chars: $num3"
   echo "- 4 chars: $num4"
+  echo "- 5 chars: $num5"
 fi

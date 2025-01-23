@@ -1,5 +1,5 @@
 # git-helpers
-[1,426](#count-completions) Git aliases and scripts.
+[1,427](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -237,11 +237,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1426 completions added by installing git-helpers
+# 1427 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 236
-# - 4 chars: 553
+# - 4 chars: 554
+# - 5 chars: 250
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -252,7 +253,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1426 new completions:
+1427 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -782,6 +783,7 @@ gism       = g is-submodule
 gisr       = g is-repo
 gl1T       = g l1fT
 gl1f       = !git --no-pager log-1-format
+gl1r       = !git --no-pager log-1-format -r
 gl1t       = g l1fT
 glaf       = g ls-new-files
 glbl       = g local-branch-shas
@@ -1436,8 +1438,8 @@ github-submodule-check-commits = git-helpers/submodule/github-submodule-check-co
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
-1345 completions present before and after installing git-helpers
-1426 completions added by installing git-helpers (0 removed, 2771 total)
+1349 completions present before and after installing git-helpers
+1427 completions added by installing git-helpers (0 removed, 2776 total)
 ```
 </details>
 
