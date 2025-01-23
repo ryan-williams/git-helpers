@@ -25,7 +25,7 @@ fi
 
 # Update README subtitle
 n="$(grep -m1 '^# .* completions added' README.md  | awk '{print $2}')"
-ns="$(printf "%'d" "$n")"
+ns="$(LC_NUMERIC=en_US.UTF-8 printf "%'d" "$n")"
 
 in=README.md
 out=README.tmp
