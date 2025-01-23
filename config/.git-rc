@@ -71,10 +71,12 @@ alias ggdr="g gdr"
 alias ggue="g gue"
 alias ggun="g gun"
 
+alias gsdb="g sdb"
 alias gsdbm="g sdbm"
 alias gsdr="g sdr"
 alias gsdru="g sdru"
 alias gsshc="g sshc"
+alias gudb="g udb"
 
 alias gue="g ue"
 alias gun="g un"

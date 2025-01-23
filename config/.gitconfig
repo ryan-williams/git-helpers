@@ -46,7 +46,10 @@
         gdb = config --global init.defaultBranch
         gdbm = config --global init.defaultBranch main
         set-default-branch-main = config --global init.defaultBranch main
+        sdb = set-default-branch-main
         sdbm = set-default-branch-main
+        update-default-branch = set-default-branch-main
+        udb = update-default-branch
         config-default-remote = config --global clone.defaultRemoteName
         cdr = config-default-remote
         gdr = config-default-remote
