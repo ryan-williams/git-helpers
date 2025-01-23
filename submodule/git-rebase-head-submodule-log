@@ -3,7 +3,7 @@
 set -e
 
 if [ $# -eq 0 ]; then
-    readarray -t conflicts <<<"$(git diff --name-only --diff-filter=UU)"
+    readarray -t conflicts < <(git conflicting)
     if [ "${#conflicts[@]}" == "1" ]; then
         submodule="${conflicts[0]}"
         echo "Using long conflicting submodule: $submodule" >&2

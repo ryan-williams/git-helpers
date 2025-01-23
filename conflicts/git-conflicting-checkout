@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Checkout "ours" or theirs" version of all conflicting files.
+# Checkout "ours" or "theirs" versions of all conflicting files.
 
 from="$1"; shift
 if [ "$from" != "ours" ] && [ "$from" != "theirs" ]; then

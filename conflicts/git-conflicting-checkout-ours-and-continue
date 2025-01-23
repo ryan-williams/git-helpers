@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
-
-# Checkout "ours" version of conflicting files and continue a rebase.
+# Checkout "ours" version of all conflicting files, and continue rebasing.
 
 set -e
 git conflicting-checkout-ours
-while read -r file; do
-    git add "$file"
-    echo "Added: $file"
-done < <(git conflicting)
-git rebase --continue
+readarray -t conflicts < <(git conflicting)
+git add-rebase-continue "${conflicts[@]}"
