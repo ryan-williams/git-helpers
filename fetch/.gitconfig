@@ -8,6 +8,7 @@
   fd3 = fetch-x --depth 3
   ff  = fetch-x --force --tags
   ft  = fetch-x --tags
+  ftf  = fetch-x --tags -f
   fa  = fetch-x --tags --all
   fta = fetch-x --tags --all
   fo  = fetch-x --tags origin
