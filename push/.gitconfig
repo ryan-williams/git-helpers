@@ -46,6 +46,7 @@
   pt = push-x -t
   pto = push --tags
   ptf = push --tags -f
+  ptfn = push --tags -f -n
   ptn = push --tags -n
   pon = push -n origin
   pno = push -n origin
