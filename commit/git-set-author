@@ -16,55 +16,66 @@
 #     # 2 args ⟹ name, email
 #     git set-author [-p|--preserve-committer-date] <name> <email>
 
+committer=
 preserve_committer_date=
-case "$1" in
-    -p | --preserve-committer-date)
-        preserve_committer_date=1
-        shift
-        ;;
-esac
+while getopts "cp" opt; do
+  case "$opt" in
+    c) committer=1 ;;
+    p) preserve_committer_date=1 ;;
+    \?) echo "Unknown option: -$opt" >&2
+      exit 1
+  esac
+done
+shift $((OPTIND - 1))
 
 if [ $# -eq 0 ]; then
-    name="$(git config user.name)"
-    email="$(git config user.email)"
-    author="$$name <$email>"
-    echo "Setting author: $author" >&2
+  name="$(git config user.name)"
+  email="$(git config user.email)"
+  author="$name <$email>"
+  echo "Setting author: $author" >&2
 elif [ $# -eq 1 ]; then
-    if [[ "$1" == *' '* ]]; then
-        # If the argument has more than one word, assume it's the author's name.
-        name="$1"; shift
-        email="$(git log -1 --format=%ae)"
-        author="$name <$email>"
-        echo "Updating author name: $author" >&2
-    elif git cat-file -t "$1" &>/dev/null; then
-        # Otherwise, check whether it's a Git "ref", and copy that author name/email if so
-        ref="$1"; shift
-        author="$(git show -s --format='%an <%ae>' "$ref")"
-        echo "Updating author from commit $ref: $author" >&2
-    else
-        # Otherwise, assume we're updating the author's email address
-        email="$1"; shift
-        name="$(git log -1 --format=%an)"
-        author="$name <$email>"
-        echo "Updating author email: $author" >&2
-    fi
-elif [ $# -eq 2 ]; then
+  if [[ "$1" == *' '* ]]; then
+    # If the argument has more than one word, assume it's the author's name.
     name="$1"; shift
-    email="$1"; shift
+    email="$(git log -1 --format=%ae)"
     author="$name <$email>"
-    echo "Setting author: $author" >&2
+    echo "Updating author name: $author" >&2
+  elif git cat-file -t "$1" &>/dev/null; then
+    # Otherwise, check whether it's a Git "ref", and copy that author name/email if so
+    ref="$1"; shift
+    name="$(git show -s --format='%an' "$ref")"
+    email="$(git show -s --format='<%ae>' "$ref")"
+    author="$name <$email>"
+    echo "Updating author from commit $ref: $author" >&2
+  else
+    # Otherwise, assume we're updating the author's email address
+    email="$1"; shift
+    name="$(git log -1 --format=%an)"
+    author="$name <$email>"
+    echo "Updating author email: $author" >&2
+  fi
+elif [ $# -eq 2 ]; then
+  name="$1"; shift
+  email="$1"; shift
+  author="$name <$email>"
+  echo "Setting author: $author" >&2
 else
-    echo "Usage: git set-author [-p|--preserve-committer-date] [name <email>]" >&2
-    echo "Usage: git set-author [-p|--preserve-committer-date] <name> <email>" >&2
-    exit 1
+  echo "Usage: git set-author [-p|--preserve-committer-date] [name <email>]" >&2
+  echo "Usage: git set-author [-p|--preserve-committer-date] <name> <email>" >&2
+  exit 1
 fi
 
 if [ "$preserve_committer_date" ]; then
-    GIT_COMMITTER_DATE="$(git log -1 --format=%cd)"
-    export GIT_COMMITTER_DATE
-    echo "Preserving committer date: $GIT_COMMITTER_DATE" >&2
+  GIT_COMMITTER_DATE="$(git log -1 --format=%cd)"
+  export GIT_COMMITTER_DATE
+  echo "Preserving committer date: $GIT_COMMITTER_DATE" >&2
 fi
 
-cmd=(git commit --amend --no-edit --allow-empty --author "$author")
+if [ -z "$committer" ]; then
+  committer_flags=()
+else
+  committer_flags=(-c user.name="$name" -c user.email="$email")
+fi
+cmd=(git "${committer_flags[@]}" commit --amend --no-edit --allow-empty --author "$author")
 echo "Running: ${cmd[*]}" >&2
 "${cmd[@]}"
