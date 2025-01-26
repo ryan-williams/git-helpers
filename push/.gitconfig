@@ -11,9 +11,9 @@
   mpf = me-push-force
   pm = push-to-master
   pdc = config push.default current
-  pdcg = config push.default current
+  pdcg = config --global push.default current
   pdu = config push.default upstream
-  pdug = config push.default upstream
+  pdug = config --global push.default upstream
   po = push-to-remote-branch origin
   p = push-x
   pc = config push.default
