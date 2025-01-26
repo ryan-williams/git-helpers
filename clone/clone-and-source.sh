@@ -1,11 +1,36 @@
-#!/usr/bin/env bash
+# Clone a repo (including submodules), add it to `$PATH`, and `source` files of the form `.*-rc`.
+#
+# This script is meant to be `source`d itself, and is not directly executable. Common usage pattern:
+#
+# ```bash
+# # Install "dotfiles" repo `runsascoded/.rc` (from GitHub) on a fresh machine:
+# . <(curl -L https://j.mp/_rc) runsascoded/.rc
+#
+# # If the repo passed has 2 or more slashes, or begins with gitlab.com, it's assumed to be a GitLab path:
+# . <(curl -L https://j.mp/_rc) runsascoded/rc/py
+# . <(curl -L https://j.mp/_rc) gitlab.com/runsascoded/rc
+# ```
+
+usage() {
+  echo "$@" >&2
+  cat >&2 <<EOF
+Usage:
+
+  $0 [-i] [-b branch] [-s init_script] <URL or github group/repo> [dest]
+
+Flags:
+-i "clone" the repository in-place (into the current directory)
+-b git branch to clone and initialize
+-s initial script to source in the clone (default: everything matching .*-rc
+EOF
+  return 1
+}
 
 declare -a args
-
 branch=
 inplace=
 jobs=8
-remote=upstream
+remote=
 script=
 dest=
 
@@ -29,21 +54,6 @@ do
     shift
 done
 
-usage() {
-  echo "$@" >&2
-  cat <<EOF >&2
-Usage:
-
-  $0 [-i] [-b branch] [-s init_script] <URL or github group/repo> [dest]
-
-Flags:
--i "clone" the repository in-place (into the current directory)
--b git branch to clone and initialize
--s initial script to source in the clone (default: everything matching .*rc
-EOF
-  exit 1
-}
-
 set -- "${args[@]}"
 echo "Found $# positional args" >&2
 if [ $# -eq 0 ]; then
@@ -54,8 +64,24 @@ else
     # $url appears to be a full git URL already
     :
   else
-    # Otherwise, assume github.com and HTTPS protocol
-    url="https://github.com/$url"
+    # Otherwise, parse `$url` as a repo path for GitHub (1 slash) or GitLab (2 or more slashes, or begins with "gitlab.com")
+    num_slashes="$(tr -cd '/' <<< "$url" | wc -c)"
+    if [[ $url =~ ^github.com ]]; then
+      url="https://$url"
+      echo "Inferred GitHub URL: $url" >&2
+    elif [[ $url =~ ^gitlab.com ]]; then
+      url="https://$url"
+      echo "Inferred GitLab URL: $url" >&2
+    elif [ "$num_slashes" -ge 2 ]; then
+      url="https://gitlab.com/$url"
+      echo "Inferred GitLab URL: $url" >&2
+    elif [ "$num_slashes" -eq 1 ]; then
+      url="https://github.com/$url"
+      echo "Inferred GitHub URL: $url" >&2
+    else
+      echo "Unrecognized GitHub/GitLab repo path: $url" >&2
+      return 1
+    fi
   fi
   if [ $# -eq 2 ]; then
     dest="$1"; shift
@@ -64,6 +90,10 @@ else
   fi
 fi
 
+if [ -z "$remote" ]; then
+  remote="$(git config clone.defaultRemoteName || true)"
+  remote="${remote:-upstream}"
+fi
 if [ -z "$inplace" ]; then
   dir="${url%.git}"
   dir="${dir##*/}"
@@ -74,13 +104,13 @@ if [ -z "$inplace" ]; then
     git clone -j "$jobs" "$url" "$dest"
   fi
 
-  pushd "$dir" || exit 2
+  pushd "$dir" || return 2
   if [ -n "$branch" ]; then
     echo "Checking out branch $branch" >&2
     git checkout "$branch"
   fi
-  git submodule update --init --recursive --jobs "$jobs" || return 100 2>/dev/null || exit 100
-  popd || exit 3
+  git submodule update --init --recursive --jobs "$jobs" || return 100 2>/dev/null || return 100
+  popd || return 3
 
   if [ -z "$script" ]; then
     script=".*rc"
