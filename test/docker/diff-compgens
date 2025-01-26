@@ -55,6 +55,23 @@ adds="$(comm_count -13)"     # Present after, not before
 boths="$(comm_count -12)"    # Present before and after
 (( afters = adds + boths ))  # Total completions available, "after"
 
+lookup_name() {
+  local name="$1"; shift
+  n="${#name}"
+  echo -n "$name"
+  if [ "$n" -lt 10 ]; then
+    (( s=10-$n ))
+    printf "% ${s}s" ""
+  fi
+  gea="$(gea "$name" || true)"
+  if [ -n "$gea" ]; then
+    echo " = $gea"
+  else
+    echo
+  fi
+}
+export -f lookup_name
+
 if [ -n "$verbose" ]; then
   echo "$adds new completions:"
 
@@ -63,21 +80,9 @@ if [ -n "$verbose" ]; then
   | sort -nk2 \
   | cut -d' ' -f1 \
   | grep -v '^git-' \
-  | while read -r cmd; do
-    n="${#cmd}"
-    echo -n "$cmd"
-    if [ $n -lt 10 ]; then
-      (( s=10-$n ))
-      printf "% ${s}s" ""
-    fi
-    gea="$(gea "$cmd" || true)"
-    if [ -n "$gea" ]; then
-      echo " = $gea"
-    else
-      echo
-    fi
+  | while read -r name; do
+    lookup_name "$name"
   done
-
   echo "$boths completions present before and after installing git-helpers"
   echo "$adds completions added by installing git-helpers ($rms removed, $afters total)"
 else
@@ -85,10 +90,10 @@ else
 fi
 if [ -n "$counts" ]; then
   completions="$(_comm -13)"
-  num2="$(echo "$completions" | grep '^g.$' | wc -l)"
-  num3="$(echo "$completions" | grep '^g..$' | wc -l)"
-  num4="$(echo "$completions" | grep '^g...$' | wc -l)"
-  num5="$(echo "$completions" | grep '^g....$' | wc -l)"
+  num2="$(echo "$completions" | grep -c '^g.$')"
+  num3="$(echo "$completions" | grep -c '^g..$')"
+  num4="$(echo "$completions" | grep -c '^g...$')"
+  num5="$(echo "$completions" | grep -c '^g....$')"
   echo "By length:"
   echo "- 2 chars: $num2"
   echo "- 3 chars: $num3"
