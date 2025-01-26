@@ -1,5 +1,5 @@
 # git-helpers
-[1,443](#count-completions) Git aliases and scripts.
+[1,448](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -237,23 +237,23 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1443 completions added by installing git-helpers
+# 1448 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 236
-# - 4 chars: 561
-# - 5 chars: 257
+# - 4 chars: 565
+# - 5 chars: 258
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
 
 Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`](.git-rc):
 
-<!-- `bmdfff -- scripts/count-completions.sh -v` -->
+<!-- `bmdfff -I -- scripts/count-completions.sh -v` -->
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1443 new completions:
+1448 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -585,7 +585,8 @@ gcbh       = g commits-behind
 gcbn       = g commit-basename
 gccb       = g commit-body
 gccd       = . git-clone-and-cd
-gcdr       = g config-default-remote
+gcdr       = g config --global clone.defaultRemoteName
+gcef       = g config --global core.excludesfile
 gcfa       = g config --add
 gcfd       = g config --unset
 gcfi       = g config --get-all include.path
@@ -718,6 +719,7 @@ gfro       = g fetch-x --tags --recurse-submodules origin
 gfru       = g fetch-x --tags --recurse-submodules u
 gfta       = g fetch-x --tags --all
 gftd       = g filter-to-dir
+gftf       = g fetch-x --tags -f
 gfua       = g fixup-author
 gfue       = g config user.email
 gfun       = g config user.name
@@ -727,7 +729,7 @@ ggad       = g graph -A
 ggal       = g graph-all -l
 ggcd       = g get-committer-date
 ggdb       = g config --global init.defaultBranch
-ggdr       = g config-default-remote
+ggdr       = g config --global clone.defaultRemoteName
 gggi       = g global-git-ignore
 gghu       = g graph -u HEAD
 ggid       = g get-id
@@ -979,9 +981,10 @@ gscd       = g set-committer-date
 gsch       = g show-cherry-pick-head
 gscp       = g show-cherry-pick-parent
 gscw       = g show-cherry-pick-head -w
+gsdb       = g set-default-branch-main
 gsdc       = !git status && git diff --cached
 gsdh       = !git status && git diff HEAD
-gsdr       = g config-default-remote
+gsdr       = g config --global clone.defaultRemoteName
 gsds       = g set-dates
 gsfe       = g submodule foreach
 gsfh       = g show-sha-file HEAD
@@ -1073,6 +1076,7 @@ gtrr       = g ls-tree -r
 gtsz       = g total-size
 gtwh       = g throw-head
 gtwp       = g throw.py HEAD^
+gudb       = g update-default-branch
 guic       = g update-index --cacheinfo
 gune       = g user
 gurb       = g undo-rebase
@@ -1228,8 +1232,8 @@ gmnnf      = g merge --no-edit --no-ff
 gmtnb      = g mergetool -y -t nbdime
 gmune      = g merge upstream/HEAD --no-edit
 gnshs      = !git --no-pager show
-gpdcg      = g config push.default current
-gpdug      = g config push.default upstream
+gpdcg      = g config --global push.default current
+gpdug      = g config --global push.default upstream
 gpftn      = g push -f --tags -n
 gpgcc      = g config --global push.default current
 gpgcu      = g config --global push.default upstream
@@ -1238,6 +1242,7 @@ gphuf      = g push-head-upstream -f
 gphun      = g push-head-upstream -n
 gppam      = g commit-push-parents -a -m
 gprhl      = g pre-rebase-head-log-pretty
+gptfn      = g push --tags -f -n
 gpubf      = g push-user-branch -f
 gpubn      = g push-user-branch -n
 grbcd      = g rebase-preserve-commit-dates -i
@@ -1283,7 +1288,7 @@ gsard      = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
 gsaut      = g set-author
 gscpw      = g show-cherry-pick-parent -w
 gsdbm      = g set-default-branch-main
-gsdru      = g config-default-remote-u
+gsdru      = g config --global clone.defaultRemoteName u
 gsgid      = g set-id -g
 gshch      = g show-cherry-pick-head
 gshcp      = g show-cherry-pick-parent
@@ -1453,7 +1458,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1349 completions present before and after installing git-helpers
-1443 completions added by installing git-helpers (0 removed, 2792 total)
+1448 completions added by installing git-helpers (0 removed, 2797 total)
 ```
 </details>
 
