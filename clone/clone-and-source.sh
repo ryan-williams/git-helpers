@@ -1,4 +1,4 @@
-# Clone a repo (including submodules), add it to `$PATH`, and `source` files of the form `.*-rc`.
+# Clone a repo (including submodules), add it to `$PATH`, and `source` files of the form `.*rc`.
 #
 # This script is meant to be `source`d itself, and is not directly executable. Common usage pattern:
 #
@@ -21,7 +21,7 @@ Usage:
 Flags:
 -i "clone" the repository in-place (into the current directory)
 -b git branch to clone and initialize
--s initial script to source in the clone (default: everything matching .*-rc
+-s initial script to source in the clone (default: everything matching .*rc
 EOF
   return 1
 }
