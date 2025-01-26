@@ -50,12 +50,10 @@
         sdbm = set-default-branch-main
         update-default-branch = set-default-branch-main
         udb = update-default-branch
-        config-default-remote = config --global clone.defaultRemoteName
-        cdr = config-default-remote
-        gdr = config-default-remote
-        sdr = config-default-remote
-        config-default-remote-u = config --global clone.defaultRemoteName u
-        sdru = config-default-remote-u
+        cdr = config --global clone.defaultRemoteName
+        gdr = config --global clone.defaultRemoteName
+        sdr = config --global clone.defaultRemoteName
+        sdru = config --global clone.defaultRemoteName u
         cfi = config --get-all include.path
         cgi = config --get-all --global include.path
         global-config-file = config --get-all --global include.path
