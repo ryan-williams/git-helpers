@@ -69,6 +69,7 @@
         cgif = config --global core.excludesfile
         cgig = config --global core.excludesfile
         cgigs = config --get-all --global core.excludesfile
+        cef = config --global core.excludesfile
         cgef = config --global core.excludesfile
         cgefs = config --get-all --global core.excludesfile
         cfis = config core.excludesfile
