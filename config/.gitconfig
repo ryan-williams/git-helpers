@@ -18,6 +18,14 @@
         aeg  = add-core-excludes -g
         ael   = add-core-excludes
         age  = add-core-excludes -g
+        cds  = config diff.submodule
+        cdsd = config diff.submodule diff
+        cdsl = config diff.submodule log
+        cgds  = config --global diff.submodule
+        cgdsd = config --global diff.submodule diff
+        cgdsl = config --global diff.submodule log
+        cgsd = config --global diff.submodule diff
+        cgsl = config --global diff.submodule log
         cf   = config
         cg   = config --global
         cfa  = config --add
