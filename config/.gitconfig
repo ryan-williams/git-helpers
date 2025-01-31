@@ -68,6 +68,9 @@
         global-git-ignore = add-core-excludes -g
         ggi = global-git-ignore
 
+        cfaf = config core.attributesfile
+        cgaf = config --global core.attributesfile
+        gaf = config --global core.attributesfile
         cfig = config core.excludesfile
         cfigs = config --get-all core.excludesfile
         cfef = config core.excludesfile
