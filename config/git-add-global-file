@@ -3,7 +3,7 @@
 config="$1"
 shift
 for file in "$@"; do
-   if [ -s "$file" ] && ! git config --global --get-all "$config" | grep "$file" >/dev/null; then
+   if [ -s "$file" ] && ! git config --global --get-all "$config" | grep -q "^$file\$"; then
        git config --global --add "$config" "$file"
    fi
 done
