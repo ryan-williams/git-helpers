@@ -172,3 +172,11 @@ for path in "$HOME/global.gitignore" "$HOME/git/ignore"; do
     fi
   fi
 done
+
+for path in "$HOME/.gitattributes" "$HOME/git/attributes"; do
+  if [ -f "$path" ]; then
+    if ! git config --global --get-all core.attributesfile | grep -q "^$path\$"; then
+      git config --global --add core.attributesfile "$path"
+    fi
+  fi
+done
