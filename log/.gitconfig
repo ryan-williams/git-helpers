@@ -35,6 +35,7 @@
   hsh = full-hash
   l1 = log-oneline
   ladr = log --name-status --diff-filter=ADR
+  lg = log
   lno = log --name-only
   lns = log --name-status
   lgg = log -S
