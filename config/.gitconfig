@@ -63,7 +63,9 @@
         sdr = config --global clone.defaultRemoteName
         sdru = config --global clone.defaultRemoteName u
         cfi = config --get-all include.path
+        fip = config --get-all include.path
         cgi = config --get-all --global include.path
+        gip = config --get-all --global include.path
         global-config-file = config --get-all --global include.path
         global-git-ignore = add-core-excludes -g
         ggi = global-git-ignore
@@ -76,7 +78,9 @@
         cfef = config core.excludesfile
         cfefs = config --get-all core.excludesfile
         cgif = config --global core.excludesfile
+        gif = config --global core.excludesfile
         cgig = config --global core.excludesfile
+        gig = config --global core.excludesfile
         cgigs = config --get-all --global core.excludesfile
         cef = config --global core.excludesfile
         cgef = config --global core.excludesfile
