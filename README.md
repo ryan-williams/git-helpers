@@ -1,5 +1,5 @@
 # git-helpers
-[1,448](#count-completions) Git aliases and scripts.
+[1,486](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -234,15 +234,15 @@ Create a commit with a given tree and parents:
 
 ### Alias count <a id="count-completions"></a>
 Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scripts/count-completions.sh) counts them:
-<!-- `bmdf -- scripts/count-completions.sh -c` -->
+<!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1448 completions added by installing git-helpers
+# 1486 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
-# - 3 chars: 236
-# - 4 chars: 565
-# - 5 chars: 258
+# - 3 chars: 243
+# - 4 chars: 583
+# - 5 chars: 269
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -253,7 +253,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1448 new completions:
+1486 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -315,6 +315,7 @@ gcn        = g commit --amend
 gco        = g checkout
 gcp        = g cherry-pick
 gct        = g commit-tree
+gcu        = g config --unset
 gcw        = g checkout-worktree
 gd-        = g diff --
 gda        = g diff-pipe
@@ -338,6 +339,7 @@ gdw        = g diff -w
 gdx        = g diff-x
 gea        = git_expand_alias
 gec        = g edit-commit
+gef        = g config --global --get-all core.excludesfile
 geq        = g equal
 ger        = g for-each-ref
 get        = g empty-tree
@@ -366,14 +368,15 @@ ggp        = g grep --recurse-submodules
 ggr        = g graph
 ggt        = g get-tag
 ggu        = g remote-get-url
-gha        = gh api
+gha        = github_open_actions
 ghb        = g blob-hash
 ghc        = g has-changes
 ghf        = g help-follow
 ghh        = g help
-ghj        = gh_job
+ghj        = gh_open_job
 ghm        = !git --no-pager log -1 '--format=%h %s'
 gho        = g hash-object
+ghp        = gh api
 ghr        = gh run
 ghu        = github_url
 ghw        = github-workflows.py
@@ -381,7 +384,9 @@ ghx        = gh api -X
 gib        = g is-branch
 gic        = g is-clean
 gid        = g is-dirty
+gif        = g config --global --get-all include.path
 gig        = g is-repo
+gip        = g config --global --get-all include.path
 gir        = g is-remote
 gis        = g is-submodule
 gkl        = g kill-lines
@@ -393,6 +398,7 @@ gld        = g list-status ' D'
 glf        = g log-format
 glg        = git-helpers/log/glg  # Display history of files, lookup by partial/grep matches, prompt to disambiguate if multiple.
 glh        = g log-hash
+glj        = gitlab_open_jobs
 glm        = g list-mode
 gln        = g list-n
 glo        = g ls-files --other --exclude-standard --directory --no-empty-directory
@@ -504,6 +510,7 @@ gwt        = g l1t
 gxb        = <git repo dir> ['git b' args...]
 gxc        = <git repo dir> ['git c' args...]
 gxd        = <git repo dir> ['git d' args...]
+gxf        = g config --global --get-all core.excludesfile
 gxg        = <git repo dir> ['git g' args...]
 gxh        = <git repo dir> ['git sha' args...]
 gxl        = <git repo dir> ['git ln' args...]
@@ -586,7 +593,8 @@ gcbn       = g commit-basename
 gccb       = g commit-body
 gccd       = . git-clone-and-cd
 gcdr       = g config --global clone.defaultRemoteName
-gcef       = g config --global core.excludesfile
+gcds       = g config diff.submodule
+gcef       = g config --global --get-all core.excludesfile
 gcfa       = g config --add
 gcfd       = g config --unset
 gcfi       = g config --get-all include.path
@@ -597,6 +605,7 @@ gcft       = g cat-file -t
 gcfu       = g config --unset
 gcga       = g config --add --global
 gcgd       = g config --unset --global
+gcgg       = g config --global --get-all
 gcgi       = g config --get-all --global include.path
 gcgl       = g config --get-all --global
 gcgs       = g config --list --global
@@ -642,6 +651,8 @@ gcsp       = g set-parents
 gctg       = g current-tags
 gctp       = g cat-file -p
 gctr       = g commit-tree-reset
+gcua       = g config --unset-all
+gcug       = g config --unset --global
 gcwt       = g checkout-worktree
 gdas       = g diff-pipe sort
 gdbm       = g config --global init.defaultBranch main
@@ -704,11 +715,13 @@ gecn       = g edit-commit -n
 gecp       = g edit-commit -p
 gecr       = g edit-commit -r
 gecx       = g edit-commit -x
+gefa       = g config --global --add core.excludesfile
 gfd1       = g fetch-x --depth 1
 gfd2       = g fetch-x --depth 2
 gfd3       = g fetch-x --depth 3
 gfer       = g for-each-ref
 gfes       = g submodule foreach --recursive --quiet
+gfip       = g config --get-all include.path
 gfm1       = !git --no-pager log-1-format
 gfnp       = g find-prefix
 gfnr       = g find-only-remote
@@ -726,13 +739,19 @@ gfun       = g config user.name
 gfur       = g fetch-x --tags --recurse-submodules u
 ggaa       = g graph-all -a
 ggad       = g graph -A
+ggaf       = g config --global core.attributesfile
 ggal       = g graph-all -l
 ggcd       = g get-committer-date
+ggcf       = g config --global --get-all include.path
 ggdb       = g config --global init.defaultBranch
 ggdr       = g config --global clone.defaultRemoteName
+ggef       = g config --global --get-all core.excludesfile
 gggi       = g global-git-ignore
 gghu       = g graph -u HEAD
 ggid       = g get-id
+ggif       = g config --global core.excludesfile
+ggig       = g config --global core.excludesfile
+ggip       = g config --get-all --global include.path
 ggpi       = g grep --recurse-submodules -i
 ggpl       = g grep --recurse-submodules -l
 ggpn       = g grep --recurse-submodules -n
@@ -766,6 +785,8 @@ ghon       = github_owner_name
 ghor       = github_open_web_ref
 ghos       = github_open_settings
 ghow       = gh repo view --web
+ghpj       = gh api -H "Accept: application/vnd.github+json"
+ghpx       = gh api -X
 ghrh       = gh run --help
 ghrl       = gh run list
 ghrn       = github_default_remote
@@ -781,6 +802,9 @@ ghwl       = gh workflow list
 ghwr       = gh_workflow_run
 gicc       = g is-clean-cached
 gidc       = g is-dirty-cached
+gifa       = g config --global --add include.path
+gipa       = g config --global --add include.path
+gipu       = g config --global --unset-all include.path
 gism       = g is-submodule
 gisr       = g is-repo
 gl1T       = g l1fT
@@ -1083,6 +1107,7 @@ gurb       = g undo-rebase
 gusi       = g update-server-info
 gusr       = g user
 gxca       = <git repo dir> ['git ca' args...]
+gxfa       = g config --global --add core.excludesfile
 hdss       = github-docs-snapshot -s
 hprq       = hub pull-request
 gaafp      = g amend-force-push -a
@@ -1114,6 +1139,10 @@ gcarb      = g checkout-and-rebase
 gcbns      = g commit-basenames
 gccba      = g commit-body -a
 gcdi1      = !git --no-pager log --format=%cd --date=iso -1
+gcdsd      = g config diff.submodule diff
+gcdsl      = g config diff.submodule log
+gcefa      = g config --global --add core.excludesfile
+gcfaf      = g config core.attributesfile
 gcfda      = g config --unset-all
 gcfef      = g config core.excludesfile
 gcfia      = g config --add core.excludesfile
@@ -1121,15 +1150,19 @@ gcfig      = g config core.excludesfile
 gcfis      = g config core.excludesfile
 gcfpd      = g config push.default
 gcfua      = g config --unset-all
+gcgaf      = g config --global core.attributesfile
 gcgda      = g config --unset-all --global
 gcgdb      = g config --global init.defaultBranch
 gcgdr      = g config --global clone.defaultRemoteName
+gcgds      = g config --global diff.submodule
 gcgef      = g config --global core.excludesfile
 gcgia      = g config --add --global core.excludesfile
 gcgif      = g config --global core.excludesfile
 gcgig      = g config --global core.excludesfile
 gcgis      = g config --global core.excludesfile
 gcgpd      = g config --global push.default
+gcgsd      = g config --global diff.submodule diff
+gcgsl      = g config --global diff.submodule log
 gcgua      = g config --unset-all --global
 gcmab      = g commit-body -a
 gcmba      = g commit-body -a
@@ -1152,6 +1185,7 @@ gcppm      = g commit-push-parents -m
 gcpsh      = g show-cherry-pick-head
 gcrbh      = g commit-rebase-head
 gctgs      = g current-tags
+gcuga      = g config --unset-all --global
 gdcno      = g diff --name-only --cached
 gdcss      = g diff --cached --submodule=short
 gdcw-      = g diff --cached -w --
@@ -1178,7 +1212,9 @@ gfune      = g user
 ggaal      = g graph-all -a -l
 ggadh      = g graph -A HEAD
 ggala      = g graph-all -l -a
+ggcfa      = g config --global --add include.path
 ggdbm      = g config --global init.defaultBranch main
+ggefa      = g config --global --add core.excludesfile
 gggid      = g get-id -g
 ggidg      = g get-id -g
 ggr10      = g gr -n 10
@@ -1326,7 +1362,7 @@ gsmlp      = g submodule foreach --quiet --recursive 'echo $name $displaypath $s
 gsmrs      = !git reset . && git submodule update --recursive && git status
 gsmsh      = g submodule-sha
 gsmst      = g submodule status
-gsmuf      = g submodule update --recursive --rebase
+gsmuf      = g submodule update --recursive -f
 gsmuq      = g submodule update --quiet
 gsmur      = g submodule update --recursive --init
 gsmus      = g submodule update
@@ -1350,8 +1386,9 @@ gcamtf     = !git-commit-and-tag.sh -a -f
 gcanea     = g commit --amend --no-edit --allow-empty --author
 gcfefs     = g config --get-all core.excludesfile
 gcfigs     = g config --get-all core.excludesfile
-gcgefs     = g config --get-all --global core.excludesfile
-gcgigs     = g config --get-all --global core.excludesfile
+gcgdsd     = g config --global diff.submodule diff
+gcgdsl     = g config --global diff.submodule log
+gcgigs     = g config --global --get-all core.excludesfile
 gcgpdc     = g config --global push.default current
 gcgpdu     = g config --global push.default upstream
 gcmfan     = g commit -aF- --amend
@@ -1396,6 +1433,7 @@ gxcapm     = <git repo dir> ['git capm' args...]
 issues     = git-helpers/github/issues
 ggracle    = g graph -ac -l -e
 grcdrbh    = g reset-committer-date-rebase-head
+gsmurrr    = g submodule update --recursive --rebase --remote
 gist-dir   = git-helpers/gist/gist-dir
 repos.py   = git-helpers/github/repos.py
 gh_job_id  = gh_last_job "$@" | jq -r .databaseId
@@ -1457,8 +1495,8 @@ github-submodule-check-commits = git-helpers/submodule/github-submodule-check-co
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
-1349 completions present before and after installing git-helpers
-1448 completions added by installing git-helpers (0 removed, 2797 total)
+1345 completions present before and after installing git-helpers
+1486 completions added by installing git-helpers (0 removed, 2831 total)
 ```
 </details>
 

@@ -19,7 +19,7 @@ done
 shift $((OPTIND-1))
 
 if [ -z "$keep_platform" ] && [ -n "$DOCKER_DEFAULT_PLATFORM" ]; then
-  echo "Unsetting \$DOCKER_DEFAULT_PLATFORM=$DOCKER_DEFAULT_PLATFORM"
+  echo "Unsetting \$DOCKER_DEFAULT_PLATFORM=$DOCKER_DEFAULT_PLATFORM" >&2
   unset DOCKER_DEFAULT_PLATFORM
 fi
 
