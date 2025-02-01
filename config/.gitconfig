@@ -53,6 +53,10 @@
         ea = expand-alias
         gdb = config --global init.defaultBranch
         gdbm = config --global init.defaultBranch main
+        if = config --global --get-all include.path
+        ifa = config --global --add include.path
+        gcf = config --global --get-all include.path
+        gcfa = config --global --add include.path
         set-default-branch-main = config --global init.defaultBranch main
         sdb = set-default-branch-main
         sdbm = set-default-branch-main
@@ -69,9 +73,22 @@
         global-config-file = config --get-all --global include.path
         global-git-ignore = add-core-excludes -g
         ggi = global-git-ignore
+        gef = config --global --get-all core.excludesfile
+        gefa = config --global --add core.excludesfile
+        xf = config --global --get-all core.excludesfile
+        xfa = config --global --add core.excludesfile
+
+        ip = config --global --get-all include.path
+        ipa = config --global --add include.path
+        ipu = config --global --unset-all include.path
+        cu = config --unset
+        cua = config --unset-all
+        cug = config --unset --global
+        cuga = config --unset-all --global
 
         cfaf = config core.attributesfile
         cgaf = config --global core.attributesfile
+        cgg = config --global --get-all
         gaf = config --global core.attributesfile
         cfig = config core.excludesfile
         cfigs = config --get-all core.excludesfile
@@ -81,10 +98,13 @@
         gif = config --global core.excludesfile
         cgig = config --global core.excludesfile
         gig = config --global core.excludesfile
-        cgigs = config --get-all --global core.excludesfile
-        cef = config --global core.excludesfile
+        cgigs = config --global --get-all core.excludesfile
+        cef = config --global --get-all core.excludesfile
+        ef = config --global --get-all core.excludesfile
+        efa = config --global --add core.excludesfile
+        cefa = config --global --add core.excludesfile
         cgef = config --global core.excludesfile
-        cgefs = config --get-all --global core.excludesfile
+        cgefa = config --global --add core.excludesfile
         cfis = config core.excludesfile
         cgis = config --global core.excludesfile
         cfia = config --add core.excludesfile
