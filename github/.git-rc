@@ -10,9 +10,11 @@ defn ghdss github-docs-snapshot -s
 defn hds github-docs-snapshot
 defn hdss github-docs-snapshot -s
 
-defn gha gh api
+defn ghp gh api
 defn ghaj 'gh api -H "Accept: application/vnd.github+json"'
+defn ghpj 'gh api -H "Accept: application/vnd.github+json"'
 defn ghax gh api -X
+defn ghpx gh api -X
 defn ghx gh api -X
 defn ghw github-workflows.py
 
@@ -35,6 +37,7 @@ github_open_actions() {
 }
 export -f github_open_actions
 defn ghoa github_open_actions
+defn gha github_open_actions
 
 github_open_settings() {
     open "$(github_url)/settings"
@@ -308,6 +311,7 @@ gh_open_job() {
 }
 export -f gh_open_job
 defn ghoj gh_open_job
+defn ghj gh_open_job
 
 github_remote_path() {
     git remote-path "$@" "$(github_default_remote)"

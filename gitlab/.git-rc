@@ -31,6 +31,7 @@ gitlab_open_jobs() {
 export -f gitlab_open_jobs
 defn globj gitlab_open_jobs
 defn gloj gitlab_open_jobs
+defn glj gitlab_open_jobs
 
 defn gitlab_remote git-find-only-remote gitlab\.com
 defn glrn gitlab_remote
