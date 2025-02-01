@@ -3,7 +3,9 @@
 config="$1"
 shift
 for file in "$@"; do
-   if [ -s "$file" ] && ! git config --global --get-all "$config" | grep -q "^$file\$"; then
-       git config --global --add "$config" "$file"
+   if [ -f "$file" ] && ! git config --global --get-all "$config" | grep -q "^$file\$"; then
+       cmd=(git config --global --add "$config" "$file")
+       echo "${cmd[*]}" >&2
+       "${cmd[@]}"
    fi
 done
