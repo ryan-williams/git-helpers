@@ -11,7 +11,10 @@ if [ -z "$excludesfile" ]; then
   echo 'No `core.excludesfile` found; set via: `git config '"${global[*]}"' core.excludesfile <path>`' >&2
   exit 1
 fi
-for exclude in "$@"; do
-  echo "$excludesfile: appending $exclude" >&2
-  echo "$exclude" >> "$excludesfile"
+
+mapfile -t new_ignores < <(comm -13 <(sort "$excludesfile") <(cat | sort))
+
+for new_ignore in "${new_ignores[@]}"; do
+  echo "$excludesfile: appending $new_ignore" >&2
+  echo "$new_ignore" >> "$excludesfile"
 done

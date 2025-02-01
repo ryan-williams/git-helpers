@@ -165,18 +165,5 @@ git_set_sha() {
 export -f git_set_sha
 alias git-set-sha=git_set_sha
 
-for path in "$HOME/global.gitignore" "$HOME/git/ignore"; do
-  if [ -f "$path" ]; then
-    if ! git config --global --get-all core.excludesfile | grep -q "^$path\$"; then
-      git config --global --add core.excludesfile "$path"
-    fi
-  fi
-done
-
-for path in "$HOME/.gitattributes" "$HOME/git/attributes"; do
-  if [ -f "$path" ]; then
-    if ! git config --global --get-all core.attributesfile | grep -q "^$path\$"; then
-      git config --global --add core.attributesfile "$path"
-    fi
-  fi
-done
+git add-global-file core.excludesfile "$HOME/global.gitignore" "$HOME/git/ignore"
+git add-global-file core.attributesfile "$HOME/.gitattributes" "$HOME/git/attributes"
