@@ -92,6 +92,3 @@
   ndc = nd --cached
   ndh = nd HEAD
   ndn = nd --name-only
-
-[diff]
-  submodule = diff
