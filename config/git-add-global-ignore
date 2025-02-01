@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
-if [ -z "$GLOBAL_GIT_IGNORE_PATH" ]; then
-  echo "No \$GLOBAL_GIT_IGNORE_PATH set" >&2
+mapfile -t files < <(git config --global --get-all core.excludesfile)
+n="${#files[@]}"
+if [ "$n" -ne 1 ]; then
+  echo "Attempting to ignore \"$*\", found $n core.excludesfiles: ${files[*]}" >&2
   exit 1
 fi
 
+excludesfile="$files[0]"
 if [ $# -eq 0 ]; then
-  comm -13 <(sort "$GLOBAL_GIT_IGNORE_PATH") <(cat | sort) >> "$GLOBAL_GIT_IGNORE_PATH"
+  comm -13 <(sort "$excludesfile") <(cat | sort) >> "$excludesfile"
 else
   cat "$@" | "$0"
 fi
