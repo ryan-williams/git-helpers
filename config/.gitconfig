@@ -102,9 +102,11 @@
         gig = config --global core.excludesfile
         cgigs = config --global --get-all core.excludesfile
         cef = config --global --get-all core.excludesfile
+        cefa = config --global --add core.excludesfile
+        cefu = config --global --unset-all core.excludesfile
         ef = config --global --get-all core.excludesfile
         efa = config --global --add core.excludesfile
-        cefa = config --global --add core.excludesfile
+        efu = config --global --unset-all core.excludesfile
         cgef = config --global core.excludesfile
         cgefa = config --global --add core.excludesfile
         cfis = config core.excludesfile
