@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+err() {
+  echo "$@" >&2
+}
+
+usage() {
+    err 'Register a file type in Git "attributes" (e.g. for configuring custom `git diff` drivers)'
+    err
+    err "Usage:"
+    err "  $0 [-g] <extension>"
+    err "  $0 [-g] <pattern> <name>"
+    err
+    err "e.g.:"
+    err
+    err "  $0 parquet"
+    err "  $0 '*.ipynb' jupyternotebook"
+    err
+    exit 1
+}
+
+global=()
+while getopts "g" opt; do
+    case $opt in
+        g) global=(--global) ;;
+        \?) usage ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+if [ $# -eq 1 ]; then
+  name="$1"
+  pattern="*.$1"
+elif [ $# -eq 2 ]; then
+  pattern="$1"
+  name="$2"
+else
+  usage
+fi
+
+attrs_file="$(git config "${global[@]}" core.attributesfile)"
+line="$pattern diff=$name"
+if perl -pi -e 'BEGIN{$found=0} $found++ if s/^\Q'"$pattern"'\E .*\n//; END{exit($found==0)}' "$attrs_file"; then
+  err "Pattern '$pattern' already present in $attrs_file; removing"
+else
+  err "Appending '$line' to $attrs_file"
+fi
+echo "$line" >> "$attrs_file"

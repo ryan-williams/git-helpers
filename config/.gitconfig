@@ -77,6 +77,8 @@
         gefa = config --global --add core.excludesfile
         xf = config --global --get-all core.excludesfile
         xfa = config --global --add core.excludesfile
+        rft = register-file-type
+        rtg = register-file-type -g
 
         ip = config --global --get-all include.path
         ipa = config --global --add include.path
