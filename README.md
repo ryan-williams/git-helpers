@@ -1,5 +1,5 @@
 # git-helpers
-[1,486](#count-completions) Git aliases and scripts.
+[1,491](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -237,12 +237,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1486 completions added by installing git-helpers
+# 1491 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 243
-# - 4 chars: 583
-# - 5 chars: 269
+# - 4 chars: 586
+# - 5 chars: 270
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -253,7 +253,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1486 new completions:
+1491 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -716,6 +716,7 @@ gecp       = g edit-commit -p
 gecr       = g edit-commit -r
 gecx       = g edit-commit -x
 gefa       = g config --global --add core.excludesfile
+gefu       = g config --global --unset-all core.excludesfile
 gfd1       = g fetch-x --depth 1
 gfd2       = g fetch-x --depth 2
 gfd3       = g fetch-x --depth 3
@@ -941,6 +942,7 @@ grcd       = g reset-committer-date-rebase-head
 grcp       = g remote-copy
 grdb       = g remote-default-branch
 grel       = g relpath
+grft       = g register-file-type
 grgh       = g remote-default-branch
 grgu       = g remote-get-url
 grh1       = g reset-hard HEAD@{1}
@@ -983,6 +985,7 @@ grss       = !git reset . && git submodule update --recursive && git status
 grst       = g reflog --stat
 grsu       = g remote-set-url
 grtc       = g root-commits
+grtg       = g register-file-type -g
 grud       = g rebase-upstream-diff
 gruh       = g remote-url-to-https
 grvl       = g rev-list
@@ -1142,6 +1145,7 @@ gcdi1      = !git --no-pager log --format=%cd --date=iso -1
 gcdsd      = g config diff.submodule diff
 gcdsl      = g config diff.submodule log
 gcefa      = g config --global --add core.excludesfile
+gcefu      = g config --global --unset-all core.excludesfile
 gcfaf      = g config core.attributesfile
 gcfda      = g config --unset-all
 gcfef      = g config core.excludesfile
@@ -1496,7 +1500,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1486 completions added by installing git-helpers (0 removed, 2831 total)
+1491 completions added by installing git-helpers (0 removed, 2836 total)
 ```
 </details>
 
