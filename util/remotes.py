@@ -5,10 +5,6 @@ import re
 import subprocess
 import sys
 
-# Use the Python3 version of input(), even in Python2.
-# pylint: disable=undefined-variable
-if sys.version[0] == '2': input=raw_input
-
 
 def group(regex, name=None, trailing=''):
     if name is None:
@@ -20,13 +16,13 @@ def opt(regex, name=None, trailing=''):
     return '(?:%s)?' % group(regex, name, trailing)
 
 
-name_regex = '(?P<name>[^\s]+)'
+name_regex = r'(?P<name>[^\s]+)'
 opt_user_regex = '((?P<user>[^@]+)@)?'
 opt_scheme_regex = opt('https?|git', 'scheme', '://')
 opt_host_regex = opt(opt_scheme_regex + opt('[^:]+', 'host', ':'))
 domain_regex = group('[^/]+', 'host', '/')
-path_regex = group('[^\s]+', 'path')
-push_label_regex = '\(push\)'
+path_regex = group(r'[^\s]+', 'path')
+push_label_regex = r'\(push\)'
 
 push_regex = r'%s\s+%s%s%s?\s%s' % (name_regex, opt_user_regex, opt_host_regex, path_regex, push_label_regex)
 
