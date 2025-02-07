@@ -1,36 +1,46 @@
 #!/usr/bin/env python
 
-"""Configure a github remote to load refs for each pull request."""
+"""Configure a GitHub remote to load refs for each pull request."""
 
+from functools import partial
 import os
+from os.path import dirname, realpath
+from subprocess import check_call, check_output
 import sys
+from sys import exit, stderr
+
+from remotes import get_remotes
+
+err = partial(print, file=stderr)
 
 if __name__ == '__main__':
-    file_path = os.path.realpath(__file__)
-    branches_dir = os.path.dirname(file_path)
-    root_dir = os.path.dirname(branches_dir)
+    file_path = realpath(__file__)
+    branches_dir = dirname(file_path)
+    root_dir = dirname(branches_dir)
     sys.path.insert(0, root_dir)
 
-from subprocess import check_output, Popen, PIPE
-from util.remotes import get_remotes
 
 def die(msg, exit_code=1):
-  sys.stderr.write(msg + '\n')
-  sys.exit(exit_code)
+    err(msg)
+    exit(exit_code)
 
-default_remote = 'origin'
-if os.environ.get('DEFAULT_REMOTE'):
-  default_remote = os.environ.get('DEFAULT_REMOTE')
+
+def lines(*cmd):
+    return check_output(cmd).decode().split('\n')
+
+
+default_remote_lines = lines('git', 'config', 'clone.defaultRemoteName')
+default_remote = default_remote_lines[0] if default_remote_lines else os.environ.get('DEFAULT_REMOTE', 'origin')
 
 if len(sys.argv) < 2:
-  remote_name=default_remote
+    remote_name = default_remote
 else:
-  remote_name=sys.argv[1]
+    remote_name = sys.argv[1]
 
 remotes = get_remotes()
 
 if remote_name not in remotes:
-  die("Remote '%s' doesn't exist" % remote_name)
+    die("Remote '%s' doesn't exist" % remote_name)
 
 remote = remotes[remote_name]
 
@@ -38,23 +48,25 @@ remote_fetch_config_key = 'remote.%s.fetch' % remote_name
 remote_fetch_config_pr_mapping = 'refs/remotes/pr/*' if remote_name == default_remote else 'refs/remotes/%s/pr/*' % remote_name
 remote_fetch_config_value = '+refs/pull/*/head:%s' % remote_fetch_config_pr_mapping
 
+
 def remote_configured_to_fetch_pr_tags():
-  return bool(
-    [
-      line
-      for line in check_output(['git', 'config', '--get-all', remote_fetch_config_key]).decode().split('\n')
-      if line.endswith(remote_fetch_config_value)
-    ]
-  )
+    return bool([
+        line
+        for line in lines('git', 'config', '--get-all', remote_fetch_config_key)
+        if line.endswith(remote_fetch_config_value)
+    ])
 
 
 if remote_configured_to_fetch_pr_tags():
-  print('Remote "%s" is already configured to fetch github "pr" tags' % remote_name)
+    err('Remote "%s" is already configured to fetch github "pr" tags' % remote_name)
 else:
-  check_output(['git', 'config', '--add', remote_fetch_config_key, remote_fetch_config_value])
-  if not remote_configured_to_fetch_pr_tags():
-    raise Exception(
-      'Failed to add fetch mapping "%s" to git config key "%s"' % (remote_fetch_config_value, remote_fetch_config_key)
-    )
+    check_call(['git', 'config', '--add', remote_fetch_config_key, remote_fetch_config_value])
+    if not remote_configured_to_fetch_pr_tags():
+        raise Exception(
+            'Failed to add fetch mapping "%s" to git config key "%s"' % (
+                remote_fetch_config_value,
+                remote_fetch_config_key,
+            )
+        )
 
-print(check_output(['git', 'fetch', remote_name]).decode())
+check_call(['git', 'fetch', remote_name])
