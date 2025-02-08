@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 mapfile -t files < <(git config --global --get-all core.excludesfile)
 n="${#files[@]}"
 if [ "$n" -ne 1 ]; then
@@ -7,7 +9,7 @@ if [ "$n" -ne 1 ]; then
   exit 1
 fi
 
-excludesfile="$files[0]"
+excludesfile="${files[0]}"
 if [ $# -eq 0 ]; then
   comm -13 <(sort "$excludesfile") <(cat | sort) >> "$excludesfile"
 else

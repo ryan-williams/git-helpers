@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 if [ "$1" == -g ] || [ "$1" == --global ]; then
   global=(--global); shift
 else
@@ -12,7 +14,7 @@ if [ -z "$excludesfile" ]; then
   exit 1
 fi
 
-mapfile -t new_ignores < <(comm -13 <(sort "$excludesfile") <(cat | sort))
+mapfile -t new_ignores < <(comm -13 <(sort "$excludesfile") <(for arg in "$@"; do echo "$arg"; done | sort))
 
 for new_ignore in "${new_ignores[@]}"; do
   echo "$excludesfile: appending $new_ignore" >&2
