@@ -18,6 +18,10 @@
         aeg  = add-core-excludes -g
         ael   = add-core-excludes
         age  = add-core-excludes -g
+        cdc  = config-diff-command
+        cdcg = config-diff-command -g
+        cdt  = config-diff-command -t
+        cdtg = config-diff-command -tg
         cds  = config diff.submodule
         cdsd = config diff.submodule diff
         cdsl = config diff.submodule log
