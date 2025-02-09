@@ -1,7 +1,13 @@
 
+git_clone_and_cd() {
+  git clone --recurse-submodules "$@"
+  dir="$(find . -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -nr | head -n1 | cut -d' ' -f2)"
+  cd "$dir"
+}
+alias gccd=git_clone_and_cd
+
 alias gclb="g clb"
 alias gcln="g cln"
-alias gccd=". git-clone-and-cd"
 alias gcsb=". git-clone-single-branch"
 alias gmc="g mc"
 alias gsrv="g srv"
