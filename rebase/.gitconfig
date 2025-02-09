@@ -59,6 +59,7 @@
   rcd     = reset-committer-date-rebase-head
   rcdrbh  = reset-committer-date-rebase-head
   rd      = rebase-diff
+  rds     = rebase-diff --stat
   ri      = rebase -i
   rio     = rebase -i --onto
   rir     = rebase -i -r
