@@ -1,0 +1,5 @@
+[alias]
+  pl = pull
+  plr = pull --rebase
+  plrs = pull --rebase --recurse-submodules
+  pls = pull --rebase --recurse-submodules

@@ -75,7 +75,7 @@ append_subdir_to_path \
   lfs log ls \
   merge merge-base mv \
   nav \
-  push \
+  pull push \
   rebase reflog remote reset rev-list revert rm_ \
   show stash status submodule \
   tag \

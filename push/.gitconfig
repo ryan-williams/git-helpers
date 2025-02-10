@@ -29,7 +29,6 @@
   pgc = config --global push.default
   pgcc = config --global push.default current
   pgcu = config --global push.default upstream
-  pl = pull
   pnf = push -n -f
   px = push-x
   ph = push-head-to
