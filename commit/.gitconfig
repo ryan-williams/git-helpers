@@ -12,6 +12,7 @@
   c     = commit
   ca    = commit -a
   caa   = commit -a --amend
+  caaf  = commit -a --amend -F-
   caam  = commit -a --amend -m
   cae   = commit --allow-empty
   caf   = commit -aF-
