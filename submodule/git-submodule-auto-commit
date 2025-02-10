@@ -37,7 +37,8 @@ if [ $# -gt 0 ]; then
 fi
 
 submodules() {
-  git ls-tree "$@" | awk '$2=="commit" { print $4 }' | sort
+  local tree="$1"; shift
+  git ls-tree "${tree:-HEAD}" "$@" | awk '$2=="commit" { print substr($0, index($0,$4)) }' | sort
 }
 
 if [ -n "$refspec" ]; then
@@ -46,7 +47,7 @@ if [ -n "$refspec" ]; then
     to="${refspec##*..}"
   else
     from="$refspec"
-    to=HEAD
+    to=
   fi
   diffs="$(comm -12 <(git diff --name-status "$refspec" | awk '$0 ~ /^M/ { print $2 }' | sort) <(submodules "$to" "$@"))"
 else
