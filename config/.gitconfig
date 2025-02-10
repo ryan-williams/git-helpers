@@ -75,7 +75,7 @@
         cgi = config --get-all --global include.path
         gip = config --get-all --global include.path
         global-config-file = config --get-all --global include.path
-        global-git-ignore = add-core-excludes -g
+        global-gitignore = add-core-excludes -g
         ggi = global-git-ignore
         gef = config --global --get-all core.excludesfile
         gefa = config --global --add core.excludesfile
