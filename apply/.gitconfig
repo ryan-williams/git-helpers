@@ -1,5 +1,7 @@
 [alias]
   abd = patch-branch-diff
+  app = apply
+  app0 = apply -p0
   apr = apply -R
   apr0 = apply -R -p0
   pbd = patch-branch-diff
