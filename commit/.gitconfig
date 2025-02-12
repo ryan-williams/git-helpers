@@ -8,6 +8,7 @@
   aapfu = amend-force-push -a u
   author = !git --no-pager log -1 '--format=%an <%ae>'
   aut   = author
+  gau   = author
   awt   = amend-worktree
   c     = commit
   ca    = commit -a
