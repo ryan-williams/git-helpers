@@ -46,9 +46,11 @@
   smshs = submodule-shas
   smu   = submodule update --recursive
   smuf  = submodule update --recursive -f
+  smiu  = submodule update --init --recursive
+  smui  = submodule update --init --recursive
   smuq  = submodule update --quiet
-  smur  = submodule update --recursive --init
-  smurf = submodule update --recursive --init -f
+  smur  = submodule update --init --recursive
+  smurf = submodule update --init --recursive -f
   smurq = submodule update --recursive --quiet
   smurr = submodule update --recursive --rebase
   smurrr = submodule update --recursive --rebase --remote

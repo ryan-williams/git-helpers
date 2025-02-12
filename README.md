@@ -1,5 +1,5 @@
 # git-helpers
-[1,505](#count-completions) Git aliases and scripts.
+[1,507](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -237,12 +237,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1505 completions added by installing git-helpers
+# 1507 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 243
 # - 4 chars: 594
-# - 5 chars: 275
+# - 5 chars: 277
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -253,7 +253,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1505 new completions:
+1507 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1373,6 +1373,7 @@ gsmaf      = g submodule add -f
 gsmcc      = g submodule-count-commits
 gsmid      = g submodule-sha
 gsmir      = !git submodule init && git submodule update --recursive
+gsmiu      = g submodule update --init --recursive
 gsmlf      = g submodule foreach --quiet --recursive 'echo $name $displaypath $sha1'
 gsmlg      = g submodule-log
 gsmlp      = g submodule foreach --quiet --recursive 'echo $name $displaypath $sha1'
@@ -1380,8 +1381,9 @@ gsmrs      = !git reset . && git submodule update --recursive && git status
 gsmsh      = g submodule-sha
 gsmst      = g submodule status
 gsmuf      = g submodule update --recursive -f
+gsmui      = g submodule update --init --recursive
 gsmuq      = g submodule update --quiet
-gsmur      = g submodule update --recursive --init
+gsmur      = g submodule update --init --recursive
 gsmus      = g submodule update
 gspfo      = g safe-push-force origin
 gspfu      = g safe-push-force upstream
@@ -1443,7 +1445,7 @@ gshadr     = g show --diff-filter=ADR --name-status
 gshwch     = g show-cherry-pick-head -w
 gsmsha     = g submodule-sha
 gsmshs     = g submodule-shas
-gsmurf     = g submodule update --recursive --init -f
+gsmurf     = g submodule update --init --recursive -f
 gsmurq     = g submodule update --recursive --quiet
 gsmurr     = g submodule update --recursive --rebase
 gxcapm     = <git repo dir> ['git capm' args...]
@@ -1514,7 +1516,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1505 completions added by installing git-helpers (0 removed, 2850 total)
+1507 completions added by installing git-helpers (0 removed, 2852 total)
 ```
 </details>
 
