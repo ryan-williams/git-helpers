@@ -18,7 +18,6 @@
   blr     = head-before-last-rebase
   hblr    = head-before-last-rebase
   hblrs   = head-before-last-rebase %h
-  pr      = pull --rebase
   rb      = rebase
   rba     = rebase --abort
   rbc     = rebase --continue
