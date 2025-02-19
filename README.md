@@ -1,5 +1,5 @@
 # git-helpers
-[1,507](#count-completions) Git aliases and scripts.
+[1,513](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -237,12 +237,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1507 completions added by installing git-helpers
+# 1513 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 243
-# - 4 chars: 594
-# - 5 chars: 277
+# - 4 chars: 598
+# - 5 chars: 279
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -253,7 +253,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1507 new completions:
+1513 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -594,9 +594,11 @@ gcbn       = g commit-basename
 gccb       = g commit-body
 gccd       = git_clone_and_cd
 gcdc       = g config-diff-command
+gcdg       = g config-diff-command -g
 gcdr       = g config --global clone.defaultRemoteName
 gcds       = g config diff.submodule
 gcdt       = g config-diff-command -t
+gcdu       = g config-diff-command -u
 gcef       = g config --global --get-all core.excludesfile
 gcfa       = g config --add
 gcfd       = g config --unset
@@ -651,9 +653,10 @@ gcrh       = g commit-rebase-head
 gcs3       = g check-s3-buckets
 gcsb       = . git-clone-single-branch
 gcsp       = g set-parents
-gctg       = g current-tags
+gctg       = g config-diff-command -tg
 gctp       = g cat-file -p
 gctr       = g commit-tree-reset
+gctu       = g config-diff-command -tu
 gcua       = g config --unset-all
 gcug       = g config --unset --global
 gcwt       = g checkout-worktree
@@ -751,7 +754,7 @@ ggcf       = g config --global --get-all include.path
 ggdb       = g config --global init.defaultBranch
 ggdr       = g config --global clone.defaultRemoteName
 ggef       = g config --global --get-all core.excludesfile
-gggi       = g global-git-ignore
+gggi       = g global-gitignore
 gghu       = g graph -u HEAD
 ggid       = g get-id
 ggif       = g config --global core.excludesfile
@@ -1104,6 +1107,7 @@ gszh       = g size -H
 gszs       = g sizes
 gtch       = g commit --amend --no-edit
 gtfi       = g tree-full-id
+gtpa       = g tag --points-at
 gtr0       = g empty-tree
 gtrh       = g ls-tree HEAD
 gtrp       = g ls-tree HEAD^
@@ -1152,6 +1156,7 @@ gcarb      = g checkout-and-rebase
 gcbns      = g commit-basenames
 gccba      = g commit-body -a
 gcdcg      = g config-diff-command -g
+gcdgu      = g config-diff-command -gu
 gcdi1      = !git --no-pager log --format=%cd --date=iso -1
 gcdsd      = g config diff.submodule diff
 gcdsl      = g config diff.submodule log
@@ -1201,6 +1206,7 @@ gcppm      = g commit-push-parents -m
 gcpsh      = g show-cherry-pick-head
 gcrbh      = g commit-rebase-head
 gctgs      = g current-tags
+gctgu      = g config-diff-command -tgu
 gcuga      = g config --unset-all --global
 gdcno      = g diff --name-only --cached
 gdcss      = g diff --cached --submodule=short
@@ -1515,8 +1521,8 @@ github-submodule-check-commits = git-helpers/submodule/github-submodule-check-co
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
-1345 completions present before and after installing git-helpers
-1507 completions added by installing git-helpers (0 removed, 2852 total)
+1349 completions present before and after installing git-helpers
+1513 completions added by installing git-helpers (0 removed, 2862 total)
 ```
 </details>
 

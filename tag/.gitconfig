@@ -1,6 +1,5 @@
 [alias]
   current-tags = tag --points-at
-  ctg = current-tags
   ctgs = current-tags
   gt = get-tag
   it = is-tag
@@ -13,3 +12,4 @@
   tl = tag -l
   tn = tags -n
   tp = tag --format='%(color:green)%(objectname:short)%(color:reset)%09%(color:yellow)%(refname:strip=2)%(color:reset)%09%(color:red)%(creatordate:iso)%(color:reset)%09%(color:blue)%(creatordate:relative)%(color:reset)'
+  tpa = tag --points-at

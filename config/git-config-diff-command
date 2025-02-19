@@ -2,18 +2,28 @@
 
 set -eo pipefail
 
+err() {
+  echo "$@" >&2
+}
+
 usage() {
-  echo "Usage: $0 <attr type> [value]" >&2
+  err "Usage: $0 [-g] [-t] [-u] <attr type> [value]"
+  err
+  err "  -g: --global"
+  err "  -t: manipulate diff.<attr>.textconv instead of diff.<attr>.command"
+  err "  -u: unset diff/textconv command"
   exit 1
 }
 
 global=()
 cmd=command
-while getopts "gt" opt; do
+unset=()
+while getopts "gtu" opt; do
   case "$opt" in
     g) global=(--global) ;;
     t) cmd=textconv ;;
-    \?) usage \\
+    u) unset=(--unset) ;;
+    \?) usage ;;
   esac
 done
 shift $((OPTIND-1))
@@ -25,4 +35,15 @@ else
 fi
 
 key="diff.$type.$cmd"
-git config "${global[@]}" "$key" "$@"
+
+if [ ${#unset[@]} -gt 0 ]; then
+  if [ $# -gt 0 ]; then
+    usage
+  fi
+  cur="$(git config "${global[@]}" "$key")"
+  if [ -n "$cur" ]; then
+    err "Unsetting $key: $cur"
+  fi
+fi
+
+git config "${global[@]}" "${unset[@]}" "$key" "$@"

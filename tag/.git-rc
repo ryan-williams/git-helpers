@@ -1,5 +1,3 @@
-
-alias gctg="g ctg"
 alias gctgs="g ctgs"
 alias ggt="g gt"
 
@@ -12,4 +10,4 @@ alias gtl="g tl"
 alias gtn="g tn"
 alias gtp="g tp"
 alias gts="g ts"
-
+alias gtpa="g tpa"

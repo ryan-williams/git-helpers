@@ -1,6 +1,5 @@
 # .git-rc sources this file from your global `.gitconfig`
 
-
 [color]
         branch  = auto
         diff    = auto
@@ -20,8 +19,14 @@
         age  = add-core-excludes -g
         cdc  = config-diff-command
         cdcg = config-diff-command -g
+        cdg  = config-diff-command -g
+        cdgu = config-diff-command -gu
         cdt  = config-diff-command -t
+        cdu  = config-diff-command -u
         cdtg = config-diff-command -tg
+        ctg  = config-diff-command -tg
+        ctgu = config-diff-command -tgu
+        ctu  = config-diff-command -tu
         cds  = config diff.submodule
         cdsd = config diff.submodule diff
         cdsl = config diff.submodule log
