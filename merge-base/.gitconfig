@@ -4,4 +4,6 @@
   mbo = merge-base --octopus
   mbp = merge-base-parents
   mbt = merge-base-tracked-branch
+  mmb = merge-base-merge-head
+  mmh = merge-base-merge-head
   shmb = show-merge-base

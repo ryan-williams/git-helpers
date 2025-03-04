@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+merge_head="$(git merge-head)"
+git merge-base "$merge_head" HEAD
