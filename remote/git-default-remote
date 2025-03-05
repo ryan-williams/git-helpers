@@ -5,35 +5,65 @@
 # - Optional override: `git config default.remote`
 # - Optional fallback: `$DEFAULT_REMOTE` env var
 
-skip_existing=
-if [ "$1" == "-n" ]; then
-  skip_existing=1
-  shift
-fi
+usage() {
+  echo "$0 [-n] [-v]" >&2
+  exit 1
+}
 
+skip_existing=
+verbose=
+while getopts "nv" opt; do
+  case $opt in
+    n) skip_existing=1 ;;
+    v) verbose=1 ;;
+    \?) usage ;;
+  esac
+done
+shift $((OPTIND-1))
+
+log() {
+  if [ -n "$verbose" ]; then
+    echo "$@" >&2
+  fi
+}
+
+# Optional custom config, only used by this script
 remote="$(git config remote.default)"
 if [ -n "$remote" ]; then
+  log "Using remote $remote from config remote.default"
   echo "$remote"
   exit 0
 fi
 
 if [ -z "$skip_existing" ]; then
-  IFS=$'\n' read -r -a remotes < <(git remote)
+  mapfile -t remotes < <(git remote)
   if [ ${#remotes[@]} -eq 1 ]; then
+    log "Using only remote $remote"
     echo "${remotes[0]}"
     exit 0
   fi
 fi
 
+upstream="$(git rev-parse --abbrev-ref "@{u}")"
+if [ -n "$upstream" ]; then
+  remote="${upstream%%/*}"
+  log "Using remote $remote from tracked branch $upstream"
+  echo "$remote"
+  exit 0
+fi
+
 remote="$(git config clone.defaultRemoteName)"
 if [ -n "$remote" ]; then
+  log "Using remote $remote from config clone.defaultRemoteName"
   echo "$remote"
   exit 0
 fi
 
 if [ -n "$DEFAULT_REMOTE" ]; then
+  log "Using remote $DEFAULT_REMOTE from env var \$DEFAULT_REMOTE"
   echo "$DEFAULT_REMOTE"
   exit 0
 fi
 
+log "No default remote found, returning origin"
 echo origin

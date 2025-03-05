@@ -1,72 +1,89 @@
-#!/usr/bin/env python
+#!/usr/bin/env bash
 
-"""Configure a GitHub remote to load refs for each pull request."""
+set -eo pipefail
 
-from functools import partial
-import os
-from os.path import dirname, realpath
-from subprocess import check_call, check_output
-import sys
-from sys import exit, stderr
+err() {
+  echo "$@" >&2
+}
 
-from remotes import get_remotes
+usage() {
+  err "$0 [-d] [-n] [-r remote] [pr-number...]"
+  err
+  err "  -d: Delete existing PR fetch mappings"
+  err "  -n: Dry run"
+  err "  -r: Remote name (default: $(git default-remote))"
+  exit 1
+}
 
-err = partial(print, file=stderr)
+delete=
+dry_run=
+remote=
+while getopts "dnr:" opt; do
+  case $opt in
+    d) delete=1 ;;
+    n) dry_run=1 ;;
+    r) remote="$OPTARG" ;;
+    \?) usage ;;
+    :)
+      err "Option -$OPTARG requires an argument."
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND-1))
 
-if __name__ == '__main__':
-    file_path = realpath(__file__)
-    branches_dir = dirname(file_path)
-    root_dir = dirname(branches_dir)
-    sys.path.insert(0, root_dir)
+default=
+if [ -z "$remote" ]; then
+  remote="$(git default-remote)"
+  if [ -z "$remote" ]; then
+    err "No remote passed and no default remote found"
+    exit 1
+  fi
+  default=1
+fi
 
+if [ $# -eq 0 ]; then
+  set -- '*'
+fi
 
-def die(msg, exit_code=1):
-    err(msg)
-    exit(exit_code)
+run() {
+  if [ -n "$dry_run" ]; then
+    err "Would run: $*"
+  else
+    err "Running: $*"
+    "$@"
+  fi
+}
 
-
-def lines(*cmd):
-    return check_output(cmd).decode().split('\n')
-
-
-default_remote_lines = lines('git', 'config', 'clone.defaultRemoteName')
-default_remote = default_remote_lines[0] if default_remote_lines else os.environ.get('DEFAULT_REMOTE', 'origin')
-
-if len(sys.argv) < 2:
-    remote_name = default_remote
-else:
-    remote_name = sys.argv[1]
-
-remotes = get_remotes()
-
-if remote_name not in remotes:
-    die("Remote '%s' doesn't exist" % remote_name)
-
-remote = remotes[remote_name]
-
-remote_fetch_config_key = 'remote.%s.fetch' % remote_name
-remote_fetch_config_pr_mapping = 'refs/remotes/pr/*' if remote_name == default_remote else 'refs/remotes/%s/pr/*' % remote_name
-remote_fetch_config_value = '+refs/pull/*/head:%s' % remote_fetch_config_pr_mapping
-
-
-def remote_configured_to_fetch_pr_tags():
-    return bool([
-        line
-        for line in lines('git', 'config', '--get-all', remote_fetch_config_key)
-        if line.endswith(remote_fetch_config_value)
-    ])
-
-
-if remote_configured_to_fetch_pr_tags():
-    err('Remote "%s" is already configured to fetch github "pr" tags' % remote_name)
-else:
-    check_call(['git', 'config', '--add', remote_fetch_config_key, remote_fetch_config_value])
-    if not remote_configured_to_fetch_pr_tags():
-        raise Exception(
-            'Failed to add fetch mapping "%s" to git config key "%s"' % (
-                remote_fetch_config_value,
-                remote_fetch_config_key,
-            )
-        )
-
-check_call(['git', 'fetch', remote_name])
+k="remote.$remote.fetch"
+for arg in "$@"; do
+  if [ -z "$default" ]; then
+    v="refs/remotes/$remote/pr/$arg"
+  else
+    v="refs/remotes/pr/$arg"
+  fi
+  kv="+refs/pull/$arg/head:$v"
+  mapfile -t configs < <(git config --get-all "$k")
+  found=
+  for config in "${configs[@]}"; do
+    if [ "$config" = "$v" ]; then
+      err "Mapping for $config already present in remote $remote"
+      found=1
+      break
+    fi
+  done
+  if [ -n "$found" ]; then
+    continue
+  fi
+  if [ -n "$delete" ]; then
+    esc="$kv"
+    esc="${esc//+/\\+}"
+    esc="${esc//\*/\\*}"
+    run git config --unset "$k" "$esc"
+    git_dir="$(git rev-parse --git-dir)"
+    run rm "$git_dir/$v"
+  else
+    run git config --add "$k" "$kv"
+  fi
+done
+git fetch --prune "$remote"
