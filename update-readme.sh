@@ -20,7 +20,7 @@ shift "$((OPTIND -1))"
 
 # Exec+Update README code blocks
 if [ -n "$mdcmd" ]; then
-    mdcmd
+    mdcmd -C
 fi
 
 # Update README subtitle

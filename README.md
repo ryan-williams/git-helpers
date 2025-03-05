@@ -1,5 +1,5 @@
 # git-helpers
-[1,513](#count-completions) Git aliases and scripts.
+[1,518](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -237,12 +237,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1513 completions added by installing git-helpers
+# 1518 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 243
-# - 4 chars: 598
-# - 5 chars: 279
+# - 4 chars: 601
+# - 5 chars: 280
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -253,7 +253,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1513 new completions:
+1518 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -698,6 +698,7 @@ gdsc       = g diff --stat --cached
 gdsd       = g diff --submodule=diff
 gdsh       = g diff --stat HEAD
 gdsl       = g diff --submodule=log
+gdsm       = g config --global diff.submodule
 gdsp       = g diff --stat HEAD^
 gdss       = g diff --submodule=short
 gdsu       = g diff-stat-parent
@@ -881,6 +882,8 @@ gmbo       = g merge-base --octopus
 gmbp       = g merge-base-parents
 gmbt       = g merge-base-tracked-branch
 gmff       = g merge --ff-only
+gmmb       = g merge-base-merge-head
+gmmh       = g merge-base-merge-head
 gmne       = g merge --no-edit
 gmnf       = g merge --no-ff
 gmnm       = g merge --no-edit -m
@@ -1218,6 +1221,7 @@ gdnoc      = g diff --name-only --cached
 gdnpg      = g config --global diff.noprefix
 gdnpt      = g config diff.noprefix true
 gdsca      = g describe --all
+gdsml      = g config --global diff.submodule log
 gdsph      = g diff --stat HEAD^..HEAD
 gdthc      = g diff-theirs-conflicting
 gdts1      = !git --no-pager dates -1
@@ -1521,8 +1525,8 @@ github-submodule-check-commits = git-helpers/submodule/github-submodule-check-co
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
-1349 completions present before and after installing git-helpers
-1513 completions added by installing git-helpers (0 removed, 2862 total)
+1345 completions present before and after installing git-helpers
+1518 completions added by installing git-helpers (0 removed, 2863 total)
 ```
 </details>
 
