@@ -58,6 +58,8 @@
         dnpg = config --global diff.noprefix
         dnpgt = config --global diff.noprefix true
         dnpt = config diff.noprefix true
+        dsm = config --global diff.submodule
+        dsml = config --global diff.submodule log
         e = expand-alias
         ea = expand-alias
         gdb = config --global init.defaultBranch
