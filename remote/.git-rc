@@ -3,9 +3,10 @@
 defn gamr g amr
 defn gcd g cd
 defn gdfr g dfr
+defn gdrb g drb
 defn gdrn g drn
-defn gdrv g drv
 defn gdrt g drt
+defn gdrv g drv
 defn gfnr g fnr
 defn ggru g gru
 defn ggu g gu
@@ -48,5 +49,4 @@ defn glsrt g lsrt
 defn glrh g lrh
 defn glrt g lrt
 
-defn gdrb g drb
 defn grdb g rdb
