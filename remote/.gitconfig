@@ -7,6 +7,8 @@
   rmpe      = remote-path -e
 
   dfr       = default-remote
+  drn       = default-remote -n
+  drv       = default-remote -v
   drb       = remote-default-branch
   drt       = default-remote
   rdb       = remote-default-branch

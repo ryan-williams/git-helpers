@@ -42,14 +42,14 @@ if [ -z "$skip_existing" ]; then
     echo "${remotes[0]}"
     exit 0
   fi
-fi
 
-upstream="$(git rev-parse --abbrev-ref "@{u}")"
-if [ -n "$upstream" ]; then
-  remote="${upstream%%/*}"
-  log "Using remote $remote from tracked branch $upstream"
-  echo "$remote"
-  exit 0
+  upstream="$(git rev-parse --abbrev-ref "@{u}")"
+  if [ -n "$upstream" ]; then
+    remote="${upstream%%/*}"
+    log "Using remote $remote from tracked branch $upstream"
+    echo "$remote"
+    exit 0
+  fi
 fi
 
 remote="$(git config clone.defaultRemoteName)"
