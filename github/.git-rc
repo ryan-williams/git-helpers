@@ -231,6 +231,7 @@ gh_workflow_run() {
 }
 export -f gh_workflow_run
 defn ghwr gh_workflow_run
+
 gh_workflow_run_current_branch() {
     name="${1%.yml}"; shift
     gh workflow run $name.yml --ref "$(git current-branch)" "$@"
