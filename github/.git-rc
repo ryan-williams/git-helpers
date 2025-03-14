@@ -189,6 +189,9 @@ defn ghrh gh run --help
 defn ghrl gh run list
 defn ghrlh gh run list --help
 
+defn ghq gh run list -s queued
+defn ghip gh run list -s in_progress
+
 gh_last_run_id() {
     gh run list -L 1 --json databaseId | jq -r .[0].databaseId
 }
