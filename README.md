@@ -1,5 +1,5 @@
 # git-helpers
-[1,518](#count-completions) Git aliases and scripts.
+[1,523](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -237,11 +237,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1518 completions added by installing git-helpers
+# 1523 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
-# - 3 chars: 243
-# - 4 chars: 601
+# - 3 chars: 244
+# - 4 chars: 605
 # - 5 chars: 280
 ```
 
@@ -253,7 +253,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1518 new completions:
+1523 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -377,6 +377,7 @@ ghj        = gh_open_job
 ghm        = !git --no-pager log -1 '--format=%h %s'
 gho        = g hash-object
 ghp        = gh api
+ghq        = gh run list -s queued
 ghr        = gh run
 ghu        = github_url
 ghw        = github-workflows.py
@@ -692,7 +693,9 @@ gdps       = g diff-pipe sort
 gdqc       = g diff --quiet --cached
 gdqe       = g diff --exit-code --quiet
 gdrb       = g remote-default-branch
+gdrn       = g default-remote -n
 gdrt       = g default-remote
+gdrv       = g default-remote -v
 gds1       = !git --no-pager dates -1 --date=iso
 gdsc       = g diff --stat --cached
 gdsd       = g diff --submodule=diff
@@ -780,6 +783,7 @@ ghax       = gh api -X
 ghbi       = g blob-hash -i
 ghbs       = g blob-hash -s
 ghds       = github-docs-snapshot
+ghip       = gh run list -s in_progress
 ghji       = gh_job_id
 ghju       = gh_job_url
 ghlr       = gh_last_run_id
@@ -949,6 +953,7 @@ grbm       = g rebase-head-message
 grbo       = g rebase --onto
 grbp       = g rebase-parent
 grbr       = g rebase -r
+grbs       = g rebase --skip
 grbu       = g rebase-undo
 grcd       = g reset-committer-date-rebase-head
 grcp       = g remote-copy
@@ -1526,7 +1531,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1518 completions added by installing git-helpers (0 removed, 2863 total)
+1523 completions added by installing git-helpers (0 removed, 2868 total)
 ```
 </details>
 
