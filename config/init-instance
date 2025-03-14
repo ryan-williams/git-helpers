@@ -1,0 +1,37 @@
+# Source this once on new nodes, e.g. after installing dotfiles umbrella repo:
+#
+# ```bash
+# . <(curl -L https://j.mp/_rc) runsascoded/.rc
+# . .rc/git/config/init-instance
+# ```
+
+mkdir -p git
+if [ -f .gitconfig ]; then
+  mv .gitconfig git/config
+else
+  touch git/config
+fi
+ln -s git/config ~/.gitconfig
+touch git/{attributes,ignore}
+rs  # Reload shell, pick up new `~/git/{attributes,ignore}` files
+
+# Set default Git configs
+git config --global init.defaultBranch main           # a.k.a. `gdbm`
+git config --global clone.defaultRemoteName u         # a.k.a. `gcdr u`
+git config --global push.default current              # a.k.a. `gpdc`
+git config --global receive.denyCurrentBranch ignore  # a.k.a. `gaps`
+git config --global diff.noprefix true                # a.k.a. `gdnpt`
+git config --global diff.submodule log                # a.k.a. `gcdsl`
+
+# Set some globally-gitignored patterns
+git global-gitignore \
+  "*.egg-info" \
+  ".ipynb_checkpoints" \
+  "__pycache__" \
+  ".jupyter" \
+  ".python-version" \
+  "*.iml" \
+  ".idea" \
+  "node_modules" \
+  ".vite"
+
