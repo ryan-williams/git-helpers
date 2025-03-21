@@ -1,5 +1,5 @@
 # git-helpers
-[1,533](#count-completions) Git aliases and scripts.
+[1,540](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -23,6 +23,7 @@
         - [`gdg` (`git-diff-gif.py`)](#gdg)
         - [`gdj` (`git-diff-json.py`)](#gdj)
     - [Update commit parents](#parents)
+    - [Query GitHub Actions runs](#gh-run-list)
     - [Set/unset "attr" types](#gsat)
 - [Meta](#meta)
     - [Alias count](#count-completions)
@@ -231,6 +232,59 @@ Create a commit with a given tree and parents:
 - `gscd` ([`git-set-committer-date`]): update `HEAD` committer date; match another commit's, or `HEAD`'s author date.
 - `gsid` ([`git-set-id`]), `ggsid` (`git-set-id -g`): set `user.{name,email}` configs.
 
+### Query GitHub Actions runs <a id="gh-run-list"></a>
+[`github_run_list.py`] wraps `gh run list`, adding support for multiple values and fuzzy-matching of several run attributes:
+
+<!-- `bmdf -- github_run_list.py --help` -->
+```bash
+github_run_list.py --help
+# Usage: github_run_list.py [OPTIONS] [REF]
+#
+#   Wrapper around `gh run list`, supporting multiple values and fuzzy-matching
+#   for several flags.
+#
+# Options:
+#   -a, --all-branches / -A, --no-all-branches
+#                                   Include runs from all branches
+#   -b, --branch TEXT               Filter to runs from this branch; by default,
+#                                   only runs corresponding to the current
+#                                   branch are returned
+#   -c, --compact / -C, --no-compact
+#                                   In JSON-output mode, output JSONL (with each
+#                                   run object on a single line)
+#   -i, --ids-only / -I, --no-ids-only
+#                                   Only print IDs of matching runs, one per
+#                                   line
+#   -j, --json TEXT                 Comma-delimited list of JSON fields to fetch
+#   -n, --name-includes TEXT        Filter to runs whose "workflow name" matches
+#                                   any of these regexs; comma-delimited, can
+#                                   also be passed multiple times
+#   -N, --name-excludes TEXT        Filter to runs whose "workflow name" doesn't
+#                                   match any of these regexs; comma-delimited,
+#                                   can also be passed multiple times
+#   -r, --remote TEXT               Git remote to query
+#   -s, --status TEXT               Comma-delimited list of statuses to query
+#   -v, --verbose / -V, --no-verbose
+#                                   Log subprocess commands as they are run
+#   -w, --include-workflow-basenames TEXT
+#                                   Comma-delimited list of workflow-file
+#                                   `basename` regexs to include
+#   -W, --exclude-workflow-basenames TEXT
+#                                   Comma-delimited list of workflow-file
+#                                   `basename` regexs to exclude
+#   --help                          Show this message and exit.
+```
+
+Select aliases:
+```bash
+alias ghra="github_run_list.py -a"
+alias ghrb="github_run_list.py"
+alias ghiq="github_run_list.py -s in,q"     # {in_progress,queued} x current branch
+alias ghaq="github_run_list.py -s in,q -a"  # {in_progress,queued} x all branches
+alias ghrw="github_run_list.py -w"
+alias ghaw="github_run_list.py -aw"
+```
+
 ### Set/unset "attr" types <a id="gsat"></a>
 [`git-set-attr-type.py`] sets/unsets "attr" types associated with file extensions (e.g. for configuring file-type-aware diff/merge hooks):
 
@@ -269,11 +323,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1533 completions added by installing git-helpers
+# 1540 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 243
-# - 4 chars: 613
+# - 4 chars: 620
 # - 5 chars: 281
 ```
 
@@ -285,7 +339,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1533 new completions:
+1540 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -810,11 +864,14 @@ ggru       = g remote-get-url
 ggue       = g config --global user.email
 ggun       = g config --global user.name
 ghaj       = gh api -H "Accept: application/vnd.github+json"
+ghaq       = github_run_list.py -s in,q -a
+ghaw       = github_run_list.py -aw
 ghax       = gh api -X
 ghbi       = g blob-hash -i
 ghbs       = g blob-hash -s
 ghds       = github-docs-snapshot
 ghip       = gh run list -s in_progress
+ghiq       = github_run_list.py -s in,q
 ghji       = gh_job_id
 ghju       = gh_job_url
 ghlr       = gh_last_run_id
@@ -831,12 +888,16 @@ ghos       = github_open_settings
 ghow       = gh repo view --web
 ghpj       = gh api -H "Accept: application/vnd.github+json"
 ghpx       = gh api -X
+ghra       = github_run_list.py -a
+ghrb       = github_run_list.py
+ghrc       = gh run cancel
 ghrh       = gh run --help
 ghrl       = gh run list
 ghrn       = github_default_remote
 ghro       = gh_run_open
 ghrp       = github_remote_path
 ghrv       = gh run view
+ghrw       = github_run_list.py -w
 ghsh       = g full-hash
 ghsu       = github_url_ssh
 ghub       = github_unprotect_branch
@@ -1310,7 +1371,7 @@ ghrvu      = gh_run_view_url
 ghrvw      = gh run view --web
 ghsdb      = github_set_default_branch
 ghubn      = github_unprotect_branch -n
-ghwip      = gh_run_list_in_progress
+ghwip      = gh run list -s in_progress
 ghwrc      = gh_workflow_run_current_branch
 gl1fT      = !git --no-pager log-1-format T
 gl1ft      = !git --no-pager log-1-format T
@@ -1543,6 +1604,7 @@ parse-github-url = git-helpers/github/parse-github-url
 github_owner_name = [remote name]
 github_remote_pathNo manual entry for git-remote-path
  = git remote-path "$@" "$(github_default_remote)"
+github_run_list.py = git-helpers/github/github_run_list.py  # Wrapper around `gh run list`, supporting:
 gitlab_remote_pathNo manual entry for git-remote-path
  = git remote-path "$@" "$(gitlab_remote)"
 init-mirror-remote = git-helpers/remote/init-mirror-remote
@@ -1559,7 +1621,6 @@ github-commit-api-urls = git-helpers/submodule/github-commit-api-urls
 github-commit-web-urls = git-helpers/submodule/github-commit-web-urls
 github_open_web_branch = [[-r remote] <branch> | <remote> <branch>]
 github_open_web_commit = [commit]
-gh_run_list_in_progress = gh run list -s in_progress
 github_unprotect_branch
 gitlab_unprotect_branch
 github_protected_branches = [remote]
@@ -1571,7 +1632,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1533 completions added by installing git-helpers (0 removed, 2878 total)
+1540 completions added by installing git-helpers (0 removed, 2885 total)
 ```
 </details>
 
@@ -1633,6 +1694,7 @@ history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 [`git-head-before-last-rebase`]: rebase/git-head-before-last-rebase
 [`git-diff-gif.py`]: diff/git-diff-gif.py
 [`git-diff-json.py`]: diff/git-diff-json.py
+[`github_run_list.py`]: github/github_run_list.py
 [`git-rebase-head`]: rebase/git-rebase-head
 [`git-cherry-pick-head`]: cherry-pick/git-cherry-pick-head
 [`git-show-rebase-head`]: rebase/git-show-rebase-head

@@ -185,11 +185,16 @@ defn ghoc github_open_web_commit
 
 defn ghr gh run
 defn ghrh gh run --help
+defn ghrc gh run cancel
 defn ghrl gh run list
 defn ghrlh gh run list --help
 
-defn ghq gh run list -s queued
-defn ghip gh run list -s in_progress
+defn ghra github_run_list.py -a
+defn ghrb github_run_list.py
+defn ghiq github_run_list.py -s in,q     # {in_progress,queued} x current branch
+defn ghaq github_run_list.py -s in,q -a  # {in_progress,queued} x all branches
+defn ghrw github_run_list.py -w
+defn ghaw github_run_list.py -aw
 
 gh_last_run_id() {
     gh run list -L 1 --json databaseId | jq -r .[0].databaseId
@@ -243,11 +248,9 @@ defn ghwrc gh_workflow_run_current_branch
 
 defn ghwl gh workflow list
 
-gh_run_list_in_progress() {
-    gh run list -s in_progress "$@"
-}
-export -f gh_run_list_in_progress
-defn ghwip gh_run_list_in_progress
+defn ghq gh run list -s queued
+defn ghip gh run list -s in_progress
+defn ghwip gh run list -s in_progress
 
 gh_open_last() {
     run="$(gh_last_workflow_run)"
