@@ -6,7 +6,7 @@
 # - Optional fallback: `$DEFAULT_REMOTE` env var
 
 usage() {
-  echo "$0 [-n] [-v]" >&2
+  echo "$0 [-n] [-v] [ref=HEAD]" >&2
   exit 1
 }
 
@@ -20,6 +20,14 @@ while getopts "nv" opt; do
   esac
 done
 shift $((OPTIND-1))
+
+if [ $# -eq 0 ]; then
+  ref=HEAD
+elif [ $# -eq 1 ]; then
+  ref="$1"; shift
+else
+  usage
+fi
 
 log() {
   if [ -n "$verbose" ]; then
@@ -43,7 +51,7 @@ if [ -z "$skip_existing" ]; then
     exit 0
   fi
 
-  upstream="$(git rev-parse --abbrev-ref "@{u}")"
+  upstream="$(git rev-parse --abbrev-ref "$ref@{u}")"
   if [ -n "$upstream" ]; then
     remote="${upstream%%/*}"
     log "Using remote $remote from tracked branch $upstream"
