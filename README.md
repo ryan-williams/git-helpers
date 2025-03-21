@@ -1,5 +1,5 @@
 # git-helpers
-[1,540](#count-completions) Git aliases and scripts.
+[1,541](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -323,7 +323,7 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1540 completions added by installing git-helpers
+# 1541 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 243
@@ -339,7 +339,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1540 new completions:
+1541 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1586,6 +1586,7 @@ gh_open_last
 git_dir_curry = <exported_function_name> <git-git-dir_param1> <git-git-dir_param2> ...
 gitlab_remote = git-find-only-remote gitlab.com
 hash-files.py = git-helpers/github/hash-files.py  # Standalone script that mimics GitHub Actions' hashFiles helper
+init-instance = git-helpers/config/init-instance  # Source this once on new nodes, e.g. after installing dotfiles umbrella repo:
 gh_last_run_id = gh run list -L 1 --json databaseId | jq -r .[0].databaseId
 gh_run_and_job = [run_id [job_idx]]
 github-api-url = git-helpers/submodule/github-api-url
@@ -1632,7 +1633,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1540 completions added by installing git-helpers (0 removed, 2885 total)
+1541 completions added by installing git-helpers (0 removed, 2886 total)
 ```
 </details>
 
