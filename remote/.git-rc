@@ -29,6 +29,7 @@ defn grgh g rgh
 defn grgu g rgu
 defn grmp g rmp
 defn grmpe g rmpe
+defn grpa g rpa
 defn grr g rr
 defn grshw g rshw
 defn grv g rv

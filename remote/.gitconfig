@@ -45,6 +45,7 @@
   up        = unpack-and-apply-diffs
   amr       = add-mirror-remote
 
+  rpa       = remote-branches-at
   rr        = remote-rename
   ruh       = remote-url-to-https
   rmv       = remote-rename
