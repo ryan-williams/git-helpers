@@ -100,6 +100,11 @@ alias grtg="g rtg"
 
 alias grcp="g rcp"
 
+alias gsat="g sat"
+alias gsdt="g sdt"
+alias gsdm="g sdm"
+alias gsdmt="g sdmt"
+alias gsmt="g smt"
 alias gsid="g sid"
 alias gsig="g sig"
 alias gsgid="g sgid"
@@ -108,6 +113,11 @@ alias gsidg="g sidg"
 alias ggid="g gid"
 alias ggidg="g gidg"
 alias gggid="g ggid"
+
+alias guat="g uat"
+alias gudt="g udt"
+alias gudm="g udm"
+alias gumt="g umt"
 
 alias gfue="g fue"
 alias gfun="g fun"

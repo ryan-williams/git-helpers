@@ -132,6 +132,15 @@
         allow-pushes = config receive.denyCurrentBranch ignore
         aps = allow-pushes
 
+        sat = set-attr-type.py
+        sdt = set-attr-type.py -a diff
+        sdm = set-attr-type.py -a diff,merge
+        sdmt = set-attr-type.py -a diff,merge
+        smt = set-attr-type.py -a merge
+        uat = set-attr-type.py -u
+        udt = set-attr-type.py -u -a diff
+        udm = set-attr-type.py -u -a diff,merge
+        umt = set-attr-type.py -u -a merge
         sid = set-id
         sgid = set-id -g
         gsid = set-id -g

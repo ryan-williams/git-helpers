@@ -1,5 +1,5 @@
 # git-helpers
-[1,525](#count-completions) Git aliases and scripts.
+[1,534](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -23,6 +23,7 @@
         - [`gdg` (`git-diff-gif.py`)](#gdg)
         - [`gdj` (`git-diff-json.py`)](#gdj)
     - [Update commit parents](#parents)
+    - [Set/unset "attr" types](#gsat)
 - [Meta](#meta)
     - [Alias count](#count-completions)
     - [Alias histogram](#aliases)
@@ -230,6 +231,37 @@ Create a commit with a given tree and parents:
 - `gscd` ([`git-set-committer-date`]): update `HEAD` committer date; match another commit's, or `HEAD`'s author date.
 - `gsid` ([`git-set-id`]), `ggsid` (`git-set-id -g`): set `user.{name,email}` configs.
 
+### Set/unset "attr" types <a id="gsat"></a>
+[`git-set-attr-type.py`] sets/unsets "attr" types associated with file extensions (e.g. for configuring file-type-aware diff/merge hooks):
+
+<!-- `bmdf -- git-set-attr-type.py --help` -->
+```bash
+git-set-attr-type.py --help
+# Usage: git-set-attr-type.py [OPTIONS] EXTENSION [NAME]
+#
+#   Manage "attr type" for one or more file extensions.
+#
+# Options:
+#   -a, --attr TEXT      Attr-types to manipulate (e.g. `diff`, `merge`; comma-
+#                        delimited)  [required]
+#   -c, --comment-lines  Comment/Uncomment lines (instead of removing/modifying)
+#   -u, --unset
+#   --help               Show this message and exit.
+```
+
+Select aliases:
+```bash
+alias gsat="set-attr-type.py"
+alias gsdt="set-attr-type.py -a diff"
+alias gsdm="set-attr-type.py -a diff,merge"
+alias gsdmt="set-attr-type.py -a diff,merge"
+alias gsmt="set-attr-type.py -a merge"
+alias guat="set-attr-type.py -u"
+alias gudt="set-attr-type.py -u -a diff"
+alias gudm="set-attr-type.py -u -a diff,merge"
+alias gumt="set-attr-type.py -u -a merge"
+```
+
 ## Meta <a id="meta"></a>
 
 ### Alias count <a id="count-completions"></a>
@@ -237,12 +269,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1525 completions added by installing git-helpers
+# 1534 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 244
-# - 4 chars: 606
-# - 5 chars: 280
+# - 4 chars: 613
+# - 5 chars: 281
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -253,7 +285,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1525 new completions:
+1534 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1020,6 +1052,7 @@ grxx       = g rebase-exec-step
 gsac       = g submodule-auto-commit
 gsad       = g set-author-date
 gsaf       = g submodule add -f
+gsat       = g set-attr-type.py
 gsau       = g set-author
 gsbj       = !git --no-pager log -1 --format=%s
 gscc       = g submodule-count-commits
@@ -1030,8 +1063,10 @@ gscw       = g show-cherry-pick-head -w
 gsdb       = g set-default-branch-main
 gsdc       = !git status && git diff --cached
 gsdh       = !git status && git diff HEAD
+gsdm       = g set-attr-type.py -a diff,merge
 gsdr       = g config --global clone.defaultRemoteName
 gsds       = g set-dates
+gsdt       = g set-attr-type.py -a diff
 gsfe       = g submodule foreach
 gsfh       = g show-sha-file HEAD
 gsfq       = g submodule foreach --quiet
@@ -1066,7 +1101,7 @@ gsmn       = g submodule foreach --quiet 'echo $name'
 gsmp       = g submodule foreach --quiet --recursive 'echo $displaypath'
 gsmr       = !git reset . && git submodule update --recursive
 gsms       = g submodules
-gsmt       = g submodule status
+gsmt       = g set-attr-type.py -a merge
 gsmu       = g submodule update --recursive
 gsnl       = g show-local-names
 gsno       = !git --no-pager log -1 --format= --name-only
@@ -1124,8 +1159,12 @@ gtrr       = g ls-tree -r
 gtsz       = g total-size
 gtwh       = g throw-head
 gtwp       = g throw.py HEAD^
+guat       = g set-attr-type.py -u
 gudb       = g update-default-branch
+gudm       = g set-attr-type.py -u -a diff,merge
+gudt       = g set-attr-type.py -u -a diff
 guic       = g update-index --cacheinfo
+gumt       = g set-attr-type.py -u -a merge
 gune       = g user
 gurb       = g undo-rebase
 gusi       = g update-server-info
@@ -1357,6 +1396,7 @@ gsard      = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
 gsaut      = g set-author
 gscpw      = g show-cherry-pick-parent -w
 gsdbm      = g set-default-branch-main
+gsdmt      = g set-attr-type.py -a diff,merge
 gsdru      = g config --global clone.defaultRemoteName u
 gsgid      = g set-id -g
 gshch      = g show-cherry-pick-head
@@ -1532,7 +1572,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1525 completions added by installing git-helpers (0 removed, 2870 total)
+1534 completions added by installing git-helpers (0 removed, 2879 total)
 ```
 </details>
 
@@ -1598,3 +1638,4 @@ history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 [`git-cherry-pick-head`]: cherry-pick/git-cherry-pick-head
 [`git-show-rebase-head`]: rebase/git-show-rebase-head
 [`git-show-cherry-pick-head`]: cherry-pick/git-show-cherry-pick-head
+[`git-set-attr-type.py`]: config/git-set-attr-type.py

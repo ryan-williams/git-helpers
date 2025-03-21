@@ -23,7 +23,6 @@
   smlg  = submodule-log
   sms   = submodules
   smst  = submodule status
-  smt   = submodule status
   fes   = submodule foreach --recursive --quiet
   sf    = submodule foreach --recursive --quiet
   sfe   = submodule foreach
