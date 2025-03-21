@@ -10,7 +10,7 @@ defn ghdss github-docs-snapshot -s
 defn hds github-docs-snapshot
 defn hdss github-docs-snapshot -s
 
-defn ghp gh api
+defn gha gh api
 defn ghaj 'gh api -H "Accept: application/vnd.github+json"'
 defn ghpj 'gh api -H "Accept: application/vnd.github+json"'
 defn ghax gh api -X
@@ -37,7 +37,6 @@ github_open_actions() {
 }
 export -f github_open_actions
 defn ghoa github_open_actions
-defn gha github_open_actions
 
 github_open_settings() {
     open "$(github_url)/settings"
