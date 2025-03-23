@@ -1,7 +1,7 @@
 [alias]
   co   = checkout
   co-  = checkout --
-  cob  = checkout -b
+  cob  = checkout-b
   cof  = checkout -f
   coh  = checkout HEAD --
   com  = checkout main

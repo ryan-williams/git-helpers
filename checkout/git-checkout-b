@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 <branch> [ref [tracking]]" >&2
+  exit 1
+fi
+
+branch="$1"; shift
+if [ $# -eq 0 ]; then
+  ref=HEAD
+else
+    ref="$1"; shift
+fi
+
+if [ $# -eq 0 ]; then
+  tracking="$(git rev-parse --abbrev-ref "$ref@{u}")"
+else
+  tracking="$1"; shift
+fi
+
+git checkout -b "$branch" "$ref"
+if [ -n "$tracking" ]; then
+  git branch --set-upstream-to="$tracking" "$branch"
+fi
