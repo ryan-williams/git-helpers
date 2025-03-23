@@ -6,7 +6,7 @@
 
   t  = tags
   td = tag -d
-  tf = tag -f
+  tf = tag-f
   tg = tag
   th = tags -n 10
   tl = tag -l
