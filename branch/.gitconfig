@@ -66,6 +66,9 @@
   ; git --no-pager branch '--format=%(color:brightblue)%(authordate:format:%Y-%m-%d %H:%M) %(color:brightred)%(objectname:short) %(color:brightwhite)%(align:25)%(refname:short)%(end) %(color:yellow)%(align:10)%(push:short)%(end) %(color:brightblue)%(ahead) %(color:magenta)%(behind) %(color:reset)%(subject)' '--sort=-authordate'
 
   be = branch-exists
+  ber = be -r
+  bre = be -r
+  remote-branch-exists = be -r
   rbe = remote-branch-exists
   tb = tracked-branch
   upstream-branch = tracked-branch

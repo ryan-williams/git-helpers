@@ -1,3 +1,28 @@
 #!/usr/bin/env bash
 
-git show-ref --verify --quiet "refs/heads/$1"
+set -e
+
+usage() {
+  echo "Usage: $0 [-r]" >&2
+  exit 1
+}
+
+type=heads
+while getopts "r" opt; do
+  case "$opt" in
+    r) type=remotes ;;
+    \?) usage ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ $# -ne 1 ]; then
+  usage
+fi
+name="$1"; shift
+
+if [ -n "$remote" ]; then
+  git show-ref --verify --quiet "refs/$type/$name"
+else
+  git show-ref --verify --quiet "refs/$type/$name"
+fi

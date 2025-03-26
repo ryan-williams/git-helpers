@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-git show-ref --verify --quiet "refs/remotes/$1"

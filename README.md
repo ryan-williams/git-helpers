@@ -1,5 +1,5 @@
 # git-helpers
-[1,543](#count-completions) Git aliases and scripts.
+[1,544](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -323,11 +323,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1543 completions added by installing git-helpers
+# 1544 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 243
-# - 4 chars: 620
+# - 4 chars: 622
 # - 5 chars: 281
 ```
 
@@ -339,7 +339,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1543 new completions:
+1544 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -643,6 +643,7 @@ gawt       = g amend-worktree
 gbcc       = g copy-branch-checkout
 gbdf       = g branch -D
 gbeb       = git bisect-earliest-bad
+gber       = g be -r
 gbfc       = g branch-reset -c
 gbhi       = g blob-hash -i
 gbhs       = g blob-hash -s
@@ -653,6 +654,7 @@ gbmv       = g branch -m
 gbno       = !gn branch --format '%(refname:short)' --list
 gbnr       = !gn branch --format '%(refname:short)' -r --list
 gbpa       = g branch-points-at
+gbre       = g be -r
 gbrg       = !git-branches.py -r
 gbrh       = g branch-reset
 gbrm       = g list-status DD
@@ -1633,7 +1635,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1543 completions added by installing git-helpers (0 removed, 2888 total)
+1544 completions added by installing git-helpers (0 removed, 2889 total)
 ```
 </details>
 
