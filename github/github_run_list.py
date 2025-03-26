@@ -208,7 +208,7 @@ def main(
         )
         if workflow_path.startswith('.github/workflows/')
            and workflow_basenames_patterns(workflow_basename := basename(workflow_path))
-    ]
+    ] if workflow_basenames_patterns else [None]
 
     if not all_branches:
         if branch:
