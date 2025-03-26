@@ -2,6 +2,7 @@
   co   = checkout
   co-  = checkout --
   cob  = checkout-b
+  cobt = checkout-b-t
   cof  = checkout -f
   coh  = checkout HEAD --
   com  = checkout main

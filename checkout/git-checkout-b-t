@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ $# -lt 0 ]; then
+  echo "Usage: $0 <branch> <track> [ref=<track>]" >&2
+  exit 1
+fi
+
+branch="$1"; shift
+track="$1"; shift
+git checkout-b "$branch" -t "$track" "$@"

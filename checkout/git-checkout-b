@@ -2,25 +2,63 @@
 
 set -e
 
-if [ $# -eq 0 ]; then
-  echo "Usage: $0 <branch> [ref [tracking]]" >&2
-  exit 1
-fi
+err() {
+  echo "$*" >&2
+}
 
+usage() {
+  err 'Wrapper around `git checkout -b <branch> <ref>` and `git branch --set-upstream-to=<track> <branch>`'
+  err
+  err 'Usage:'
+  err
+  err '    '"$0"' <branch> [ref=HEAD [track]]  # `track` defaults to current tracked branch'
+  err "    $0 <branch> <-t <track>> [ref=<track>]"
+  exit 1
+}
+
+if [ $# -eq 0 ]; then
+  usage
+fi
 branch="$1"; shift
+
+track=
+while getopts "t:" opt; do
+  case "$opt" in
+    t) track="$OPTARG" ;;
+    \?) usage ;;
+  esac
+done
+shift $((OPTIND - 1))
+
 if [ $# -eq 0 ]; then
   ref=HEAD
 else
-    ref="$1"; shift
+  ref="$1"; shift
+  if [ $# -eq 0 ]; then
+    if [ -z "$track" ]; then
+      if git branch-exists "$ref"; then
+        copy_upstream="$ref"
+      else
+        copy_upstream=
+      fi
+      track="$(git rev-parse --abbrev-ref "$copy_upstream@{u}")"
+    fi
+  elif [ -n "$track" ] && [ "$track" != "$1" ]; then
+    usage
+  else
+    track="$1"; shift
+  fi
+  if [ $# -ne 0 ]; then
+    usage
+  fi
 fi
 
-if [ $# -eq 0 ]; then
-  tracking="$(git rev-parse --abbrev-ref "$ref@{u}")"
-else
-  tracking="$1"; shift
-fi
+run() {
+  echo "$*" >&2
+  "$@"
+}
 
-git checkout -b "$branch" "$ref"
-if [ -n "$tracking" ]; then
-  git branch --set-upstream-to="$tracking" "$branch"
+run git checkout -b "$branch" "$ref"
+if [ -n "$track" ]; then
+  run git branch --set-upstream-to="$track" "$branch"
 fi
