@@ -68,6 +68,7 @@
   be = branch-exists
   ber = be -r
   bre = be -r
+  bt = branch --track=inherit
   remote-branch-exists = be -r
   rbe = remote-branch-exists
   tb = tracked-branch
