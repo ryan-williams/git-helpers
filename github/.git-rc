@@ -51,6 +51,8 @@ export -f github_open_settings_secrets_actions
 defn ghossa github_open_settings_secrets_actions
 
 defn ghow gh repo view --web
+defn ghowb gh repo view --web -b
+defn ghob gh repo view --web -b
 
 defn github_default_remote git-find-only-remote github\.com
 defn ghrn github_default_remote
@@ -81,75 +83,6 @@ github_owner_name() {
 }
 export -f github_owner_name
 defn ghon github_owner_name
-
-github_open_web_branch() {
-    local remote
-    local branch
-    local remote_branch
-    if [ "$1" = -r ]; then
-        shift
-        if [ $# -eq 0 ]; then
-            echo "Usage: ${FUNCNAME[0]} [[-r remote] <branch> | <remote> <branch>]" >&2
-            return 1
-        fi
-        remote="$1"; shift
-        if [ $# -eq 1 ]; then
-            remote_branch="$1"; shift
-        elif [ $# -gt 1 ]; then
-            echo "Usage: ${FUNCNAME[0]} [[-r remote] <branch> | <remote> <branch>]" >&2
-            return 1
-        fi
-    elif [ $# -eq 2 ]; then
-        remote="$1"; shift
-        remote_branch="$1"; shift
-    elif [ $# -eq 1 ]; then
-        remote_branch="$1"; shift
-    elif [ $# -gt 2 ]; then
-        echo "Usage: ${FUNCNAME[0]} [[-r remote] <branch> | <remote> <branch>]" >&2
-        return 1
-    fi
-    if [ -z "$remote" ]; then
-        remote="$(github_default_remote)"
-    fi
-    remote_path="$(github_owner_name "$remote")"
-    if [ -z "$remote_branch" ]; then
-        if [ -z "$branch" ]; then
-            branch="$(git current-branch)"
-        fi
-        local default
-        local remote_branches=()
-        while read -r line; do
-            if [ "$line" = "$remote" ]; then
-                echo "Opening default branch for remote $remote" >&2
-                default=1
-                break
-            elif [[ $line == $remote/* ]]; then
-                remote_branches+=("${line#$remote/}")
-            fi
-        done < <(git branch-points-at-r "$branch")
-        set -- "${remote_branches[@]}"
-        if [ $# -gt 1 ]; then
-            echo "Found $# branches on remote $remote:" >&2
-            remote_branch="$1"
-            while [ $# -gt 0 ]; do
-              echo "  $1" >&2; shift
-            done
-            echo "Using first: $remote_branch" >&2
-        elif [ $# -eq 1 ]; then
-            remote_branch="$1"; shift
-        elif [ -z "$default" ]; then
-            echo "No eligible branch found in remote $remote, opening default branch" >&2
-        fi
-    fi
-    cmd=(gh repo view "$remote_path" --web)
-    if [ -n "$remote_branch" ]; then
-        cmd+=(-b "$remote_branch")
-    fi
-    echo "Running: ${cmd[*]}" >&2
-    "${cmd[@]}"
-}
-export -f github_open_web_branch
-defn ghob github_open_web_branch
 
 github_open_web_ref() {
     if [ $# -eq 0 ]; then

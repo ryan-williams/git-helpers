@@ -50,3 +50,10 @@ defn glrh g lrh
 defn glrt g lrt
 
 defn grdb g rdb
+
+alias gob="g ob"
+alias gobn="g obn"
+alias gobnu="g obnu"
+alias gobnv="g obnv"
+alias gobu="g obu"
+alias gobv="g obv"
