@@ -21,8 +21,4 @@ if [ $# -ne 1 ]; then
 fi
 name="$1"; shift
 
-if [ -n "$remote" ]; then
-  git show-ref --verify --quiet "refs/$type/$name"
-else
-  git show-ref --verify --quiet "refs/$type/$name"
-fi
+git show-ref --verify --quiet "refs/$type/$name"
