@@ -60,6 +60,7 @@
   ln9 = list-n 9
   ln20 = list-n 20
   lnw = log --no-walk
+  lpw = log -p --follow
   lw = log --follow
   lws = log --follow --stat
   hash-message = log -1 '--format=%h %s'
