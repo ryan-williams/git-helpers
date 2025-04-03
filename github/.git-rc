@@ -124,6 +124,13 @@ defn ghrlh gh run list --help
 
 defn ghra github_run_list.py -a
 defn ghrb github_run_list.py
+defn ghr1 github_run_list.py -L1
+defn ghr1b github_run_list.py -L1 -b
+defn ghrbb github_run_list.py -b
+defn ghri github_run_list.py -i
+defn ghri1 github_run_list.py -iL1
+defn ghri1b github_run_list.py -iL1 -b
+defn ghrib github_run_list.py -ib
 defn ghiq github_run_list.py -s in,q     # {in_progress,queued} x current branch
 defn ghaq github_run_list.py -s in,q -a  # {in_progress,queued} x all branches
 defn ghrw github_run_list.py -w

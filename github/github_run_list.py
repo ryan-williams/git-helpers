@@ -16,7 +16,7 @@ from sys import stdout
 from typing import Literal, get_args, TypeVar, Callable
 
 from click import command, option, BadParameter, argument
-from utz import proc, silent, err, parallel, Log
+from utz import proc, silent, err, parallel, Log, solo
 from utz.cli import flag, inc_exc, multi
 from utz.rgx import Patterns
 
@@ -133,7 +133,13 @@ def parse_vals(
     return rvs
 
 
-vals_cb = lambda vals: lambda ctx, param, val: parse_vals(val, vals=vals, err=lambda msg: BadParameter(msg, ctx, param))
+vals_cb = lambda vals: (
+    lambda ctx, param, val: parse_vals(
+        val,
+        vals=vals,
+        err=lambda msg: BadParameter(msg, ctx, param)
+    )
+)
 
 
 def parse_workflow_basenames(
@@ -143,10 +149,7 @@ def parse_workflow_basenames(
     if val is None:
         return [None]
 
-    workflow_paths = proc.lines(
-        'gh', 'workflow', 'list', '--json', 'path', '-q', '.[].path',
-        log=log,
-    )
+    workflow_paths = proc.lines('gh workflow list --json path -q .[].path', log=log)
     workflow_basenames = [
         basename(workflow_path)
         for workflow_path in workflow_paths
@@ -162,10 +165,12 @@ def parse_workflow_basenames(
 
 @command
 @flag('-a', '--all-branches', help='Include runs from all branches')
+@flag('-A', '--include-artifacts', help="Include `artifacts` as a JSON key; this isn't supported by `gh`, but is fetched separately and merged in to the output result")
 @option('-b', '--branch', help='Filter to runs from this branch; by default, only runs corresponding to the current branch are returned')
 @flag('-c', '--compact', help='In JSON-output mode, output JSONL (with each run object on a single line)')
 @flag('-i', '--ids-only', help='Only print IDs of matching runs, one per line')
-@option('-j', '--json', 'json_fields', callback=vals_cb(JSON_FIELDS), help="Comma-delimited list of JSON fields to fetch")
+@option('-j', '--json', 'json_fields', callback=vals_cb(JSON_FIELDS), help="Comma-delimited list of JSON fields to fetch; `*` or `-` for all fields")
+@option('-L', '--limit', type=int, default='Maximum number of runs to fetch (passed through to `gh`; default 20)')
 @inc_exc(
     multi('-n', '--name-includes', help="Filter to runs whose \"workflow name\" matches any of these regexs; comma-delimited, can also be passed multiple times"),
     multi('-N', '--name-excludes', help="Filter to runs whose \"workflow name\" doesn't match any of these regexs; comma-delimited, can also be passed multiple times"),
@@ -184,10 +189,12 @@ def parse_workflow_basenames(
 @argument('ref', default='HEAD')
 def main(
     all_branches: bool,
+    include_artifacts: bool,
     branch: str | None,
     compact: bool,
     ids_only: bool,
     json_fields: list[JsonField],
+    limit: int | None,
     workflow_name_patterns: Patterns,
     remote: str | None,
     statuses: list[Status],
@@ -198,14 +205,11 @@ def main(
     """Wrapper around `gh run list`, supporting multiple values and fuzzy-matching for several flags."""
     log = err if verbose else silent
     if not remote:
-        remote = proc.line('git', 'default-remote', log=log)
+        remote = proc.line('git default-remote', log=log)
 
     workflow_basenames = [
         workflow_basename
-        for workflow_path in proc.lines(
-            'gh', 'workflow', 'list', '--json', 'path', '-q', '.[].path',
-            log=log,
-        )
+        for workflow_path in proc.lines('gh workflow list --json path -q .[].path', log=log)
         if workflow_path.startswith('.github/workflows/')
            and workflow_basenames_patterns(workflow_basename := basename(workflow_path))
     ] if workflow_basenames_patterns else [None]
@@ -217,7 +221,7 @@ def main(
             prefix = f"{remote}/"
             refs = [
                 branch[len(prefix):]
-                for branch in proc.lines('git', 'branch', '--format=%(refname:short)', '-r', '--points-at', ref, log=log)
+                for branch in proc.lines(f'git branch --format=%(refname:short) -r --points-at {ref}', log=log)
                 if branch.startswith(f"{remote}/")
             ]
     else:
@@ -227,7 +231,7 @@ def main(
         if 'workflowName' not in json_fields:
             json_fields.append('workflowName')
 
-    if ids_only:
+    if ids_only or include_artifacts:
         if 'databaseId' not in json_fields:
             json_fields.append('databaseId')
 
@@ -239,6 +243,7 @@ def main(
         cmd = [
             'gh', 'run', 'list',
             *(['-b', ref] if ref else []),
+            *(['-L', str(limit)] if limit else []),
             *(['-s', status] if status else []),
             *(['-w', workflow_basename] if workflow_basename else []),
         ]
@@ -274,13 +279,24 @@ def main(
             for run in res
             if 'workflowName' not in run or workflow_name_patterns(run['workflowName'])
         ]
-        if ids_only:
+        if include_artifacts:
+            repo = proc.line('gh repo view --json nameWithOwner -q .nameWithOwner')
+            runs = parallel(
+                runs,
+                # TODO: paginate
+                lambda run: { **run, 'artifacts': proc.json(f'gh api repos/{repo}/actions/runs/{run["databaseId"]}/artifacts')['artifacts'] }
+            )
+        if ids_only and not include_artifacts:
             for run in runs:
                 print(run['databaseId'])
         elif compact:
             for run in runs:
                 json.dump(run, stdout)
                 print()
+        elif limit == 1:
+            run = solo(runs)
+            json.dump(run, stdout, indent=2, )
+            print()
         else:
             json.dump(runs, stdout, indent=2)
 

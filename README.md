@@ -1,5 +1,5 @@
 # git-helpers
-[1,557](#count-completions) Git aliases and scripts.
+[1,564](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -245,6 +245,10 @@ github_run_list.py --help
 #
 # Options:
 #   -a, --all-branches              Include runs from all branches
+#   -A, --include-artifacts         Include `artifacts` as a JSON key; this
+#                                   isn't supported by `gh`, but is fetched
+#                                   separately and merged in to the output
+#                                   result
 #   -b, --branch TEXT               Filter to runs from this branch; by default,
 #                                   only runs corresponding to the current
 #                                   branch are returned
@@ -252,7 +256,9 @@ github_run_list.py --help
 #                                   run object on a single line)
 #   -i, --ids-only                  Only print IDs of matching runs, one per
 #                                   line
-#   -j, --json TEXT                 Comma-delimited list of JSON fields to fetch
+#   -j, --json TEXT                 Comma-delimited list of JSON fields to
+#                                   fetch; `*` or `-` for all fields
+#   -L, --limit INTEGER
 #   -n, --name-includes TEXT        Filter to runs whose "workflow name" matches
 #                                   any of these regexs; comma-delimited, can
 #                                   also be passed multiple times
@@ -319,12 +325,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1557 completions added by installing git-helpers
+# 1564 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 245
-# - 4 chars: 627
-# - 5 chars: 286
+# - 4 chars: 629
+# - 5 chars: 290
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -335,7 +341,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1557 new completions:
+1564 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -888,10 +894,12 @@ ghos       = github_open_settings
 ghow       = gh repo view --web
 ghpj       = gh api -H "Accept: application/vnd.github+json"
 ghpx       = gh api -X
+ghr1       = github_run_list.py -L1
 ghra       = github_run_list.py -a
 ghrb       = github_run_list.py
 ghrc       = gh run cancel
 ghrh       = gh run --help
+ghri       = github_run_list.py -i
 ghrl       = gh run list
 ghrn       = github_default_remote
 ghro       = gh_run_open
@@ -1369,7 +1377,11 @@ ghjis      = gh_job_ids
 ghlwr      = gh_last_workflow_run
 ghowb      = gh repo view --web -b
 ghpbs      = github_protected_branches
+ghr1b      = github_run_list.py -L1 -b
 ghraj      = gh_run_and_job
+ghrbb      = github_run_list.py -b
+ghri1      = github_run_list.py -iL1
+ghrib      = github_run_list.py -ib
 ghrlh      = gh run list --help
 ghrvh      = gh run view --help
 ghrvj      = gh run view --job
@@ -1553,6 +1565,7 @@ ggracl     = g graph -ac -l
 gh_job     = gh_run_and_job "$@" | jq ".job"
 ghblrs     = g head-before-last-rebase %h
 ghossa     = github_open_settings_secrets_actions
+ghri1b     = github_run_list.py -iL1 -b
 ghrvjs     = gh_run_view_jobs
 ghrvlj     = gh run view --log --job
 github     = git-helpers/github/github
@@ -1643,7 +1656,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1557 completions added by installing git-helpers (0 removed, 2902 total)
+1564 completions added by installing git-helpers (0 removed, 2909 total)
 ```
 </details>
 
