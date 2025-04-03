@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 from fnmatch import fnmatch
-from typing import Sequence, Optional
+from typing import Sequence
 
 from branch_info import BranchInfo
 from color import clen
@@ -33,8 +33,7 @@ class BranchInfos:
         return BranchInfo
 
     def get_lines(self):
-        out, err = subprocess.Popen(
-            self.cmd(), stdout=subprocess.PIPE).communicate()
+        out, err = subprocess.Popen(self.cmd(), stdout=subprocess.PIPE).communicate()
         return out.decode('utf8').splitlines()
 
     def run_secondary_cmd(self):
@@ -60,14 +59,13 @@ class BranchInfos:
 
     def maxed_fields(self):
         return [
-            ('name',
-             True), 'remote', 'ahead_str', 'behind_str', 'reldate', 'hash'
+            ('name', True), 'remote', 'ahead_str', 'behind_str', 'reldate', 'hash'
         ]
 
     def __init__(
         self,
-        lines: Optional[Sequence[str]] = None,
-        patterns: Optional[Sequence[str]] = None,
+        lines: Sequence[str] | None = None,
+        patterns: Sequence[str] | None = None,
     ):
         self.maxs = {}
 
