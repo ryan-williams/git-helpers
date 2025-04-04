@@ -1,5 +1,5 @@
 # git-helpers
-[1,547](#count-completions) Git aliases and scripts.
+[1,556](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -244,16 +244,13 @@ github_run_list.py --help
 #   for several flags.
 #
 # Options:
-#   -a, --all-branches / -A, --no-all-branches
-#                                   Include runs from all branches
+#   -a, --all-branches              Include runs from all branches
 #   -b, --branch TEXT               Filter to runs from this branch; by default,
 #                                   only runs corresponding to the current
 #                                   branch are returned
-#   -c, --compact / -C, --no-compact
-#                                   In JSON-output mode, output JSONL (with each
+#   -c, --compact                   In JSON-output mode, output JSONL (with each
 #                                   run object on a single line)
-#   -i, --ids-only / -I, --no-ids-only
-#                                   Only print IDs of matching runs, one per
+#   -i, --ids-only                  Only print IDs of matching runs, one per
 #                                   line
 #   -j, --json TEXT                 Comma-delimited list of JSON fields to fetch
 #   -n, --name-includes TEXT        Filter to runs whose "workflow name" matches
@@ -264,8 +261,7 @@ github_run_list.py --help
 #                                   can also be passed multiple times
 #   -r, --remote TEXT               Git remote to query
 #   -s, --status TEXT               Comma-delimited list of statuses to query
-#   -v, --verbose / -V, --no-verbose
-#                                   Log subprocess commands as they are run
+#   -v, --verbose                   Log subprocess commands as they are run
 #   -w, --include-workflow-basenames TEXT
 #                                   Comma-delimited list of workflow-file
 #                                   `basename` regexs to include
@@ -323,12 +319,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1547 completions added by installing git-helpers
+# 1556 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
-# - 3 chars: 244
-# - 4 chars: 622
-# - 5 chars: 282
+# - 3 chars: 245
+# - 4 chars: 626
+# - 5 chars: 286
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -339,7 +335,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1547 new completions:
+1556 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -510,6 +506,7 @@ gmv        = g mv
 gnb        = g new-branch
 gnd        = !git --no-pager diff
 gnx        = !git-git-dir -n
+gob        = !git_open_web_branch.py
 goc        = g original-commit
 goh        = g original-head
 gom        = g octomerge
@@ -881,7 +878,7 @@ ghlr       = gh_last_run_id
 ghlw       = gh_last_workflow_run
 ghnc       = g has-no-changes
 ghoa       = github_open_actions
-ghob       = github_open_web_branch
+ghob       = gh repo view --web -b
 ghoc       = github_open_web_commit
 ghoj       = gh_open_job
 ghol       = gh_open_last
@@ -950,8 +947,9 @@ glnf       = g ls-new-files
 glno       = g log --name-only
 glns       = g log --name-status
 glnw       = g log --no-walk
-glob       = glab repo view --web
+glob       = glab repo view --web -b
 gloj       = gitlab_open_jobs
+glow       = glab repo view --web
 gloz       = g ls-files --other --exclude-standard --directory --no-empty-directory -z
 glpb       = gitlab_protect_branch
 glpp       = g log -p --
@@ -998,6 +996,9 @@ gnfm       = gn log-format
 gngp       = gn grep --recurse-submodules
 gnlh       = !git --no-pager log-hash
 gnsh       = !git --no-pager show
+gobn       = !git_open_web_branch.py -n
+gobu       = !git_open_web_branch.py -u
+gobv       = !git_open_web_branch.py -v
 gpbd       = g patch-branch-diff
 gpdc       = g config push.default current
 gpdu       = g config push.default upstream
@@ -1365,6 +1366,7 @@ ghblr      = g head-before-last-rebase
 ghdss      = github-docs-snapshot -s
 ghjis      = gh_job_ids
 ghlwr      = gh_last_workflow_run
+ghowb      = gh repo view --web -b
 ghpbs      = github_protected_branches
 ghraj      = gh_run_and_job
 ghrlh      = gh run list --help
@@ -1387,6 +1389,7 @@ glgpg      = g log -p -S
 glmim      = g list-mode -i ' M'
 gln20      = g list-n 20
 globj      = gitlab_open_jobs
+glowb      = glab repo view --web -b
 glpbn      = gitlab_protect_branch -n
 glrpe      = gitlab_remote_path -e
 glsdb      = gitlab_set_default_branch
@@ -1403,6 +1406,8 @@ gmnnf      = g merge --no-edit --no-ff
 gmtnb      = g mergetool -y -t nbdime
 gmune      = g merge upstream/HEAD --no-edit
 gnshs      = !git --no-pager show
+gobnu      = !git_open_web_branch.py -nu
+gobnv      = !git_open_web_branch.py -nv
 gpdcg      = g config --global push.default current
 gpdug      = g config --global push.default upstream
 gpftn      = g push -f --tags -n
@@ -1622,9 +1627,9 @@ github_open_settings = open "$(github_url)/settings"
 pop_commit_from_file = git-helpers/cherry-pick/pop_commit_from_file  # Cherry-pick a commit from a file; if successful, remove it from the file.
 github_default_remote = git-find-only-remote github.com
 gitlab_protect_branch
+git_open_web_branch.py = git-helpers/remote/git_open_web_branch.py
 github-commit-api-urls = git-helpers/submodule/github-commit-api-urls
 github-commit-web-urls = git-helpers/submodule/github-commit-web-urls
-github_open_web_branch = [[-r remote] <branch> | <remote> <branch>]
 github_open_web_commit = [commit]
 github_unprotect_branch
 gitlab_unprotect_branch
@@ -1637,7 +1642,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1547 completions added by installing git-helpers (0 removed, 2892 total)
+1556 completions added by installing git-helpers (0 removed, 2901 total)
 ```
 </details>
 
