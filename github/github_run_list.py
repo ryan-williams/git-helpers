@@ -170,7 +170,7 @@ def parse_workflow_basenames(
 @flag('-c', '--compact', help='In JSON-output mode, output JSONL (with each run object on a single line)')
 @flag('-i', '--ids-only', help='Only print IDs of matching runs, one per line')
 @option('-j', '--json', 'json_fields', callback=vals_cb(JSON_FIELDS), help="Comma-delimited list of JSON fields to fetch; `*` or `-` for all fields")
-@option('-L', '--limit', type=int, default='Maximum number of runs to fetch (passed through to `gh`; default 20)')
+@option('-L', '--limit', type=int, help='Maximum number of runs to fetch (passed through to `gh`; default 20)')
 @inc_exc(
     multi('-n', '--name-includes', help="Filter to runs whose \"workflow name\" matches any of these regexs; comma-delimited, can also be passed multiple times"),
     multi('-N', '--name-excludes', help="Filter to runs whose \"workflow name\" doesn't match any of these regexs; comma-delimited, can also be passed multiple times"),
@@ -221,7 +221,7 @@ def main(
             prefix = f"{remote}/"
             refs = [
                 branch[len(prefix):]
-                for branch in proc.lines(f'git branch --format=%(refname:short) -r --points-at {ref}', log=log)
+                for branch in proc.lines('git', 'branch', '--format=%(refname:short)', '-r', '--points-at', ref, log=log)
                 if branch.startswith(f"{remote}/")
             ]
     else:
