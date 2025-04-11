@@ -2,11 +2,26 @@
 
 set -e
 
-if [ $# -lt 0 ]; then
-  echo "Usage: $0 <branch> <track> [ref=<track>]" >&2
+usage() {
+  echo "Usage: $0 <branch> [<track> [ref=<track>]]" >&2
   exit 1
+}
+
+if [ $# -eq 0 ]; then
+  usage
 fi
 
 branch="$1"; shift
-track="$1"; shift
-git checkout-b "$branch" -t "$track" "$@"
+if [ $# -eq 0 ]; then
+  cur="$(git current-branch)"
+  track="$(git rev-parse --abbrev-ref "${cur}@{u}")"
+  set -- "$cur"
+elif [ $# -eq 1 ]; then
+  track="$1"; shift
+else
+  usage
+fi
+
+cmd=(git checkout-b "$branch" -t "$track" "$@")
+echo "${cmd[*]}" >&2
+"${cmd[@]}"
