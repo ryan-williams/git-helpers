@@ -8,27 +8,60 @@
 #
 # $ git set-id [--global]
 
-if [ "$1" == "-g" ] || [ "$1" == "--global" ]; then
-  global=("--global")
-  global_msg="global "
-  shift
-else
-  global=()
-  global_msg=
-fi
+usage() {
+  echo "Usage: $0 [-g] [-c]" >&2
+  echo "Usage: $0 [-g] [-c] <email | ref>" >&2
+  echo "Usage: $0 [-g] [-c] <name> <email>" >&2
+  exit 1
+}
+
+name_fmt=an
+email_fmt=ae
+global=()
+while getopts "gc" opt; do
+  case "$opt" in
+    c) name_fmt=cn; email_fmt=ce ;;
+    g) global=("--global") ;;
+    \?) exit 1 ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+name() {
+  git log -n1 "--format=%$name_fmt" "$@"
+}
+
+email() {
+  git log -n1 "--format=%$email_fmt" "$@"
+}
 
 if [ $# -eq 0 ]; then
-  name="$(git log -n1 --format=%an)"
-  email="$(git log -n1 --format=%ae)"
-elif [ $# -ne 2 ]; then
-  ref="$1"; shift
-  name="$(git log -n1 --format=%an "$ref")"
-  email="$(git log -n1 --format=%ae "$ref")"
-else
+  name="$(name)"
+  email="$(email)"
+elif [ $# -eq 1 ]; then
+  arg="$1"; shift
+  if [[ "$arg" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
+    email="$arg"
+    name=
+  else
+    name="$(name "$arg")"
+    email="$(email "$arg")"
+  fi
+elif [ $# -eq 2 ]; then
   name="$1"; shift
   email="$1"; shift
+else
+  usage
 fi
 
-echo "Setting ${global_msg}Git configs: name=\"$name\", email=\"$email\""
-git config "${global[@]}" user.name "$name"
-git config "${global[@]}" user.email "$email"
+run() {
+  echo "Running: $*" >&2
+  "$@"
+}
+
+if [ -z "$name" ]; then
+  run git config "${global[@]}" user.email "$email"
+else
+  run git config "${global[@]}" user.name "$name"
+  run git config "${global[@]}" user.email "$email"
+fi
