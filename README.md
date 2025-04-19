@@ -258,7 +258,8 @@ github_run_list.py --help
 #                                   line
 #   -j, --json TEXT                 Comma-delimited list of JSON fields to
 #                                   fetch; `*` or `-` for all fields
-#   -L, --limit INTEGER
+#   -L, --limit INTEGER             Maximum number of runs to fetch (passed
+#                                   through to `gh`; default 20)
 #   -n, --name-includes TEXT        Filter to runs whose "workflow name" matches
 #                                   any of these regexs; comma-delimited, can
 #                                   also be passed multiple times
