@@ -33,7 +33,8 @@
   L = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset%n%n%B' --date=relative
   hashes = hash
   hsh = full-hash
-  l1 = log-oneline
+  l1l = log-oneline
+  lol = log --oneline
   ladr = log --name-status --diff-filter=ADR
   lg = log
   lno = log --name-only
@@ -47,6 +48,7 @@
   lpp = log -p --
   lg1 = log-oneline
   lh = log-hash
+  lhr = log-hash --reverse
   nlh = !git --no-pager log-hash
   ln = list-n
   ln1 = list-n 1

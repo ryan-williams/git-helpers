@@ -1,5 +1,5 @@
 # git-helpers
-[1,565](#count-completions) Git aliases and scripts.
+[1,568](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -326,11 +326,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1565 completions added by installing git-helpers
+# 1568 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 245
-# - 4 chars: 630
+# - 4 chars: 633
 # - 5 chars: 290
 ```
 
@@ -342,7 +342,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1565 new completions:
+1568 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -923,6 +923,7 @@ gism       = g is-submodule
 gisr       = g is-repo
 gl1T       = g l1fT
 gl1f       = !git --no-pager log-1-format
+gl1l       = g log-oneline
 gl1r       = !git --no-pager log-1-format -r
 gl1t       = g l1fT
 glaf       = g ls-new-files
@@ -941,6 +942,7 @@ glgf       = g log-format
 glgg       = g log -S
 glgp       = g load-github-prs
 glgs       = g log --stat
+glhr       = g log-hash --reverse
 glim       = g list-mode -i ' M'
 glmm       = g list-mode ' M'
 gln1       = g list-n 1
@@ -958,6 +960,7 @@ glns       = g log --name-status
 glnw       = g log --no-walk
 glob       = glab repo view --web -b
 gloj       = gitlab_open_jobs
+glol       = g log --oneline
 glow       = glab repo view --web
 gloz       = g ls-files --other --exclude-standard --directory --no-empty-directory -z
 glpb       = gitlab_protect_branch
@@ -1658,7 +1661,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1565 completions added by installing git-helpers (0 removed, 2910 total)
+1568 completions added by installing git-helpers (0 removed, 2913 total)
 ```
 </details>
 
