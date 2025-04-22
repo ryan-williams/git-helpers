@@ -83,6 +83,7 @@
   sau   = set-author
   saut  = set-author
   scd   = set-committer-date
+  sct   = set-committer-date
   scm   = squashed-commit-message
   sds   = set-dates
   tr0   = empty-tree
