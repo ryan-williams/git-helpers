@@ -79,7 +79,7 @@ Improved version of `git branch -vv`:
 
 ![gb](img/gb-tdbs.png)
 
-#### `gbr` ([`git-remote-branches`]) <a id="gbr"></a>
+#### `gbr` ([`git remote-branches`]) <a id="gbr"></a>
 
 Similar to [`gb`](#gb), but summarizes remotes' branches.
 
@@ -1712,6 +1712,7 @@ history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 [`git-graph`]: graph/git-graph
 [`git-graph-all`]: graph/git-graph-all
 [`git branches`]: branch/git-branches
+[`git remote-branches`]: branch/git-remote-branches
 [`git-commit-multiple-parents`]: commit/git-commit-multiple-parents
 [`git-set-author`]: commit/git-set-author
 [`git-set-author-date`]: commit/git-set-author-date
