@@ -15,9 +15,9 @@ from subprocess import DEVNULL
 from sys import stdout
 from typing import Literal, get_args, TypeVar, Callable
 
-from click import command, option, BadParameter, argument
+from click import BadParameter
 from utz import proc, silent, err, parallel, Log, solo
-from utz.cli import flag, inc_exc, multi
+from utz.cli import flag, inc_exc, multi, opt, cmd, arg
 from utz.rgx import Patterns
 
 Status = Literal[
@@ -49,6 +49,7 @@ JsonField = Literal[
     'event',
     'headBranch',
     'headSha',
+    'jobs',
     'name',
     'number',
     'startedAt',
@@ -163,22 +164,24 @@ def parse_workflow_basenames(
     )
 
 
-@command
+@cmd
 @flag('-a', '--all-branches', help='Include runs from all branches')
-@flag('-A', '--include-artifacts', help="Include `artifacts` as a JSON key; this isn't supported by `gh`, but is fetched separately and merged in to the output result")
-@option('-b', '--branch', help='Filter to runs from this branch; by default, only runs corresponding to the current branch are returned')
+@flag('-A', '--include-artifacts', help="Include `artifacts` as a JSON key; this isn't supported by `gh`, but is fetched separately and merged into the output result")
+@opt('-b', '--branch', help='Filter to runs from this branch; by default, only runs corresponding to the current branch are returned')
 @flag('-c', '--compact', help='In JSON-output mode, output JSONL (with each run object on a single line)')
 @flag('-i', '--ids-only', help='Only print IDs of matching runs, one per line')
-@option('-j', '--json', 'json_fields', callback=vals_cb(JSON_FIELDS), help="Comma-delimited list of JSON fields to fetch; `*` or `-` for all fields")
-@option('-L', '--limit', type=int, help='Maximum number of runs to fetch (passed through to `gh`; default 20)')
+@opt('-j', '--json', 'json_fields', callback=vals_cb(JSON_FIELDS), help="Comma-delimited list of JSON fields to fetch; `*` or `-` for all fields")
+@flag('-J', '--include-jobs', help='Include `jobs` as a JSON key; this isn\'t supported by `gh`, but is fetched separately and merged into the output ')
+@opt('-L', '--limit', type=int, help='Maximum number of runs to fetch (passed through to `gh`; default 20)')
+@opt('-1', '--limit-1', is_flag=True, help='Alias for -L/--limit 1')
 @inc_exc(
     multi('-n', '--name-includes', help="Filter to runs whose \"workflow name\" matches any of these regexs; comma-delimited, can also be passed multiple times"),
     multi('-N', '--name-excludes', help="Filter to runs whose \"workflow name\" doesn't match any of these regexs; comma-delimited, can also be passed multiple times"),
     'workflow_name_patterns',
     flags=re.I,
 )
-@option('-r', '--remote', help='Git remote to query')
-@option('-s', '--status', 'statuses', callback=vals_cb(STATUSES), help="Comma-delimited list of statuses to query")
+@opt('-r', '--remote', help='Git remote to query')
+@opt('-s', '--status', 'statuses', callback=vals_cb(STATUSES), help="Comma-delimited list of statuses to query")
 @flag('-v', '--verbose', help='Log subprocess commands as they are run')
 @inc_exc(
     multi('-w', '--include-workflow-basenames', help='Comma-delimited list of workflow-file `basename` regexs to include'),
@@ -186,7 +189,7 @@ def parse_workflow_basenames(
     'workflow_basenames_patterns',
     flags=re.I,
 )
-@argument('ref', default='HEAD')
+@arg('ref', default='HEAD')
 def main(
     all_branches: bool,
     include_artifacts: bool,
@@ -194,7 +197,9 @@ def main(
     compact: bool,
     ids_only: bool,
     json_fields: list[JsonField],
+    include_jobs: bool,
     limit: int | None,
+    limit_1: bool,
     workflow_name_patterns: Patterns,
     remote: str | None,
     statuses: list[Status],
@@ -206,6 +211,16 @@ def main(
     log = err if verbose else silent
     if not remote:
         remote = proc.line('git default-remote', log=log)
+
+    if limit_1:
+        if limit and limit != 1:
+            raise ValueError(f"-1/--limit-1 conflicts with -L/--limit {limit}")
+        limit = 1
+
+    if 'jobs' in json_fields:
+        idx = json_fields.index('jobs')
+        json_fields = json_fields[:idx] + json_fields[idx + 1:]
+        include_jobs = True
 
     workflow_basenames = [
         workflow_basename
@@ -231,7 +246,7 @@ def main(
         if 'workflowName' not in json_fields:
             json_fields.append('workflowName')
 
-    if ids_only or include_artifacts:
+    if ids_only or include_artifacts or include_jobs:
         if 'databaseId' not in json_fields:
             json_fields.append('databaseId')
 
@@ -284,9 +299,32 @@ def main(
             runs = parallel(
                 runs,
                 # TODO: paginate
-                lambda run: { **run, 'artifacts': proc.json(f'gh api repos/{repo}/actions/runs/{run["databaseId"]}/artifacts')['artifacts'] }
+                lambda run: {
+                    **run,
+                    'artifacts': proc.json(f'gh api repos/{repo}/actions/runs/{run["databaseId"]}/artifacts', log=log)['artifacts']
+                }
             )
-        if ids_only and not include_artifacts:
+        if include_jobs:
+            runs = parallel(
+                runs,
+                lambda run: {
+                    **run,
+                    'jobs': proc.json(f'gh run view --json jobs {run["databaseId"]}', log=log)['jobs']
+                }
+            )
+            if limit == 1 and not include_artifacts:
+                run = solo(runs)
+                jobs = run['jobs']
+                if ids_only:
+                    job_ids = [ job['databaseId'] for job in jobs ]
+                    print('\n'.join(map(str, job_ids)))
+                    return
+                if compact:
+                    for job in jobs:
+                        json.dump(job, stdout)
+                        print()
+                    return
+        if ids_only and not include_artifacts and not include_jobs:
             for run in runs:
                 print(run['databaseId'])
         elif compact:
