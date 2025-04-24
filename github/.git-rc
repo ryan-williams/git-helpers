@@ -153,6 +153,7 @@ export -f gh_run_view_jobs
 defn ghrvjs gh_run_view_jobs
 defn ghrvl gh run view --log
 defn ghrvlj gh run view --log --job
+defn ghjl gh run view --log --job
 gh_run_view_url() {
     ghrv "$@" --json url | jr .url
 }
