@@ -46,4 +46,6 @@ if [ ${#unset[@]} -gt 0 ]; then
   fi
 fi
 
-git config "${global[@]}" "${unset[@]}" "$key" "$@"
+cmd=(git config "${global[@]}" "${unset[@]}" "$key" "$@")
+echo "${cmd[*]}" >&2
+"${cmd[@]}"
