@@ -1,5 +1,5 @@
 # git-helpers
-[1,568](#count-completions) Git aliases and scripts.
+[1,572](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -247,8 +247,7 @@ github_run_list.py --help
 #   -a, --all-branches              Include runs from all branches
 #   -A, --include-artifacts         Include `artifacts` as a JSON key; this
 #                                   isn't supported by `gh`, but is fetched
-#                                   separately and merged in to the output
-#                                   result
+#                                   separately and merged into the output result
 #   -b, --branch TEXT               Filter to runs from this branch; by default,
 #                                   only runs corresponding to the current
 #                                   branch are returned
@@ -258,8 +257,12 @@ github_run_list.py --help
 #                                   line
 #   -j, --json TEXT                 Comma-delimited list of JSON fields to
 #                                   fetch; `*` or `-` for all fields
+#   -J, --include-jobs              Include `jobs` as a JSON key; this isn't
+#                                   supported by `gh`, but is fetched separately
+#                                   and merged into the output
 #   -L, --limit INTEGER             Maximum number of runs to fetch (passed
 #                                   through to `gh`; default 20)
+#   -1, --limit-1                   Alias for -L/--limit 1
 #   -n, --name-includes TEXT        Filter to runs whose "workflow name" matches
 #                                   any of these regexs; comma-delimited, can
 #                                   also be passed multiple times
@@ -326,12 +329,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1568 completions added by installing git-helpers
+# 1572 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 245
-# - 4 chars: 633
-# - 5 chars: 290
+# - 4 chars: 635
+# - 5 chars: 292
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -342,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1568 new completions:
+1572 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -880,6 +883,7 @@ ghds       = github-docs-snapshot
 ghip       = gh run list -s in_progress
 ghiq       = github_run_list.py -s in,q
 ghji       = gh_job_id
+ghjl       = gh run view --log --job
 ghju       = gh_job_url
 ghlr       = gh_last_run_id
 ghlw       = gh_last_workflow_run
@@ -964,10 +968,11 @@ glol       = g log --oneline
 glow       = glab repo view --web
 gloz       = g ls-files --other --exclude-standard --directory --no-empty-directory -z
 glpb       = gitlab_protect_branch
+glpf       = g log -p --follow
 glpp       = g log -p --
 glpr       = g load-github-prs
 glpu       = g remote-list-push-urls
-glpw       = g log -p --follow
+glpw       = g log -p -w
 glrh       = !ls-remote --heads
 glrn       = gitlab_remote
 glrp       = gitlab_remote_path
@@ -1277,6 +1282,7 @@ gcaem      = g commit --allow-empty -m
 gcamf      = g commit -aF-
 gcamt      = !git-commit-and-tag.sh -a
 gcane      = g commit --amend --no-edit --allow-empty
+gcanm      = g commit -a --amend -m
 gcapm      = g commit-push -a -m
 gcarb      = g checkout-and-rebase
 gcbns      = g commit-basenames
@@ -1409,6 +1415,7 @@ gln20      = g list-n 20
 globj      = gitlab_open_jobs
 glowb      = glab repo view --web -b
 glpbn      = gitlab_protect_branch -n
+glpwf      = g log -p -w --follow
 glrpe      = gitlab_remote_path -e
 glsdb      = gitlab_set_default_branch
 glsrh      = !ls-remote --heads
@@ -1661,7 +1668,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1568 completions added by installing git-helpers (0 removed, 2913 total)
+1572 completions added by installing git-helpers (0 removed, 2917 total)
 ```
 </details>
 
