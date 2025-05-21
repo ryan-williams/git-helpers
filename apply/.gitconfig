@@ -4,4 +4,5 @@
   app0 = apply -p0
   apr = apply -R
   apr0 = apply -R -p0
+  ar0 = apply -R -p0
   pbd = patch-branch-diff
