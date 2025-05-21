@@ -57,7 +57,14 @@
         dnp = config diff.noprefix
         dnpg = config --global diff.noprefix
         dnpgt = config --global diff.noprefix true
+        dnpgu = config --global --unset diff.noprefix
         dnpt = config diff.noprefix true
+        dnpu = config --unset diff.noprefix
+        dpg = config --global diff.noprefix
+        dptg = config --global diff.noprefix true
+        dpug = config --global --unset diff.noprefix
+        dpt = config diff.noprefix true
+        dpu = config --unset diff.noprefix
         dsm = config --global diff.submodule
         dsml = config --global diff.submodule log
         e = expand-alias
