@@ -1,5 +1,5 @@
 # git-helpers
-[1,579](#count-completions) Git aliases and scripts.
+[1,574](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,11 +329,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1579 completions added by installing git-helpers
+# 1574 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
-# - 3 chars: 245
-# - 4 chars: 638
+# - 3 chars: 243
+# - 4 chars: 636
 # - 5 chars: 295
 ```
 
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1579 new completions:
+1574 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -411,7 +411,6 @@ gct        = g commit-tree
 gcu        = g config --unset
 gcw        = g checkout-worktree
 gd-        = g diff --
-gda        = g diff-pipe
 gdb        = g diff-branch-reflog
 gdc        = g diff --cached
 gdd        = g diff --submodule=diff
@@ -422,7 +421,6 @@ gdh        = g diff HEAD
 gdj        = g diff-json.py
 gdl        = g diff --submodule=log
 gdn        = g diff --name-status
-gdp        = g diff-pipe
 gdq        = g diff --quiet
 gdr        = g rev-parse --git-dir
 gds        = g diff --stat
@@ -756,7 +754,6 @@ gctu       = g config-diff-command -tu
 gcua       = g config --unset-all
 gcug       = g config --unset --global
 gcwt       = g checkout-worktree
-gdas       = g diff-pipe sort
 gdbm       = g config --global init.defaultBranch main
 gdbr       = g diff-branch-reflog
 gdbt       = g list-status UD
@@ -785,7 +782,6 @@ gdp1       = g diff-vs-parent 1
 gdp2       = g diff-vs-parent 2
 gdpg       = g config --global diff.noprefix
 gdph       = g diff HEAD^..HEAD
-gdps       = g diff-pipe sort
 gdpt       = g config diff.noprefix true
 gdpu       = g config --unset diff.noprefix
 gdqc       = g diff --quiet --cached
@@ -1675,7 +1671,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1579 completions added by installing git-helpers (0 removed, 2924 total)
+1574 completions added by installing git-helpers (0 removed, 2919 total)
 ```
 </details>
 
