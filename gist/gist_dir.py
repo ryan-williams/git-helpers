@@ -1,3 +1,5 @@
+import shlex
+from functools import partial
 from os import chdir, environ as env, getcwd
 from os.path import exists
 from pathlib import Path
@@ -22,14 +24,26 @@ class cd:
         chdir(str(self.prevPath))
 
 
-def run(*args, output=False, stdout=sys.stdout, stderr=sys.stderr, **kwargs):
-    """Print a command before running it (converting all args to strs as well; useful for Paths in particular)"""
+err = partial(print, file=sys.stderr)
+
+
+def run(
+    *args,
+    output=False,
+    stdout=sys.stdout,
+    stderr=sys.stderr,
+    **kwargs,
+):
+    """Print a command to stderr, then run it.
+
+    Also converts args to `str`s (useful for `Path`s).
+    """
     cmd = [str(arg) for arg in args]
-    print('Running: %s' % ' '.join(cmd))
+    err(f'Running: {shlex.join(cmd)}')
     if output:
         return check_output(cmd, **kwargs).decode()
     else:
-        check_call(cmd, stdout=stdout, stderr=stderr, **kwargs)
+        return check_call(cmd, stdout=stdout, stderr=stderr, **kwargs)
 
 
 def lines(*args, **kwargs):
@@ -56,20 +70,19 @@ def parse_gist_url(url):
 
 
 def gist_dir(
-        dir,
-        remote='gist',
-        branch='gist',
-        copy_url=False,
-        open_gist=False,
-        private=False,
-        files=None,
-        push_history=False,
-        restore_branch=False,
-        host=None,
-        gist=None,
+    dir,
+    remote='gist',
+    branch='gist',
+    copy_url=False,
+    open_gist=False,
+    private=False,
+    files=None,
+    push_history=False,
+    restore_branch=False,
+    host=None,
+    gist=None,
 ):
     dir = Path(dir)
-    print(f"Gist'ing {dir}")
     with cd(dir):
         # We'll make a git repository in this directory iff one doesn't exist
         init = not exists('.git')
@@ -79,28 +92,22 @@ def gist_dir(
         if gist:
             id, ssh_url = parse_gist_url(gist)
         else:
-            with NamedTemporaryFile(dir=Path.cwd()) as f:
-                name = f.name
-                # initialize the gist with a dummy file
-                with open(name, 'w') as f:
-                    f.write('placeholder text; in process of creating Gist from existing files\n')
+            # Prepare gist cmd
+            cmd = ['gist']
+            if copy_url:
+                cmd.append('-c')
+            if private:
+                cmd.append('-p')
+            cmd += ['-f', 'init.txt']
 
-                # prepare gist cmd
-                cmd = ['gist']
-                if copy_url:
-                    cmd.append('-c')
-                if private:
-                    cmd.append('-p')
-                cmd.append(name)
+            # Create the gist and grab its ID
+            url = line(*cmd, input='placeholder text; in process of creating Gist from existing files\n'.encode())
+            id, ssh_url = parse_gist_url(url)
+            err(f"Created gist {url} (id {id})")
 
-                # create the gist and grab its ID
-                url = check_output(cmd).decode().strip()
-                id, ssh_url = parse_gist_url(url)
-                print(f"Created gist {url} (id {id})")
-
-                if init:
-                    # make working dir a clone of the upstream gist
-                    run('git', 'init')
+            if init:
+                # Make working dir a clone of the upstream gist
+                run('git', 'init')
 
         remotes = lines('git', 'remote')
         if remote not in remotes:
@@ -108,45 +115,36 @@ def gist_dir(
         run('git', 'fetch', remote)
 
         prev_branch = line('git', 'symbolic-ref', '-q', '--short', 'HEAD')
-        prev_sha = line('git', '--no-pager', 'log', '--no-walk', '--format=%h', 'HEAD')
-        print(f'Saved current branch: {prev_branch} ({prev_sha})')
+        prev_sha = line('git', 'log', '-1', '--format=%h')
+        prev_worktree = line('git', 'log', '-1', '--format=%t')
+        err(f'Current branch {prev_branch}: SHA {prev_sha}, worktree {prev_worktree}')
 
         if push_history:
             run('git', 'branch', branch, prev_sha)
             run('git', 'branch', '-u', f'{remote}/main', branch)
         else:
-            run('git', 'branch', branch)
-            run('git', 'branch', '-u', f'{remote}/main', branch)
-            run('git', 'reset', branch)
+            run('git', 'checkout', '-b', branch, f'{remote}/main')
+            run('git', 'branch', '-u', f'{remote}/main')
 
-            # add the local dir's contents (including only specific files if necessary)
+            # Add the local dir's contents (including only specific files if necessary)
             if files:
                 for file in files:
                     file = Path(file)
-                    if not file.exists():
-                        run(*['git', 'checkout', prev_sha, '--', file])
-
-                    run('git', 'add', file)
+                    run(*['git', 'checkout', prev_sha, '--', file])
+                run('git', 'commit', '--amend', '--no-edit')
             else:
-                run('git', 'add', '.')
+                gist_sha = line('git', 'commit-tree', prev_worktree, '-m', 'initial commit')
+                run('git', 'reset', '--hard', gist_sha)
 
-            # rm the dummy file again (checkout may have restored it, and it's git-tracked this time)
-            if exists(name):
-                run('git', 'rm', name)
-
-            # create a new "initial commit", overwriting the one the gist was created with
-            run('git', 'commit', '--amend', '--allow-empty', '-m', 'initial commit')
-
-        # overwrite the gist (and its history) with the single real commit we want to be present
+        # Overwrite the gist (and its history) with the single real commit we want to be present
         run('git', 'push', remote, '--force', f'{branch}:main')
 
-        print(f"Updated gist: {url}")
+        err(f"Updated gist: {url}")
         if open_gist:
             try:
-                run('which', 'open', stdout=DEVNULL, stderr=DEVNULL)
                 run('open', url)
             except CalledProcessError:
-                print("Couldn't find `open` command")
+                err("Couldn't find `open` command")
 
         if restore_branch:
             run('git', 'checkout', prev_branch)
@@ -197,8 +195,7 @@ if __name__ == '__main__':
     files = None
     if dir:
         if not all(are_files):
-            raise Exception(
-                'When a directory is passed via the -d/--dir flag, all positional arguments must be files (and in that directory)')
+            raise Exception('When a directory is passed via the -d/--dir flag, all positional arguments must be files (and in that directory)')
         dirs = [dir]
         files = paths
     else:
