@@ -54,8 +54,46 @@ defn ghow gh repo view --web
 defn ghowb gh repo view --web -b
 defn ghob gh repo view --web -b
 
-defn github_default_remote git-find-only-remote github\.com
+github_default_remote() {
+  local remote
+  remote="$(git-find-only-remote github\.com)"
+  if [ -z "$remote" ]; then
+    remote="$(gh repo set-default --view)"
+  fi
+  if [ -z "$remote" ]; then
+    return 1
+  fi
+  echo "$remote"
+}
+defn ghdr github_default_remote
 defn ghrn github_default_remote
+
+defn ghgdr gh repo set-default --view
+
+github_set_default_remote() {
+  local remote
+  if [ $# -eq 0 ]; then
+    remote="$(git-find-only-remote github\.com)"
+    if [ -z "$remote" ]; then
+      echo "Failed to find a suitable GitHub remote" >&2
+      return 1
+    fi
+  elif [ $# -eq 1 ]; then
+    remote="$1"; shift
+  else
+    echo "Usage: ${FUNCNAME[0]} [remote name]" >&2
+    return 1
+  fi
+  local repo
+  repo="$(github_owner_name "$remote")"
+  gh repo set-default "$repo"
+  git config --global github.default-remote "$remote"
+}
+export -f github_set_default_remote
+defn ghsdr github_set_default_remote
+
+defn ghudr gh repo set-default --unset
+defn ghdru gh repo set-default --unset
 
 github_owner_name() {
     local remote
