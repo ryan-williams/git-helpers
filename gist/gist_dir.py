@@ -1,6 +1,6 @@
 import shlex
 from functools import partial
-from os import chdir, environ as env, getcwd
+from os import chdir, getcwd
 from os.path import exists
 from pathlib import Path
 from subprocess import check_call, check_output, CalledProcessError, DEVNULL
@@ -59,14 +59,14 @@ def line(*args, **kwargs):
     return line
 
 
-def check_gist_auth():
-    """Check if gist CLI is installed and user is authenticated"""
-    if not shutil.which('gist'):
-        err("Error: 'gist' command not found. Please install it with: gem install gist")
+def check_gh_auth():
+    """Check if gh CLI is installed and user is authenticated"""
+    if not shutil.which('gh'):
+        err("Error: 'gh' command not found. Please install GitHub CLI: https://cli.github.com/")
         sys.exit(1)
 
     try:
-        run('gist', '-r', '5304c3c400a1eeb5995bf2d85188d1d9', output=True, stderr=DEVNULL)
+        run('gh', 'gist', 'list', '--limit', '1', output=True, stderr=DEVNULL)
         return True
     except CalledProcessError:
         return False
@@ -94,10 +94,10 @@ def gist_dir(
     restore_branch=False,
     gist=None,
 ):
-    """Create a gist from a directory.
+    """Create a gist from a directory using GitHub CLI.
 
-    Note: For GitHub Enterprise, set the GITHUB_URL environment variable
-    (e.g., export GITHUB_URL=http://github.internal.example.com/)
+    Note: Requires 'gh' (GitHub CLI) to be installed and authenticated.
+    For GitHub Enterprise, configure gh with: gh auth login --hostname your-github-enterprise.com
     """
     dir = Path(dir)
     with cd(dir):
@@ -109,27 +109,44 @@ def gist_dir(
         if gist:
             id, ssh_url = parse_gist_url(gist)
         else:
-            # Prepare gist cmd
-            cmd = ['gist']
-            if copy_url:
-                cmd.append('-c')
-            if private:
-                cmd.append('-p')
-            cmd += ['-f', 'init.txt']
+            # Get list of files to include in gist
+            if files:
+                gist_files = [str(f) for f in files]
+            else:
+                gist_files = lines('git', 'ls-files')
+                gist_files = [f for f in gist_files if f]  # Remove empty strings
+
+            if not gist_files:
+                err("No files to create gist from")
+                sys.exit(1)
+
+            # Prepare gh gist create cmd with actual files
+            cmd = ['gh', 'gist', 'create']
+            if not private:
+                cmd.append('--public')
+            cmd.extend(gist_files)
 
             # Create the gist and grab its ID
             try:
-                url = line(*cmd, input='placeholder text; in process of creating Gist from existing files\n'.encode())
+                url = line(*cmd)
             except CalledProcessError:
                 # Check if authentication is the issue
-                if not check_gist_auth():
-                    err("Error: Not authenticated with gist CLI. Please run 'gist --login' first.")
+                if not check_gh_auth():
+                    err("Error: Not authenticated with gh CLI. Please run 'gh auth login' first.")
                     sys.exit(1)
                 else:
                     # Re-raise the original error if it's not an auth issue
                     raise
             id, ssh_url = parse_gist_url(url)
             err(f"Created gist {url} (id {id})")
+
+            # Copy URL to clipboard if requested
+            if copy_url:
+                try:
+                    run('pbcopy', input=url.encode())
+                    err("Gist URL copied to clipboard")
+                except CalledProcessError:
+                    err("Couldn't copy to clipboard (pbcopy not available)")
 
             if init:
                 # Make working dir a clone of the upstream gist
@@ -145,30 +162,21 @@ def gist_dir(
         prev_worktree = line('git', 'log', '-1', '--format=%t')
         err(f'Current branch {prev_branch}: SHA {prev_sha}, worktree {prev_worktree}')
 
+        # Create local branch to track the gist
+        run('git', 'checkout', '-b', branch, f'{remote}/main')
+        run('git', 'branch', '-u', f'{remote}/main')
+
+        # If push_history is requested, push the original commit (with history) to replace the flat commit
         if push_history:
-            run('git', 'branch', branch, prev_sha)
-            run('git', 'branch', '-u', f'{remote}/main', branch)
-        else:
-            run('git', 'checkout', '-b', branch, f'{remote}/main')
-            run('git', 'branch', '-u', f'{remote}/main')
-
-            # Add the local dir's contents (including only specific files if necessary)
-            if files:
-                for file in files:
-                    file = Path(file)
-                    run(*['git', 'checkout', prev_sha, '--', file])
-                run('git', 'commit', '--amend', '--no-edit')
-            else:
-                gist_sha = line('git', 'commit-tree', prev_worktree, '-m', 'initial commit')
-                run('git', 'reset', '--hard', gist_sha)
-
-        # Overwrite the gist (and its history) with the single real commit we want to be present
-        run('git', 'push', remote, '--force', f'{branch}:main')
+            err(f"Pushing commit history to replace flat gist commit")
+            run('git', 'push', remote, '--force', f'{prev_sha}:main')
+            # Update local branch to point to the same commit we just pushed
+            run('git', 'reset', '--hard', prev_sha)
 
         # Configure push.default so that `git push` will update gist/main
         run('git', 'config', 'push.default', 'upstream')
 
-        err(f"Updated gist: {url}")
+        err(f"Gist created: {url}")
         if open_gist:
             try:
                 run('open', url)
