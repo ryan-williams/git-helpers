@@ -31,6 +31,6 @@ if ! [ -f "$rebase_done" ]; then
 fi
 
 # Extract the SHA from the last `pick` line.
-pick_line="$(cat "$rebase_done" | grep '^pick' | tail -n1)"
+pick_line="$(cat "$rebase_done" | grep -e '^pick' -e '^edit' | tail -n1)"
 sha="$(echo "$pick_line" | awk -F' ' '{print $2}')"
 echo "$sha"
