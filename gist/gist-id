@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# If exactly one Git remote is a gist URL, return its ID. Otherwise, check whether `github_default_remote` is a gist URL and return its ID. Otherwise, error.
+remote="$(git-find-only-remote gist\.github\.com)"
+if [ -z "$remote" ]; then
+    remote="$(github_default_remote)"
+    if [[ ! "$remote" =~ gist\.github\.com ]]; then
+        echo "No gist remote found" >&2
+        exit 1
+    fi
+fi
+url="$(git remote get-url "$remote")"
+url="${url%.git}"
+url="${url##*:}"
+url="${url##*/}"
+echo "$url"
