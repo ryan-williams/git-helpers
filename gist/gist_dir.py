@@ -3,9 +3,8 @@ from functools import partial
 from os import chdir, environ as env, getcwd
 from os.path import exists
 from pathlib import Path
-from subprocess import check_call, check_output, DEVNULL, CalledProcessError
+from subprocess import check_call, check_output, CalledProcessError, DEVNULL
 import sys
-from tempfile import NamedTemporaryFile
 from urllib.parse import urlparse
 
 
@@ -59,6 +58,15 @@ def line(*args, **kwargs):
     return line
 
 
+def check_gist_auth():
+    """Check if user is authenticated with gist CLI"""
+    try:
+        run('gist', '-r', '5304c3c400a1eeb5995bf2d85188d1d9', output=True, stderr=DEVNULL)
+        return True
+    except CalledProcessError:
+        return False
+
+
 def parse_gist_url(url):
     url = urlparse(url)
     path = url.path
@@ -101,7 +109,16 @@ def gist_dir(
             cmd += ['-f', 'init.txt']
 
             # Create the gist and grab its ID
-            url = line(*cmd, input='placeholder text; in process of creating Gist from existing files\n'.encode())
+            try:
+                url = line(*cmd, input='placeholder text; in process of creating Gist from existing files\n'.encode())
+            except CalledProcessError:
+                # Check if authentication is the issue
+                if not check_gist_auth():
+                    err("Error: Not authenticated with gist CLI. Please run 'gist --login' first.")
+                    sys.exit(1)
+                else:
+                    # Re-raise the original error if it's not an auth issue
+                    raise
             id, ssh_url = parse_gist_url(url)
             err(f"Created gist {url} (id {id})")
 
@@ -138,6 +155,9 @@ def gist_dir(
 
         # Overwrite the gist (and its history) with the single real commit we want to be present
         run('git', 'push', remote, '--force', f'{branch}:main')
+
+        # Configure push.default so that `git push` will update gist/main
+        run('git', 'config', 'push.default', 'upstream')
 
         err(f"Updated gist: {url}")
         if open_gist:
