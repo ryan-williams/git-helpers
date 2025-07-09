@@ -84,8 +84,12 @@
   sau   = set-author
   saut  = set-author
   scd   = set-committer-date
+  sci   = set-committer-info
   sct   = set-committer-date
+  set-committer-date = set-committer-info -N
+  set-committer-name = set-committer-info -D
   scm   = squashed-commit-message
+  scn   = set-committer-name
   sds   = set-dates
   tr0   = empty-tree
   touch = commit --amend --no-edit

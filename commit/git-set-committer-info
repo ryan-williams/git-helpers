@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+set_date=true
+set_name=true
+commit=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -D)
+            set_date=false
+            shift
+            ;;
+        -N)
+            set_name=false
+            shift
+            ;;
+        -*)
+            echo "Usage: $0 [-D] [-N] [commit]" >&2
+            echo "  -D: Don't set committer date" >&2
+            echo "  -N: Don't set committer name" >&2
+            exit 1
+            ;;
+        *)
+            if [ -n "$commit" ]; then
+                echo "Usage: $0 [-D] [-N] [commit]" >&2
+                exit 1
+            fi
+            commit="$1"
+            shift
+            ;;
+    esac
+done
+
+if [ -n "$commit" ]; then
+    source_commit="$commit"
+else
+    source_commit="HEAD"
+fi
+
+env_vars=()
+
+if [ "$set_date" = true ]; then
+    cd="$(git log -1 --format=%cd "$source_commit")"
+    env_vars+=("GIT_COMMITTER_DATE=$cd")
+    echo "Setting committer date to $cd" >&2
+fi
+
+if [ "$set_name" = true ]; then
+    cn="$(git log -1 --format=%cn "$source_commit")"
+    ce="$(git log -1 --format=%ce "$source_commit")"
+    env_vars+=("GIT_COMMITTER_NAME=$cn")
+    env_vars+=("GIT_COMMITTER_EMAIL=$ce")
+    echo "Setting committer name to $cn <$ce>" >&2
+fi
+
+if [ ${#env_vars[@]} -eq 0 ]; then
+    echo "Nothing to set (both -D and -N specified)" >&2
+    exit 1
+fi
+
+env "${env_vars[@]}" git commit --amend --no-edit

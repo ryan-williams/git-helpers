@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -e
-
-git rebase -x 'git reset-committer-date-rebase-head' "$@"

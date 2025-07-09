@@ -10,4 +10,4 @@ if [ -z "$rebase_head" ]; then
     exit 1
 fi
 
-git set-committer-date "$rebase_head"
+git set-committer-info "$@" "$rebase_head"

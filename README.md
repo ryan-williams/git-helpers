@@ -1,5 +1,5 @@
 # git-helpers
-[1,581](#count-completions) Git aliases and scripts.
+[1,584](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -9,14 +9,14 @@
         - [`gg` (`git-graph-all`)](#gg)
     - [Summarize local/remote branches](#branches)
         - [`gb` (`git branches`)](#gb)
-        - [`gbr` (`git-remote-branches`)](#gbr)
+        - [`gbr` (`git remote-branches`)](#gbr)
     - [Inspect commits being rebased/cherry-picked](#gshrh)
         - [`grbh` (`git-rebase-head`), `gcph` (`git-cherry-pick-head`)](#grbh)
         - [`gshrh` (`git-show-rebase-head`), `gshch` (`git-show-cherry-pick-head`)](#gshrh)
     - [Rebase](#rebase)
         - [`gtw` (`git-throw`)](#gtw)
         - [`groc` (`git-reorder-commits`)](#groc)
-        - [`grbcd` (`git-rebase-preserve-commit-dates`)](#grbcd)
+        - [`grbci` (`git-rebase-preserve-commit-info`)](#grbci)
         - [`gec` (`git-edit-commit`)](#gec)
         - [Other](#rebase-other)
     - [Diff helpers, GIFs, JSON](#diff)
@@ -149,14 +149,14 @@ In this case, calls to [`git reset-committer-date-rebase-head`] are inserted aft
 The `rebase -x` flag is also directly available; this does the same as the above:
 
 ```bash
-git roc -n -x 'g rcd' 0 1
+git roc -n -x 'g rcr' 0 1
 # pick 3d2e3a8 `dcw="diff --cached -w"`
-# exec g rcd
+# exec g rcr
 # pick 2d551a6 `commit -F-` aliases
-# exec g rcd
+# exec g rcr
 ```
 
-(`g rcd` is an alias for [`git reset-committer-date-rebase-head`])
+(`g rcr` is an alias for [`git reset-committer-rebase-head`])
 
 ##### No-op rotations
 Running it twice is a no-op (assuming there are no rebase conflicts):
@@ -172,8 +172,8 @@ groc -p 0 2 1  # Repeat; current state same as `groc -p 1 0 2`
 groc -p 0 2 1  # Original commit is restored (including SHA)
 ```
 
-#### `grbcd` ([`git-rebase-preserve-commit-dates`]) <a id="grbcd"></a>
-Rebase, but inject `-x git rcd` ([`git reset-committer-date-rebase-head`]) after each commit, so that the committer-time is preserved.
+#### `grbci` ([`git-rebase-preserve-commit-info`]) <a id="grbci"></a>
+Rebase, but inject `-x git rcr` ([`git reset-committer-rebase-head`]) after each commit, so that the committer-time is preserved.
 
 #### `gec` ([`git-edit-commit`]) <a id="gec"></a>
 Run a rebase to `edit` or `reword` a specific commit:
@@ -329,11 +329,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1581 completions added by installing git-helpers
+# 1584 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 243
-# - 4 chars: 638
+# - 4 chars: 641
 # - 5 chars: 299
 ```
 
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1581 new completions:
+1584 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1070,8 +1070,9 @@ grbp       = g rebase-parent
 grbr       = g rebase -r
 grbs       = g rebase --skip
 grbu       = g rebase-undo
-grcd       = g reset-committer-date-rebase-head
+grci       = g reset-committer-rebase-head
 grcp       = g remote-copy
+grcr       = g reset-committer-rebase-head
 grdb       = g remote-default-branch
 grds       = g rebase-diff --stat
 grel       = g relpath
@@ -1141,6 +1142,8 @@ gsbj       = !git --no-pager log -1 --format=%s
 gscc       = g submodule-count-commits
 gscd       = g set-committer-date
 gsch       = g show-cherry-pick-head
+gsci       = g set-committer-info
+gscn       = g set-committer-name
 gscp       = g show-cherry-pick-parent
 gsct       = g set-committer-date
 gscw       = g show-cherry-pick-head -w
@@ -1455,7 +1458,7 @@ gprhl      = g pre-rebase-head-log-pretty
 gptfn      = g push --tags -f -n
 gpubf      = g push-user-branch -f
 gpubn      = g push-user-branch -n
-grbcd      = g rebase-preserve-commit-dates -i
+grbci      = g rebase-preserve-commit-info -i
 grbhm      = g rebase-head-message
 grbmb      = g rebase-merge-base
 grbor      = g rebase -r --onto
@@ -1593,9 +1596,10 @@ github     = git-helpers/github/github
 gphufn     = g push-head-upstream -f -n
 gprhlh     = g pre-rebase-head-log
 gprnts     = !git-parents.py
-grbcda     = g rebase-preserve-commit-dates
+grbcia     = g rebase-preserve-commit-info
 grbori     = g rebase -r -i --onto
 grbrio     = g rebase -r -i --onto
+grcrbh     = g reset-committer-rebase-head
 grmlso     = g rm-untracked
 grvneh     = g revert --no-edit HEAD
 gsacam     = g submodule-auto-commit -am
@@ -1611,7 +1615,6 @@ gsmurr     = g submodule update --recursive --rebase
 gxcapm     = <git repo dir> ['git capm' args...]
 issues     = git-helpers/github/issues
 ggracle    = g graph -ac -l -e
-grcdrbh    = g reset-committer-date-rebase-head
 gsmurrr    = g submodule update --recursive --rebase --remote
 gist-dir   = git-helpers/gist/gist-dir
 repos.py   = git-helpers/github/repos.py
@@ -1678,7 +1681,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1581 completions added by installing git-helpers (0 removed, 2926 total)
+1584 completions added by installing git-helpers (0 removed, 2929 total)
 ```
 </details>
 
@@ -1722,9 +1725,9 @@ history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 [hammerlab/guacamole]: https://github.com/hammerlab/guacamole
 [TileDB-SOMA]: https://github.com/TileDB-Inc/TileDB-SOMA
 
-[`git reset-committer-date-rebase-head`]: rebase/git-reset-committer-date-rebase-head
+[`git reset-committer-rebase-head`]: rebase/git-reset-committer-rebase-head
 [`git-throw`]: rebase/git-throw.py
-[`git-rebase-preserve-commit-dates`]: rebase/git-rebase-preserve-commit-dates
+[`git-rebase-preserve-commit-info`]: rebase/git-rebase-preserve-commit-info
 [`git-reorder-commits`]: rebase/git-reorder-commits
 [`git-graph`]: graph/git-graph
 [`git-graph-all`]: graph/git-graph-all

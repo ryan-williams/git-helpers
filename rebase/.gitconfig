@@ -21,8 +21,8 @@
   rb      = rebase
   rba     = rebase --abort
   rbc     = rebase --continue
-  rbcd    = rebase-preserve-commit-dates -i
-  rbcda   = rebase-preserve-commit-dates
+  rbci    = rebase-preserve-commit-info -i
+  rbcia   = rebase-preserve-commit-info
   crb     = checkout-and-rebase
   crh     = commit-rebase-head
   carb    = checkout-and-rebase
@@ -55,8 +55,9 @@
   rbu     = rebase-undo
   rbud    = rebase-upstream-diff
   rc      = rebase --continue
-  rcd     = reset-committer-date-rebase-head
-  rcdrbh  = reset-committer-date-rebase-head
+  rci     = reset-committer-rebase-head
+  rcr     = reset-committer-rebase-head
+  rcrbh   = reset-committer-rebase-head
   rd      = rebase-diff
   rds     = rebase-diff --stat
   ri      = rebase -i
