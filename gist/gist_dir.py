@@ -87,9 +87,13 @@ def gist_dir(
     files=None,
     push_history=False,
     restore_branch=False,
-    host=None,
     gist=None,
 ):
+    """Create a gist from a directory.
+
+    Note: For GitHub Enterprise, set the GITHUB_URL environment variable
+    (e.g., export GITHUB_URL=http://github.internal.example.com/)
+    """
     dir = Path(dir)
     with cd(dir):
         # We'll make a git repository in this directory iff one doesn't exist
@@ -184,8 +188,6 @@ if __name__ == '__main__':
                         help="Copy the resulting gist's URL to the clipboard")
     parser.add_argument('-d', '--dir', required=False,
                         help="Specify a single directory to make a gist from; any positional arguments must point to files in this directory")
-    parser.add_argument('-e', '--enterprise_host',
-                        help="Use a GitHub Enterprise host (defaults to $GITHUB_URL, when set)")
     parser.add_argument('-g', '--gist', help="URL of an existing Gist (will overwrite that Gist's contents!)")
     parser.add_argument('-o', '--open', default=False, action='store_true', help="Open the gist when finished running")
     parser.add_argument('-p', '--private', default=False, action='store_true', help="Make the gist private")
@@ -203,10 +205,6 @@ if __name__ == '__main__':
     private = args.private
     push_history = args.history
     restore_branch = args.restore_branch
-
-    host = args.enterprise_host
-    if host:
-        env['GITHUB_URL'] = host
 
     gist = args.gist
 
@@ -242,6 +240,5 @@ if __name__ == '__main__':
             files=files,
             push_history=push_history,
             restore_branch=restore_branch,
-            host=host,
             gist=gist,
         )
