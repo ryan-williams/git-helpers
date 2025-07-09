@@ -4,6 +4,7 @@ from os import chdir, environ as env, getcwd
 from os.path import exists
 from pathlib import Path
 from subprocess import check_call, check_output, CalledProcessError, DEVNULL
+import shutil
 import sys
 from urllib.parse import urlparse
 
@@ -59,7 +60,11 @@ def line(*args, **kwargs):
 
 
 def check_gist_auth():
-    """Check if user is authenticated with gist CLI"""
+    """Check if gist CLI is installed and user is authenticated"""
+    if not shutil.which('gist'):
+        err("Error: 'gist' command not found. Please install it with: gem install gist")
+        sys.exit(1)
+
     try:
         run('gist', '-r', '5304c3c400a1eeb5995bf2d85188d1d9', output=True, stderr=DEVNULL)
         return True
