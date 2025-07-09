@@ -11,4 +11,7 @@ if which -a gist &> /dev/null; then
   alias gop="gist -op"
   alias gopc="gist -opc"
   alias gpc="gist -opc"
+
+  alias gdo="gist-dir -o"
+  alias gdop="gist-dir -op"
 fi
