@@ -1,17 +1,24 @@
+### Aliases for `gh gist`
 
-if which -a gist &> /dev/null; then
-  ### Aliases for `gist` utility: https://github.com/defunkt/gist ###
-  # Private gist, copy link to clipboard, parse first argument as gist description
-  alias gst="gist -p -c -d"
-  # Same as above, but open in browser ("-o")
-  alias gsto="gist -p -c -o -d"
-  # Same as above, but pulling content from clipboard
-  alias gstp="gist -p -c -o -P -d"
+alias ghg="gh gist"
 
-  alias gop="gist -op"
-  alias gopc="gist -opc"
-  alias gpc="gist -opc"
+alias ggc="gh gist create"
+alias ghgc="gh gist create"
+alias gop="gh gist create --web"
+alias ggcd="gh gist create --web -d"
+alias gsto="gh gist create --web -d"
+alias ggcdn="gh gist create -d"
+alias gst="gh gist create -d"
 
-  alias gdo="gist-dir -o"
-  alias gdop="gist-dir -op"
-fi
+alias ghgd="gh gist delete"
+alias ggdy="gh gist delete --yes"
+alias ghgdy="gh gist delete --yes"
+
+alias ghgl="gh gist list"
+
+alias gge="gh gist edit"
+alias ghge="gh gist edit"
+alias ghgu="gh gist edit"
+
+alias gdo="gist-dir -o"
+alias gdop="gist-dir -op"

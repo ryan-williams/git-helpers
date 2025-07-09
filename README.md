@@ -1,5 +1,5 @@
 # git-helpers
-[1,585](#count-completions) Git aliases and scripts.
+[1,600](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,12 +329,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1585 completions added by installing git-helpers
+# 1600 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
-# - 3 chars: 243
-# - 4 chars: 641
-# - 5 chars: 299
+# - 3 chars: 248
+# - 4 chars: 649
+# - 5 chars: 301
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1585 new completions:
+1600 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -421,6 +421,7 @@ gdh        = g diff HEAD
 gdj        = g diff-json.py
 gdl        = g diff --submodule=log
 gdn        = g diff --name-status
+gdo        = gist-dir -o
 gdq        = g diff --quiet
 gdr        = g rev-parse --git-dir
 gds        = g diff --stat
@@ -451,7 +452,9 @@ gfs        = g find-suffix
 gft        = g fetch-x --tags
 gfu        = g fetch-x --tags u
 gga        = g graph-all
+ggc        = gh gist create
 ggd        = git-git-dir
+gge        = gh gist edit
 ggi        = g grep --recurse-submodules -i
 ggl        = g grep --recurse-submodules -l
 ggn        = g grep --recurse-submodules -n
@@ -463,6 +466,7 @@ gha        = gh api
 ghb        = g blob-hash
 ghc        = g has-changes
 ghf        = g help-follow
+ghg        = gh gist
 ghh        = g help
 ghj        = gh_open_job
 ghm        = !git --no-pager log -1 '--format=%h %s'
@@ -518,6 +522,7 @@ gob        = !git_open_web_branch.py
 goc        = g original-commit
 goh        = g original-head
 gom        = g octomerge
+gop        = gh gist create --web
 gpb        = g previous-branch
 gpd        = g push --delete
 gpf        = g push -f
@@ -779,6 +784,7 @@ gdmb       = g delete-merged-branches
 gdno       = g diff --name-only
 gdnp       = g config diff.noprefix
 gdns       = g diff --name-status
+gdop       = gist-dir -op
 gdp1       = g diff-vs-parent 1
 gdp2       = g diff-vs-parent 2
 gdpg       = g config --global diff.noprefix
@@ -848,10 +854,11 @@ ggad       = g graph -A
 ggaf       = g config --global core.attributesfile
 ggal       = g graph-all -l
 ggau       = g author
-ggcd       = g get-committer-date
+ggcd       = gh gist create --web -d
 ggcf       = g config --global --get-all include.path
 ggdb       = g config --global init.defaultBranch
 ggdr       = g config --global clone.defaultRemoteName
+ggdy       = gh gist delete --yes
 ggef       = g config --global --get-all core.excludesfile
 gggi       = g global-gitignore
 gghu       = g graph -u HEAD
@@ -881,6 +888,11 @@ ghbi       = g blob-hash -i
 ghbs       = g blob-hash -s
 ghdr       = github_default_remote
 ghds       = github-docs-snapshot
+ghgc       = gh gist create
+ghgd       = gh gist delete
+ghge       = gh gist edit
+ghgl       = gh gist list
+ghgu       = gh gist edit
 ghip       = gh run list -s in_progress
 ghiq       = github_run_list.py -s in,q
 ghji       = gh_job_id
@@ -1219,6 +1231,7 @@ gsss       = g submodule-set-sha
 gsst       = g submodule-shas
 gstd       = g stash drop
 gsth       = g stash show
+gsto       = gh gist create --web -d
 gstp       = g status --porcelain
 gsts       = g status -s
 gsuf       = g submodule update --recursive -f
@@ -1375,6 +1388,7 @@ gfune      = g user
 ggaal      = g graph-all -a -l
 ggadh      = g graph -A HEAD
 ggala      = g graph-all -l -a
+ggcdn      = gh gist create -d
 ggcfa      = g config --global --add include.path
 ggdbm      = g config --global init.defaultBranch main
 ggefa      = g config --global --add core.excludesfile
@@ -1393,6 +1407,7 @@ ghblr      = g head-before-last-rebase
 ghdru      = gh repo set-default --unset
 ghdss      = github-docs-snapshot -s
 ghgdr      = gh repo set-default --view
+ghgdy      = gh gist delete --yes
 ghjis      = gh_job_ids
 ghlwr      = gh_last_workflow_run
 ghowb      = gh repo view --web -b
@@ -1682,7 +1697,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1585 completions added by installing git-helpers (0 removed, 2930 total)
+1600 completions added by installing git-helpers (0 removed, 2945 total)
 ```
 </details>
 
