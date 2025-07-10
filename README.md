@@ -1,5 +1,5 @@
 # git-helpers
-[1,601](#count-completions) Git aliases and scripts.
+[1,605](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,12 +329,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1601 completions added by installing git-helpers
+# 1605 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 248
-# - 4 chars: 649
-# - 5 chars: 302
+# - 4 chars: 650
+# - 5 chars: 303
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1601 new completions:
+1605 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -886,6 +886,7 @@ ghaw       = github_run_list.py -aw
 ghax       = gh api -X
 ghbi       = g blob-hash -i
 ghbs       = g blob-hash -s
+ghby       = github_branches_yours
 ghdr       = github_default_remote
 ghds       = github-docs-snapshot
 ghgc       = gh gist create
@@ -1411,6 +1412,7 @@ ghgdr      = gh repo set-default --view
 ghgdy      = gh gist delete --yes
 ghjis      = gh_job_ids
 ghlwr      = gh_last_workflow_run
+ghoby      = github_open_branches_yours
 ghowb      = gh repo view --web -b
 ghpbs      = github_protected_branches
 ghr1b      = github_run_list.py -L1 -b
@@ -1639,7 +1641,7 @@ gh_job_id  = gh_last_job "$@" | jq -r .databaseId
 ls-remote  = git-helpers/remote/ls-remote
 gh_job_ids = [run_id [job_idx]]
 gh_job_url = gh_job "$@" | jq -r .url
-github_url = gh repo view --json url | jq -r .url
+github_url = gh repo view --json url "$@" | jq -r .url
 gitlab_api
 gitlab_url = gh repo view --json url | jq -r .url
 gh_open_job = open "$(gh_job_url "$@")"
@@ -1680,6 +1682,7 @@ gh_last_workflow_run = gh run list -L 1 --json databaseId | jq -r .[0].databaseI
 github-docs-snapshot = git-helpers/github/github-docs-snapshot
 github_open_settings = open "$(github_url)/settings"
 pop_commit_from_file = git-helpers/cherry-pick/pop_commit_from_file  # Cherry-pick a commit from a file; if successful, remove it from the file.
+github_branches_yours
 github_default_remote
 gitlab_protect_branch
 git_open_web_branch.py = git-helpers/remote/git_open_web_branch.py
@@ -1692,13 +1695,14 @@ github_protected_branches = [remote]
 github_set_default_branch
 github_set_default_remote = [remote name]
 gitlab_set_default_branch
+github_open_branches_yours
 gh_workflow_run_current_branch
 github-submodule-check-commits = git-helpers/submodule/github-submodule-check-commits
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1601 completions added by installing git-helpers (0 removed, 2946 total)
+1605 completions added by installing git-helpers (0 removed, 2950 total)
 ```
 </details>
 
