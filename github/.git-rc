@@ -19,11 +19,35 @@ defn ghx gh api -X
 defn ghw github-workflows.py
 
 github_url() {
-    gh repo view --json url | jq -r .url
+    gh repo view --json url "$@" | jq -r .url
 }
 export -f github_url
 defn ghu github_url
 defn ghuw github_url
+
+github_branches_yours() {
+  local url
+  url="$(github_url "$@")"
+  if [ -z "$url" ]; then
+    echo "Failed to get GitHub URL" >&2
+    return 1
+  fi
+  echo "$url/branches/yours"
+}
+export -f github_branches_yours
+defn ghby github_branches_yours
+
+github_open_branches_yours() {
+  local url
+  url="$(github_branches_yours "$@")"
+  if [ -z "$url" ]; then
+    echo "Failed to get GitHub URL" >&2
+    return 1
+  fi
+  open "$url"
+}
+export -f github_open_branches_yours
+defn ghoby github_open_branches_yours
 
 github_url_ssh() {
     gh repo view --json sshUrl | jq -r .sshUrl
