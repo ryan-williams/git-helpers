@@ -15,5 +15,5 @@ else
 fi
 
 git ls-files -z --recurse-submodules "$@" | \
-perl -0 -lne 'print if lstat && -f _' | \
+perl -0 -lne 'print if lstat && -f _ && -T _' | \
 xargs -0 perl -pi -e "$sub"
