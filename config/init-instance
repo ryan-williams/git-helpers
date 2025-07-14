@@ -27,13 +27,14 @@ git config --global diff.submodule log                # a.k.a. `gcdsl`
 
 # Set some globally-gitignored patterns
 git global-gitignore \
-  "*.egg-info" \
-  ".ipynb_checkpoints" \
   "__pycache__" \
+  "*.egg-info" \
+  "*.iml" \
+  ".claude" \
+  ".idea" \
+  ".ipynb_checkpoints" \
   ".jupyter" \
   ".python-version" \
-  "*.iml" \
-  ".idea" \
-  "node_modules" \
   ".vite"
+  "node_modules" \
 
