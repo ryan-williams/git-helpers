@@ -11,5 +11,7 @@
   gpq = grep -q
   kl = kill-lines
   pie = sub  # name derived from perl -pi -e
+  remove-trailing-spaces = sub 's/ +$//'
+  rts = remove-trailing-spaces
 
   cs3 = check-s3-buckets
