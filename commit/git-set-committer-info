@@ -33,21 +33,23 @@ done
 
 if [ -n "$commit" ]; then
     source_commit="$commit"
+    fmt=c
 else
     source_commit="HEAD"
+    fmt=a
 fi
 
 env_vars=()
 
 if [ "$set_date" = true ]; then
-    cd="$(git log -1 --format=%cd "$source_commit")"
+    cd="$(git log -1 "--format=%${fmt}d" "$source_commit")"
     env_vars+=("GIT_COMMITTER_DATE=$cd")
     echo "Setting committer date to $cd" >&2
 fi
 
 if [ "$set_name" = true ]; then
-    cn="$(git log -1 --format=%cn "$source_commit")"
-    ce="$(git log -1 --format=%ce "$source_commit")"
+    cn="$(git log -1 "--format=%${fmt}n" "$source_commit")"
+    ce="$(git log -1 "--format=%${fmt}e" "$source_commit")"
     env_vars+=("GIT_COMMITTER_NAME=$cn")
     env_vars+=("GIT_COMMITTER_EMAIL=$ce")
     echo "Setting committer name to $cn <$ce>" >&2
