@@ -58,6 +58,8 @@
   pto = push --tags origin
   pu = push-to-remote-branch upstream
   pub = push-user-branch
+  pbf = push-user-branch -f
+  pbn = push-user-branch -n
   pubf = push-user-branch -f
   pubn = push-user-branch -n
   spf = safe-push-force
