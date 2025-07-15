@@ -8,7 +8,8 @@
   cpc  = cherry-pick --continue
   cph  = cherry-pick-head
   cpn  = cherry-pick -n
-  cppcd = cherry-pick-preserve-commit-date
+  cpi  = cherry-pick-preserve-committer-info
+  cppc = cherry-pick-preserve-committer-info
   cps  = cherry-pick --skip
   cpsh = show-cherry-pick-head
   sch  = show-cherry-pick-head

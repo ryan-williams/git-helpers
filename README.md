@@ -1,5 +1,5 @@
 # git-helpers
-[1,605](#count-completions) Git aliases and scripts.
+[1,607](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,12 +329,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1605 completions added by installing git-helpers
+# 1607 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 248
-# - 4 chars: 650
-# - 5 chars: 303
+# - 4 chars: 652
+# - 5 chars: 304
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1605 new completions:
+1607 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -744,6 +744,7 @@ gcpa       = g cherry-pick --abort
 gcpc       = g cherry-pick --continue
 gcpd       = g config push.default
 gcph       = g cherry-pick-head
+gcpi       = g cherry-pick-preserve-committer-info
 gcpm       = g commit-push -m
 gcpn       = g cherry-pick -n
 gcpp       = g commit-push-parents
@@ -1134,6 +1135,7 @@ grst       = g reflog --stat
 grsu       = g remote-set-url
 grtc       = g root-commits
 grtg       = g register-file-type -g
+grts       = g remove-trailing-spaces
 grud       = g rebase-upstream-diff
 gruh       = g remote-url-to-https
 grvl       = g rev-list
@@ -1353,6 +1355,7 @@ gcpdc      = g config push.default current
 gcpdd      = g config --unset push.default
 gcpdu      = g config push.default upstream
 gcppa      = g commit-push-parents -a
+gcppc      = g cherry-pick-preserve-committer-info
 gcppm      = g commit-push-parents -m
 gcpsh      = g show-cherry-pick-head
 gcrbh      = g commit-rebase-head
@@ -1594,7 +1597,6 @@ gcmtrr     = g commit-tree-reset
 gcococ     = g conflicting-checkout-ours-and-continue
 gcoctc     = g conflicting-checkout-theirs-and-continue
 gcppam     = g commit-push-parents -a -m
-gcppcd     = g cherry-pick-preserve-commit-date
 gdnpgt     = g config --global diff.noprefix true
 gdnpgu     = g config --global --unset diff.noprefix
 gdxcrr     = g diff-x -cr
@@ -1702,7 +1704,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1605 completions added by installing git-helpers (0 removed, 2950 total)
+1607 completions added by installing git-helpers (0 removed, 2952 total)
 ```
 </details>
 

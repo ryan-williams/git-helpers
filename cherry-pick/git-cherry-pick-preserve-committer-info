@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# Cherry-pick one or more commits while preserving the committer information (name/email/datetime).
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 <refspec>" >&2
+  exit 1
+fi
+
+rs="$1"; shift
+
+git log --no-walk --reverse --format=%h "$rs" | \
+while read -r sha; do
+  echo "p $sha"
+  echo "x g rci"
+done | \
+git rebase-noninteractive HEAD
