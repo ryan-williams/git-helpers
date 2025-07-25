@@ -1,5 +1,5 @@
 # git-helpers
-[1,609](#count-completions) Git aliases and scripts.
+[1,616](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,11 +329,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1609 completions added by installing git-helpers
+# 1616 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
-# - 3 chars: 248
-# - 4 chars: 654
+# - 3 chars: 250
+# - 4 chars: 659
 # - 5 chars: 304
 ```
 
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1609 new completions:
+1616 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -473,7 +473,9 @@ ghm        = !git --no-pager log -1 '--format=%h %s'
 gho        = g hash-object
 ghq        = gh run list -s queued
 ghr        = gh run
+ghs        = gh secret list
 ghu        = github_url
+ghv        = gh variable list
 ghw        = github-workflows.py
 ghx        = gh api -X
 gib        = g is-branch
@@ -926,11 +928,16 @@ ghro       = gh_run_open
 ghrp       = github_remote_path
 ghrv       = gh run view
 ghrw       = github_run_list.py -w
+ghsd       = gh secret delete
 ghsh       = g full-hash
+ghss       = gh secret set
 ghsu       = github_url_ssh
 ghub       = github_unprotect_branch
 ghus       = github_url_ssh
 ghuw       = github_url
+ghvd       = gh variable delete
+ghvg       = gh variable get
+ghvs       = gh variable set
 ghwl       = gh workflow list
 ghwr       = gh_workflow_run
 gicc       = g is-clean-cached
@@ -1706,7 +1713,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1609 completions added by installing git-helpers (0 removed, 2954 total)
+1616 completions added by installing git-helpers (0 removed, 2961 total)
 ```
 </details>
 

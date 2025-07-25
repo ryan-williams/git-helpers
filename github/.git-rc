@@ -407,3 +407,12 @@ github_protected_branches() {
 }
 export -f github_protected_branches
 defn ghpbs github_protected_branches
+
+defn ghv gh variable list
+defn ghvd gh variable delete
+defn ghvg gh variable get
+defn ghvs gh variable set
+
+defn ghs gh secret list
+defn ghsd gh secret delete
+defn ghss gh secret set
