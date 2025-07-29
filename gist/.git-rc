@@ -22,3 +22,5 @@ alias ghgu="gh gist edit"
 
 alias gdo="gist-dir -o"
 alias gdop="gist-dir -op"
+
+alias gtid=gist-id
