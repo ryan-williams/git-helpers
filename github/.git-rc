@@ -236,8 +236,19 @@ defn ghlw gh_last_workflow_run
 defn ghlwr gh_last_workflow_run
 
 gh_workflow_run() {
-    name="${1%.yml}"; shift
-    gh workflow run $name.yml "$@"
+    local name="${1%.yml}"; shift
+    local basename="$name.yml"
+    local path=".github/workflows/$basename"
+    if [ ! -f "$path" ]; then
+        local basename2="$name.yaml"
+        local path2=".github/workflows/$basename2"
+        if [ ! -f "$path2" ]; then
+            echo "Workflow file not found at $path or $path2" >&2
+            return 1
+        fi
+        path="$path2"
+    fi
+    gh workflow run "$path" "$@"
 }
 export -f gh_workflow_run
 defn ghwr gh_workflow_run
