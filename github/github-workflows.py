@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import json
+import os
 import re
 import shlex
 from os.path import basename
-from subprocess import check_output, check_call, PIPE, CalledProcessError
+from subprocess import check_output, check_call, CalledProcessError
 from sys import stderr
 
 from click import group, pass_context, option, argument
@@ -103,6 +104,251 @@ def github_workflows_delete(ctx, dry_run, workflow):
         else:
             stderr.write(shlex.join(cmd) + "\n")
             check_call(cmd)
+
+
+@github_workflows.command('run')
+@pass_context
+@option('-O', '--no-open', is_flag=True, help='Do not automatically open the job in browser')
+@option('-r', '--ref', help='Git reference (branch, tag, or SHA) to run workflow from')
+@option('-F', '--field', multiple=True, help='Add a field with a JSON value')
+@option('-f', '--raw-field', multiple=True, help='Add a field with a raw string value')
+@argument('workflow')
+@argument('args', nargs=-1)
+def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
+    """Trigger a workflow and optionally open the job when it starts."""
+    import time
+    import os
+    from pathlib import Path
+
+    repo = ctx.obj
+
+    # Handle workflow name (remove .yml extension if present)
+    workflow_filename = workflow.removesuffix('.yml').removesuffix('.yaml')
+
+    # Check for workflow file
+    workflow_path = None
+    for ext in ['.yml', '.yaml']:
+        path = Path(f'.github/workflows/{workflow_filename}{ext}')
+        if path.exists():
+            workflow_path = str(path)
+            break
+
+    if not workflow_path:
+        stderr.write(f"Workflow file not found at .github/workflows/{workflow_filename}.yml or .yaml\n")
+        exit(1)
+
+    # Read the workflow file to get the actual workflow name
+    workflow_name = None
+    try:
+        import yaml
+        with open(workflow_path, 'r') as f:
+            workflow_data = yaml.safe_load(f)
+            workflow_name = workflow_data.get('name')
+            if workflow_name:
+                stderr.write(f"Workflow name: '{workflow_name}' (from file: {workflow_filename})\n")
+            else:
+                stderr.write(f"Warning: No 'name' field in workflow file\n")
+    except ImportError:
+        stderr.write("Warning: PyYAML not installed, cannot parse workflow file\n")
+    except Exception as e:
+        stderr.write(f"Warning: Failed to parse workflow file: {e}\n")
+
+    # If we couldn't get the name from the file, try to get it from gh workflow list
+    if not workflow_name:
+        try:
+            # List all workflows to find the one matching our filename
+            workflows_data = check_output(['gh', 'workflow', 'list', '--json', 'name,path']).decode()
+            workflows = json.loads(workflows_data)
+            for wf in workflows:
+                if os.path.basename(wf['path']) == os.path.basename(workflow_path):
+                    workflow_name = wf['name']
+                    stderr.write(f"Workflow name: '{workflow_name}' (from gh workflow list)\n")
+                    break
+        except Exception as e:
+            stderr.write(f"Warning: Failed to get workflow name from gh: {e}\n")
+
+    # Final fallback
+    if not workflow_name:
+        workflow_name = workflow_filename
+        stderr.write(f"Warning: Using filename as workflow name: {workflow_name}\n")
+
+    # If no ref specified, try to match current local ref with remote
+    if not ref:
+        try:
+            # Get current branch
+            current_branch = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip()
+
+            # Get remote branches that match
+            remote_refs = check_output(['git', 'branch', '-r', '--format=%(refname:short)']).decode().strip().split('\n')
+            matching_refs = [r for r in remote_refs if r.endswith(f'/{current_branch}')]
+
+            if len(matching_refs) == 1:
+                # Extract the actual branch name from the remote ref
+                remote_ref = matching_refs[0]
+                # Split "remote/branch" and take the branch part
+                ref = remote_ref.split('/', 1)[1] if '/' in remote_ref else remote_ref
+                stderr.write(f"Using ref: {ref} (from remote {remote_ref})\n")
+            elif len(matching_refs) > 1:
+                stderr.write(f"Error: Multiple remote refs match current branch '{current_branch}':\n")
+                for r in matching_refs:
+                    stderr.write(f"  - {r}\n")
+                stderr.write("Please specify --ref explicitly\n")
+                exit(1)
+            elif current_branch != 'HEAD':
+                # No remote matches, but we're on a real branch - use it anyway
+                ref = current_branch
+                stderr.write(f"Using ref: {ref} (current branch, no remote match)\n")
+        except:
+            # If anything fails, just let gh use its default
+            pass
+
+    # Get timestamp before triggering (more reliable than checking existing runs)
+    import datetime
+    trigger_time = datetime.datetime.now(datetime.timezone.utc)
+
+    # Get workflow ID for more reliable matching
+    workflow_id = None
+    try:
+        workflows_data = check_output(['gh', 'api', f'/repos/{repo}/actions/workflows']).decode()
+        workflows = json.loads(workflows_data)['workflows']
+        for wf in workflows:
+            if os.path.basename(wf['path']) == os.path.basename(workflow_path):
+                workflow_id = wf['id']
+                stderr.write(f"Workflow ID: {workflow_id} (name: '{workflow_name}')\n")
+                break
+    except Exception as e:
+        stderr.write(f"Warning: Could not get workflow ID: {e}\n")
+
+    # Build command with options
+    workflow_file = os.path.basename(workflow_path)
+    cmd = ['gh', 'workflow', 'run', workflow_file]
+
+    # Add ref if specified
+    if ref:
+        cmd.extend(['--ref', ref])
+
+    # Add field options
+    for f in field:
+        cmd.extend(['-F', f])
+    for f in raw_field:
+        cmd.extend(['-f', f])
+
+    # Add any remaining args
+    cmd.extend(list(args))
+
+    stderr.write(f"Running: {shlex.join(cmd)}\n")
+    check_call(cmd)
+
+    if no_open:
+        return
+
+    # Poll for new workflow run
+    stderr.write("Waiting for workflow to start")
+    new_run_id = None
+    for attempt in range(30):
+        time.sleep(2)
+        stderr.write(".")
+        stderr.flush()
+
+        try:
+            # Get runs for this specific workflow file
+            if workflow_id:
+                # Use workflow ID if we have it (most reliable)
+                runs_data = check_output([
+                    'gh', 'api', f'/repos/{repo}/actions/workflows/{workflow_id}/runs',
+                    '-q', '.workflow_runs[:10]'
+                ]).decode()
+            else:
+                # Fallback to listing by workflow file
+                runs_data = check_output([
+                    'gh', 'run', 'list',
+                    '-w', os.path.basename(workflow_path),
+                    '-L', '10',
+                    '--json', 'databaseId,workflowName,status,headBranch,createdAt,event'
+                ]).decode()
+
+            runs = json.loads(runs_data)
+
+            # Look for a run created after we triggered it
+            for run in runs:
+                # Parse creation time
+                created_at = run.get('created_at') or run.get('createdAt')
+                if not created_at:
+                    continue
+
+                run_time = datetime.datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+
+                # Check if this run was created after we triggered
+                if run_time < trigger_time:
+                    continue
+
+                # Check branch if specified
+                run_branch = run.get('head_branch') or run.get('headBranch')
+                if ref and run_branch != ref:
+                    continue
+
+                # Check if it's a workflow_dispatch event (what we triggered)
+                if run.get('event') == 'workflow_dispatch' or attempt > 10:
+                    new_run_id = run.get('id') or run.get('databaseId')
+                    stderr.write(f"\nFound new workflow run: {new_run_id} (branch: {run_branch}, created: {created_at})\n")
+                    break
+
+            if new_run_id:
+                break
+
+        except Exception as e:
+            if attempt == 0:
+                stderr.write(f"\nWarning: Failed to check runs: {e}\n")
+            pass
+
+    if not new_run_id:
+        stderr.write("\nTimed out waiting for workflow to start\n")
+        exit(1)
+
+    # Poll for job to start
+    stderr.write("Waiting for job to start")
+    job_started = False
+    for attempt in range(30):
+        time.sleep(1)
+        stderr.write(".")
+        stderr.flush()
+
+        try:
+            job_data = check_output([
+                'gh', 'run', 'view', str(new_run_id),
+                '--json', 'jobs'
+            ]).decode()
+            jobs = json.loads(job_data).get('jobs', [])
+
+            if len(jobs) > 0:
+                job_started = True
+                break
+        except:
+            pass
+
+    stderr.write("\n")
+
+    if job_started:
+        stderr.write("Job started, opening...\n")
+        # Get the job URL and open it
+        try:
+            run_data = check_output([
+                'gh', 'run', 'view', str(new_run_id),
+                '--json', 'databaseId,jobs'
+            ]).decode()
+            data = json.loads(run_data)
+            if data['jobs']:
+                job_url = data['jobs'][-1]['url']  # Get the last (most recent) job
+                check_call(['open', job_url])
+            else:
+                raise Exception("No jobs found")
+        except Exception as e:
+            stderr.write(f"Failed to open job: {e}\n")
+            # Fallback to opening the run
+            check_call(['gh', 'run', 'view', '--web', str(new_run_id)])
+    else:
+        stderr.write("Job didn't start in time, opening workflow run instead...\n")
+        check_call(['gh', 'run', 'view', '--web', str(new_run_id)])
 
 
 if __name__ == '__main__':
