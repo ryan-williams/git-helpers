@@ -133,8 +133,28 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
             workflow_path = str(path)
             break
 
+    # If exact match not found, try substring matching
     if not workflow_path:
-        stderr.write(f"Workflow file not found at .github/workflows/{workflow_filename}.yml or .yaml\n")
+        workflows_dir = Path('.github/workflows')
+        if workflows_dir.exists():
+            # Find all workflow files that contain the substring
+            matching_files = []
+            for file in workflows_dir.iterdir():
+                if file.suffix in ['.yml', '.yaml'] and workflow_filename.lower() in file.stem.lower():
+                    matching_files.append(file)
+
+            if len(matching_files) == 1:
+                workflow_path = str(matching_files[0])
+                stderr.write(f"Found workflow by substring match: {matching_files[0].name}\n")
+            elif len(matching_files) > 1:
+                stderr.write(f"Error: Multiple workflows match '{workflow_filename}':\n")
+                for f in sorted(matching_files):
+                    stderr.write(f"  - {f.name}\n")
+                stderr.write("Please be more specific.\n")
+                exit(1)
+
+    if not workflow_path:
+        stderr.write(f"Workflow file not found: no files in .github/workflows/ match '{workflow_filename}'\n")
         exit(1)
 
     # Read the workflow file to get the actual workflow name
