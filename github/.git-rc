@@ -452,6 +452,12 @@ defn ghvd gh variable delete
 defn ghvg gh variable get
 defn ghvs gh variable set
 
+gh_variables_eval() {
+  ghv --json name,value | jr '.[] | .name+"="+.value'
+}
+export -f gh_variables_eval
+defn ghve gh_variables_eval
+
 defn ghs gh secret list
 defn ghsd gh secret delete
 defn ghss gh secret set
