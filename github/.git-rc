@@ -250,6 +250,50 @@ defn ghq gh run list -s queued
 defn ghip gh run list -s in_progress
 defn ghwip gh run list -s in_progress
 
+gh_runners_offline_ids() {
+  local repo
+  repo="$(github_remote_path)"
+  if [ -z "$repo" ]; then
+    echo "Failed to determine GitHub repository path" >&2
+    return 1
+  fi
+  gh api repos/$repo/actions/runners | jr '.runners[] | select(.status == "offline").id' | sort -u
+}
+export -f gh_runners_offline_ids
+defn ghroi gh_runners_offline_ids
+
+gh_runners_rm() {
+  local repo
+  repo="$(github_remote_path)"
+  if [ -z "$repo" ]; then
+    echo "Failed to determine GitHub repository path" >&2
+    return 1
+  fi
+  local cmd
+  for id in "$@"; do
+    cmd=(gh api -X DELETE "/repos/$repo/actions/runners/$id")
+    echo "Running: ${cmd[*]}" >&2
+    if ! "${cmd[@]}"; then
+      echo "Failed to remove runner with ID $id" >&2
+      return 1
+    fi
+  done
+}
+export -f gh_runners_rm
+defn ghrrm gh_runners_rm
+
+gh_runners_ls() {
+  local repo
+  repo="$(github_remote_path)"
+  if [ -z "$repo" ]; then
+    echo "Failed to determine GitHub repository path" >&2
+    return 1
+  fi
+  gh api "repos/$repo/actions/runners" | jr '.runners[] | {id, name, status, busy, labels: .labels[].name}'
+}
+export -f gh_runners_ls
+defn ghrls gh_runners_ls
+
 gh_open_last() {
     run="$(gh_last_workflow_run)"
     gh run view --web $run
