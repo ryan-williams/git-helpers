@@ -1,5 +1,5 @@
 # git-helpers
-[1,616](#count-completions) Git aliases and scripts.
+[1,626](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,12 +329,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1616 completions added by installing git-helpers
+# 1626 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 250
-# - 4 chars: 659
-# - 5 chars: 304
+# - 4 chars: 662
+# - 5 chars: 307
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1616 new completions:
+1626 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -659,6 +659,7 @@ gbdf       = g branch -D
 gbeb       = git bisect-earliest-bad
 gber       = g be -r
 gbfc       = g branch-reset -c
+gbfp       = git_branch_force_parent
 gbhi       = g blob-hash -i
 gbhs       = g blob-hash -s
 gblg       = git bisect-latest-good
@@ -936,10 +937,11 @@ ghub       = github_unprotect_branch
 ghus       = github_url_ssh
 ghuw       = github_url
 ghvd       = gh variable delete
+ghve       = gh_variables_eval
 ghvg       = gh variable get
 ghvs       = gh variable set
 ghwl       = gh workflow list
-ghwr       = gh_workflow_run
+ghwr       = github-workflows.py run
 gicc       = g is-clean-cached
 gidc       = g is-dirty-cached
 gifa       = g config --global --add include.path
@@ -1263,6 +1265,7 @@ gszh       = g size -H
 gszs       = g sizes
 gtch       = g commit --amend --no-edit
 gtfi       = g tree-full-id
+gtid       = gist-id
 gtpa       = g tag --points-at
 gtr0       = g empty-tree
 gtrh       = g ls-tree HEAD
@@ -1433,6 +1436,9 @@ ghrbb      = github_run_list.py -b
 ghri1      = github_run_list.py -iL1
 ghrib      = github_run_list.py -ib
 ghrlh      = gh run list --help
+ghrls      = gh_runners_ls
+ghroi      = gh_runners_offline_ids
+ghrrm      = gh_runners_rm
 ghrvh      = gh run view --help
 ghrvj      = gh run view --job
 ghrvl      = gh run view --log
@@ -1660,6 +1666,8 @@ gh_run_open
 git_set_sha = export sha="$(git sha)"
 clone_org.py = git-helpers/github/clone_org.py
 gh_open_last
+gh_runners_ls
+gh_runners_rm
 git_dir_curry = <exported_function_name> <git-git-dir_param1> <git-git-dir_param2> ...
 gitlab_remote = git-find-only-remote gitlab.com
 hash-files.py = git-helpers/github/hash-files.py  # Standalone script that mimics GitHub Actions' hashFiles helper
@@ -1671,7 +1679,6 @@ github-web-url = git-helpers/submodule/github-web-url
 github_url_ssh = gh repo view --json sshUrl | jq -r .sshUrl
 gitlab_url_ssh = gh repo view --json sshUrl | jq -r .sshUrl
 gh_run_view_url = ghrv "$@" --json url | jr .url
-gh_workflow_run
 gh_run_view_jobs = gh run view "$@" --json jobs
 git_clone_and_cd
 git_expand_alias = [-v] <alias>
@@ -1679,6 +1686,7 @@ github_maybe_api
 gitlab_maybe_api
 gitlab_open_jobs
 parse-github-url = git-helpers/github/parse-github-url
+gh_variables_eval = ghv --json name,value | jr '.[] | .name+"="+.value'
 github_owner_name = [remote name]
 github_remote_pathNo manual entry for git-remote-path
  = git remote-path "$@" "$(github_default_remote)"
@@ -1696,10 +1704,12 @@ pop_commit_from_file = git-helpers/cherry-pick/pop_commit_from_file  # Cherry-pi
 github_branches_yours
 github_default_remote
 gitlab_protect_branch
+gh_runners_offline_ids
 git_open_web_branch.py = git-helpers/remote/git_open_web_branch.py
 github-commit-api-urls = git-helpers/submodule/github-commit-api-urls
 github-commit-web-urls = git-helpers/submodule/github-commit-web-urls
 github_open_web_commit = [commit]
+git_branch_force_parent = <branch>
 github_unprotect_branch
 gitlab_unprotect_branch
 github_protected_branches = [remote]
@@ -1713,7 +1723,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1616 completions added by installing git-helpers (0 removed, 2961 total)
+1626 completions added by installing git-helpers (0 removed, 2971 total)
 ```
 </details>
 
