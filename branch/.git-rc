@@ -11,6 +11,18 @@ alias gbf="g bf"
 alias gbfc="g bfc"
 alias gbc="g bc"
 
+# Git branch force to parent - move branch to point to HEAD^ (parent commit)
+git_branch_force_parent() {
+  if [ $# -ne 1 ]; then
+    echo "Usage: gbfp <branch>" >&2
+    echo "  Moves branch to point to HEAD^ (parent commit)" >&2
+    return 1
+  fi
+  gbf "$1" HEAD^
+}
+export -f git_branch_force_parent
+alias gbfp=git_branch_force_parent
+
 alias gbpa="g bpa"
 alias gbpar="g bpar"
 
