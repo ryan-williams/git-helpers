@@ -6,7 +6,9 @@
   rsp = reset HEAD^
   rsp2 = reset HEAD~2
   rsp3 = reset HEAD~3
-  rss = !git reset . && git submodule update --recursive && git status
+  rss = reset --soft
+  rssm = !git reset . && git submodule update --recursive && git status
+  rssp = reset --soft HEAD^
   rp = reset -p
   rh = reset-hard
   rh1 = reset-hard HEAD@{1}

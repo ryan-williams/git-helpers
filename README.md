@@ -1,5 +1,5 @@
 # git-helpers
-[1,626](#count-completions) Git aliases and scripts.
+[1,628](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,12 +329,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1626 completions added by installing git-helpers
+# 1628 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 250
 # - 4 chars: 662
-# - 5 chars: 307
+# - 5 chars: 309
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1626 new completions:
+1628 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1141,7 +1141,7 @@ grs.       = g reset .
 grsf       = g checkout HEAD --
 grsh       = g remote-set-head
 grsp       = g reset HEAD^
-grss       = !git reset . && git submodule update --recursive && git status
+grss       = g reset --soft
 grst       = g reflog --stat
 grsu       = g remote-set-url
 grtc       = g root-commits
@@ -1522,6 +1522,8 @@ grsha      = g remote-set-head-auto
 grshw      = g remote show
 grsp2      = g reset HEAD~2
 grsp3      = g reset HEAD~3
+grssm      = !git reset . && git submodule update --recursive && git status
+grssp      = g reset --soft HEAD^
 grtch      = g root-commits HEAD
 grvne      = g revert --no-edit
 grvph      = g rev-parse HEAD
@@ -1723,7 +1725,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1626 completions added by installing git-helpers (0 removed, 2971 total)
+1628 completions added by installing git-helpers (0 removed, 2973 total)
 ```
 </details>
 
