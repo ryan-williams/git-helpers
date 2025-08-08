@@ -2,14 +2,31 @@
 
 plan_file=
 dry_run=
-while getopts "f:n" opt; do
-  case "$opt" in
-    f) plan_file="$OPTARG" ;;
-    n) dry_run=-n ;;
-    *) exit 1 ;;
+# Process only our script options, stop at first non-option or unknown option
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -f)
+      plan_file="$2"
+      shift 2
+      ;;
+    -n)
+      dry_run=-n
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      # Unknown option, assume it's for git-rebase
+      break
+      ;;
+    *)
+      # Non-option argument, pass to git-rebase
+      break
+      ;;
   esac
 done
-shift $((OPTIND-1))
 
 cmd=(git rebase -i "$@")
 
