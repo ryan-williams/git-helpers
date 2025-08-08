@@ -89,6 +89,7 @@ github_default_remote() {
   fi
   echo "$remote"
 }
+export -f github_default_remote
 defn ghdr github_default_remote
 defn ghrn github_default_remote
 
