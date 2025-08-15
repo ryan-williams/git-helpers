@@ -229,6 +229,12 @@ gh_run_open() {
 export -f gh_run_open
 defn ghro gh_run_open
 
+gh_repo_description() {
+  gh repo view --json description "$@" | jq -r .description
+}
+export -f gh_repo_description
+defn ghrd gh_repo_description
+
 gh_last_workflow_run() {
     gh run list -L 1 --json databaseId | jq -r .[0].databaseId
 }
