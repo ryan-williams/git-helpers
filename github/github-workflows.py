@@ -125,17 +125,24 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
     # Handle workflow name (remove .yml extension if present)
     workflow_filename = workflow.removesuffix('.yml').removesuffix('.yaml')
 
+    # Get git root directory
+    try:
+        git_root = check_output(['git', 'rev-parse', '--show-toplevel']).decode().strip()
+    except CalledProcessError:
+        stderr.write("Error: Not in a git repository\n")
+        exit(1)
+
     # Check for workflow file
     workflow_path = None
     for ext in ['.yml', '.yaml']:
-        path = Path(f'.github/workflows/{workflow_filename}{ext}')
+        path = Path(git_root) / f'.github/workflows/{workflow_filename}{ext}'
         if path.exists():
             workflow_path = str(path)
             break
 
     # If exact match not found, try substring matching
     if not workflow_path:
-        workflows_dir = Path('.github/workflows')
+        workflows_dir = Path(git_root) / '.github/workflows'
         if workflows_dir.exists():
             # Find all workflow files that contain the substring
             matching_files = []
