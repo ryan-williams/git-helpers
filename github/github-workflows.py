@@ -202,8 +202,9 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
     # If no ref specified, try to match current local ref with remote
     if not ref:
         try:
-            # Get current branch
+            # Get current branch and SHA
             current_branch = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip()
+            current_sha = check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
 
             # Get remote branches that match
             remote_refs = check_output(['git', 'branch', '-r', '--format=%(refname:short)']).decode().strip().split('\n')
@@ -216,11 +217,35 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
                 ref = remote_ref.split('/', 1)[1] if '/' in remote_ref else remote_ref
                 stderr.write(f"Using ref: {ref} (from remote {remote_ref})\n")
             elif len(matching_refs) > 1:
-                stderr.write(f"Error: Multiple remote refs match current branch '{current_branch}':\n")
-                for r in matching_refs:
-                    stderr.write(f"  - {r}\n")
-                stderr.write("Please specify --ref explicitly\n")
-                exit(1)
+                # Multiple matches - check which one points to the same SHA
+                matching_sha_refs = []
+                for remote_ref in matching_refs:
+                    try:
+                        remote_sha = check_output(['git', 'rev-parse', remote_ref]).decode().strip()
+                        if remote_sha == current_sha:
+                            matching_sha_refs.append(remote_ref)
+                    except:
+                        pass
+
+                if len(matching_sha_refs) == 1:
+                    # Exactly one remote ref points to the same SHA
+                    remote_ref = matching_sha_refs[0]
+                    ref = remote_ref.split('/', 1)[1] if '/' in remote_ref else remote_ref
+                    stderr.write(f"Using ref: {ref} (from remote {remote_ref} - matches current SHA)\n")
+                elif len(matching_sha_refs) > 1:
+                    # Multiple refs point to the same SHA - still ambiguous
+                    stderr.write(f"Error: Multiple remote refs match current branch '{current_branch}' and SHA:\n")
+                    for r in matching_sha_refs:
+                        stderr.write(f"  - {r}\n")
+                    stderr.write("Please specify --ref explicitly\n")
+                    exit(1)
+                else:
+                    # No remote refs match the current SHA
+                    stderr.write(f"Warning: Multiple remote refs match branch name '{current_branch}' but none match current SHA:\n")
+                    for r in matching_refs:
+                        stderr.write(f"  - {r}\n")
+                    stderr.write("Using local branch name as ref\n")
+                    ref = current_branch
             elif current_branch != 'HEAD':
                 # No remote matches, but we're on a real branch - use it anyway
                 ref = current_branch
