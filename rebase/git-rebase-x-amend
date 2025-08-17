@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#
+# Run git rebase with -x flag, automatically amending any changes made by the command.
+#
+# Usage: git rebase-x-amend <command> <rebase-args>
+#
+# Example:
+#   git rebase-x-amend 'update-readme.sh -D' gh/main
+#   git rebase-x-amend 'ruff format .' HEAD~5
+#
+# This will run the command on each commit and automatically amend any changes.
+
+set -e
+
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 <command> <rebase-args...>" >&2
+  echo "Example: $0 'ruff format .' HEAD~5" >&2
+  exit 1
+fi
+
+command="$1"
+shift
+
+# Use git-rebase-exec-step with -a flag to amend changes
+exec_cmd="git-rebase-exec-step -a $command"
+
+# Run the rebase with the exec command
+echo "Starting rebase with automatic amending for: $command" >&2
+git rebase -x "$exec_cmd" "$@"
