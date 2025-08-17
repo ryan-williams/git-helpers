@@ -109,6 +109,7 @@ export ph=HEAD^..HEAD
 export rh=refs/heads
 
 # Reflog history aliases
+export h0="HEAD"
 export h1="HEAD@{1}"
 export h2="HEAD@{2}"
 export h3="HEAD@{3}"

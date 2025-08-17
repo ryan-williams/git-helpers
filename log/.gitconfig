@@ -8,8 +8,15 @@
   bhs = blob-hash -s
   blob-hash = blob-sha
   body = !git --no-pager log -1 --format=%B
+  b0 = body HEAD
+  b1 = body HEAD@{1}
+  b2 = body HEAD@{2}
+  b3 = body HEAD@{3}
   by = body
+  by0 = body HEAD
   by1 = body HEAD@{1}
+  by2 = body HEAD@{2}
+  by3 = body HEAD@{3}
   byh1 = body HEAD@{1}
   byp = body HEAD^
   cdi1 = !git --no-pager log --format=%cd --date=iso -1
