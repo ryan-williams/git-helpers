@@ -8,8 +8,6 @@ from os.path import basename
 from subprocess import check_output, check_call, CalledProcessError
 from sys import stderr
 
-# Add parent directory to path to import util modules
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from util.branch_resolution import resolve_remote_ref
 
 from click import group, pass_context, option, argument
@@ -137,33 +135,40 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
         stderr.write("Error: Not in a git repository\n")
         exit(1)
 
-    # Check for workflow file
+    # Get list of git-tracked workflow files
+    try:
+        tracked_files = check_output(['git', 'ls-tree', '-r', '--name-only', 'HEAD', '.github/workflows/']).decode().strip().split('\n')
+        tracked_files = [f for f in tracked_files if f]  # Remove empty strings
+    except CalledProcessError:
+        tracked_files = []
+
+    # Check for exact workflow file match (only among tracked files)
     workflow_path = None
     for ext in ['.yml', '.yaml']:
-        path = Path(git_root) / f'.github/workflows/{workflow_filename}{ext}'
-        if path.exists():
-            workflow_path = str(path)
+        relative_path = f'.github/workflows/{workflow_filename}{ext}'
+        if relative_path in tracked_files:
+            workflow_path = str(Path(git_root) / relative_path)
             break
 
-    # If exact match not found, try substring matching
+    # If exact match not found, try substring matching (only among tracked files)
     if not workflow_path:
-        workflows_dir = Path(git_root) / '.github/workflows'
-        if workflows_dir.exists():
-            # Find all workflow files that contain the substring
-            matching_files = []
-            for file in workflows_dir.iterdir():
-                if file.suffix in ['.yml', '.yaml'] and workflow_filename.lower() in file.stem.lower():
-                    matching_files.append(file)
+        # Find all tracked workflow files that contain the substring
+        matching_files = []
+        for file in tracked_files:
+            filename = os.path.basename(file)
+            stem = os.path.splitext(filename)[0]
+            if workflow_filename.lower() in stem.lower():
+                matching_files.append(file)
 
-            if len(matching_files) == 1:
-                workflow_path = str(matching_files[0])
-                stderr.write(f"Found workflow by substring match: {matching_files[0].name}\n")
-            elif len(matching_files) > 1:
-                stderr.write(f"Error: Multiple workflows match '{workflow_filename}':\n")
-                for f in sorted(matching_files):
-                    stderr.write(f"  - {f.name}\n")
-                stderr.write("Please be more specific.\n")
-                exit(1)
+        if len(matching_files) == 1:
+            workflow_path = str(Path(git_root) / matching_files[0])
+            stderr.write(f"Found workflow by substring match: {os.path.basename(matching_files[0])}\n")
+        elif len(matching_files) > 1:
+            stderr.write(f"Error: Multiple workflows match '{workflow_filename}':\n")
+            for f in sorted(matching_files):
+                stderr.write(f"  - {os.path.basename(f)}\n")
+            stderr.write("Please be more specific.\n")
+            exit(1)
 
     if not workflow_path:
         stderr.write(f"Workflow file not found: no files in .github/workflows/ match '{workflow_filename}'\n")
