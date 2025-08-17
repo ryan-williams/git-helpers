@@ -36,7 +36,22 @@ Source [`.git-rc`](./.git-rc) in your `.bashrc`:
 echo ". $PWD/.git-rc" >> ~/.bashrc  # Configure new shells to load `git-helpers`
 . .bashrc                           # re-"source" your .bashrc, for immediate effect in existing shells
 ```
-This will load all aliases from this repo, and add relevant directories to `$PATH`. `pip install -r requirements.txt` also ensures `python-dateutil` is installed available, which some scripts here require.
+This will load all aliases from this repo, and add relevant directories to `$PATH`.
+
+### Python modules
+Some tools (e.g. [`github-pr.py`]) use shared Python utilities.Install Python module support with [`install.sh`]:
+```bash
+~/.rc/git/install.sh
+```
+
+which just wraps:
+```bash
+python -c "import site,os; os.symlink('$HOME/.rc/git-helpers.pth', os.path.join(site.getsitepackages()[0], 'git-helpers.pth'))"
+```
+
+`pip install -r requirements.txt` also ensures `python-dateutil` is installed available, which some scripts here require.
+
+All these steps only need to be performed once (per machine).
 
 ## Commands <a id="commands"></a>
 Some aliases/commands I use frequently:
@@ -1825,3 +1840,6 @@ history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 [`git-show-rebase-head`]: rebase/git-show-rebase-head
 [`git-show-cherry-pick-head`]: cherry-pick/git-show-cherry-pick-head
 [`git-set-attr-type.py`]: config/git-set-attr-type.py
+
+[`github-pr.py`]: github/github-pr.py
+[`install.sh`]: install.sh
