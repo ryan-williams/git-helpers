@@ -1,5 +1,5 @@
 # git-helpers
-[1,631](#count-completions) Git aliases and scripts.
+[1,633](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,12 +329,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1631 completions added by installing git-helpers
+# 1633 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 250
 # - 4 chars: 663
-# - 5 chars: 309
+# - 5 chars: 310
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1631 new completions:
+1633 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -915,7 +915,7 @@ ghol       = gh_open_last
 ghon       = github_owner_name
 ghor       = github_open_web_ref
 ghos       = github_open_settings
-ghow       = gh repo view --web
+ghow       = github-open-web.py
 ghpj       = gh api -H "Accept: application/vnd.github+json"
 ghpx       = gh api -X
 ghr1       = github_run_list.py -L1
@@ -1431,6 +1431,7 @@ ghjis      = gh_job_ids
 ghlwr      = gh_last_workflow_run
 ghoby      = github_open_branches_yours
 ghowb      = gh repo view --web -b
+ghowd      = github-open-web.py -d
 ghpbs      = github_protected_branches
 ghr1b      = github_run_list.py -L1 -b
 ghraj      = gh_run_and_job
@@ -1692,6 +1693,7 @@ gitlab_open_jobs
 parse-github-url = git-helpers/github/parse-github-url
 gh_variables_eval = ghv --json name,value | jr '.[] | .name+"="+.value'
 github_owner_name = [remote name]
+github-open-web.py = git-helpers/github/github-open-web.py  # Add parent directory to path to import util modules
 github_remote_pathNo manual entry for git-remote-path
  = git remote-path "$@" "$(github_default_remote)"
 github_run_list.py = git-helpers/github/github_run_list.py  # Wrapper around `gh run list`, supporting:
@@ -1699,7 +1701,7 @@ gitlab_remote_pathNo manual entry for git-remote-path
  = git remote-path "$@" "$(gitlab_remote)"
 init-mirror-remote = git-helpers/remote/init-mirror-remote
 gh_repo_description = gh repo view --json description "$@" | jq -r .description
-github-workflows.py = git-helpers/github/github-workflows.py
+github-workflows.py = git-helpers/github/github-workflows.py  # Add parent directory to path to import util modules
 github_open_actions = open "$(github_url)/actions"
 github_open_web_ref = [ref]
 gh_last_workflow_run = gh run list -L 1 --json databaseId | jq -r .[0].databaseId
@@ -1728,7 +1730,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1631 completions added by installing git-helpers (0 removed, 2976 total)
+1633 completions added by installing git-helpers (0 removed, 2978 total)
 ```
 </details>
 
