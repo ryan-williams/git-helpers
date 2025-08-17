@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# Remove trailing spaces from Git-tracked files
+#
+# $ git remove-trailing-spaces         # entire repo
+# $ git remove-trailing-spaces path/   # specific path
+
+exec git sub 's/ +$//' "$@"

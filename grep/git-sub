@@ -3,17 +3,38 @@
 # Apply a perl-style substitution to all (or some) Git-tracked files
 #
 # $ git sub 's/v1/v2/g'  # replace "v1" with "v2" in entire repo
+# $ git sub 's/v1/v2/g' path/  # replace in specific path
+# $ git sub path/ 's/v1/v2/g'  # alternative order
 #
 # Excludes symbolic links
 
 if [ $# -eq 0 ]; then
   echo "Usage: $0 [git ls-files args...] <perl expr>" >&2
   exit 1
-else
-  sub="${!#}"
-  set -- "${@:1:(($#-1))}"
 fi
 
-git ls-files -z --recurse-submodules "$@" | \
+# Try to determine which argument is the perl expression
+# Look for an argument that starts with 's/' or contains regex-like patterns
+sub=""
+args=()
+
+for arg in "$@"; do
+  if [[ -z "$sub" && ( "$arg" =~ ^s[/|#:] || "$arg" =~ ^[/|#:] || "$arg" =~ ^\'s[/|#:] ) ]]; then
+    # This looks like a perl substitution expression
+    sub="$arg"
+  else
+    # This is a path or other argument
+    args+=("$arg")
+  fi
+done
+
+# If no substitution found, assume last arg is the substitution (backward compatibility)
+if [ -z "$sub" ]; then
+  sub="${!#}"
+  set -- "${@:1:(($#-1))}"
+  args=("$@")
+fi
+
+git ls-files -z --recurse-submodules "${args[@]}" | \
 perl -0 -lne 'print if lstat && -f _ && -T _' | \
 xargs -0 perl -pi -e "$sub"
