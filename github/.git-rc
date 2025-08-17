@@ -469,3 +469,7 @@ defn ghve gh_variables_eval
 defn ghs gh secret list
 defn ghsd gh secret delete
 defn ghss gh secret set
+
+alias ghpr='gh pr'
+alias prv='gh pr view'
+alias pre='gh pr edit'

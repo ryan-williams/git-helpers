@@ -1,5 +1,5 @@
 # git-helpers
-[1,636](#count-completions) Git aliases and scripts.
+[1,639](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,11 +329,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1636 completions added by installing git-helpers
+# 1639 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 250
-# - 4 chars: 664
+# - 4 chars: 665
 # - 5 chars: 312
 ```
 
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1636 new completions:
+1639 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -623,6 +623,8 @@ lfl        = lf ls-files
 lfp        = lf push
 lfs        = lf status
 pgr        = parse-github-url
+pre        = gh pr edit
+prv        = gh pr view
 rbo        = g rebase --onto
 rts        = g remove-trailing-spaces
 gabd       = g patch-branch-diff
@@ -917,6 +919,7 @@ ghor       = github_open_web_ref
 ghos       = github_open_settings
 ghow       = github-open-web.py
 ghpj       = gh api -H "Accept: application/vnd.github+json"
+ghpr       = gh pr
 ghpx       = gh api -X
 ghr1       = github_run_list.py -L1
 ghra       = github_run_list.py -a
@@ -1733,7 +1736,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1636 completions added by installing git-helpers (0 removed, 2981 total)
+1639 completions added by installing git-helpers (0 removed, 2984 total)
 ```
 </details>
 
