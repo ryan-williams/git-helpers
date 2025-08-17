@@ -1,5 +1,5 @@
 # git-helpers
-[1,648](#count-completions) Git aliases and scripts.
+[1,660](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,12 +329,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1648 completions added by installing git-helpers
+# 1660 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 254
 # - 4 chars: 668
-# - 5 chars: 313
+# - 5 chars: 320
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1648 new completions:
+1660 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -926,7 +926,7 @@ ghor       = github_open_web_ref
 ghos       = github_open_settings
 ghow       = github-open-web.py
 ghpj       = gh api -H "Accept: application/vnd.github+json"
-ghpr       = gh pr
+ghpr       = github-pr.py
 ghpx       = gh api -X
 ghr1       = github_run_list.py -L1
 ghra       = github_run_list.py -a
@@ -1446,6 +1446,13 @@ ghowb      = gh repo view --web -b
 ghowd      = github-open-web.py -d
 ghowg      = github-open-web.py -g
 ghpbs      = github_protected_branches
+ghprc      = github-pr.py clone
+ghprd      = github-pr.py diff
+ghpri      = github-pr.py init
+ghprl      = github-pr.py pull
+ghpro      = github-pr.py open
+ghprp      = github-pr.py push
+ghprr      = gh pr
 ghr1b      = github_run_list.py -L1 -b
 ghraj      = gh_run_and_job
 ghrbb      = github_run_list.py -b
@@ -1643,6 +1650,9 @@ ggracl     = g graph -ac -l
 gh_job     = gh_run_and_job "$@" | jq ".job"
 ghblrs     = g head-before-last-rebase %h
 ghossa     = github_open_settings_secrets_actions
+ghprpF     = github-pr.py push -F
+ghprpg     = github-pr.py push -g
+ghprpo     = github-pr.py push -o
 ghri1b     = github_run_list.py -iL1 -b
 ghrvjs     = gh_run_view_jobs
 ghrvlj     = gh run view --log --job
@@ -1685,6 +1695,7 @@ gh_run_open
 git_set_sha = export sha="$(git sha)"
 clone_org.py = git-helpers/github/clone_org.py
 gh_open_last
+github-pr.py = git-helpers/github/github-pr.py  # Helper for printing to stderr
 gh_runners_ls
 gh_runners_rm
 git_dir_curry = <exported_function_name> <git-git-dir_param1> <git-git-dir_param2> ...
@@ -1701,6 +1712,7 @@ gh_run_view_url = ghrv "$@" --json url | jr .url
 gh_run_view_jobs = gh run view "$@" --json jobs
 git_clone_and_cd
 git_expand_alias = [-v] <alias>
+github-pr.py.bak = git-helpers/github/github-pr.py.bak  # Helper for printing to stderr
 github_maybe_api
 gitlab_maybe_api
 gitlab_open_jobs
@@ -1744,7 +1756,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1648 completions added by installing git-helpers (0 removed, 2993 total)
+1660 completions added by installing git-helpers (0 removed, 3005 total)
 ```
 </details>
 

@@ -471,6 +471,16 @@ defn ghs gh secret list
 defn ghsd gh secret delete
 defn ghss gh secret set
 
-alias ghpr='gh pr'
+alias ghprr='gh pr'                   # raw gh pr command
+alias ghpr='github-pr.py'             # main github-pr.py command
+alias ghpri='github-pr.py init'       # initialize new PR draft
+alias ghpro='github-pr.py open'       # create/open new PR from draft
+alias ghprc='github-pr.py clone'      # clone existing PR
+alias ghprp='github-pr.py push'       # push to PR (auto-adds footer if gist exists)
+alias ghprl='github-pr.py pull'       # pull from PR (and optionally push back)
+alias ghprpg='github-pr.py push -g'   # push with gist backup (auto-footer)
+alias ghprpo='github-pr.py push -o'   # push and open in browser
+alias ghprpF='github-pr.py push -F'   # push WITHOUT footer
+alias ghprd='github-pr.py diff'       # diff local vs remote PR
 alias prv='gh pr view'
 alias pre='gh pr edit'
