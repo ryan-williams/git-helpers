@@ -1,5 +1,5 @@
 # git-helpers
-[1,633](#count-completions) Git aliases and scripts.
+[1,636](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -329,12 +329,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1633 completions added by installing git-helpers
+# 1636 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 250
-# - 4 chars: 663
-# - 5 chars: 310
+# - 4 chars: 664
+# - 5 chars: 312
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -345,7 +345,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1633 new completions:
+1636 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1201,6 +1201,7 @@ gshr       = g show-rebase-head
 gshs       = g show --stat
 gshw       = g show -w
 gsid       = g set-id
+gsie       = g set-id
 gsig       = g set-id -g
 gslg       = g submodule-log
 gsln       = g show-local-names
@@ -1420,6 +1421,7 @@ ggrdn      = g graph -d -n
 ggrec      = g graph -e -C
 ggrhu      = g graph -u HEAD
 ggsid      = g set-id -g
+ggsie      = g set-id -g
 ghbis      = g blob-hash -is
 ghblr      = g head-before-last-rebase
 ghdru      = gh repo set-default --unset
@@ -1569,6 +1571,7 @@ gshsl      = g show --submodule=log
 gshss      = g show --submodule=short
 gshwc      = g show-cherry-pick-head -w
 gsidg      = g set-id -g
+gsieg      = g set-id -g
 gsmab      = g submodule add -b
 gsmac      = g submodule-auto-commit
 gsmaf      = g submodule add -f
@@ -1730,7 +1733,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1633 completions added by installing git-helpers (0 removed, 2978 total)
+1636 completions added by installing git-helpers (0 removed, 2981 total)
 ```
 </details>
 
