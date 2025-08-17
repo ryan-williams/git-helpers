@@ -8,12 +8,12 @@ from sys import stderr
 def resolve_remote_ref(current_branch=None, current_sha=None, verbose=True):
     """
     Resolve which remote ref to use based on current branch and SHA.
-    
+
     Returns:
         tuple: (ref_name, remote_ref) where ref_name is the branch name to use
                and remote_ref is the full remote reference (e.g., 'origin/branch')
         (None, None) if no ref can be determined
-    
+
     Raises:
         SystemExit: If multiple remote refs match and are ambiguous
     """
@@ -23,11 +23,11 @@ def resolve_remote_ref(current_branch=None, current_sha=None, verbose=True):
             current_branch = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip()
         if current_sha is None:
             current_sha = check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
-        
+
         # Get remote branches that match
         remote_refs = check_output(['git', 'branch', '-r', '--format=%(refname:short)']).decode().strip().split('\n')
         matching_refs = [r for r in remote_refs if r.endswith(f'/{current_branch}')]
-        
+
         if len(matching_refs) == 1:
             # Extract the actual branch name from the remote ref
             remote_ref = matching_refs[0]
@@ -36,7 +36,7 @@ def resolve_remote_ref(current_branch=None, current_sha=None, verbose=True):
             if verbose:
                 stderr.write(f"Using ref: {ref} (from remote {remote_ref})\n")
             return ref, remote_ref
-        
+
         elif len(matching_refs) > 1:
             # Multiple matches - check which one points to the same SHA
             matching_sha_refs = []
@@ -47,7 +47,7 @@ def resolve_remote_ref(current_branch=None, current_sha=None, verbose=True):
                         matching_sha_refs.append(remote_ref)
                 except:
                     pass
-            
+
             if len(matching_sha_refs) == 1:
                 # Exactly one remote ref points to the same SHA
                 remote_ref = matching_sha_refs[0]
@@ -55,7 +55,7 @@ def resolve_remote_ref(current_branch=None, current_sha=None, verbose=True):
                 if verbose:
                     stderr.write(f"Using ref: {ref} (from remote {remote_ref} - matches current SHA)\n")
                 return ref, remote_ref
-            
+
             elif len(matching_sha_refs) > 1:
                 # Multiple refs point to the same SHA - still ambiguous
                 stderr.write(f"Error: Multiple remote refs match current branch '{current_branch}' and SHA:\n")
@@ -63,7 +63,7 @@ def resolve_remote_ref(current_branch=None, current_sha=None, verbose=True):
                     stderr.write(f"  - {r}\n")
                 stderr.write("Please specify --ref explicitly\n")
                 exit(1)
-            
+
             else:
                 # No remote refs match the current SHA
                 if verbose:
@@ -72,17 +72,17 @@ def resolve_remote_ref(current_branch=None, current_sha=None, verbose=True):
                         stderr.write(f"  - {r}\n")
                     stderr.write("Using local branch name as ref\n")
                 return current_branch, None
-        
+
         elif current_branch != 'HEAD':
             # No remote matches, but we're on a real branch - use it anyway
             if verbose:
                 stderr.write(f"Using ref: {current_branch} (current branch, no remote match)\n")
             return current_branch, None
-        
+
         else:
             # Detached HEAD with no matches
             return None, None
-            
+
     except Exception as e:
         # If anything fails, return None
         if verbose:
@@ -97,7 +97,7 @@ def get_default_branch(repo=None):
             cmd = ['gh', 'repo', 'view', repo, '--json', 'defaultBranchRef']
         else:
             cmd = ['gh', 'repo', 'view', '--json', 'defaultBranchRef']
-        
+
         import json
         result = check_output(cmd).decode()
         data = json.loads(result)
@@ -111,6 +111,6 @@ def get_default_branch(repo=None):
                 return remote_head.replace('refs/remotes/origin/', '')
         except:
             pass
-        
+
         # Final fallback
         return 'main'
