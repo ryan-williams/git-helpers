@@ -35,6 +35,6 @@ git global-gitignore \
   ".ipynb_checkpoints" \
   ".jupyter" \
   ".python-version" \
-  ".vite"
-  "node_modules" \
+  ".vite" \
+  "node_modules"
 
