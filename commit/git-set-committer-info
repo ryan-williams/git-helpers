@@ -3,6 +3,7 @@
 set_date=true
 set_name=true
 commit=""
+date_offset=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -14,15 +15,27 @@ while [[ $# -gt 0 ]]; do
             set_name=false
             shift
             ;;
+        -d|--date-offset)
+            if [ $# -lt 2 ]; then
+                echo "Error: -d requires an offset argument (e.g., '1s', '2m', '1h')" >&2
+                exit 1
+            fi
+            date_offset="$2"
+            shift 2
+            ;;
         -*)
-            echo "Usage: $0 [-D] [-N] [commit]" >&2
+            echo "Usage: $0 [-D] [-N] [-d offset] [commit]" >&2
             echo "  -D: Don't set committer date" >&2
             echo "  -N: Don't set committer name" >&2
+            echo "  -d offset: Date offset (e.g., '1s', '5m', '2h', '3d')" >&2
+            echo "             Prefix with '+' to add, otherwise subtracts" >&2
+            echo "             Units: s=seconds, m=minutes, h=hours, d=days" >&2
             exit 1
             ;;
         *)
             if [ -n "$commit" ]; then
-                echo "Usage: $0 [-D] [-N] [commit]" >&2
+                echo "Usage: $0 [-D] [-N] [-d offset] [commit]" >&2
+                echo "Run with -h for detailed help" >&2
                 exit 1
             fi
             commit="$1"
@@ -43,8 +56,47 @@ env_vars=()
 
 if [ "$set_date" = true ]; then
     cd="$(git log -1 "--format=%${fmt}d" "$source_commit")"
+
+    # Apply date offset if specified
+    if [ -n "$date_offset" ]; then
+        # Convert to ISO format for date manipulation
+        cd_iso="$(git log -1 "--format=%${fmt}d" --date=iso "$source_commit")"
+
+        # Parse the offset - check for +/- prefix and unit suffix
+        if [[ "$date_offset" =~ ^([+-]?)([0-9]+)([smhd]?)$ ]]; then
+            sign="${BASH_REMATCH[1]:-}"  # Default empty (subtract)
+            num="${BASH_REMATCH[2]}"
+            unit="${BASH_REMATCH[3]:-s}"  # Default to seconds
+
+            # Convert unit abbreviations to full words for date command
+            case "$unit" in
+                s) unit="second" ;;
+                m) unit="minute" ;;
+                h) unit="hour" ;;
+                d) unit="day" ;;
+            esac
+
+            # Build the date arithmetic expression
+            if [ "$sign" = "+" ]; then
+                date_expr="$cd_iso + $num $unit"
+                display_offset="+${num}${BASH_REMATCH[3]:-s}"
+            else
+                date_expr="$cd_iso - $num $unit"
+                display_offset="-${num}${BASH_REMATCH[3]:-s}"
+            fi
+
+            cd="$(date -d "$date_expr" --iso-8601=seconds)"
+            echo "Setting committer date to $cd (original: $cd_iso, offset: $display_offset)" >&2
+        else
+            echo "Error: Invalid date offset format: $date_offset" >&2
+            echo "Expected format: [+|-]<number>[s|m|h|d] (e.g., '1s', '+2h', '-3d')" >&2
+            exit 1
+        fi
+    else
+        echo "Setting committer date to $cd" >&2
+    fi
+
     env_vars+=("GIT_COMMITTER_DATE=$cd")
-    echo "Setting committer date to $cd" >&2
 fi
 
 if [ "$set_name" = true ]; then
