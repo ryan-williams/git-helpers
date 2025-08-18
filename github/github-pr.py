@@ -142,6 +142,101 @@ def add_gist_footer(body, gist_url):
         return footer
 
 
+def upload_image_to_github(image_path, owner, repo):
+    """Upload an image to GitHub and get the user-attachments URL.
+
+    GitHub stores PR images in a special user-attachments area.
+    We use the gh CLI to interact with GitHub's API.
+    """
+    import base64
+    import mimetypes
+
+    if not Path(image_path).exists():
+        err(f"Warning: Image file not found: {image_path}")
+        return None
+
+    # Determine MIME type
+    mime_type, _ = mimetypes.guess_type(image_path)
+    if not mime_type or not mime_type.startswith('image/'):
+        err(f"Warning: {image_path} doesn't appear to be an image (mime: {mime_type})")
+        return None
+
+    # Read and encode the image
+    with open(image_path, 'rb') as f:
+        image_data = f.read()
+    encoded = base64.b64encode(image_data).decode('utf-8')
+
+    # Create a data URL
+    data_url = f"data:{mime_type};base64,{encoded}"
+
+    # Use gh api to upload via markdown rendering
+    # This is a bit of a hack - we render markdown with an image to trigger upload
+    markdown_with_image = f'![image]({data_url})'
+
+    try:
+        # Use GitHub's markdown API to process the image
+        cmd = [
+            'gh', 'api',
+            '--method', 'POST',
+            '/markdown',
+            '-f', f'text={markdown_with_image}',
+            '-f', 'mode=gfm',
+            '-f', f'context={owner}/{repo}'
+        ]
+        result = check_output(cmd, stderr=DEVNULL).decode()
+
+        # Extract the uploaded image URL from the rendered HTML
+        import re
+        match = re.search(r'src="(https://github\.com/user-attachments/assets/[^"]+)"', result)
+        if match:
+            url = match.group(1)
+            err(f"Uploaded {image_path} -> {url}")
+            return url
+        else:
+            err(f"Warning: Could not extract URL from upload response for {image_path}")
+            return None
+    except CalledProcessError as e:
+        err(f"Warning: Failed to upload {image_path}: {e}")
+        return None
+
+
+def process_images_in_description(body, owner, repo, dry_run=False):
+    """Find local image references and upload them to GitHub."""
+    import re
+
+    if dry_run:
+        # Just find and report what would be uploaded
+        pattern = r'!\[([^\]]*)\]\(([^)]+)\)'
+        matches = re.findall(pattern, body)
+        for alt_text, path in matches:
+            if not path.startswith('http'):
+                err(f"[DRY-RUN] Would upload image: {path}")
+        return body
+
+    def replace_image(match):
+        alt_text = match.group(1)
+        path = match.group(2)
+
+        # Skip if already a URL
+        if path.startswith('http'):
+            return match.group(0)
+
+        # Upload the image
+        url = upload_image_to_github(path, owner, repo)
+        if url:
+            # Use <img> tag for consistency with GitHub's format
+            return f'<img alt="{alt_text}" src="{url}" />'
+        else:
+            # Keep original if upload failed
+            return match.group(0)
+
+    # Replace markdown image references
+    pattern = r'!\[([^\]]*)\]\(([^)]+)\)'
+    updated_body = re.sub(pattern, replace_image, body)
+
+    return updated_body
+
+
 def read_description_file(path):
     """Read and parse DESCRIPTION.md file."""
     desc_file = path / 'DESCRIPTION.md'
@@ -463,7 +558,8 @@ def clone(pr_spec, directory):
               help='Add gist footer to PR (default: auto - add if gist exists)')
 @click.option('-o/-O', '--open/--no-open', 'open_browser', default=False,
               help='Open PR in browser after pushing')
-def push(message, gist, dry_run, footer, open_browser):
+@click.option('-i', '--images', is_flag=True, help='Upload local images and replace references')
+def push(message, gist, dry_run, footer, open_browser, images):
     """Push local description changes back to the PR."""
 
     # Get PR info from current directory
@@ -509,6 +605,11 @@ def push(message, gist, dry_run, footer, open_browser):
     while body_lines and not body_lines[0].strip():
         body_lines = body_lines[1:]
     body = '\n'.join(body_lines).rstrip()
+
+    # Process images if requested
+    if images:
+        err("Processing images in description...")
+        body = process_images_in_description(body, owner, repo, dry_run)
 
     # Check if we have an existing gist
     has_gist = False
@@ -557,10 +658,18 @@ def push(message, gist, dry_run, footer, open_browser):
             cmd.extend(['--title', title])
 
         if body is not None:  # Allow empty body
-            cmd.extend(['--body', body])
+            # Use --body-file to avoid command line length issues and special character problems
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+                f.write(body)
+                body_file = f.name
+
+            cmd.extend(['--body-file', body_file])
 
         try:
             check_call(cmd)
+            if body is not None:
+                os.unlink(body_file)  # Clean up temp file
             err("Successfully updated PR")
 
             # Get PR URL if we need to open it
@@ -614,9 +723,10 @@ def sync_to_gist(owner, repo, pr_number, content, return_url=False, add_remote=T
         # Update existing gist
         err(f"Updating gist {gist_id}...")
 
-        # Update gist description
+        # Update gist description using API to avoid editor
         try:
-            check_call(['gh', 'gist', 'edit', gist_id, '-d', description])
+            check_call(['gh', 'api', f'gists/{gist_id}', '-X', 'PATCH',
+                       '-f', f'description={description}'], stderr=DEVNULL)
         except:
             pass  # Description update is optional
 
@@ -698,6 +808,95 @@ def sync_to_gist(owner, repo, pr_number, content, return_url=False, add_remote=T
 
 
 @cli.command()
+@click.argument('files', nargs=-1, required=True)
+@click.option('-b', '--branch', default='assets', help='Branch name in gist (default: assets)')
+@click.option('-f', '--format', type=click.Choice(['url', 'markdown', 'img', 'auto']), default='auto',
+              help='Output format (default: auto - img for images, url for others)')
+@click.option('-a', '--alt', help='Alt text for markdown/img format')
+def upload(files, branch, format, alt):
+    """Upload images to the PR's gist and get URLs."""
+    from subprocess import check_call
+    import gist_upload
+
+    # Get PR info
+    owner, repo, pr_number = get_pr_info_from_path()
+
+    if not all([owner, repo, pr_number]):
+        try:
+            owner = check_output(['git', 'config', 'pr.owner'], stderr=DEVNULL).decode().strip()
+            repo = check_output(['git', 'config', 'pr.repo'], stderr=DEVNULL).decode().strip()
+            pr_number = check_output(['git', 'config', 'pr.number'], stderr=DEVNULL).decode().strip()
+        except:
+            err("Error: Could not determine PR from directory or git config")
+            exit(1)
+
+    # Get or create gist
+    try:
+        gist_id = check_output(['git', 'config', 'pr.gist'], stderr=DEVNULL).decode().strip()
+    except:
+        gist_id = None
+
+    if not gist_id:
+        # Create a gist for this PR
+        err("Creating gist for PR assets...")
+        description = f'{owner}/{repo}#{pr_number} assets'
+        desc_content = "# PR Assets\nImage assets for PR"
+
+        gist_id = gist_upload.create_gist(description, desc_content)
+        if gist_id:
+            check_call(['git', 'config', 'pr.gist', gist_id])
+            err(f"Created gist: {gist_id}")
+        else:
+            err("Error: Could not create gist")
+            exit(1)
+
+    # Check if we're already in a gist clone
+    is_local_clone = False
+    remote_name = None
+    try:
+        # Check all remotes to see if any point to this gist
+        remotes = check_output(['git', 'remote']).decode().strip().split('\n')
+        for remote in remotes:
+            if not remote:
+                continue
+            try:
+                remote_url = check_output(['git', 'remote', 'get-url', remote], stderr=DEVNULL).decode().strip()
+                if f'gist.github.com:{gist_id}' in remote_url or f'gist.github.com/{gist_id}' in remote_url:
+                    is_local_clone = True
+                    remote_name = remote
+                    err(f"Already in gist repository with remote '{remote}'")
+                    break
+            except:
+                continue
+    except:
+        pass
+
+    # Prepare files for upload
+    file_list = []
+    for file_path in files:
+        filename = Path(file_path).name
+        file_list.append((file_path, filename))
+
+    # Upload files using the library
+    results = gist_upload.upload_files_to_gist(
+        file_list,
+        gist_id,
+        branch=branch,
+        is_local_clone=is_local_clone,
+        commit_msg=f'Add assets for {owner}/{repo}#{pr_number}',
+        remote_name=remote_name
+    )
+
+    # Output formatted results
+    for orig_name, safe_name, url in results:
+        output = gist_upload.format_output(orig_name, url, format, alt)
+        print(output)
+
+    if not results:
+        exit(1)
+
+
+@cli.command()
 @click.option('-c', '--color', type=click.Choice(['auto', 'always', 'never']), default='auto',
               help='When to use colored output (default: auto)')
 def diff(color):
@@ -765,9 +964,15 @@ def diff(color):
         body_lines = body_lines[1:]
     local_body = '\n'.join(body_lines).rstrip()
 
+    # Strip footer from local body for comparison
+    local_body_without_footer, _ = extract_gist_footer(local_body)
+
     # Get remote title and body (already normalized in get_pr_metadata)
     remote_title = pr_data['title']
     remote_body = (pr_data['body'] or '').rstrip()
+
+    # Strip footer from remote body for comparison
+    remote_body_without_footer, _ = extract_gist_footer(remote_body)
 
     # Compare titles
     if local_title != remote_title:
@@ -777,13 +982,13 @@ def diff(color):
     else:
         err(f"\n{BOLD}{CYAN}=== Title: No differences ==={RESET}")
 
-    # Compare bodies
-    if local_body != remote_body:
+    # Compare bodies (without footers)
+    if local_body_without_footer != remote_body_without_footer:
         err(f"\n{BOLD}{YELLOW}=== Body Differences ==={RESET}")
 
         # Generate a unified diff
-        local_lines = local_body.splitlines(keepends=True)
-        remote_lines = remote_body.splitlines(keepends=True)
+        local_lines = local_body_without_footer.splitlines(keepends=True)
+        remote_lines = remote_body_without_footer.splitlines(keepends=True)
 
         diff_lines = difflib.unified_diff(
             remote_lines,

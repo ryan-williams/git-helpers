@@ -482,5 +482,7 @@ alias ghprpg='github-pr.py push -g'   # push with gist backup (auto-footer)
 alias ghprpo='github-pr.py push -o'   # push and open in browser
 alias ghprpF='github-pr.py push -F'   # push WITHOUT footer
 alias ghprd='github-pr.py diff'       # diff local vs remote PR
+alias ghpru='github-pr.py upload'     # upload images to PR's gist
+alias ghui='gh-upload-img.py'         # upload images to GitHub
 alias prv='gh pr view'
 alias pre='gh pr edit'
