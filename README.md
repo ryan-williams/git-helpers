@@ -1,5 +1,5 @@
 # git-helpers
-[1,660](#count-completions) Git aliases and scripts.
+[1,661](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -36,22 +36,10 @@ Source [`.git-rc`](./.git-rc) in your `.bashrc`:
 echo ". $PWD/.git-rc" >> ~/.bashrc  # Configure new shells to load `git-helpers`
 . .bashrc                           # re-"source" your .bashrc, for immediate effect in existing shells
 ```
-This will load all aliases from this repo, and add relevant directories to `$PATH`.
+This will load all aliases from this repo, add relevant directories to `$PATH`, and set up `PYTHONPATH` for Python utilities.
 
-### Python modules
-Some tools (e.g. [`github-pr.py`]) use shared Python utilities.Install Python module support with [`install.sh`]:
-```bash
-~/.rc/git/install.sh
-```
+`pip install -r requirements.txt` ensures `python-dateutil` is installed, which some scripts here require.
 
-which just wraps:
-```bash
-python -c "import site,os; os.symlink('$HOME/.rc/git-helpers.pth', os.path.join(site.getsitepackages()[0], 'git-helpers.pth'))"
-```
-
-`pip install -r requirements.txt` also ensures `python-dateutil` is installed available, which some scripts here require.
-
-All these steps only need to be performed once (per machine).
 
 ## Commands <a id="commands"></a>
 Some aliases/commands I use frequently:
@@ -344,7 +332,7 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1660 completions added by installing git-helpers
+# 1661 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 254
@@ -360,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1660 new completions:
+1661 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1742,7 +1730,7 @@ gitlab_remote_pathNo manual entry for git-remote-path
  = git remote-path "$@" "$(gitlab_remote)"
 init-mirror-remote = git-helpers/remote/init-mirror-remote
 gh_repo_description = gh repo view --json description "$@" | jq -r .description
-github-workflows.py = git-helpers/github/github-workflows.py  # Add parent directory to path to import util modules
+github-workflows.py = git-helpers/github/github-workflows.py
 github_open_actions = open "$(github_url)/actions"
 github_open_web_ref = [ref]
 gh_last_workflow_run = gh run list -L 1 --json databaseId | jq -r .[0].databaseId
@@ -1771,7 +1759,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1660 completions added by installing git-helpers (0 removed, 3005 total)
+1661 completions added by installing git-helpers (0 removed, 3006 total)
 ```
 </details>
 
@@ -1842,4 +1830,3 @@ history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 [`git-set-attr-type.py`]: config/git-set-attr-type.py
 
 [`github-pr.py`]: github/github-pr.py
-[`install.sh`]: install.sh
