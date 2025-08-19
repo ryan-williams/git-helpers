@@ -1,5 +1,5 @@
 # git-helpers
-[1,664](#count-completions) Git aliases and scripts.
+[1,666](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,11 +332,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1664 completions added by installing git-helpers
+# 1666 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 254
-# - 4 chars: 669
+# - 4 chars: 670
 # - 5 chars: 321
 ```
 
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1664 new completions:
+1666 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -909,6 +909,7 @@ ghds       = github-docs-snapshot
 ghgc       = gh gist create
 ghgd       = gh gist delete
 ghge       = gh gist edit
+ghgf       = github-gist-file.py
 ghgl       = gh gist list
 ghgu       = gh gist edit
 ghip       = gh run list -s in_progress
@@ -1733,6 +1734,7 @@ gitlab_remote_pathNo manual entry for git-remote-path
  = git remote-path "$@" "$(gitlab_remote)"
 init-mirror-remote = git-helpers/remote/init-mirror-remote
 gh_repo_description = gh repo view --json description "$@" | jq -r .description
+github-gist-file.py = git-helpers/github/github-gist-file.py
 github-workflows.py = git-helpers/github/github-workflows.py
 github_open_actions = open "$(github_url)/actions"
 github_open_web_ref = [ref]
@@ -1762,7 +1764,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1664 completions added by installing git-helpers (0 removed, 3009 total)
+1666 completions added by installing git-helpers (0 removed, 3011 total)
 ```
 </details>
 

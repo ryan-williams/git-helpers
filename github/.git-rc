@@ -486,3 +486,4 @@ alias ghpru='github-pr.py upload'     # upload images to PR's gist
 alias ghui='gh-upload-img.py'         # upload images to GitHub
 alias prv='gh pr view'
 alias pre='gh pr edit'
+alias ghgf="github-gist-file.py"
