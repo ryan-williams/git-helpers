@@ -73,6 +73,7 @@ github_open_settings_secrets_actions() {
 }
 export -f github_open_settings_secrets_actions
 defn ghossa github_open_settings_secrets_actions
+defn ghoss github_open_settings_secrets_actions
 
 defn ghow github-open-web.py
 defn ghowd github-open-web.py -d
