@@ -75,6 +75,12 @@ export -f github_open_settings_secrets_actions
 defn ghossa github_open_settings_secrets_actions
 defn ghoss github_open_settings_secrets_actions
 
+github_open_settings_runners() {
+    open "$(github_url)/settings/actions/runners"
+}
+export -f github_open_settings_runners
+defn ghosr github_open_settings_runners
+
 defn ghow github-open-web.py
 defn ghowd github-open-web.py -d
 defn ghowg github-open-web.py -g  # open gist

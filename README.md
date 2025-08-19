@@ -1,5 +1,5 @@
 # git-helpers
-[1,690](#count-completions) Git aliases and scripts.
+[1,692](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,12 +332,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1690 completions added by installing git-helpers
+# 1692 completions added by installing git-helpers
 # By length:
 # - 2 chars: 17
 # - 3 chars: 255
 # - 4 chars: 677
-# - 5 chars: 331
+# - 5 chars: 332
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1690 new completions:
+1692 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1462,6 +1462,7 @@ ghgdy      = gh gist delete --yes
 ghjis      = gh_job_ids
 ghlwr      = gh_last_workflow_run
 ghoby      = github_open_branches_yours
+ghosr      = github_open_settings_runners
 ghoss      = github_open_settings_secrets_actions
 ghowb      = gh repo view --web -b
 ghowd      = github-open-web.py -d
@@ -1781,13 +1782,14 @@ github_set_default_branch
 github_set_default_remote = [remote name]
 gitlab_set_default_branch
 github_open_branches_yours
+github_open_settings_runners = open "$(github_url)/settings/actions/runners"
 gh_workflow_run_current_branch
 github-submodule-check-commits = git-helpers/submodule/github-submodule-check-commits
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1690 completions added by installing git-helpers (0 removed, 3035 total)
+1692 completions added by installing git-helpers (0 removed, 3037 total)
 ```
 </details>
 
