@@ -110,11 +110,27 @@ def get_pr_metadata(owner, repo, pr_number):
 
 def extract_gist_footer(body):
     """Extract gist footer from body and return (body_without_footer, gist_url)."""
+    import re
+
     if not body:
         return body, None
 
     lines = body.split('\n')
-    # Check if last line is a gist footer (handle both old and new formats)
+
+    # Check for visible footer format (last 3 lines: empty, ---, "Synced with...")
+    if len(lines) >= 3:
+        if (lines[-3].strip() == '' and
+            lines[-2].strip() == '---' and
+            'Synced with [gist](' in lines[-1]):
+            # Extract URL from markdown link
+            match = re.search(r'\[gist\]\((https://gist\.github\.com/[a-f0-9]+(?:/[a-f0-9]+)?)\)', lines[-1])
+            if match:
+                gist_url = match.group(1)
+                # Remove the footer (last 3 lines)
+                body_without_footer = '\n'.join(lines[:-3]).rstrip()
+                return body_without_footer, gist_url
+
+    # Check if last line is a hidden gist footer (handle both old and new formats)
     if lines and lines[-1].strip().startswith('<!-- Synced with '):
         # Try new format with attribution (with or without revision)
         match = re.match(r'<!-- Synced with (https://gist\.github\.com/[a-f0-9]+(?:/[a-f0-9]+)?) via \[github-pr\.py\].*-->', lines[-1].strip())
@@ -130,11 +146,28 @@ def extract_gist_footer(body):
     return body, None
 
 
-def add_gist_footer(body, gist_url):
+def add_gist_footer(body, gist_url, visible=False):
     """Add or update gist footer in body."""
     body_without_footer, _ = extract_gist_footer(body)
 
-    footer = f'<!-- Synced with {gist_url} via [github-pr.py](https://github.com/ryan-williams/git-helpers/blob/main/github/github-pr.py) -->'
+    if visible:
+        # Extract gist ID and revision from URL if available
+        # URL format: https://gist.github.com/user/gist_id or https://gist.github.com/gist_id/revision
+        import re
+        gist_match = re.search(r'gist\.github\.com/(?:[^/]+/)?([a-f0-9]+)(?:/([a-f0-9]+))?', gist_url)
+        if gist_match:
+            gist_id = gist_match.group(1)
+            revision = gist_match.group(2)
+            if revision:
+                gist_link = f'https://gist.github.com/{gist_id}/{revision}'
+            else:
+                gist_link = f'https://gist.github.com/{gist_id}'
+        else:
+            gist_link = gist_url
+
+        footer = f'\n---\n\nSynced with [gist]({gist_link}) via [github-pr.py](https://github.com/ryan-williams/git-helpers/blob/main/github/github-pr.py)'
+    else:
+        footer = f'<!-- Synced with {gist_url} via [github-pr.py](https://github.com/ryan-williams/git-helpers/blob/main/github/github-pr.py) -->'
 
     if body_without_footer:
         return f'{body_without_footer}\n\n{footer}'
@@ -554,12 +587,11 @@ def clone(pr_spec, directory):
 @click.option('-m', '--message', help='Commit message')
 @click.option('-g', '--gist', is_flag=True, help='Also sync to gist')
 @click.option('-n', '--dry-run', is_flag=True, help='Show what would be done without making changes')
-@click.option('-f/-F', '--footer/--no-footer', default=None,
-              help='Add gist footer to PR (default: auto - add if gist exists)')
-@click.option('-o/-O', '--open/--no-open', 'open_browser', default=False,
-              help='Open PR in browser after pushing')
+@click.option('-f', '--footer', count=True, help='Footer level: -f = hidden footer, -ff = visible footer')
+@click.option('-F', '--no-footer', is_flag=True, help='Disable footer completely')
+@click.option('-o/-O', '--open/--no-open', 'open_browser', default=False, help='Open PR in browser after pushing')
 @click.option('-i', '--images', is_flag=True, help='Upload local images and replace references')
-def push(message, gist, dry_run, footer, open_browser, images):
+def push(message, gist, dry_run, footer, no_footer, open_browser, images):
     """Push local description changes back to the PR."""
 
     # Get PR info from current directory
@@ -619,8 +651,28 @@ def push(message, gist, dry_run, footer, open_browser, images):
     except:
         pass
 
-    # Determine if we should add footer (auto mode: add if gist exists)
-    should_add_footer = footer if footer is not None else has_gist
+    # Determine footer behavior
+    if no_footer:
+        # -F flag: disable footer completely
+        should_add_footer = False
+        footer_visible = False
+    elif footer == 0:
+        # No -f flag: auto mode (add footer if gist exists)
+        should_add_footer = has_gist
+        footer_visible = False  # Default to hidden
+    elif footer == 1:
+        # -f: Hidden footer (HTML comment)
+        should_add_footer = True
+        footer_visible = False
+        gist = True  # Ensure we sync to gist if adding footer
+    elif footer >= 2:
+        # -ff: Visible footer (markdown)
+        should_add_footer = True
+        footer_visible = True
+        gist = True  # Ensure we sync to gist if adding footer
+    else:
+        should_add_footer = False
+        footer_visible = False
 
     # Handle gist syncing first (to get URL for footer if needed)
     gist_url = None
@@ -638,7 +690,7 @@ def push(message, gist, dry_run, footer, open_browser, images):
 
     # Add footer if we should
     if should_add_footer and gist_url:
-        body = add_gist_footer(body, gist_url)
+        body = add_gist_footer(body, gist_url, visible=footer_visible)
 
     # Update the PR
     if dry_run:
