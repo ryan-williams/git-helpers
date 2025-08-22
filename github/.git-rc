@@ -303,6 +303,47 @@ gh_runners_ls() {
 export -f gh_runners_ls
 defn ghrls gh_runners_ls
 
+# GitHub runners offline list (self-hosted only)
+gh_runners_offline_list() {
+    local repo table_format=false
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -t|--table)
+                table_format=true
+                shift
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    repo="$(github_remote_path)"
+    if [ -z "$repo" ]; then
+        echo "Failed to determine GitHub repository path" >&2
+        return 1
+    fi
+
+    if [ "$table_format" = true ]; then
+        # Table format with column headers
+        {
+            echo "ID NAME OS STATUS"
+            gh api repos/$repo/actions/runners --paginate | \
+                jr '.runners[] | select(.status == "offline") | select(.labels[].name == "self-hosted") | [.id, .name, .os, .status] | @tsv' | \
+                tr '\t' ' '
+        } | column -t
+    else
+        # JSON format
+        gh api repos/$repo/actions/runners --paginate | \
+            jr '.runners[] | select(.status == "offline") | select(.labels[].name == "self-hosted") | {id, name, os, status, labels: [.labels[].name]}'
+    fi
+}
+export -f gh_runners_offline_list
+defn ghrol gh_runners_offline_list
+defn ghrot 'gh_runners_offline_list -t'
+
 gh_open_last() {
     run="$(gh_last_workflow_run)"
     gh run view --web $run

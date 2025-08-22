@@ -1,5 +1,5 @@
 # git-helpers
-[1,666](#count-completions) Git aliases and scripts.
+[1,668](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,12 +332,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1666 completions added by installing git-helpers
+# 1668 completions added by installing git-helpers
 # By length:
 # - 2 chars: 16
 # - 3 chars: 254
 # - 4 chars: 670
-# - 5 chars: 321
+# - 5 chars: 323
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1666 new completions:
+1668 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1467,6 +1467,8 @@ ghrib      = github_run_list.py -ib
 ghrlh      = gh run list --help
 ghrls      = gh_runners_ls
 ghroi      = gh_runners_offline_ids
+ghrol      = gh_runners_offline_list
+ghrot      = gh_runners_offline_list -t
 ghrrm      = gh_runners_rm
 ghrvh      = gh run view --help
 ghrvj      = gh run view --job
@@ -1719,7 +1721,6 @@ gh-upload-img.py = git-helpers/github/gh-upload-img.py  # Import from local libr
 gh_run_view_jobs = gh run view "$@" --json jobs
 git_clone_and_cd
 git_expand_alias = [-v] <alias>
-github-pr.py.bak = git-helpers/github/github-pr.py.bak  # Helper for printing to stderr
 github_maybe_api
 gitlab_maybe_api
 gitlab_open_jobs
@@ -1750,6 +1751,7 @@ git_open_web_branch.py = git-helpers/remote/git_open_web_branch.py
 github-commit-api-urls = git-helpers/submodule/github-commit-api-urls
 github-commit-web-urls = git-helpers/submodule/github-commit-web-urls
 github_open_web_commit = [commit]
+gh_runners_offline_list
 git_branch_force_parent = <branch>
 github_unprotect_branch
 gitlab_unprotect_branch
@@ -1764,7 +1766,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1666 completions added by installing git-helpers (0 removed, 3011 total)
+1668 completions added by installing git-helpers (0 removed, 3013 total)
 ```
 </details>
 
