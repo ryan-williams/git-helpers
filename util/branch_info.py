@@ -2,12 +2,12 @@ __author__ = 'ryan'
 
 """Encapsulates info about one git branch."""
 
-from color import clen, color
-from datetime import datetime as dt
-from regexs import refname_regex, captured_whitespace_regex, hash_regex
-from reldate_util import shorten_reldate
 import re
 
+from datetime import datetime as dt
+from util.color import clen, color
+from util.regexs import refname_regex, captured_whitespace_regex, hash_regex
+from util.reldate_util import shorten_reldate
 
 def fixed(width, s, left_justified=False):
     spaces = (' ' * (width - clen(s)))

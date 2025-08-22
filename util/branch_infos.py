@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
+import subprocess
 import sys
 from fnmatch import fnmatch
 from typing import Sequence
 
-from branch_info import BranchInfo
-from color import clen
-import subprocess
+from util.branch_info import BranchInfo
+from util.color import clen
 
 
 class BranchInfos:

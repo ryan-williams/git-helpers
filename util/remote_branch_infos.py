@@ -5,9 +5,10 @@ import sys
 if __name__ == '__main__':
     sys.path.append('.')
 
-from branch_infos import BranchInfos
-from remote_branch_info import RemoteBranchInfo
 import fileinput
+
+from util.branch_infos import BranchInfos
+from util.remote_branch_info import RemoteBranchInfo
 
 
 class RemoteBranchInfos(BranchInfos):
