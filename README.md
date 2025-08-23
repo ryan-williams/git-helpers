@@ -1,5 +1,5 @@
 # git-helpers
-[1,668](#count-completions) Git aliases and scripts.
+[1,675](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,12 +332,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1668 completions added by installing git-helpers
+# 1675 completions added by installing git-helpers
 # By length:
-# - 2 chars: 16
-# - 3 chars: 254
-# - 4 chars: 670
-# - 5 chars: 323
+# - 2 chars: 17
+# - 3 chars: 255
+# - 4 chars: 673
+# - 5 chars: 324
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1668 new completions:
+1675 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -366,6 +366,7 @@ gp         = g push-x
 gr         = g remote -vv
 gs         = g status
 gt         = g tags
+gu         = gist-upload
 gx         = git-git-dir
 hb         = hub browse
 rb         = git-helpers/rebase/rb  # Interactive rebase over the last <arg> commits.
@@ -604,8 +605,9 @@ gtw        = g throw.py
 gub        = g upstream-branch
 gud        = g undelete
 gue        = g config user.email
-gui        = g update-index
+gui        = gh-upload-img.py
 gun        = g config user.name
+guo        = gist-upload -o
 gup        = g unpack-and-apply-diffs
 gur        = g update-ref
 gus        = g upstream
@@ -801,7 +803,6 @@ gdmb       = g delete-merged-branches
 gdno       = g diff --name-only
 gdnp       = g config diff.noprefix
 gdns       = g diff --name-status
-gdop       = gist-dir -op
 gdp1       = g diff-vs-parent 1
 gdp2       = g diff-vs-parent 2
 gdpg       = g config --global diff.noprefix
@@ -912,6 +913,7 @@ ghge       = gh gist edit
 ghgf       = github-gist-file.py
 ghgl       = gh gist list
 ghgu       = gh gist edit
+ghgv       = gh gist view
 ghip       = gh run list -s in_progress
 ghiq       = github_run_list.py -s in,q
 ghji       = gh_job_id
@@ -1283,7 +1285,6 @@ gszh       = g size -H
 gszs       = g sizes
 gtch       = g commit --amend --no-edit
 gtfi       = g tree-full-id
-gtid       = gist-id
 gtpa       = g tag --points-at
 gtr0       = g empty-tree
 gtrh       = g ls-tree HEAD
@@ -1297,8 +1298,12 @@ gudb       = g update-default-branch
 gudm       = g set-attr-type.py -u -a diff,merge
 gudt       = g set-attr-type.py -u -a diff
 guic       = g update-index --cacheinfo
+guim       = gh-upload-img.py -f markdown
+guiu       = gh-upload-img.py -f url
 gumt       = g set-attr-type.py -u -a merge
 gune       = g user
+guop       = gist-upload -o -p
+gupd       = gist-upload -p -d
 gurb       = g undo-rebase
 gusi       = g update-server-info
 gusr       = g user
@@ -1442,6 +1447,7 @@ ghblr      = g head-before-last-rebase
 ghdru      = gh repo set-default --unset
 ghdss      = github-docs-snapshot -s
 ghgcd      = gh gist create --web -d
+ghgco      = gh gist clone
 ghgdr      = gh repo set-default --view
 ghgdy      = gh gist delete --yes
 ghjis      = gh_job_ids
@@ -1700,6 +1706,7 @@ gitlab_api
 gitlab_url = gh repo view --json url | jq -r .url
 gh_open_job = open "$(gh_job_url "$@")"
 gh_run_open
+gist-upload = git-helpers/gist/gist-upload  # Upload files to GitHub Gist preserving their filenames
 git_set_sha = export sha="$(git sha)"
 clone_org.py = git-helpers/github/clone_org.py
 gh_open_last
@@ -1766,7 +1773,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1668 completions added by installing git-helpers (0 removed, 3013 total)
+1675 completions added by installing git-helpers (0 removed, 3020 total)
 ```
 </details>
 

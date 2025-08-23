@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+
+# Upload files to GitHub Gist preserving their filenames
+#
+# This is a simple wrapper around `gh gist create` for basic use cases.
+# For advanced features like uploading to gist branches or handling images,
+# use gh-upload-img.py or the gist_upload.py library in git/github/
+
+set -euo pipefail
+
+# Default values
+OPEN_AFTER=false
+PRIVATE_FLAG=""
+DESCRIPTION=""
+FILES=()
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -o|--open)
+            OPEN_AFTER=true
+            shift
+            ;;
+        -p|--private)
+            PRIVATE_FLAG="--public=false"
+            shift
+            ;;
+        -d|--description)
+            if [[ -z "${2:-}" ]]; then
+                echo "Error: -d requires a description argument" >&2
+                exit 1
+            fi
+            DESCRIPTION="$2"
+            shift 2
+            ;;
+        -h|--help)
+            cat >&2 <<EOF
+Upload files to GitHub Gist preserving their filenames
+
+Usage: $(basename "$0") [OPTIONS] file1 [file2 ...]
+
+Options:
+  -o, --open         Open gist in browser after creation
+  -p, --private      Make gist private (default is public)
+  -d, --description  Add description to gist
+  -h, --help         Show this help message
+
+Examples:
+  # Upload single file publicly
+  $(basename "$0") script.sh
+
+  # Upload multiple files as private gist with description
+  $(basename "$0") -p -d "Config files" .bashrc .vimrc
+
+  # Upload and open in browser
+  $(basename "$0") -o README.md main.py
+
+For advanced features:
+  - Uploading images with markdown output: gh-upload-img.py
+  - Managing gist branches: Use the gist_upload.py library
+EOF
+            exit 0
+            ;;
+        -*)
+            echo "Error: Unknown option $1" >&2
+            echo "Use -h for help" >&2
+            exit 1
+            ;;
+        *)
+            # It's a file
+            if [[ ! -f "$1" ]]; then
+                echo "Error: File not found: $1" >&2
+                exit 1
+            fi
+            FILES+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Check if we have files to upload
+if [[ ${#FILES[@]} -eq 0 ]]; then
+    echo "Error: No files specified" >&2
+    echo "Use -h for help" >&2
+    exit 1
+fi
+
+# Build the gh gist create command
+GH_CMD=(gh gist create)
+
+# Add private flag if set
+if [[ -n "$PRIVATE_FLAG" ]]; then
+    GH_CMD+=($PRIVATE_FLAG)
+fi
+
+# Add description if provided
+if [[ -n "$DESCRIPTION" ]]; then
+    GH_CMD+=(--desc "$DESCRIPTION")
+fi
+
+# Add all files
+GH_CMD+=("${FILES[@]}")
+
+# Create the gist
+echo "Creating gist with ${#FILES[@]} file(s)..." >&2
+GIST_URL=$("${GH_CMD[@]}")
+
+if [[ -z "$GIST_URL" ]]; then
+    echo "Error: Failed to create gist" >&2
+    exit 1
+fi
+
+echo "Gist created: $GIST_URL"
+
+# Open in browser if requested
+if [[ "$OPEN_AFTER" == true ]]; then
+    echo "Opening in browser..." >&2
+    if command -v open &>/dev/null; then
+        open "$GIST_URL"
+    elif command -v xdg-open &>/dev/null; then
+        xdg-open "$GIST_URL"
+    else
+        echo "Could not open browser automatically" >&2
+    fi
+fi
+
+# Copy URL to clipboard if possible
+if command -v pbcopy &>/dev/null; then
+    echo "$GIST_URL" | pbcopy
+    echo "URL copied to clipboard" >&2
+elif command -v xclip &>/dev/null; then
+    echo "$GIST_URL" | xclip -selection clipboard
+    echo "URL copied to clipboard" >&2
+fi

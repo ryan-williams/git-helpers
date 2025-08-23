@@ -1,7 +1,4 @@
-### Aliases for `gh gist`
-
 alias ghg="gh gist"
-
 alias ggc="gh gist create"
 alias ghgc="gh gist create"
 alias gop="gh gist create --web"
@@ -21,6 +18,16 @@ alias ghge="gh gist edit"
 alias ghgu="gh gist edit"
 
 alias gdo="gist-dir -o"
-alias gdop="gist-dir -op"
 
-alias gtid=gist-id
+alias ghgco="gh gist clone"
+alias ghgv="gh gist view"
+
+alias gu="gist-upload"
+alias guo="gist-upload -o"
+alias gup="gist-upload -p"
+alias guop="gist-upload -o -p"
+alias gupd="gist-upload -p -d"
+
+alias gui="gh-upload-img.py"
+alias guim="gh-upload-img.py -f markdown"  # Upload image with markdown output
+alias guiu="gh-upload-img.py -f url"       # Upload image with URL output
