@@ -52,13 +52,14 @@ def get_gist_id():
 @click.command('github-open-web')
 @click.option('-b', '--branch', help='Branch to open (defaults to current branch)')
 @click.option('-d', '--default', is_flag=True, help='Open default branch')
-@click.option('-r', '--repo', help='Repository (owner/name format) or gist ID')
+@click.option('-r', '--remote', help='Git remote name to use (e.g. origin, upstream)')
+@click.option('-R', '--repo', help='Repository (owner/name format) or gist ID')
 @click.option('-g', '--gist', is_flag=True, help='Force gist mode')
-def github_open_web(branch, default, repo, gist):
+def github_open_web(branch, default, remote, repo, gist):
     """Open GitHub repository or gist in web browser."""
 
     # Check if this is a gist or if gist mode is forced
-    if gist or (not repo and is_gist_repo()):
+    if gist or (not repo and not remote and is_gist_repo()):
         # Handle gist mode
         if repo:
             # User provided a gist ID
@@ -74,10 +75,29 @@ def github_open_web(branch, default, repo, gist):
         cmd = ['gh', 'gist', 'view', '--web', gist_id]
     else:
         # Regular repository mode
-        cmd = ['gh', 'repo', 'view', '--web']
+        # Handle remote option
+        if remote:
+            # Get the repository path from the specified remote
+            try:
+                remote_url = check_output(['git', 'remote', 'get-url', remote], stderr=DEVNULL).decode().strip()
+                # Parse GitHub owner/repo from the URL
+                # Handle both SSH and HTTPS URLs
+                match = re.match(r'(?:git@github\.com:|https://github\.com/)([^/]+/[^/]+?)(?:\.git)?$', remote_url)
+                if match:
+                    repo = match.group(1)
+                    stderr.write(f"Using remote '{remote}': {repo}\n")
+                else:
+                    stderr.write(f"Error: Could not parse GitHub repo from remote '{remote}': {remote_url}\n")
+                    exit(1)
+            except CalledProcessError:
+                stderr.write(f"Error: Remote '{remote}' not found\n")
+                exit(1)
 
+        # Build command with repository as positional argument
         if repo:
-            cmd.extend(['-R', repo])
+            cmd = ['gh', 'repo', 'view', repo, '--web']
+        else:
+            cmd = ['gh', 'repo', 'view', '--web']
 
         if default:
             # Just open the default branch (gh does this by default)
