@@ -3,3 +3,13 @@ alias gcfp="g cfp"
 alias gcft="g cft"
 alias gctp="g ctp"
 alias gho="g ho"
+
+# Find earliest commit containing a blob
+alias gb1c="g b1c"
+alias gb1cc="g b1cc"
+alias gb1cv="g b1cv"
+alias gb1co="g b1co"
+alias gb1cu="g b1cu"
+alias gb1cr="g b1cr"
+alias gb1cor="g b1cor"
+alias gb1cur="g b1cur"

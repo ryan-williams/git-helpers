@@ -1,0 +1,246 @@
+#!/usr/bin/env bash
+
+# Find the earliest commit containing a blob SHA and optionally open GitHub URL
+# Usage: git-blob-first-commit [-o|--open] [-u|--url] <blob-sha>
+
+set -euo pipefail
+
+# Parse arguments
+OPEN_URL=false
+PRINT_URL=false
+BLOB_SHA=""
+REMOTE_NAME=""
+VERBOSE=false
+QUIET=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -o|--open)
+            OPEN_URL=true
+            shift
+            ;;
+        -u|--url)
+            PRINT_URL=true
+            shift
+            ;;
+        -r|--remote)
+            if [[ -z "${2:-}" ]]; then
+                echo "Error: -r requires a remote name" >&2
+                exit 1
+            fi
+            REMOTE_NAME="$2"
+            shift 2
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        -c|--commit)
+            QUIET=true
+            shift
+            ;;
+        -h|--help)
+            cat >&2 <<EOF
+Find the earliest commit containing a blob SHA
+
+Usage: $(basename "$0") [OPTIONS] <blob-sha>
+
+Options:
+  -o, --open         Open the GitHub URL in browser
+  -u, --url          Print the GitHub URL
+  -r, --remote NAME  Use specific remote (default: origin or upstream)
+  -c, --commit       Only output commit SHA
+  -v, --verbose      Show full metadata (commit, date, author, message, file)
+  -h, --help         Show this help message
+
+Default output: SHA:path format (for git show)
+
+Examples:
+  # Default: output in git show format (SHA:path)
+  $(basename "$0") 02f86182f16cb99cfc8934c7a0c159c1106094bb
+
+  # Just output commit SHA
+  $(basename "$0") -c 02f86182f16cb99cfc8934c7a0c159c1106094bb
+
+  # Show full metadata
+  $(basename "$0") -v 02f86182f16cb99cfc8934c7a0c159c1106094bb
+
+  # Find and open in GitHub
+  $(basename "$0") -o 02f86182f16cb99cfc8934c7a0c159c1106094bb
+
+  # Open using 'm' remote
+  $(basename "$0") -o -r m 02f86182f16cb99cfc8934c7a0c159c1106094bb
+EOF
+            exit 0
+            ;;
+        -*)
+            echo "Error: Unknown option $1" >&2
+            echo "Use -h for help" >&2
+            exit 1
+            ;;
+        *)
+            BLOB_SHA="$1"
+            shift
+            ;;
+    esac
+done
+
+if [[ -z "$BLOB_SHA" ]]; then
+    echo "Error: No blob SHA specified" >&2
+    echo "Use -h for help" >&2
+    exit 1
+fi
+
+# First verify the blob exists
+if ! git cat-file -e "$BLOB_SHA" 2>/dev/null; then
+    echo "Error: Object $BLOB_SHA does not exist in repository" >&2
+    exit 1
+fi
+
+# Get object type
+OBJ_TYPE=$(git cat-file -t "$BLOB_SHA")
+if [[ "$OBJ_TYPE" != "blob" ]]; then
+    echo "Error: $BLOB_SHA is a $OBJ_TYPE, not a blob" >&2
+    exit 1
+fi
+
+# Only show progress in verbose mode
+if [[ "$VERBOSE" == true ]]; then
+    echo "Searching for blob $BLOB_SHA..." >&2
+fi
+
+# Use git log with --find-object if available (Git 2.16+)
+GIT_VERSION=$(git --version | awk '{print $3}')
+GIT_MAJOR=$(echo "$GIT_VERSION" | cut -d. -f1)
+GIT_MINOR=$(echo "$GIT_VERSION" | cut -d. -f2)
+
+if [[ "$GIT_MAJOR" -gt 2 ]] || [[ "$GIT_MAJOR" -eq 2 && "$GIT_MINOR" -ge 16 ]]; then
+    # Modern Git: use --find-object for efficiency
+    COMMIT_INFO=$(git log --all --source --reverse --pretty=format:'%H' --find-object="$BLOB_SHA" 2>/dev/null | head -1)
+
+    if [[ -z "$COMMIT_INFO" ]]; then
+        echo "Error: Blob $BLOB_SHA not found in any commit" >&2
+        exit 1
+    fi
+
+    FIRST_COMMIT="$COMMIT_INFO"
+else
+    # Older Git: use a more efficient rev-list approach
+    # Find all commits, then check which ones have the blob
+    echo "Using compatibility mode for older Git..." >&2
+
+    # Get all commits that touch files (not just merge commits)
+    COMMITS_WITH_BLOB=""
+
+    # Use rev-list to get all commits, then check each
+    for commit in $(git rev-list --all --reverse); do
+        if git ls-tree -r "$commit" 2>/dev/null | grep -q "blob $BLOB_SHA"; then
+            COMMITS_WITH_BLOB="$commit"
+            break  # Found the earliest one
+        fi
+    done
+
+    if [[ -z "$COMMITS_WITH_BLOB" ]]; then
+        echo "Error: Blob $BLOB_SHA not found in any commit" >&2
+        exit 1
+    fi
+
+    FIRST_COMMIT="$COMMITS_WITH_BLOB"
+fi
+
+# Get the file path in that commit
+FILE_PATH=$(git ls-tree -r "$FIRST_COMMIT" 2>/dev/null | grep "blob $BLOB_SHA" | awk '{print $4}' | head -1)
+
+if [[ -z "$FILE_PATH" ]]; then
+    echo "Error: Could not determine file path for blob" >&2
+    exit 1
+fi
+
+# Output based on mode (unless we're only printing URL)
+if [[ "$PRINT_URL" != true ]] || [[ "$OPEN_URL" == true ]]; then
+    if [[ "$QUIET" == true ]]; then
+        # Just output commit SHA (-c mode)
+        echo "$FIRST_COMMIT"
+    elif [[ "$VERBOSE" == true ]]; then
+        # Verbose mode: show full metadata
+        COMMIT_DATE=$(git show -s --format='%ai' "$FIRST_COMMIT")
+        COMMIT_MSG=$(git show -s --format='%s' "$FIRST_COMMIT")
+        COMMIT_AUTHOR=$(git show -s --format='%an' "$FIRST_COMMIT")
+
+        echo "Earliest commit: $FIRST_COMMIT"
+        echo "Date: $COMMIT_DATE"
+        echo "Author: $COMMIT_AUTHOR"
+        echo "Message: $COMMIT_MSG"
+        echo "File: $FILE_PATH"
+    else
+        # Default: output in git show format
+        echo "${FIRST_COMMIT}:${FILE_PATH}"
+    fi
+fi
+
+# Handle GitHub URL if requested
+if [[ "$PRINT_URL" == true ]] || [[ "$OPEN_URL" == true ]]; then
+    # Get GitHub URL for the repository
+    GITHUB_URL=""
+    REMOTE_URL=""
+
+    # If remote specified, use that
+    if [[ -n "$REMOTE_NAME" ]]; then
+        REMOTE_URL=$(git remote get-url "$REMOTE_NAME" 2>/dev/null || true)
+        if [[ -z "$REMOTE_URL" ]]; then
+            echo "Error: Remote '$REMOTE_NAME' not found" >&2
+            exit 1
+        fi
+    else
+        # Try to get from gh CLI for current repo
+        if command -v gh &>/dev/null; then
+            GITHUB_URL=$(gh repo view --json url -q .url 2>/dev/null || true)
+        fi
+
+        # Fallback to parsing origin/upstream remote
+        if [[ -z "$GITHUB_URL" ]]; then
+            REMOTE_URL=$(git remote get-url origin 2>/dev/null || git remote get-url upstream 2>/dev/null || true)
+        fi
+    fi
+
+    # Convert remote URL to GitHub URL if needed
+    if [[ -n "$REMOTE_URL" ]] && [[ -z "$GITHUB_URL" ]]; then
+        # Convert SSH to HTTPS
+        GITHUB_URL=$(echo "$REMOTE_URL" | sed -e 's/git@github.com:/https:\/\/github.com\//' -e 's/\.git$//')
+    fi
+
+    if [[ -n "$GITHUB_URL" ]]; then
+        # Construct the blob URL
+        BLOB_URL="${GITHUB_URL}/blob/${FIRST_COMMIT}/${FILE_PATH}"
+
+        if [[ "$PRINT_URL" == true ]]; then
+            echo "$BLOB_URL"
+        fi
+
+        if [[ "$OPEN_URL" == true ]]; then
+            echo "Opening in browser..." >&2
+            if command -v open &>/dev/null; then
+                open "$BLOB_URL"
+            elif command -v xdg-open &>/dev/null; then
+                xdg-open "$BLOB_URL"
+            else
+                echo "Could not open browser automatically" >&2
+            fi
+        fi
+
+        # Copy to clipboard if possible (but don't announce in URL-only mode)
+        if command -v pbcopy &>/dev/null; then
+            echo "$BLOB_URL" | pbcopy
+            if [[ "$PRINT_URL" != true ]]; then
+                echo "URL copied to clipboard" >&2
+            fi
+        elif command -v xclip &>/dev/null; then
+            echo "$BLOB_URL" | xclip -selection clipboard
+            if [[ "$PRINT_URL" != true ]]; then
+                echo "URL copied to clipboard" >&2
+            fi
+        fi
+    else
+        echo "Warning: Could not determine GitHub URL" >&2
+    fi
+fi

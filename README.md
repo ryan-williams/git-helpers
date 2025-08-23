@@ -1,5 +1,5 @@
 # git-helpers
-[1,675](#count-completions) Git aliases and scripts.
+[1,684](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,12 +332,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1675 completions added by installing git-helpers
+# 1684 completions added by installing git-helpers
 # By length:
 # - 2 chars: 17
 # - 3 chars: 255
-# - 4 chars: 673
-# - 5 chars: 324
+# - 4 chars: 674
+# - 5 chars: 329
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1675 new completions:
+1684 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -666,6 +666,7 @@ gaup       = g add -u -p
 gaus       = !git add -u && git status
 gaut       = g author
 gawt       = g amend-worktree
+gb1c       = !git-blob-first-commit
 gbcc       = g copy-branch-checkout
 gbdf       = g branch -D
 gbeb       = git bisect-earliest-bad
@@ -1321,6 +1322,11 @@ gapr0      = g apply -R -p0
 gapu.      = g add -p -u .
 garcn      = g add-rebase-continue-no-edit
 gaup.      = g add -u -p .
+gb1cc      = !git-blob-first-commit -c
+gb1co      = !git-blob-first-commit -o
+gb1cr      = !git-blob-first-commit -r
+gb1cu      = !git-blob-first-commit -u
+gb1cv      = !git-blob-first-commit -v
 gbcag      = git bisect-commits-ahead-good
 gbcbb      = git bisect-commits-behind-bad
 gbhis      = g blob-hash -is
@@ -1636,6 +1642,8 @@ gtwp3      = g throw.py HEAD~3
 gxcam      = <git repo dir> ['git cam' args...]
 gxcap      = <git repo dir> ['git cap' args...]
 gaapfu     = g amend-force-push -a u
+gb1cor     = !git-blob-first-commit -o -r
+gb1cur     = !git-blob-first-commit -u -r
 gcaane     = g commit -a -u --amend --no-edit --allow-empty
 gcaapm     = g commit-push -a -m
 gcamtf     = !git-commit-and-tag.sh -a -f
@@ -1773,7 +1781,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1675 completions added by installing git-helpers (0 removed, 3020 total)
+1684 completions added by installing git-helpers (0 removed, 3029 total)
 ```
 </details>
 

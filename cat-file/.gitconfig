@@ -3,3 +3,13 @@
   ctp = cat-file -p
   cft = cat-file -t
   ho = hash-object
+
+  # Find earliest commit containing a blob
+  b1c = !git-blob-first-commit
+  b1cc = !git-blob-first-commit -c
+  b1cv = !git-blob-first-commit -v
+  b1co = !git-blob-first-commit -o
+  b1cu = !git-blob-first-commit -u
+  b1cr = !git-blob-first-commit -r
+  b1cor = !git-blob-first-commit -o -r
+  b1cur = !git-blob-first-commit -u -r
