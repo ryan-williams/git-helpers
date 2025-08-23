@@ -76,7 +76,6 @@
   lws = log --follow --stat
   hash-message = log -1 '--format=%h %s'
   hm = !git --no-pager log -1 '--format=%h %s'
-  shm = !git --no-pager log -1 '--format=%h %s'
   msg = !git --no-pager log -1 --format=%s
   sbj = !git --no-pager log -1 --format=%s
   l1 = !git --no-pager log -1

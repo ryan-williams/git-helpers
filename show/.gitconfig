@@ -2,9 +2,10 @@
   eq = equal
   nsh = !git --no-pager show
   nshs = !git --no-pager show
-  sh = show
+  sh = show -m
   sh1 = show HEAD@{1}
   sh2 = show HEAD@{2}
+  shm = show -m
   shmr = show --diff-merges=remerge
   shms = show --diff-merges=separate
   shno = show --name-only

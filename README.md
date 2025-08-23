@@ -574,7 +574,7 @@ gsc        = g status --porcelain
 gsd        = !git status && git diff
 gsf        = g submodule foreach --recursive --quiet
 gsg        = g submodule-log
-gsh        = g show
+gsh        = g show -m
 gsj        = g log -n1 --format=%s
 gsk        = g stash save -k
 gsl        = g stash list
@@ -1212,7 +1212,7 @@ gshd       = g show --submodule=diff
 gshf       = g show-sha-file
 gshh       = g show-head
 gshl       = g show --submodule=log
-gshm       = !git --no-pager log -1 '--format=%h %s'
+gshm       = g show -m
 gsho       = g squash-head-onto
 gshp       = g show HEAD^
 gshr       = g show-rebase-head
