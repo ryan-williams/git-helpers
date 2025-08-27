@@ -1,5 +1,5 @@
 # git-helpers
-[1,685](#count-completions) Git aliases and scripts.
+[1,688](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,11 +332,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1685 completions added by installing git-helpers
+# 1688 completions added by installing git-helpers
 # By length:
 # - 2 chars: 17
 # - 3 chars: 255
-# - 4 chars: 674
+# - 4 chars: 677
 # - 5 chars: 330
 ```
 
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1685 new completions:
+1688 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -972,6 +972,7 @@ gisr       = g is-repo
 gl1T       = g l1fT
 gl1f       = !git --no-pager log-1-format
 gl1l       = g log-oneline
+gl1p       = g log -1 -p
 gl1r       = !git --no-pager log-1-format -r
 gl1t       = g l1fT
 glaf       = g ls-new-files
@@ -986,6 +987,7 @@ glds       = g diff --cached --name-only --diff-filter=D
 gldu       = g diff --name-only --diff-filter=D
 glf1       = !git --no-pager log-1-format
 glfu       = g remote-list-fetch-urls
+glg1       = g log --oneline
 glgf       = g log-format
 glgg       = g log -S
 glgp       = g load-github-prs
@@ -1011,6 +1013,7 @@ gloj       = gitlab_open_jobs
 glol       = g log --oneline
 glow       = glab repo view --web
 gloz       = g ls-files --other --exclude-standard --directory --no-empty-directory -z
+glp1       = g log -p -1
 glpb       = gitlab_protect_branch
 glpf       = g log -p --follow
 glpp       = g log -p --
@@ -1782,7 +1785,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1685 completions added by installing git-helpers (0 removed, 3030 total)
+1688 completions added by installing git-helpers (0 removed, 3033 total)
 ```
 </details>
 

@@ -82,9 +82,12 @@
   l1f = !git --no-pager log-1-format
   l1ft = !git --no-pager log-1-format t
   l1fT = !git --no-pager log-1-format T
+  l1p = log -1 -p
   l1r = !git --no-pager log-1-format -r
   l1t = l1ft
   l1T = l1fT
+  lg1 = log --oneline
+  lp1 = log -p -1
   fh = full-hash
   fm = log-format
   lf = log-format
