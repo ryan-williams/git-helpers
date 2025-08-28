@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -e
+
+usage() {
+    echo "Usage: git create-empty-commit [-b branch] [-m message]" >&2
+    echo "  -b branch   Create/update branch to point to the empty commit" >&2
+    echo "  -m message  Commit message (default: 'Empty initial commit')" >&2
+    exit 1
+}
+
+branch=""
+msg="Empty initial commit"
+
+while getopts "b:m:h" opt; do
+    case "$opt" in
+        b)
+            branch="$OPTARG"
+            ;;
+        m)
+            msg="$OPTARG"
+            ;;
+        h)
+            usage
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+
+# Create empty tree
+empty_tree=$(git hash-object -t tree /dev/null)
+
+# Create empty commit
+empty_commit=$(git commit-tree "$empty_tree" -m "$msg")
+
+# Create or update branch if specified
+if [ -n "$branch" ]; then
+    git branch -f "$branch" "$empty_commit"
+fi
+
+# Output the commit SHA
+echo "$empty_commit"

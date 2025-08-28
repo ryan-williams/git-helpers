@@ -52,6 +52,7 @@
   cnm   = commit --amend -m
   cnne  = commit --amend --no-edit
   cpau  = copy-author
+  cec   = create-empty-commit
   cap   = commit-push
   caap  = commit-push -a
   cpm   = commit-push -m
