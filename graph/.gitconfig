@@ -27,4 +27,6 @@
   grH = graph -H
   grl = graph -l
   grn = graph -n
+  grt = graph -t
+  grth = graph -t -H
   gru = graph -u

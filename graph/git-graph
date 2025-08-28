@@ -14,6 +14,7 @@
 # -e: show author/committer email (default: name)
 # -H: omit SHA hashes from output
 # -l: render "local" datetimes (default: "relative")
+# -t: show worktree SHA (tree object hash)
 # -u: include upstream ("tracked") branch
 #
 # Other args are passed through to `git log`
@@ -30,6 +31,7 @@ date_fmt='%cd'
 date_style="relative"
 include_upstream=
 omit_sha=
+show_tree=
 while [ $# -gt 0 ]; do
     arg="$1"; shift
     case "$arg" in
@@ -41,6 +43,7 @@ while [ $# -gt 0 ]; do
     -e) show_email=1 ;;
     -H) omit_sha=1 ;;
     -l) date_style="local" ;;
+    -t) show_tree=1 ;;
     -u) include_upstream=1 ;;
     *) args+=("$arg") ;;
     esac
@@ -74,11 +77,23 @@ for arg in "$@"; do
   fi
 done
 
-# Build format string based on whether SHAs should be omitted
+# Build format string based on flags
 if [ -n "$omit_sha" ]; then
-  format_string="%C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(auto)%d %s"
+  if [ -n "$show_tree" ]; then
+    # Show only tree SHA when -H and -t are both used
+    format_string="%C(yellow)%t %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(auto)%d %s"
+  else
+    # Omit SHA entirely with just -H
+    format_string="%C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(auto)%d %s"
+  fi
 else
-  format_string="%C(auto)%h %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(auto)%d %s"
+  if [ -n "$show_tree" ]; then
+    # Show both commit and tree SHA with -t
+    format_string="%C(auto)%h %C(yellow)%t %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(auto)%d %s"
+  else
+    # Default: just commit SHA
+    format_string="%C(auto)%h %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(auto)%d %s"
+  fi
 fi
 
 git log \
