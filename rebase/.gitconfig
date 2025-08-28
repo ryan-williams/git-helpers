@@ -58,6 +58,7 @@
   rci     = reset-committer-rebase-head
   rcr     = reset-committer-rebase-head
   rcrbh   = reset-committer-rebase-head
+  ptc     = preserve-tree-and-committer
   rd      = rebase-diff
   rds     = rebase-diff --stat
   ri      = rebase -i
