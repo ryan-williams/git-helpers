@@ -56,12 +56,14 @@
   pot = push --tags origin
   psu = push --set-upstream
   pto = push --tags origin
-  pu = push-to-remote-branch upstream
+  pu = push-user-branch
   pub = push-user-branch
   pbf = push-user-branch -f
   pbn = push-user-branch -n
   pubf = push-user-branch -f
   pubn = push-user-branch -n
+  puf = push-user-branch -f
+  pun = push-user-branch -n
   spf = safe-push-force
   spfo = safe-push-force origin
   spfu = safe-push-force upstream
