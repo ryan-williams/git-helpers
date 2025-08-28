@@ -12,6 +12,7 @@
 # -C: show committer name and email (default: author)
 # -d: render ISO datetimes (default: "relative")
 # -e: show author/committer email (default: name)
+# -H: omit SHA hashes from output
 # -l: render "local" datetimes (default: "relative")
 # -u: include upstream ("tracked") branch
 #
@@ -28,6 +29,7 @@ email_color=cyan
 date_fmt='%cd'
 date_style="relative"
 include_upstream=
+omit_sha=
 while [ $# -gt 0 ]; do
     arg="$1"; shift
     case "$arg" in
@@ -37,6 +39,7 @@ while [ $# -gt 0 ]; do
     -C) show_committer=1 ;;
     -d) date_style="iso" ;;
     -e) show_email=1 ;;
+    -H) omit_sha=1 ;;
     -l) date_style="local" ;;
     -u) include_upstream=1 ;;
     *) args+=("$arg") ;;
@@ -71,9 +74,16 @@ for arg in "$@"; do
   fi
 done
 
+# Build format string based on whether SHAs should be omitted
+if [ -n "$omit_sha" ]; then
+  format_string="%C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(auto)%d %s"
+else
+  format_string="%C(auto)%h %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(auto)%d %s"
+fi
+
 git log \
   "$style" \
-  "--format=%C(auto)%h %C(blue)${date_fmt} %C(red)${author_fmt}%C(reset)%C(auto)%d %s" \
+  "--format=$format_string" \
   "--date=$date_style" \
   "$date_order" \
   "$@"
