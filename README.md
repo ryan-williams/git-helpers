@@ -1,5 +1,5 @@
 # git-helpers
-[1,700](#count-completions) Git aliases and scripts.
+[1,702](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,12 +332,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1700 completions added by installing git-helpers
+# 1702 completions added by installing git-helpers
 # By length:
 # - 2 chars: 17
 # - 3 chars: 255
-# - 4 chars: 681
-# - 5 chars: 333
+# - 4 chars: 682
+# - 5 chars: 334
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1700 new completions:
+1702 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -898,6 +898,7 @@ ggre       = g graph -e
 ggrh       = g graph -H
 ggrl       = g graph -l
 ggrn       = g graph -n
+ggrt       = g graph -t
 ggru       = g remote-get-url
 ggue       = g config --global user.email
 ggun       = g config --global user.name
@@ -1453,6 +1454,7 @@ ggrdh      = g graph -d HEAD
 ggrdn      = g graph -d -n
 ggrec      = g graph -e -C
 ggrhu      = g graph -u HEAD
+ggrth      = g graph -t -H
 ggsid      = g set-id -g
 ggsie      = g set-id -g
 ghbis      = g blob-hash -is
@@ -1795,7 +1797,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1700 completions added by installing git-helpers (0 removed, 3045 total)
+1702 completions added by installing git-helpers (0 removed, 3047 total)
 ```
 </details>
 
