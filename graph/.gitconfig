@@ -24,6 +24,7 @@
   grdn = graph -d -n
   grh = graph HEAD
   grhu = graph -u HEAD
+  grH = graph -H
   grl = graph -l
   grn = graph -n
   gru = graph -u
