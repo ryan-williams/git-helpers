@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# During a rebase, restore the exact tree from the original commit being rebased,
+# then reset committer info to match the original.
+#
+# This ensures bit-for-bit tree preservation during complex rebases.
+
+set -e
+
+rebase_head="$(git rebase-head)"
+if [ -z "$rebase_head" ]; then
+    echo "No rebase detected (.git/REBASE_HEAD missing, no relevant SHA recognized in .git/rebase-merge/done)" >&2
+    exit 1
+fi
+
+# Get the current tree and original tree
+current_tree=$(git rev-parse HEAD^{tree})
+original_tree=$(git rev-parse "$rebase_head^{tree}")
+
+# Only restore if trees differ
+if [ "$current_tree" != "$original_tree" ]; then
+    echo "Restoring tree from $rebase_head (tree was modified during rebase)" >&2
+
+    # Checkout the original tree into the index and working directory
+    git read-tree -m -u "$rebase_head^{tree}"
+
+    # Amend the commit with the original tree
+    git commit --amend --no-edit --allow-empty
+fi
+
+# Reset committer info to match original
+git set-committer-info "$rebase_head"
