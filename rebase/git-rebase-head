@@ -30,7 +30,14 @@ if ! [ -f "$rebase_done" ]; then
     exit 11
 fi
 
-# Extract the SHA from the last `pick` line.
-pick_line="$(cat "$rebase_done" | grep -e '^pick' -e '^edit' | tail -n1)"
-sha="$(echo "$pick_line" | awk -F' ' '{print $2}')"
+# Extract the SHA from the last `pick`, `edit`, or `merge` line.
+# For merge lines, the format is "merge -C <sha> <label>"
+last_line="$(cat "$rebase_done" | grep -E '^(pick|edit|merge)' | tail -n1)"
+if echo "$last_line" | grep -q '^merge'; then
+    # Extract SHA from merge line (format: "merge -C SHA label")
+    sha="$(echo "$last_line" | awk '{print $3}')"
+else
+    # Extract SHA from pick/edit line (format: "pick SHA")
+    sha="$(echo "$last_line" | awk '{print $2}')"
+fi
 echo "$sha"
