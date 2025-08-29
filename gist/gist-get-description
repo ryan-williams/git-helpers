@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+#
+# Get a GitHub Gist's description
+#
+# Usage:
+#   gist-get-description [gist_id]
+#
+# If gist_id is not provided, uses the current directory's gist ID (via gist-id command)
+#
+# Examples:
+#   gist-get-description
+#   gist-get-description abc123def456
+
+set -e
+
+# Get gist ID from argument or current directory
+if [ $# -gt 0 ]; then
+    gist_id="$1"
+else
+    # Try to get gist ID from current directory
+    if command -v gist-id &>/dev/null; then
+        gist_id="$(gist-id 2>/dev/null || true)"
+    fi
+
+    if [ -z "$gist_id" ]; then
+        echo "Error: No gist ID provided and couldn't determine from current directory" >&2
+        echo "Usage: $0 [gist_id]" >&2
+        exit 1
+    fi
+fi
+
+# Get the gist description using GitHub API
+# Use --jq to extract just the description field
+gh api "gists/$gist_id" --jq '.description'

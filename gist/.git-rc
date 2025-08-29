@@ -17,6 +17,9 @@ alias gge="gh gist edit"
 alias ghge="gh gist edit"
 alias ghgu="gh gist edit"
 
+alias ghgsd="gist-set-description"
+alias ghggd="gist-get-description"
+
 alias gdo="gist-dir -o"
 
 alias ghgco="gh gist clone"

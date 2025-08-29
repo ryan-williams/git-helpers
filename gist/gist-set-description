@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+# Set or update a GitHub Gist's description
+#
+# Usage:
+#   gist-set-description <description> [gist_id]
+#   gist-set-description -d <description> [gist_id]
+#
+# If gist_id is not provided, uses the current directory's gist ID (via gist-id command)
+#
+# Examples:
+#   gist-set-description "My new description"
+#   gist-set-description "My new description" abc123def456
+#   gist-set-description -d "My new description"
+
+set -e
+
+# Parse arguments
+description=""
+gist_id=""
+
+# Handle -d flag for consistency with gh gist edit
+if [ "$1" = "-d" ]; then
+    shift
+    if [ $# -eq 0 ]; then
+        echo "Error: Description required after -d flag" >&2
+        exit 1
+    fi
+    description="$1"
+    shift
+else
+    if [ $# -eq 0 ]; then
+        echo "Usage: $0 [-d] <description> [gist_id]" >&2
+        exit 1
+    fi
+    description="$1"
+    shift
+fi
+
+# Get gist ID from argument or current directory
+if [ $# -gt 0 ]; then
+    gist_id="$1"
+else
+    # Try to get gist ID from current directory
+    if command -v gist-id &>/dev/null; then
+        gist_id="$(gist-id 2>/dev/null || true)"
+    fi
+
+    if [ -z "$gist_id" ]; then
+        echo "Error: No gist ID provided and couldn't determine from current directory" >&2
+        echo "Usage: $0 [-d] <description> [gist_id]" >&2
+        exit 1
+    fi
+fi
+
+# Update the gist description using GitHub API
+echo "Updating description for gist: $gist_id" >&2
+gh api "gists/$gist_id" --method PATCH -f description="$description"
+
+echo "Description updated successfully" >&2
