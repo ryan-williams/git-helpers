@@ -1,16 +1,27 @@
 #!/usr/bin/env bash
 
-# Set the upstream ref for the current branch. Usage:
+# Set the upstream ref for a branch. Usage:
 #
-#   $ git branch-upstream [upstream ref] <branch>
+#   $ git branch-upstream                    # Set current branch to track origin/main
+#   $ git branch-upstream <upstream>         # Set current branch to track <upstream>
+#   $ git branch-upstream <branch> <upstream> # Set <branch> to track <upstream>
 
 if [ $# -eq 0 ]; then
+  # No args: set current branch to track default remote/branch
   remote="$(git default-remote)"
   branch="$(git remote-default-branch "$remote")"
   upstream="$remote/$branch"
-else
+  git branch --set-upstream-to "$upstream"
+elif [ $# -eq 1 ]; then
+  # One arg: set current branch to track the given upstream
   upstream="$1"
-  shift
+  git branch --set-upstream-to "$upstream"
+elif [ $# -eq 2 ]; then
+  # Two args: set specified branch to track specified upstream
+  branch="$1"
+  upstream="$2"
+  git branch --set-upstream-to "$upstream" "$branch"
+else
+  echo "Usage: git branch-upstream [<branch>] [<upstream>]" >&2
+  exit 1
 fi
-
-git branch --set-upstream-to "$upstream" "$@"
