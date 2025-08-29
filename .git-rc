@@ -172,3 +172,8 @@ alias git-set-sha=git_set_sha
 
 git add-global-file core.excludesfile "$HOME/global.gitignore" "$HOME/git/ignore"
 git add-global-file core.attributesfile "$HOME/.gitattributes" "$HOME/git/attributes"
+
+# Source git alias completions
+if [ -f "$GIT_HELPERS_HOME/.git-alias-completions.bash" ]; then
+  source "$GIT_HELPERS_HOME/.git-alias-completions.bash"
+fi
