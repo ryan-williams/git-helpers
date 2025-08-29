@@ -42,5 +42,10 @@ if [ -n "$dry_run" ]; then
   exit
 fi
 
-export GIT_SEQUENCE_EDITOR="echo '$plan' >"
+# Write plan to a temp file to avoid quoting issues
+plan_temp=$(mktemp)
+trap "rm -f $plan_temp" EXIT
+echo "$plan" > "$plan_temp"
+
+export GIT_SEQUENCE_EDITOR="cat $plan_temp >"
 "${cmd[@]}"
