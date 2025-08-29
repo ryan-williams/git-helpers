@@ -503,6 +503,7 @@ github_protected_branches() {
   gh api "repos/$path/branches?protected=true"
 }
 export -f github_protected_branches
+defn ghpb github_protected_branches
 defn ghpbs github_protected_branches
 
 defn ghv gh variable list
