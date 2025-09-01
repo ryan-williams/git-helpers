@@ -18,7 +18,9 @@
   dcp  = diff --cached --submodule=diff
   dcq  = diff --cached --quiet
   dcss = diff --cached --submodule=short
+  dcsw = diff --cached --stat -w
   dcw  = diff --cached -w
+  dcws = diff --cached -w --stat
   df   = diff-filter
   dfm  = diff-filter M
   dg   = diff-gif.py
