@@ -23,10 +23,11 @@
   grdh = graph -d HEAD
   grdn = graph -d -n
   grh = graph HEAD
+  grht = graph -t -H
   grhu = graph -u HEAD
-  grH = graph -H
   grl = graph -l
   grn = graph -n
+  grs = graph -H
   grt = graph -t
   grth = graph -t -H
   gru = graph -u
