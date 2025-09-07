@@ -21,6 +21,7 @@ alias ghgsd="gist-set-description"
 alias ghggd="gist-get-description"
 
 alias gdo="gist-dir -o"
+alias gdop="gist-dir -op"
 
 alias ghgco="gh gist clone"
 alias ghgv="gh gist view"
