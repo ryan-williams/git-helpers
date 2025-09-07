@@ -84,7 +84,7 @@ def parse_gist_url(url):
 
 def gist_dir(
     dir,
-    remote='gist',
+    remote='g',
     branch='gist',
     copy_url=False,
     open_gist=False,
@@ -152,7 +152,17 @@ def gist_dir(
                 # Make working dir a clone of the upstream gist
                 run('git', 'init')
 
-        remotes = lines('git', 'remote')
+        remotes = list(lines('git', 'remote'))
+
+        # If the specified remote already exists and it's 'g', try 'gist' instead
+        if remote == 'g' and 'g' in remotes:
+            if 'gist' not in remotes:
+                err(f"Remote 'g' already exists, using 'gist' instead")
+                remote = 'gist'
+            else:
+                err(f"Both 'g' and 'gist' remotes already exist")
+                # Keep the original remote name, will just update it
+
         if remote not in remotes:
             run('git', 'remote', 'add', remote, ssh_url)
         run('git', 'fetch', remote)
@@ -204,8 +214,8 @@ if __name__ == '__main__':
     parser.add_argument('-g', '--gist', help="URL of an existing Gist (will overwrite that Gist's contents!)")
     parser.add_argument('-o', '--open', default=False, action='store_true', help="Open the gist when finished running")
     parser.add_argument('-p', '--private', default=False, action='store_true', help="Make the gist private")
-    parser.add_argument('-r', '--remote', default='gist',
-                        help='Name to use for a git remote created in each repo/directory, which points at the created gist.')
+    parser.add_argument('-r', '--remote', default='g',
+                        help='Name to use for a git remote created in each repo/directory, which points at the created gist (defaults to "g", falls back to "gist" if "g" is taken).')
     parser.add_argument('-H', '--history', '--push_history', default=False, action='store_true',
                         help="When set, push the directory's existing Git history to the newly-created Gist (by default, a standalone commit appearing add applicable files de novo will be created).")
     args = parser.parse_args()
