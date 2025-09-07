@@ -2,7 +2,7 @@
   eq = equal
   nsh = !git --no-pager show
   nshs = !git --no-pager show
-  sh = show -m
+  sh = show -m --format=fuller
   sh1 = show HEAD@{1}
   sh2 = show HEAD@{2}
   shm = show -m
@@ -24,7 +24,7 @@
   shp3 = show HEAD~3
   shd = show --submodule=diff
   shl = show --submodule=log
-  shs = show --stat
+  shs = show --stat -m --format=fuller
   shsl = show --submodule=log
   shss = show --submodule=short
   shw = show -w
