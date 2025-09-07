@@ -90,7 +90,6 @@ def gist_dir(
     open_gist=False,
     private=False,
     files=None,
-    push_history=False,
     restore_branch=False,
     gist=None,
 ):
@@ -103,8 +102,14 @@ def gist_dir(
     with cd(dir):
         # We'll make a git repository in this directory iff one doesn't exist
         init = not exists('.git')
-        # if not init and files:
-        #     raise Exception('File-restrictions not supported for existing git-repo directories')
+
+        # Capture current branch if in existing repo (for restore_branch option)
+        original_branch = None
+        if not init:
+            try:
+                original_branch = line('git', 'symbolic-ref', '-q', '--short', 'HEAD')
+            except:
+                pass  # Detached HEAD or other edge case
 
         if gist:
             id, ssh_url = parse_gist_url(gist)
@@ -165,23 +170,26 @@ def gist_dir(
 
         if remote not in remotes:
             run('git', 'remote', 'add', remote, ssh_url)
-        run('git', 'fetch', remote)
 
-        prev_branch = line('git', 'symbolic-ref', '-q', '--short', 'HEAD')
-        prev_sha = line('git', 'log', '-1', '--format=%h')
-        prev_worktree = line('git', 'log', '-1', '--format=%t')
-        err(f'Current branch {prev_branch}: SHA {prev_sha}, worktree {prev_worktree}')
+        # If we're in an existing git repo (not newly initialized), push current commit to gist
+        if not init:
+            prev_sha = line('git', 'log', '-1', '--format=%h')
 
-        # Create local branch to track the gist
-        run('git', 'checkout', '-b', branch, f'{remote}/main')
-        run('git', 'branch', '-u', f'{remote}/main')
+            err(f'Pushing existing commit {prev_sha} to gist')
+            # Force push current HEAD to gist's main branch
+            run('git', 'push', remote, '--force', 'HEAD:main')
 
-        # If push_history is requested, push the original commit (with history) to replace the flat commit
-        if push_history:
-            err(f"Pushing commit history to replace flat gist commit")
-            run('git', 'push', remote, '--force', f'{prev_sha}:main')
-            # Update local branch to point to the same commit we just pushed
-            run('git', 'reset', '--hard', prev_sha)
+            # Set up tracking if we're on a branch
+            if original_branch:
+                run('git', 'branch', '--set-upstream-to', f'{remote}/main', original_branch)
+                err(f'Set {original_branch} to track {remote}/main')
+        else:
+            # For newly initialized repos, fetch and create tracking branch
+            run('git', 'fetch', remote)
+
+            # Create local branch to track the gist
+            run('git', 'checkout', '-b', branch, f'{remote}/main')
+            run('git', 'branch', '-u', f'{remote}/main')
 
         # Configure push.default so that `git push` will update gist/main
         run('git', 'config', 'push.default', 'upstream')
@@ -193,8 +201,8 @@ def gist_dir(
             except CalledProcessError:
                 err("Couldn't find `open` command")
 
-        if restore_branch:
-            run('git', 'checkout', prev_branch)
+        if restore_branch and original_branch:
+            run('git', 'checkout', original_branch)
 
 
 if __name__ == '__main__':
@@ -204,9 +212,9 @@ if __name__ == '__main__':
     parser.add_argument('paths', nargs='*',
                         help='Either a list of directories to create GitHub gists of, or a list of files to add to a gist from the current directory (binary files work in both cases!)')
     parser.add_argument('-b', '--branch', default='gist',
-                        help="Name for new local branch that will track the new Gist's \"main\" branch")
+                        help="Name for new local branch when creating gist from non-git directory (ignored for existing git repos)")
     parser.add_argument('-B', '--restore_branch', default=False, action='store_true',
-                        help="Move back to current branch at end of execution (by default, a new local branch tracking the new Gist's \"main\" branch is checked out when `gist-dir` is finished running")
+                        help="Stay on current branch after creating gist (only applies to existing git repos)")
     parser.add_argument('-c', '--copy', default=False, action='store_true',
                         help="Copy the resulting gist's URL to the clipboard")
     parser.add_argument('-d', '--dir', required=False,
@@ -216,8 +224,6 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--private', default=False, action='store_true', help="Make the gist private")
     parser.add_argument('-r', '--remote', default='g',
                         help='Name to use for a git remote created in each repo/directory, which points at the created gist (defaults to "g", falls back to "gist" if "g" is taken).')
-    parser.add_argument('-H', '--history', '--push_history', default=False, action='store_true',
-                        help="When set, push the directory's existing Git history to the newly-created Gist (by default, a standalone commit appearing add applicable files de novo will be created).")
     args = parser.parse_args()
 
     dir = args.dir
@@ -226,7 +232,6 @@ if __name__ == '__main__':
     copy_url = args.copy
     open_gist = args.open
     private = args.private
-    push_history = args.history
     restore_branch = args.restore_branch
 
     gist = args.gist
@@ -261,7 +266,6 @@ if __name__ == '__main__':
             open_gist=open_gist,
             private=private,
             files=files,
-            push_history=push_history,
             restore_branch=restore_branch,
             gist=gist,
         )
