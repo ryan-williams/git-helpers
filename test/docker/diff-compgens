@@ -90,10 +90,10 @@ else
 fi
 if [ -n "$counts" ]; then
   completions="$(_comm -13)"
-  num2="$(echo "$completions" | grep -c '^g.$')"
-  num3="$(echo "$completions" | grep -c '^g..$')"
-  num4="$(echo "$completions" | grep -c '^g...$')"
-  num5="$(echo "$completions" | grep -c '^g....$')"
+  num2="$(echo "$completions" | grep -c '^..$')"
+  num3="$(echo "$completions" | grep -c '^...$')"
+  num4="$(echo "$completions" | grep -c '^....$')"
+  num5="$(echo "$completions" | grep -c '^.....$')"
   echo "By length:"
   echo "- 2 chars: $num2"
   echo "- 3 chars: $num3"

@@ -334,9 +334,9 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 scripts/count-completions.sh -c
 # 1719 completions added by installing git-helpers
 # By length:
-# - 2 chars: 17
-# - 3 chars: 255
-# - 4 chars: 685
+# - 2 chars: 19
+# - 3 chars: 268
+# - 4 chars: 687
 # - 5 chars: 344
 ```
 
