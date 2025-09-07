@@ -1,5 +1,5 @@
 # git-helpers
-[1,710](#count-completions) Git aliases and scripts.
+[1,715](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,12 +332,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1710 completions added by installing git-helpers
+# 1715 completions added by installing git-helpers
 # By length:
 # - 2 chars: 17
 # - 3 chars: 255
 # - 4 chars: 683
-# - 5 chars: 339
+# - 5 chars: 342
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1710 new completions:
+1715 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -635,7 +635,9 @@ pgr        = parse-github-url
 pre        = gh pr edit
 prv        = gh pr view
 rbo        = g rebase --onto
+rta        = ! git diff HEAD --name-only | xargs -I {} git sub 's/ +$//' -- {}
 rts        = g remove-trailing-spaces
+rtu        = ! git diff --name-only | xargs -I {} git sub 's/ +$//' -- {}
 gabd       = g patch-branch-diff
 gabt       = g list-status UA
 gabu       = g list-status AU
@@ -1587,6 +1589,9 @@ grsp3      = g reset HEAD~3
 grssm      = !git reset . && git submodule update --recursive && git status
 grssp      = g reset --soft HEAD^
 grtch      = g root-commits HEAD
+grtsa      = ! git diff HEAD --name-only | xargs -I {} git sub 's/ +$//' -- {}
+grtss      = ! git diff --cached --name-only | xargs -I {} git sub 's/ +$//' -- {}
+grtsu      = ! git diff --name-only | xargs -I {} git sub 's/ +$//' -- {}
 grvne      = g revert --no-edit
 grvph      = g rev-parse HEAD
 grvth      = g revert HEAD
@@ -1805,7 +1810,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1710 completions added by installing git-helpers (0 removed, 3055 total)
+1715 completions added by installing git-helpers (0 removed, 3060 total)
 ```
 </details>
 

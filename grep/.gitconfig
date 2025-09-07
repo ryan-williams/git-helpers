@@ -14,4 +14,9 @@
   remove-trailing-spaces = sub 's/ +$//'
   rts = remove-trailing-spaces
 
+  # Remove trailing spaces only from files with changes
+  rtss = ! git diff --cached --name-only | xargs -I {} git sub 's/ +$//' -- {}
+  rtsu = ! git diff --name-only | xargs -I {} git sub 's/ +$//' -- {}
+  rtsa = ! git diff HEAD --name-only | xargs -I {} git sub 's/ +$//' -- {}
+
   cs3 = check-s3-buckets
