@@ -49,8 +49,10 @@
   lgg = log -S
   lgpg = log -p -S
   lggp = log -p -S
-  lgs = log --stat
+  lgs = log --graph --stat --format=fuller
+  lsg = log --stat --graph
   lst = log --stat
+  lstg = log --stat --graph
   lp  = log -p
   lpp = log -p --
   lg1 = log-oneline

@@ -40,7 +40,9 @@ alias glgpg="g lgpg"
 alias glggp="g lggp"
 
 alias glgs="g lgs"
+alias glsg="g lsg"
 alias glst="g lst"
+alias glstg="g lstg"
 
 alias gln="g ln"
 alias gln1="g ln1"
