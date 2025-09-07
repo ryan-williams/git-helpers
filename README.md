@@ -1,5 +1,5 @@
 # git-helpers
-[1,719](#count-completions) Git aliases and scripts.
+[1,722](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,11 +332,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1719 completions added by installing git-helpers
+# 1722 completions added by installing git-helpers
 # By length:
 # - 2 chars: 19
-# - 3 chars: 268
-# - 4 chars: 687
+# - 3 chars: 269
+# - 4 chars: 689
 # - 5 chars: 344
 ```
 
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1719 new completions:
+1722 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -394,6 +394,7 @@ gbd        = g branch -D
 gbe        = g branch-exists
 gbf        = g branch-reset
 gbh        = g blob-hash
+gbi        = g branches-including
 gbk        = g branch-back
 gbn        = !gn branch --format '%(refname:short)' --list
 gbp        = g branch-point
@@ -595,12 +596,12 @@ gtd        = g tag -d
 gtf        = g tag-f
 gtg        = g tag
 gth        = g tags -n 10
-gti        = g tree-id
+gti        = g tags-including
 gtl        = g tag -l
 gtn        = g tags -n
 gtp        = g tag --format='%(color:green)%(objectname:short)%(color:reset)%09%(color:yellow)%(refname:strip=2)%(color:reset)%09%(color:red)%(creatordate:iso)%(color:reset)%09%(color:blue)%(creatordate:relative)%(color:reset)'
 gtr        = g ls-tree
-gts        = g total-size
+gts        = g tree-sha
 gtw        = g throw.py
 gub        = g upstream-branch
 gud        = g undelete
@@ -677,6 +678,8 @@ gbfc       = g branch-reset -c
 gbfp       = git_branch_force_parent
 gbhi       = g blob-hash -i
 gbhs       = g blob-hash -s
+gbia       = g branches-including-all
+gbir       = g branches-including-remote
 gblg       = git bisect-latest-good
 gblr       = g head-before-last-rebase
 gbls       = g local-branch-shas
@@ -1814,7 +1817,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1719 completions added by installing git-helpers (0 removed, 3064 total)
+1722 completions added by installing git-helpers (0 removed, 3067 total)
 ```
 </details>
 

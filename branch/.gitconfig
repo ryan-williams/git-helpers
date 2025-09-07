@@ -78,3 +78,15 @@
   bruc = branch-reset-upstream-checkout
 
   ur = update-ref
+
+  # Find branches containing a commit
+  branches-including = branch --contains
+  bi = branches-including
+  branches-including-all = branch -a --contains
+  bia = branches-including-all
+  branches-including-remote = branch -r --contains
+  bir = branches-including-remote
+
+  # Find tags containing a commit
+  tags-including = tag --contains
+  ti = tags-including

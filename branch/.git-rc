@@ -78,3 +78,9 @@ alias gbru="g bru"
 alias gbruc="g bruc"
 
 alias gur="g ur"
+
+# Find branches/tags containing a commit
+alias gbi="g bi"
+alias gbia="g bia"
+alias gbir="g bir"
+alias gti="g ti"

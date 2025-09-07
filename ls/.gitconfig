@@ -24,8 +24,7 @@
 
   tree-full-id = log -n1 --format=%T
   tfi = tree-full-id
-  tree-id = log -n1 --format=%t
-  ti = tree-id
+  tree-sha = log -n1 --format=%t
 
   lsh = ls-hashes
 
@@ -98,5 +97,5 @@
   szh = size -H
   szs = sizes
   total-size = size
-  ts  = total-size
+  ts  = tree-sha
   tsz = total-size
