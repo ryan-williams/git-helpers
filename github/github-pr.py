@@ -700,6 +700,9 @@ def push(message, gist, dry_run, footer, no_footer, open_browser, images):
     # Add footer if we should
     if should_add_footer and gist_url:
         body = add_gist_footer(body, gist_url, visible=footer_visible)
+        err(f"Added {'visible' if footer_visible else 'hidden'} footer with gist URL: {gist_url}")
+    elif should_add_footer and not gist_url:
+        err("Warning: Should add footer but no gist URL available")
 
     # Update the PR
     if dry_run:
@@ -829,12 +832,20 @@ def sync_to_gist(owner, repo, pr_number, content, return_url=False, add_remote=T
 
         try:
             # Create gist from actual DESCRIPTION.md file (secret by default)
-            output = check_output(['gh', 'gist', 'create', '-d', description, 'DESCRIPTION.md']).decode().strip()
-            # Extract gist ID from URL
-            match = re.search(r'gist\.github\.com/([a-f0-9]+)', output)
+            import subprocess
+            result = subprocess.run(['gh', 'gist', 'create', '-d', description, 'DESCRIPTION.md'],
+                                  capture_output=True, text=True)
+            if result.returncode != 0:
+                err(f"Error creating gist: {result.stderr}")
+                return None
+            output = result.stdout.strip()
+            err(f"Gist create output: {output}")
+            # Extract gist ID from URL (format: https://gist.github.com/username/gist_id or https://gist.github.com/gist_id)
+            match = re.search(r'gist\.github\.com/(?:[^/]+/)?([a-f0-9]+)', output)
             if match:
                 gist_id = match.group(1)
                 check_call(['git', 'config', 'pr.gist', gist_id])
+                err(f"Stored gist ID: {gist_id}")
 
                 # Add gist as a remote if requested
                 if add_remote:
@@ -850,6 +861,36 @@ def sync_to_gist(owner, repo, pr_number, content, return_url=False, add_remote=T
                         # Add new remote
                         check_call(['git', 'remote', 'add', gist_remote, gist_ssh_url])
                         err(f"Added remote '{gist_remote}': {gist_ssh_url}")
+
+                    # Fetch from the gist remote first
+                    try:
+                        check_call(['git', 'fetch', gist_remote], stderr=DEVNULL)
+                    except:
+                        pass  # Fetch might fail if gist is empty
+
+                    # Set up branch tracking
+                    try:
+                        current_branch = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stderr=DEVNULL).decode().strip()
+                        check_call(['git', 'branch', '--set-upstream-to', f'{gist_remote}/main', current_branch])
+                        err(f"Set {current_branch} to track {gist_remote}/main")
+                    except Exception as e:
+                        err(f"Could not set up branch tracking: {e}")
+
+                    # Commit and push to the gist
+                    try:
+                        # Check if there are uncommitted changes
+                        check_call(['git', 'diff', '--quiet', 'DESCRIPTION.md'], stderr=DEVNULL)
+                    except:
+                        # There are changes, commit them
+                        check_call(['git', 'add', 'DESCRIPTION.md'])
+                        check_call(['git', 'commit', '-m', f'Sync PR {owner}/{repo}#{pr_number} to gist'])
+
+                    # Push to the gist remote
+                    try:
+                        check_call(['git', 'push', gist_remote, 'main', '--force'])
+                        err(f"Pushed to gist remote '{gist_remote}'")
+                    except Exception as e:
+                        err(f"Warning: Could not push to gist remote '{gist_remote}': {e}")
 
                 # Get the revision SHA for the newly created gist
                 try:
