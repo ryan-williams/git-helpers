@@ -1,5 +1,5 @@
 [alias]
+    ce = command-exists
     h = help
     hf = help-follow
-    hh = help
-	ce = command-exists
+    hh = help-follow

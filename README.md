@@ -477,7 +477,7 @@ ghb        = g blob-hash
 ghc        = g has-changes
 ghf        = g help-follow
 ghg        = gh gist
-ghh        = g help
+ghh        = g help-follow
 ghj        = gh_open_job
 ghm        = !git --no-pager log -1 '--format=%h %s'
 gho        = g hash-object

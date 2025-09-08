@@ -1,4 +1,69 @@
 #!/usr/bin/env bash
 
-# Follows config aliases and shows help for the aliased command.
-git "$@" --help
+# Follows config aliases recursively and shows help for the final command.
+set -e
+
+if [ $# -eq 0 ]; then
+    git help
+    exit 0
+fi
+
+cmd="$1"
+shift
+original_cmd="$cmd"
+seen=()
+max_depth=10
+depth=0
+
+# Follow alias chain
+while [ $depth -lt $max_depth ]; do
+    # Check if we've seen this command before (circular reference)
+    for s in "${seen[@]}"; do
+        if [ "$s" = "$cmd" ]; then
+            echo "Circular alias reference detected: ${seen[*]} -> $cmd" >&2
+            exit 1
+        fi
+    done
+
+    seen+=("$cmd")
+
+    # Check if it's an alias
+    alias_value="$(git config --get "alias.$cmd" 2>/dev/null || true)"
+    if [ -n "$alias_value" ]; then
+        echo "'$cmd' is aliased to '$alias_value'" >&2
+        # Extract the first word as the next command to follow
+        cmd="$(echo "$alias_value" | awk '{print $1}')"
+        depth=$((depth + 1))
+    else
+        break
+    fi
+done
+
+if [ $depth -eq $max_depth ]; then
+    echo "Maximum alias depth ($max_depth) reached, stopping" >&2
+    exit 1
+fi
+
+# Now try to get help for the final command
+if [ "$cmd" != "$original_cmd" ]; then
+    echo "Final command: $cmd" >&2
+    echo >&2
+fi
+
+# Try various help methods in order of preference
+if git help "$cmd" "$@" 2>/dev/null; then
+    exit 0
+elif which "git-$cmd" >/dev/null 2>&1; then
+    script_path="$(which "git-$cmd")"
+    echo "Found script: $script_path" >&2
+    echo >&2
+    if [ -r "$script_path" ]; then
+        cat "$script_path"
+    else
+        echo "Script is not readable" >&2
+        exit 1
+    fi
+else
+    echo "No help available for '$cmd'" >&2
+    exit 1
+fi
