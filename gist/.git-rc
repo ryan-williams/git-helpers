@@ -12,6 +12,8 @@ alias ggdy="gh gist delete --yes"
 alias ghgdy="gh gist delete --yes"
 
 alias ghgl="gh gist list"
+alias ghgli="gh gist list | cut -f1"
+alias ghgi="gh gist list | cut -f1"
 
 alias gge="gh gist edit"
 alias ghge="gh gist edit"
