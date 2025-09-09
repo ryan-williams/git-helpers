@@ -541,3 +541,5 @@ alias ghpm="github-placeholder-main.py"
 alias ghpom="github-placeholder-main.py"
 
 export gw=.github/workflows
+
+alias ghre="gh repo edit"
