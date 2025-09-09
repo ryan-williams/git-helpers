@@ -17,10 +17,10 @@ from pathlib import Path
 from subprocess import check_output, check_call, CalledProcessError, DEVNULL
 from sys import stderr
 
+from click import argument, Choice, group, option
+
 # Add parent directory to path for local imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-import click
 
 # Helper for printing to stderr
 err = partial(print, file=stderr)
@@ -28,7 +28,7 @@ err = partial(print, file=stderr)
 from util.branch_resolution import resolve_remote_ref
 
 
-def get_pr_info_from_path(path=None):
+def get_pr_info_from_path(path: Path | None = None) -> tuple[str | None, str | None, str | None]:
     """Extract PR info from directory structure or git config."""
     if path is None:
         path = Path.cwd()
@@ -102,7 +102,7 @@ def get_pr_info_from_path(path=None):
     return None, None, pr_number
 
 
-def get_pr_metadata(owner, repo, pr_number):
+def get_pr_metadata(owner: str, repo: str, pr_number: str) -> dict | None:
     """Get PR metadata from GitHub."""
     try:
         cmd = ['gh', 'pr', 'view', pr_number, '-R', f'{owner}/{repo}', '--json', 'title,body,number,url']
@@ -117,7 +117,7 @@ def get_pr_metadata(owner, repo, pr_number):
         return None
 
 
-def extract_gist_footer(body):
+def extract_gist_footer(body: str | None) -> tuple[str | None, str | None]:
     """Extract gist footer from body and return (body_without_footer, gist_url)."""
     import re
 
@@ -155,7 +155,7 @@ def extract_gist_footer(body):
     return body, None
 
 
-def add_gist_footer(body, gist_url, visible=False):
+def add_gist_footer(body: str | None, gist_url: str, visible: bool = False) -> str:
     """Add or update gist footer in body."""
     body_without_footer, _ = extract_gist_footer(body)
 
@@ -184,7 +184,7 @@ def add_gist_footer(body, gist_url, visible=False):
         return footer
 
 
-def upload_image_to_github(image_path, owner, repo):
+def upload_image_to_github(image_path: str, owner: str, repo: str) -> str | None:
     """Upload an image to GitHub and get the user-attachments URL.
 
     GitHub stores PR images in a special user-attachments area.
@@ -242,7 +242,7 @@ def upload_image_to_github(image_path, owner, repo):
         return None
 
 
-def process_images_in_description(body, owner, repo, dry_run=False):
+def process_images_in_description(body: str, owner: str, repo: str, dry_run: bool = False) -> str:
     """Find local image references and upload them to GitHub."""
     import re
 
@@ -279,7 +279,7 @@ def process_images_in_description(body, owner, repo, dry_run=False):
     return updated_body
 
 
-def read_description_file(path):
+def read_description_file(path: Path) -> tuple[str | None, str | None]:
     """Read and parse DESCRIPTION.md file."""
     desc_file = path / 'DESCRIPTION.md'
     if not desc_file.exists():
@@ -317,16 +317,19 @@ def read_description_file(path):
     return None, None
 
 
-@click.group()
+@group()
 def cli():
     """Clone and sync GitHub PR descriptions."""
     pass
 
 
 @cli.command()
-@click.option('-r', '--repo', help='Repository (owner/repo format)')
-@click.option('-b', '--base', help='Base branch (default: main/master)')
-def init(repo, base):
+@option('-r', '--repo', help='Repository (owner/repo format)')
+@option('-b', '--base', help='Base branch (default: main/master)')
+def init(
+    repo: str | None,
+    base: str | None,
+) -> None:
     """Initialize a new PR draft in the current directory."""
     # Check if we're already in a PR directory
     if Path('DESCRIPTION.md').exists():
@@ -363,11 +366,16 @@ def init(repo, base):
 
 
 @cli.command(name='open')
-@click.option('--head', help='Head branch (default: auto-detect from parent repo)')
-@click.option('--base', help='Base branch (default: main/master)')
-@click.option('-d', '--draft', is_flag=True, help='Create as draft PR')
-@click.option('-w', '--web', is_flag=True, help='Open PR in web browser after creating')
-def open_pr(head, base, draft, web):
+@option('--head', help='Head branch (default: auto-detect from parent repo)')
+@option('--base', help='Base branch (default: main/master)')
+@option('-d', '--draft', is_flag=True, help='Create as draft PR')
+@option('-w', '--web', is_flag=True, help='Open PR in web browser after creating')
+def open_pr(
+    head: str | None,
+    base: str | None,
+    draft: bool,
+    web: bool,
+) -> None:
     """Create a new PR from the current draft."""
 
     # Read DESCRIPTION.md
@@ -489,9 +497,12 @@ def open_pr(head, base, draft, web):
 
 
 @cli.command()
-@click.argument('pr_spec', required=False)
-@click.option('-d', '--directory', help='Directory to clone into')
-def clone(pr_spec, directory):
+@argument('pr_spec', required=False)
+@option('-d', '--directory', help='Directory to clone into')
+def clone(
+    pr_spec: str | None,
+    directory: str | None,
+) -> None:
     """Clone a PR description to a local directory.
 
     PR_SPEC can be:
@@ -593,14 +604,22 @@ def clone(pr_spec, directory):
 
 
 @cli.command()
-@click.option('-m', '--message', help='Commit message')
-@click.option('-g', '--gist', is_flag=True, help='Also sync to gist')
-@click.option('-n', '--dry-run', is_flag=True, help='Show what would be done without making changes')
-@click.option('-f', '--footer', count=True, help='Footer level: -f = hidden footer, -ff = visible footer')
-@click.option('-F', '--no-footer', is_flag=True, help='Disable footer completely')
-@click.option('-o/-O', '--open/--no-open', 'open_browser', default=False, help='Open PR in browser after pushing')
-@click.option('-i', '--images', is_flag=True, help='Upload local images and replace references')
-def push(message, gist, dry_run, footer, no_footer, open_browser, images):
+@option('-m', '--message', help='Commit message')
+@option('-g', '--gist', is_flag=True, help='Also sync to gist')
+@option('-n', '--dry-run', is_flag=True, help='Show what would be done without making changes')
+@option('-f', '--footer', count=True, help='Footer level: -f = hidden footer, -ff = visible footer')
+@option('-F', '--no-footer', is_flag=True, help='Disable footer completely')
+@option('-o/-O', '--open/--no-open', 'open_browser', default=False, help='Open PR in browser after pushing')
+@option('-i', '--images', is_flag=True, help='Upload local images and replace references')
+def push(
+    message: str | None,
+    gist: bool,
+    dry_run: bool,
+    footer: int,
+    no_footer: bool,
+    open_browser: bool,
+    images: bool,
+) -> None:
     """Push local description changes back to the PR."""
 
     # Get PR info from current directory
@@ -751,7 +770,14 @@ def push(message, gist, dry_run, footer, no_footer, open_browser, images):
             exit(1)
 
 
-def sync_to_gist(owner, repo, pr_number, content, return_url=False, add_remote=True):
+def sync_to_gist(
+    owner: str,
+    repo: str,
+    pr_number: str,
+    content: str,
+    return_url: bool = False,
+    add_remote: bool = True,
+) -> str | None:
     """Sync PR description to a gist.
 
     Args:
@@ -910,12 +936,16 @@ def sync_to_gist(owner, repo, pr_number, content, return_url=False, add_remote=T
 
 
 @cli.command()
-@click.argument('files', nargs=-1, required=True)
-@click.option('-b', '--branch', default='assets', help='Branch name in gist (default: assets)')
-@click.option('-f', '--format', type=click.Choice(['url', 'markdown', 'img', 'auto']), default='auto',
-              help='Output format (default: auto - img for images, url for others)')
-@click.option('-a', '--alt', help='Alt text for markdown/img format')
-def upload(files, branch, format, alt):
+@argument('files', nargs=-1, required=True)
+@option('-b', '--branch', default='assets', help='Branch name in gist (default: assets)')
+@option('-f', '--format', type=Choice(['url', 'markdown', 'img', 'auto']), default='auto', help='Output format (default: auto - img for images, url for others)')
+@option('-a', '--alt', help='Alt text for markdown/img format')
+def upload(
+    files: tuple[str, ...],
+    branch: str,
+    format: str,
+    alt: str | None,
+) -> None:
     """Upload images to the PR's gist and get URLs."""
     from subprocess import check_call
     import gist_upload
@@ -999,9 +1029,10 @@ def upload(files, branch, format, alt):
 
 
 @cli.command()
-@click.option('-c', '--color', type=click.Choice(['auto', 'always', 'never']), default='auto',
-              help='When to use colored output (default: auto)')
-def diff(color):
+@option('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
+def diff(
+    color: str,
+) -> None:
     """Show differences between local and remote PR descriptions."""
 
     # Determine if we should use color
@@ -1119,14 +1150,18 @@ def diff(color):
 
 
 @cli.command()
-@click.option('-m', '--message', help='Commit message')
-@click.option('-g', '--gist', is_flag=True, help='Also sync to gist')
-@click.option('-n', '--dry-run', is_flag=True, help='Show what would be done')
-@click.option('-f/-F', '--footer/--no-footer', default=None,
-              help='Add gist footer to PR (default: auto - add if gist exists)')
-@click.option('-o/-O', '--open/--no-open', 'open_browser', default=False,
-              help='Open PR in browser after pulling')
-def pull(message, gist, dry_run, footer, open_browser):
+@option('-m', '--message', help='Commit message')
+@option('-g', '--gist', is_flag=True, help='Also sync to gist')
+@option('-n', '--dry-run', is_flag=True, help='Show what would be done')
+@option('-f/-F', '--footer/--no-footer', default=None, help='Add gist footer to PR (default: auto - add if gist exists)')
+@option('-o/-O', '--open/--no-open', 'open_browser', default=False, help='Open PR in browser after pulling')
+def pull(
+    message: str | None,
+    gist: bool,
+    dry_run: bool,
+    footer: bool | None,
+    open_browser: bool,
+) -> None:
     """Pull latest from PR and optionally push changes back."""
     # First pull
     err("Pulling latest from PR...")
