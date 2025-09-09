@@ -608,7 +608,7 @@ def clone(
 @option('-n', '--dry-run', is_flag=True, help='Show what would be done without making changes')
 @option('-f', '--footer', count=True, help='Footer level: -f = hidden footer, -ff = visible footer')
 @option('-F', '--no-footer', is_flag=True, help='Disable footer completely')
-@option('-o/-O', '--open/--no-open', 'open_browser', default=False, help='Open PR in browser after pushing')
+@option('-o', '--open', 'open_browser', is_flag=True, help='Open PR in browser after pushing')
 @option('-i', '--images', is_flag=True, help='Upload local images and replace references')
 @option('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
 def push(
@@ -1174,7 +1174,7 @@ def diff(
 @option('-g', '--gist', is_flag=True, help='Also sync to gist')
 @option('-n', '--dry-run', is_flag=True, help='Show what would be done')
 @option('-f/-F', '--footer/--no-footer', default=None, help='Add gist footer to PR (default: auto - add if gist exists)')
-@option('-o/-O', '--open/--no-open', 'open_browser', default=False, help='Open PR in browser after pulling')
+@option('-o', '--open', 'open_browser', is_flag=True, help='Open PR in browser after pulling')
 @option('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
 def pull(
     gist: bool,
