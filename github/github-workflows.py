@@ -1,4 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "click",
+# ]
+# ///
 import json
 import os
 import re
@@ -7,6 +13,9 @@ import sys
 from os.path import basename
 from subprocess import check_output, check_call, CalledProcessError
 from sys import stderr
+
+# Add parent directory to path for local imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from util.branch_resolution import resolve_remote_ref
 

@@ -1,4 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "click",
+# ]
+# ///
 import shlex
 from functools import partial
 from subprocess import check_call, CalledProcessError, check_output

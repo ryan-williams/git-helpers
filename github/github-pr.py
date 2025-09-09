@@ -1,4 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "click",
+# ]
+# ///
 """Clone and sync GitHub PR descriptions with local folders and GitHub gists."""
 
 import json
@@ -10,6 +16,9 @@ from functools import partial
 from pathlib import Path
 from subprocess import check_output, check_call, CalledProcessError, DEVNULL
 from sys import stderr
+
+# Add parent directory to path for local imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import click
 

@@ -1,5 +1,5 @@
 # git-helpers
-[1,723](#count-completions) Git aliases and scripts.
+[1,722](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,7 +332,7 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1723 completions added by installing git-helpers
+# 1722 completions added by installing git-helpers
 # By length:
 # - 2 chars: 20
 # - 3 chars: 269
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1723 new completions:
+1722 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1748,9 +1748,9 @@ gh_open_job = open "$(gh_job_url "$@")"
 gh_run_open
 gist-upload = git-helpers/gist/gist-upload  # Upload files to GitHub Gist preserving their filenames
 git_set_sha = export sha="$(git sha)"
-clone_org.py = git-helpers/github/clone_org.py
+clone_org.py = git-helpers/github/clone_org.py  # Add current directory to path for local imports
 gh_open_last
-github-pr.py = git-helpers/github/github-pr.py  # Helper for printing to stderr
+github-pr.py = git-helpers/github/github-pr.py  # Add parent directory to path for local imports
 gh_runners_ls
 gh_runners_rm
 git_dir_curry = <exported_function_name> <git-git-dir_param1> <git-git-dir_param2> ...
@@ -1764,11 +1764,10 @@ github-web-url = git-helpers/submodule/github-web-url
 github_url_ssh = gh repo view --json sshUrl | jq -r .sshUrl
 gitlab_url_ssh = gh repo view --json sshUrl | jq -r .sshUrl
 gh_run_view_url = ghrv "$@" --json url | jr .url
-gh-upload-img.py = git-helpers/github/gh-upload-img.py  # Import from local library
+gh-upload-img.py = git-helpers/github/gh-upload-img.py  # Add current directory to path for local imports
 gh_run_view_jobs = gh run view "$@" --json jobs
 git_clone_and_cd
 git_expand_alias = [-v] <alias>
-github-pr.py.bak = git-helpers/github/github-pr.py.bak  # Helper for printing to stderr
 github_maybe_api
 gitlab_maybe_api
 gitlab_open_jobs
@@ -1784,7 +1783,7 @@ gitlab_remote_pathNo manual entry for git-remote-path
 init-mirror-remote = git-helpers/remote/init-mirror-remote
 gh_repo_description = gh repo view --json description "$@" | jq -r .description
 github-gist-file.py = git-helpers/github/github-gist-file.py
-github-workflows.py = git-helpers/github/github-workflows.py
+github-workflows.py = git-helpers/github/github-workflows.py  # Add parent directory to path for local imports
 github_open_actions = open "$(github_url)/actions"
 github_open_web_ref = [ref]
 gh_last_workflow_run = gh run list -L 1 --json databaseId | jq -r .[0].databaseId
@@ -1818,7 +1817,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1723 completions added by installing git-helpers (0 removed, 3068 total)
+1722 completions added by installing git-helpers (0 removed, 3067 total)
 ```
 </details>
 

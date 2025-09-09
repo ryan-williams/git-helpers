@@ -231,7 +231,8 @@ git_expand_alias() {
       if [ -n "$which" ]; then
         which="${which#$PWD/}"
         log "found command $1" >&2
-        local comment="$(grep -m1 '^# ' "$which")"
+        # Extract first meaningful comment, skipping uv metadata block
+        local comment="$(sed -n '/^# \/\/\//,/^# \/\/\/$/d; /^# ./{p;q;}' "$which")"
         local out="$which"
         if [ -n "$comment" ]; then
           out="$out  $comment"

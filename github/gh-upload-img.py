@@ -2,11 +2,13 @@
 """Upload images to GitHub Gist and get permanent URLs."""
 
 import sys
+import os
 from functools import partial
 from pathlib import Path
 from subprocess import check_output, DEVNULL
 
-# Import from local library
+# Add current directory to path for local imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gist_upload
 
 err = partial(print, file=sys.stderr)

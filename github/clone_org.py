@@ -1,10 +1,22 @@
-#!/usr/bin/env python
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "click",
+#     "utz",
+#     "requests",
+# ]
+# ///
 
+import sys
+import os
 from os import chdir, getcwd
 from pathlib import Path
 from subprocess import check_call as sh
 from sys import exit
 
+# Add current directory to path for local imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from repos import repos as get_repos
 
 
