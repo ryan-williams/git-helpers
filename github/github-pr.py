@@ -610,6 +610,7 @@ def clone(
 @option('-F', '--no-footer', is_flag=True, help='Disable footer completely')
 @option('-o/-O', '--open/--no-open', 'open_browser', default=False, help='Open PR in browser after pushing')
 @option('-i', '--images', is_flag=True, help='Upload local images and replace references')
+@option('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
 def push(
     gist: bool,
     dry_run: bool,
@@ -617,6 +618,7 @@ def push(
     no_footer: bool,
     open_browser: bool,
     images: bool,
+    gist_private: bool | None,
 ) -> None:
     """Push local description changes back to the PR."""
 
@@ -712,7 +714,7 @@ def push(
                 gist_url = 'https://gist.github.com/NEW_GIST'
         else:
             if gist or has_gist:  # Sync if explicitly requested or if gist exists
-                gist_url = sync_to_gist(owner, repo, pr_number, desc_content, return_url=True)
+                gist_url = sync_to_gist(owner, repo, pr_number, desc_content, return_url=True, gist_private=gist_private)
 
     # Add footer if we should
     if should_add_footer and gist_url:
@@ -775,6 +777,7 @@ def sync_to_gist(
     content: str,
     return_url: bool = False,
     add_remote: bool = True,
+    gist_private: bool | None = None,
 ) -> str | None:
     """Sync PR description to a gist.
 
@@ -785,6 +788,7 @@ def sync_to_gist(
         content: Content to sync to gist
         return_url: If True, return the gist URL with revision instead of None
         add_remote: If True, add gist as a git remote
+        gist_private: If True, create private gist; if False, create public; if None, match repo visibility
 
     Returns:
         None or gist URL with revision if return_url=True
@@ -801,6 +805,22 @@ def sync_to_gist(
         gist_remote = check_output(['git', 'config', 'pr.gist-remote'], stderr=DEVNULL).decode().strip()
     except:
         gist_remote = 'g'
+
+    # Determine gist visibility
+    if gist_private is not None:
+        # Explicit visibility specified
+        is_public = not gist_private  # Invert: if private flag is True, public is False
+        err(f"Using explicit gist visibility: {'PUBLIC' if is_public else 'PRIVATE'}")
+    else:
+        # Check repository visibility to determine gist visibility
+        is_public = True  # Default to public
+        try:
+            repo_info = check_output(['gh', 'repo', 'view', f'{owner}/{repo}', '--json', 'visibility']).decode()
+            repo_data = json.loads(repo_info)
+            is_public = repo_data.get('visibility', 'PUBLIC').upper() == 'PUBLIC'
+            err(f"Repository visibility: {'PUBLIC' if is_public else 'PRIVATE'}, gist will match")
+        except Exception as e:
+            err(f"Warning: Could not determine repository visibility, defaulting to public gist: {e}")
 
     filename = 'DESCRIPTION.md'  # Use actual filename, not temp name
     description = f'{owner}/{repo}#{pr_number} - 2-way sync via github-pr.py (ryan-williams/git-helpers)'
@@ -847,7 +867,7 @@ def sync_to_gist(
         err(f"Updated gist: {gist_url}")
     else:
         # Create new gist
-        err("Creating new gist...")
+        err(f"Creating new {'public' if is_public else 'secret'} gist...")
 
         # Ensure DESCRIPTION.md exists with latest content
         desc_file = Path('DESCRIPTION.md')
@@ -855,10 +875,13 @@ def sync_to_gist(
             f.write(content)
 
         try:
-            # Create gist from actual DESCRIPTION.md file (secret by default)
+            # Create gist from actual DESCRIPTION.md file (visibility based on repo)
             import subprocess
-            result = subprocess.run(['gh', 'gist', 'create', '-d', description, 'DESCRIPTION.md'],
-                                  capture_output=True, text=True)
+            gist_cmd = ['gh', 'gist', 'create', '-d', description]
+            if is_public:
+                gist_cmd.append('--public')
+            gist_cmd.append('DESCRIPTION.md')
+            result = subprocess.run(gist_cmd, capture_output=True, text=True)
             if result.returncode != 0:
                 err(f"Error creating gist: {result.stderr}")
                 return None
@@ -1152,11 +1175,13 @@ def diff(
 @option('-n', '--dry-run', is_flag=True, help='Show what would be done')
 @option('-f/-F', '--footer/--no-footer', default=None, help='Add gist footer to PR (default: auto - add if gist exists)')
 @option('-o/-O', '--open/--no-open', 'open_browser', default=False, help='Open PR in browser after pulling')
+@option('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
 def pull(
     gist: bool,
     dry_run: bool,
     footer: bool | None,
     open_browser: bool,
+    gist_private: bool | None,
 ) -> None:
     """Pull latest from PR and optionally push changes back."""
     # First pull
@@ -1211,7 +1236,9 @@ def pull(
 
     # Now push our version back
     err("Pushing to PR...")
-    push.callback(message, gist, dry_run, footer, open_browser)
+    # Convert pull's footer boolean to push's footer count
+    footer_count = 1 if footer else 0 if footer is False else 0
+    push.callback(gist, dry_run, footer_count, no_footer=False, open_browser=open_browser, images=False, gist_private=gist_private)
 
 
 if __name__ == '__main__':
