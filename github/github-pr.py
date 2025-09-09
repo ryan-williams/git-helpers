@@ -604,7 +604,6 @@ def clone(
 
 
 @cli.command()
-@option('-m', '--message', help='Commit message')
 @option('-g', '--gist', is_flag=True, help='Also sync to gist')
 @option('-n', '--dry-run', is_flag=True, help='Show what would be done without making changes')
 @option('-f', '--footer', count=True, help='Footer level: -f = hidden footer, -ff = visible footer')
@@ -612,7 +611,6 @@ def clone(
 @option('-o/-O', '--open/--no-open', 'open_browser', default=False, help='Open PR in browser after pushing')
 @option('-i', '--images', is_flag=True, help='Upload local images and replace references')
 def push(
-    message: str | None,
     gist: bool,
     dry_run: bool,
     footer: int,
@@ -1150,13 +1148,11 @@ def diff(
 
 
 @cli.command()
-@option('-m', '--message', help='Commit message')
 @option('-g', '--gist', is_flag=True, help='Also sync to gist')
 @option('-n', '--dry-run', is_flag=True, help='Show what would be done')
 @option('-f/-F', '--footer/--no-footer', default=None, help='Add gist footer to PR (default: auto - add if gist exists)')
 @option('-o/-O', '--open/--no-open', 'open_browser', default=False, help='Open PR in browser after pulling')
 def pull(
-    message: str | None,
     gist: bool,
     dry_run: bool,
     footer: bool | None,
