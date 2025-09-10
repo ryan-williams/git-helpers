@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# Forcibly me-push.
-
-git me-push -f $@

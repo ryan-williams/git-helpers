@@ -7,8 +7,6 @@
   cgpd = config --global push.default
   cgpdc = config --global push.default current
   cgpdu = config --global push.default upstream
-  mp = me-push
-  mpf = me-push-force
   pm = push-to-master
   pdc = config push.default current
   pdcg = config --global push.default current

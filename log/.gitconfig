@@ -7,18 +7,6 @@
   bhis = blob-hash -is
   bhs = blob-hash -s
   blob-hash = blob-sha
-  body = !git --no-pager log -1 --format=%B
-  b0 = body HEAD
-  b1 = body HEAD@{1}
-  b2 = body HEAD@{2}
-  b3 = body HEAD@{3}
-  by = body
-  by0 = body HEAD
-  by1 = body HEAD@{1}
-  by2 = body HEAD@{2}
-  by3 = body HEAD@{3}
-  byh1 = body HEAD@{1}
-  byp = body HEAD^
   cdi1 = !git --no-pager log --format=%cd --date=iso -1
   dates = log '--format=%ad %cd'
   details = log '--format=%H %T%n%an <%ae> (%ad)%n%cn <%ce> (%cd)%n%B'
@@ -76,9 +64,20 @@
   lpwf = log -p -w --follow
   lw = log --follow
   lws = log --follow --stat
+  m0 = msg HEAD
+  m1 = msg HEAD@{1}
+  m2 = msg HEAD@{2}
+  m3 = msg HEAD@{3}
+  mp = msg HEAD^
+  ms = msg
+  ms0 = msg HEAD
+  ms1 = msg HEAD@{1}
+  ms2 = msg HEAD@{2}
+  ms3 = msg HEAD@{3}
+  msh1 = msg HEAD@{1}
+  msp = msg HEAD^
   hash-message = log -1 '--format=%h %s'
   hm = !git --no-pager log -1 '--format=%h %s'
-  msg = !git --no-pager log -1 --format=%s
   sbj = !git --no-pager log -1 --format=%s
   l1 = !git --no-pager log -1
   l1f = !git --no-pager log-1-format

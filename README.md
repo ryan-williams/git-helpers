@@ -335,7 +335,7 @@ scripts/count-completions.sh -c
 # 1726 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
-# - 3 chars: 269
+# - 3 chars: 270
 # - 4 chars: 691
 # - 5 chars: 345
 ```
@@ -385,10 +385,6 @@ gan        = g add -n
 gap        = g add -p
 gar        = g add-rebase-continue
 gau        = g add -u
-gb0        = g body HEAD
-gb1        = g body HEAD@{1}
-gb2        = g body HEAD@{2}
-gb3        = g body HEAD@{3}
 gbD        = g branch -D
 gbb        = !git-branches.py -b
 gbc        = g branch-reset -c
@@ -404,7 +400,6 @@ gbr        = g remote-branches
 gbs        = g bisect
 gbt        = g branch --track=inherit
 gbu        = g branch-upstream
-gby        = g body
 gca        = g commit -a
 gcb        = g current-branch
 gcd        = g copy-diffs
@@ -517,6 +512,10 @@ glt        = g ls-tree
 glu        = g list-unstaged
 glw        = g log --follow
 glz        = g ls-files -z
+gm0        = g msg HEAD
+gm1        = g msg HEAD@{1}
+gm2        = g msg HEAD@{2}
+gm3        = g msg HEAD@{3}
 gma        = g merge --abort
 gmb        = g merge-base-plus
 gmc        = g my-clone
@@ -524,7 +523,9 @@ gmf        = g merge --ff-only
 gmh        = g merge-head
 gmm        = g merge -m
 gmn        = g merge --no-edit
+gmp        = g msg HEAD^
 gmr        = g mirror-remote
+gms        = g msg
 gmt        = g mergetool -y -t
 gmu        = g merge upstream/HEAD
 gmv        = g mv
@@ -703,11 +704,6 @@ gbsl       = g bisect log
 gbsr       = g bisect run
 gbss       = g bisect start
 gbsx       = g bisect reset
-gby0       = g body HEAD
-gby1       = g body HEAD@{1}
-gby2       = g body HEAD@{2}
-gby3       = g body HEAD@{3}
-gbyp       = g body HEAD^
 gcaa       = g commit -a --amend
 gcae       = g commit --allow-empty
 gcaf       = g commit -aF-
@@ -1065,7 +1061,13 @@ gmmh       = g merge-base-merge-head
 gmne       = g merge --no-edit
 gmnf       = g merge --no-ff
 gmnm       = g merge --no-edit -m
-gmsg       = !git --no-pager log -1 --format=%s
+gms0       = g msg HEAD
+gms1       = g msg HEAD@{1}
+gms2       = g msg HEAD@{2}
+gms3       = g msg HEAD@{3}
+gmsg      No manual entry for git-msg
+ = g msg
+gmsp       = g msg HEAD^
 gmtb       = g mount-branch
 gmun       = g merge upstream/HEAD --no-edit
 gnbl       = !git --no-pager branch-points-at
@@ -1354,7 +1356,6 @@ gbnor      = !gn branch --format '%(refname:short)' -r --list
 gbpar      = g branch-points-at-r
 gbruc      = g branch-reset-upstream-checkout
 gbssr      = g bisect-start-run
-gbyh1      = g body HEAD@{1}
 gcaaf      = g commit -a --amend -F-
 gcaam      = g commit -a --amend -m
 gcaan      = g commit -a -u --amend --no-edit
@@ -1550,6 +1551,7 @@ glubn      = gitlab_unprotect_branch -n
 gmmne      = g merge main --no-edit
 gmnef      = g merge --no-edit --no-ff
 gmnnf      = g merge --no-edit --no-ff
+gmsh1      = g msg HEAD@{1}
 gmtnb      = g mergetool -y -t nbdime
 gmune      = g merge upstream/HEAD --no-edit
 gnshs      = !git --no-pager show

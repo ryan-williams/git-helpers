@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Get the full message of a commit or tag
+# Usage: git msg [ref]
+# If no ref provided, uses HEAD
+
+ref="${1:-HEAD}"
+
+# Check if the ref itself is a tag object (not what it points to)
+type=$(git cat-file -t "$ref" 2>/dev/null)
+if [ $? -ne 0 ]; then
+  echo "Invalid ref: $ref" >&2
+  exit 1
+fi
+
+if [ "$type" = "tag" ]; then
+  # It's an annotated tag - get the full tag message
+  git tag -l --format='%(contents)' "$ref"
+else
+  # It's a commit (or lightweight tag pointing to a commit)
+  # Get the full commit message
+  git log -1 --format='%B' "$ref"
+fi
