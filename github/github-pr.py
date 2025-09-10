@@ -3,6 +3,7 @@
 # requires-python = ">=3.10"
 # dependencies = [
 #     "click",
+#     "utz",
 # ]
 # ///
 """Clone and sync GitHub PR descriptions with local folders and GitHub gists."""
@@ -12,18 +13,13 @@ import os
 import re
 import sys
 import difflib
-from functools import partial
 from pathlib import Path
-from subprocess import check_output, check_call, CalledProcessError, DEVNULL
-from sys import stderr
 
 from click import argument, Choice, group, option
+from utz import proc, err
 
 # Add parent directory to path for local imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-# Helper for printing to stderr
-err = partial(print, file=stderr)
 
 from util.branch_resolution import resolve_remote_ref
 
@@ -36,14 +32,11 @@ def get_pr_info_from_path(path: Path | None = None) -> tuple[str | None, str | N
         path = Path(path)
 
     # First, check if we have PR info in git config (highest priority)
-    try:
-        owner = check_output(['git', 'config', 'pr.owner'], stderr=DEVNULL).decode().strip()
-        repo = check_output(['git', 'config', 'pr.repo'], stderr=DEVNULL).decode().strip()
-        pr_number = check_output(['git', 'config', 'pr.number'], stderr=DEVNULL).decode().strip()
-        if owner and repo and pr_number:
-            return owner, repo, pr_number
-    except:
-        pass
+    owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None)
+    repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None)
+    pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None)
+    if owner and repo and pr_number:
+        return owner, repo, pr_number
 
     # Look for pr<number> pattern in current or parent directories
     current = path
@@ -80,13 +73,13 @@ def get_pr_info_from_path(path: Path | None = None) -> tuple[str | None, str | N
     # Try to get owner/repo from git remote
     try:
         # Get the default remote
-        remotes = check_output(['git', 'remote'], stderr=DEVNULL).decode().strip().split('\n')
+        remotes = proc.lines('git', 'remote', err_ok=True, log=None) or []
 
         for remote in ['origin', 'upstream'] + remotes:
             if not remote:
                 continue
             try:
-                url = check_output(['git', 'remote', 'get-url', remote], stderr=DEVNULL).decode().strip()
+                url = proc.line('git', 'remote', 'get-url', remote, err_ok=True, log=None) or ''
                 # Match GitHub URLs
                 match = re.search(r'github\.com[:/]([^/]+)/([^/\s]+?)(?:\.git)?$', url)
                 if match:
@@ -105,14 +98,12 @@ def get_pr_info_from_path(path: Path | None = None) -> tuple[str | None, str | N
 def get_pr_metadata(owner: str, repo: str, pr_number: str) -> dict | None:
     """Get PR metadata from GitHub."""
     try:
-        cmd = ['gh', 'pr', 'view', pr_number, '-R', f'{owner}/{repo}', '--json', 'title,body,number,url']
-        result = check_output(cmd).decode()
-        data = json.loads(result)
+        data = proc.json('gh', 'pr', 'view', pr_number, '-R', f'{owner}/{repo}', '--json', 'title,body,number,url', log=None)
         # Normalize line endings from GitHub (convert \r\n to \n)
         if data.get('body'):
             data['body'] = data['body'].replace('\r\n', '\n')
         return data
-    except CalledProcessError as e:
+    except Exception as e:
         err(f"Error fetching PR metadata: {e}")
         return None
 
@@ -225,7 +216,7 @@ def upload_image_to_github(image_path: str, owner: str, repo: str) -> str | None
             '-f', 'mode=gfm',
             '-f', f'context={owner}/{repo}'
         ]
-        result = check_output(cmd, stderr=DEVNULL).decode()
+        result = proc.text(*cmd, log=None) or ''
 
         # Extract the uploaded image URL from the rendered HTML
         import re
@@ -237,7 +228,7 @@ def upload_image_to_github(image_path: str, owner: str, repo: str) -> str | None
         else:
             err(f"Warning: Could not extract URL from upload response for {image_path}")
             return None
-    except CalledProcessError as e:
+    except Exception as e:
         err(f"Warning: Failed to upload {image_path}: {e}")
         return None
 
@@ -338,18 +329,18 @@ def init(
 
     # Initialize git repo if needed
     if not Path('.git').exists():
-        check_call(['git', 'init', '-q'])
+        proc.run('git', 'init', '-q', log=None)
         err("Initialized git repository")
 
     # Store config if provided
     if repo:
         owner, repo_name = repo.split('/')
-        check_call(['git', 'config', 'pr.owner', owner])
-        check_call(['git', 'config', 'pr.repo', repo_name])
+        proc.run('git', 'config', 'pr.owner', owner, log=None)
+        proc.run('git', 'config', 'pr.repo', repo_name, log=None)
         err(f"Configured for {repo}")
 
     if base:
-        check_call(['git', 'config', 'pr.base', base])
+        proc.run('git', 'config', 'pr.base', base, log=None)
         err(f"Base branch: {base}")
 
     # Create initial DESCRIPTION.md
@@ -409,16 +400,15 @@ def open_pr(
 
     # Get repo info from config or parent directory
     try:
-        owner = check_output(['git', 'config', 'pr.owner'], stderr=DEVNULL).decode().strip()
-        repo = check_output(['git', 'config', 'pr.repo'], stderr=DEVNULL).decode().strip()
+        owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
+        repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
     except:
         # Try to get from parent directory
         parent_dir = Path('..').resolve()
         if (parent_dir / '.git').exists():
             try:
                 os.chdir(parent_dir)
-                repo_info = check_output(['gh', 'repo', 'view', '--json', 'owner,name']).decode()
-                repo_data = json.loads(repo_info)
+                repo_data = proc.json('gh', 'repo', 'view', '--json', 'owner,name', log=None)
                 owner = repo_data['owner']['login']
                 repo = repo_data['name']
                 os.chdir(Path(__file__).parent)
@@ -432,7 +422,7 @@ def open_pr(
     # Get base branch from config or default
     if not base:
         try:
-            base = check_output(['git', 'config', 'pr.base'], stderr=DEVNULL).decode().strip()
+            base = proc.line('git', 'config', 'pr.base', err_ok=True, log=None)
         except:
             base = 'main'  # Default to main
 
@@ -450,7 +440,7 @@ def open_pr(
 
                 if not head:
                     # Fallback to current branch
-                    head = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip()
+                    head = proc.line('git', 'rev-parse', '--abbrev-ref', 'HEAD', log=None)
                     if head == 'HEAD':
                         err("Error: Parent repo is in detached HEAD state. Specify --head explicitly")
                         exit(1)
@@ -478,20 +468,20 @@ def open_pr(
         cmd.append('--web')
 
     try:
-        output = check_output(cmd).decode().strip()
+        output = proc.text(*cmd, log=None).strip()
         if not web:
             # Extract PR number from URL
             match = re.search(r'/pull/(\d+)', output)
             if match:
                 pr_number = match.group(1)
                 # Store PR info in git config
-                check_call(['git', 'config', 'pr.number', pr_number])
-                check_call(['git', 'config', 'pr.url', output])
+                proc.run('git', 'config', 'pr.number', pr_number, log=None)
+                proc.run('git', 'config', 'pr.url', output, log=None)
                 err(f"Created PR #{pr_number}: {output}")
                 err("PR info stored in git config")
             else:
                 err(f"Created PR: {output}")
-    except CalledProcessError as e:
+    except Exception as e:
         err(f"Error creating PR: {e}")
         exit(1)
 
@@ -533,8 +523,7 @@ def clone(
                     pr_number = pr_spec
                     # Get owner/repo from current directory
                     try:
-                        repo_info = check_output(['gh', 'repo', 'view', '--json', 'owner,name']).decode()
-                        repo_data = json.loads(repo_info)
+                        repo_data = proc.json('gh', 'repo', 'view', '--json', 'owner,name', log=None)
                         owner = repo_data['owner']['login']
                         repo = repo_data['name']
                     except:
@@ -570,7 +559,7 @@ def clone(
     target_path.mkdir(parents=True)
     os.chdir(target_path)
 
-    check_call(['git', 'init', '-q'])
+    proc.run('git', 'init', '-q', log=None)
 
     # Create DESCRIPTION.md with proper format
     desc_file = Path('DESCRIPTION.md')
@@ -590,14 +579,14 @@ def clone(
                 f.write('\n')
 
     # Store metadata in git config
-    check_call(['git', 'config', 'pr.owner', owner])
-    check_call(['git', 'config', 'pr.repo', repo])
-    check_call(['git', 'config', 'pr.number', str(pr_number)])
-    check_call(['git', 'config', 'pr.url', pr_data['url']])
+    proc.run('git', 'config', 'pr.owner', owner, log=None)
+    proc.run('git', 'config', 'pr.repo', repo, log=None)
+    proc.run('git', 'config', 'pr.number', str(pr_number), log=None)
+    proc.run('git', 'config', 'pr.url', pr_data['url'], log=None)
 
     # Initial commit
-    check_call(['git', 'add', 'DESCRIPTION.md'])
-    check_call(['git', 'commit', '-m', f'Initial clone of {owner}/{repo}#{pr_number}'])
+    proc.run('git', 'add', 'DESCRIPTION.md', log=None)
+    proc.run('git', 'commit', '-m', f'Initial clone of {owner}/{repo}#{pr_number}', log=None)
 
     err(f"Successfully cloned PR to {target_path}")
     err(f"URL: {pr_data['url']}")
@@ -628,19 +617,19 @@ def push(
     if not all([owner, repo, pr_number]):
         # Try git config
         try:
-            owner = check_output(['git', 'config', 'pr.owner'], stderr=DEVNULL).decode().strip()
-            repo = check_output(['git', 'config', 'pr.repo'], stderr=DEVNULL).decode().strip()
-            pr_number = check_output(['git', 'config', 'pr.number'], stderr=DEVNULL).decode().strip()
+            owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
+            repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
+            pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
         except:
             err("Error: Could not determine PR from directory or git config")
             exit(1)
 
     # Read the current description file (from HEAD, not working directory)
     try:
-        desc_content = check_output(['git', 'show', 'HEAD:DESCRIPTION.md']).decode()
+        desc_content = proc.text('git', 'show', 'HEAD:DESCRIPTION.md', log=None)
         # Normalize line endings to \n
         desc_content = desc_content.replace('\r\n', '\n')
-    except CalledProcessError:
+    except Exception:
         err("Error: Could not read DESCRIPTION.md from HEAD")
         err("Make sure you've committed your changes")
         exit(1)
@@ -674,7 +663,7 @@ def push(
     # Check if we have an existing gist
     has_gist = False
     try:
-        gist_id = check_output(['git', 'config', 'pr.gist'], stderr=DEVNULL).decode().strip()
+        gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
         has_gist = bool(gist_id)
     except:
         pass
@@ -750,7 +739,7 @@ def push(
             cmd.extend(['--body-file', body_file])
 
         try:
-            check_call(cmd)
+            proc.run(*cmd, log=None)
             if body is not None:
                 os.unlink(body_file)  # Clean up temp file
             err("Successfully updated PR")
@@ -758,14 +747,14 @@ def push(
             # Get PR URL if we need to open it
             if open_browser:
                 try:
-                    pr_url = check_output(['git', 'config', 'pr.url'], stderr=DEVNULL).decode().strip()
+                    pr_url = proc.line('git', 'config', 'pr.url', err_ok=True, log=None)
                 except:
                     pr_url = f"https://github.com/{owner}/{repo}/pull/{pr_number}"
 
                 import webbrowser
                 webbrowser.open(pr_url)
                 err(f"Opened: {pr_url}")
-        except CalledProcessError as e:
+        except Exception as e:
             err(f"Error updating PR: {e}")
             exit(1)
 
@@ -796,13 +785,13 @@ def sync_to_gist(
 
     # Check if we already have a gist ID stored
     try:
-        gist_id = check_output(['git', 'config', 'pr.gist'], stderr=DEVNULL).decode().strip()
+        gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
     except:
         gist_id = None
 
     # Get configured remote name for gist (default: 'g')
     try:
-        gist_remote = check_output(['git', 'config', 'pr.gist-remote'], stderr=DEVNULL).decode().strip()
+        gist_remote = proc.line('git', 'config', 'pr.gist-remote', err_ok=True, log=None)
     except:
         gist_remote = 'g'
 
@@ -815,8 +804,7 @@ def sync_to_gist(
         # Check repository visibility to determine gist visibility
         is_public = True  # Default to public
         try:
-            repo_info = check_output(['gh', 'repo', 'view', f'{owner}/{repo}', '--json', 'visibility']).decode()
-            repo_data = json.loads(repo_info)
+            repo_data = proc.json('gh', 'repo', 'view', f'{owner}/{repo}', '--json', 'visibility', err_ok=True, log=None) or {}
             is_public = repo_data.get('visibility', 'PUBLIC').upper() == 'PUBLIC'
             err(f"Repository visibility: {'PUBLIC' if is_public else 'PRIVATE'}, gist will match")
         except Exception as e:
@@ -833,8 +821,8 @@ def sync_to_gist(
 
         # Update gist description using API to avoid editor
         try:
-            check_call(['gh', 'api', f'gists/{gist_id}', '-X', 'PATCH',
-                       '-f', f'description={description}'], stderr=DEVNULL)
+            proc.run('gh', 'api', f'gists/{gist_id}', '-X', 'PATCH',
+                       '-f', f'description={description}', log=None)
         except:
             pass  # Description update is optional
 
@@ -842,20 +830,20 @@ def sync_to_gist(
         if add_remote:
             try:
                 # Commit any changes and push to gist
-                check_call(['git', 'add', 'DESCRIPTION.md'])
-                check_call(['git', 'commit', '-m', f'Update PR description for {owner}/{repo}#{pr_number}'])
+                proc.run('git', 'add', 'DESCRIPTION.md', log=None)
+                proc.run('git', 'commit', '-m', f'Update PR description for {owner}/{repo}#{pr_number}', log=None)
             except:
                 pass  # May already be committed
 
             try:
-                check_call(['git', 'push', gist_remote, 'main', '--force'])
+                proc.run('git', 'push', gist_remote, 'main', '--force', log=None)
                 err(f"Pushed to gist remote '{gist_remote}'")
             except:
                 err(f"Warning: Could not push to gist remote '{gist_remote}'")
 
         # Get the latest revision SHA
         try:
-            gist_info = check_output(['gh', 'api', f'gists/{gist_id}', '--jq', '.history[0].version']).decode().strip()
+            gist_info = proc.line('gh', 'api', f'gists/{gist_id}', '--jq', '.history[0].version', log=None)
             revision = gist_info
         except:
             revision = None
@@ -876,22 +864,21 @@ def sync_to_gist(
 
         try:
             # Create gist from actual DESCRIPTION.md file (visibility based on repo)
-            import subprocess
             gist_cmd = ['gh', 'gist', 'create', '-d', description]
             if is_public:
                 gist_cmd.append('--public')
             gist_cmd.append('DESCRIPTION.md')
-            result = subprocess.run(gist_cmd, capture_output=True, text=True)
-            if result.returncode != 0:
-                err(f"Error creating gist: {result.stderr}")
+            output = proc.text(*gist_cmd, err_ok=True, log=None)
+            if not output:
+                err(f"Error creating gist")
                 return None
-            output = result.stdout.strip()
+            output = output.strip()
             err(f"Gist create output: {output}")
             # Extract gist ID from URL (format: https://gist.github.com/username/gist_id or https://gist.github.com/gist_id)
             match = re.search(r'gist\.github\.com/(?:[^/]+/)?([a-f0-9]+)', output)
             if match:
                 gist_id = match.group(1)
-                check_call(['git', 'config', 'pr.gist', gist_id])
+                proc.run('git', 'config', 'pr.gist', gist_id, log=None)
                 err(f"Stored gist ID: {gist_id}")
 
                 # Add gist as a remote if requested
@@ -899,26 +886,26 @@ def sync_to_gist(
                     gist_ssh_url = f"git@gist.github.com:{gist_id}.git"
                     try:
                         # Check if remote already exists
-                        existing_url = check_output(['git', 'remote', 'get-url', gist_remote], stderr=DEVNULL).decode().strip()
+                        existing_url = proc.line('git', 'remote', 'get-url', gist_remote, err_ok=True, log=None)
                         if existing_url != gist_ssh_url:
                             # Update existing remote
-                            check_call(['git', 'remote', 'set-url', gist_remote, gist_ssh_url])
+                            proc.run('git', 'remote', 'set-url', gist_remote, gist_ssh_url, log=None)
                             err(f"Updated remote '{gist_remote}' to {gist_ssh_url}")
                     except:
                         # Add new remote
-                        check_call(['git', 'remote', 'add', gist_remote, gist_ssh_url])
+                        proc.run('git', 'remote', 'add', gist_remote, gist_ssh_url, log=None)
                         err(f"Added remote '{gist_remote}': {gist_ssh_url}")
 
                     # Fetch from the gist remote first
                     try:
-                        check_call(['git', 'fetch', gist_remote], stderr=DEVNULL)
+                        proc.run('git', 'fetch', gist_remote, log=None)
                     except:
                         pass  # Fetch might fail if gist is empty
 
                     # Set up branch tracking
                     try:
-                        current_branch = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stderr=DEVNULL).decode().strip()
-                        check_call(['git', 'branch', '--set-upstream-to', f'{gist_remote}/main', current_branch])
+                        current_branch = proc.line('git', 'rev-parse', '--abbrev-ref', 'HEAD', log=None)
+                        proc.run('git', 'branch', '--set-upstream-to', f'{gist_remote}/main', current_branch, log=None)
                         err(f"Set {current_branch} to track {gist_remote}/main")
                     except Exception as e:
                         err(f"Could not set up branch tracking: {e}")
@@ -926,29 +913,29 @@ def sync_to_gist(
                     # Commit and push to the gist
                     try:
                         # Check if there are uncommitted changes
-                        check_call(['git', 'diff', '--quiet', 'DESCRIPTION.md'], stderr=DEVNULL)
+                        proc.check('git', 'diff', '--quiet', 'DESCRIPTION.md', log=None)
                     except:
                         # There are changes, commit them
-                        check_call(['git', 'add', 'DESCRIPTION.md'])
-                        check_call(['git', 'commit', '-m', f'Sync PR {owner}/{repo}#{pr_number} to gist'])
+                        proc.run('git', 'add', 'DESCRIPTION.md', log=None)
+                        proc.run('git', 'commit', '-m', f'Sync PR {owner}/{repo}#{pr_number} to gist', log=None)
 
                     # Push to the gist remote
                     try:
-                        check_call(['git', 'push', gist_remote, 'main', '--force'])
+                        proc.run('git', 'push', gist_remote, 'main', '--force', log=None)
                         err(f"Pushed to gist remote '{gist_remote}'")
                     except Exception as e:
                         err(f"Warning: Could not push to gist remote '{gist_remote}': {e}")
 
                 # Get the revision SHA for the newly created gist
                 try:
-                    gist_info = check_output(['gh', 'api', f'gists/{gist_id}', '--jq', '.history[0].version']).decode().strip()
+                    gist_info = proc.line('gh', 'api', f'gists/{gist_id}', '--jq', '.history[0].version', log=None)
                     revision = gist_info
                     gist_url = f"https://gist.github.com/{gist_id}/{revision}"
                 except:
                     gist_url = output  # Fallback to the output URL
 
                 err(f"Created gist: {gist_url}")
-        except CalledProcessError as e:
+        except Exception as e:
             err(f"Error creating gist: {e}")
             return None
 
@@ -968,7 +955,6 @@ def upload(
     alt: str | None,
 ) -> None:
     """Upload images to the PR's gist and get URLs."""
-    from subprocess import check_call
     import gist_upload
 
     # Get PR info
@@ -976,16 +962,16 @@ def upload(
 
     if not all([owner, repo, pr_number]):
         try:
-            owner = check_output(['git', 'config', 'pr.owner'], stderr=DEVNULL).decode().strip()
-            repo = check_output(['git', 'config', 'pr.repo'], stderr=DEVNULL).decode().strip()
-            pr_number = check_output(['git', 'config', 'pr.number'], stderr=DEVNULL).decode().strip()
+            owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
+            repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
+            pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
         except:
             err("Error: Could not determine PR from directory or git config")
             exit(1)
 
     # Get or create gist
     try:
-        gist_id = check_output(['git', 'config', 'pr.gist'], stderr=DEVNULL).decode().strip()
+        gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
     except:
         gist_id = None
 
@@ -997,7 +983,7 @@ def upload(
 
         gist_id = gist_upload.create_gist(description, desc_content)
         if gist_id:
-            check_call(['git', 'config', 'pr.gist', gist_id])
+            proc.run('git', 'config', 'pr.gist', gist_id, log=None)
             err(f"Created gist: {gist_id}")
         else:
             err("Error: Could not create gist")
@@ -1008,12 +994,12 @@ def upload(
     remote_name = None
     try:
         # Check all remotes to see if any point to this gist
-        remotes = check_output(['git', 'remote']).decode().strip().split('\n')
+        remotes = proc.lines('git', 'remote', log=None) or []
         for remote in remotes:
             if not remote:
                 continue
             try:
-                remote_url = check_output(['git', 'remote', 'get-url', remote], stderr=DEVNULL).decode().strip()
+                remote_url = proc.line('git', 'remote', 'get-url', remote, err_ok=True, log=None)
                 if f'gist.github.com:{gist_id}' in remote_url or f'gist.github.com/{gist_id}' in remote_url:
                     is_local_clone = True
                     remote_name = remote
@@ -1077,9 +1063,9 @@ def diff(
     if not all([owner, repo, pr_number]):
         # Try git config
         try:
-            owner = check_output(['git', 'config', 'pr.owner'], stderr=DEVNULL).decode().strip()
-            repo = check_output(['git', 'config', 'pr.repo'], stderr=DEVNULL).decode().strip()
-            pr_number = check_output(['git', 'config', 'pr.number'], stderr=DEVNULL).decode().strip()
+            owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
+            repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
+            pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
         except:
             err("Error: Could not determine PR from directory or git config")
             exit(1)
@@ -1092,10 +1078,10 @@ def diff(
 
     # Read local description
     try:
-        desc_content = check_output(['git', 'show', 'HEAD:DESCRIPTION.md']).decode()
+        desc_content = proc.text('git', 'show', 'HEAD:DESCRIPTION.md', log=None)
         # Normalize line endings to \n
         desc_content = desc_content.replace('\r\n', '\n')
-    except CalledProcessError:
+    except Exception:
         err("Error: Could not read DESCRIPTION.md from HEAD")
         err("Make sure you've committed your changes")
         exit(1)
@@ -1192,9 +1178,9 @@ def pull(
 
     if not all([owner, repo, pr_number]):
         try:
-            owner = check_output(['git', 'config', 'pr.owner'], stderr=DEVNULL).decode().strip()
-            repo = check_output(['git', 'config', 'pr.repo'], stderr=DEVNULL).decode().strip()
-            pr_number = check_output(['git', 'config', 'pr.number'], stderr=DEVNULL).decode().strip()
+            owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
+            repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
+            pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
         except:
             err("Error: Could not determine PR")
             exit(1)
@@ -1223,13 +1209,13 @@ def pull(
 
     # Check if there are changes
     try:
-        check_output(['git', 'diff', '--exit-code', 'DESCRIPTION.md'], stderr=DEVNULL)
+        proc.check('git', 'diff', '--exit-code', 'DESCRIPTION.md', log=None)
         err("No changes from PR")
-    except CalledProcessError:
+    except Exception:
         # There are changes, commit them
         if not dry_run:
-            check_call(['git', 'add', 'DESCRIPTION.md'])
-            check_call(['git', 'commit', '-m', f'Sync from PR (pulled latest)'])
+            proc.run('git', 'add', 'DESCRIPTION.md', log=None)
+            proc.run('git', 'commit', '-m', f'Sync from PR (pulled latest)', log=None)
             err("Pulled and committed changes from PR")
         else:
             err("[DRY-RUN] Would pull and commit changes from PR")
