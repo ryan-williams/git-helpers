@@ -81,6 +81,12 @@ github_open_settings_runners() {
 export -f github_open_settings_runners
 defn ghosr github_open_settings_runners
 
+github_open_releases() {
+    open "$(github_url)/releases"
+}
+export -f github_open_releases
+defn ghorl github_open_releases
+
 defn ghow github-open-web.py
 defn ghowd github-open-web.py -d
 defn ghowg github-open-web.py -g  # open gist
