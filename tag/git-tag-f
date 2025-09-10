@@ -2,15 +2,35 @@
 
 set -e
 
+# Function to preserve tag message if it exists
+preserve_tag() {
+  local tag="$1"
+  shift
+  if git rev-parse "$tag" >/dev/null 2>&1; then
+    # Tag exists, check if it's annotated
+    if git cat-file -p "$tag" 2>/dev/null | grep -q "^tag "; then
+      # It's an annotated tag, preserve the message
+      tag_msg=$(git tag -l --format='%(contents)' "$tag")
+      git tag -f -a "$tag" -m "$tag_msg" "$@"
+    else
+      # It's a lightweight tag, just force update
+      git tag -f "$tag" "$@"
+    fi
+  else
+    # Tag doesn't exist, create normally
+    git tag -f "$tag" "$@"
+  fi
+}
+
 if [ $# -eq 0 ]; then
   msg="$(git msg)"
   if [[ $msg =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    git tag -f "$msg"
+    preserve_tag "$msg"
   else
     echo "Usage: $0 [tag]" >&2
     echo "If no [tag] is provided, the current commit message is used as the tag, and expected to be of the form /^v?[0-9]+\.[0-9]+\.[0-9]+$/" >&2
     exit 1
   fi
 else
-  git tag -f "$@"
+  preserve_tag "$@"
 fi
