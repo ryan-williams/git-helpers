@@ -539,6 +539,7 @@ alias ghprr='gh pr'                   # raw gh pr command
 alias ghpr='github-pr.py'             # main github-pr.py command
 alias ghpri='github-pr.py init'       # initialize new PR draft
 alias ghpro='github-pr.py open'       # create/open new PR from draft
+alias ghpron='github-pr.py open -n'   # dry-run: show what PR would be created
 alias ghprc='github-pr.py clone'      # clone existing PR
 alias ghprp='github-pr.py push'       # push to PR (auto-adds footer if gist exists)
 alias ghprl='github-pr.py pull'       # pull from PR (and optionally push back)
