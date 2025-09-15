@@ -16,7 +16,7 @@ import difflib
 from pathlib import Path
 
 from click import argument, Choice, group, option
-from utz import proc, err
+from utz import proc, err, cd
 
 # Add parent directory to path for local imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -401,21 +401,26 @@ def open_pr(
     body = '\n'.join(body_lines).strip()
 
     # Get repo info from config or parent directory
+    owner = None
+    repo = None
     try:
-        owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
-        repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
+        owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or None
+        repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or None
     except:
+        pass
+
+    if not owner or not repo:
         # Try to get from parent directory
         parent_dir = Path('..').resolve()
         if (parent_dir / '.git').exists():
             try:
-                os.chdir(parent_dir)
-                repo_data = proc.json('gh', 'repo', 'view', '--json', 'owner,name', log=None)
-                owner = repo_data['owner']['login']
-                repo = repo_data['name']
-                os.chdir(Path(__file__).parent)
-            except:
-                err("Error: Could not determine repository. Configure with 'github-pr.py init -r owner/repo'")
+                with cd(parent_dir):
+                    repo_data = proc.json('gh', 'repo', 'view', '--json', 'owner,name', log=None)
+                    owner = repo_data['owner']['login']
+                    repo = repo_data['name']
+            except Exception as e:
+                err(f"Error: Could not determine repository: {e}")
+                err("Configure with 'github-pr.py init -r owner/repo'")
                 exit(1)
         else:
             err("Error: Could not determine repository. Configure with 'github-pr.py init -r owner/repo'")
@@ -430,11 +435,10 @@ def open_pr(
             try:
                 parent_dir = Path('..').resolve()
                 if (parent_dir / '.git').exists():
-                    os.chdir(parent_dir)
-                    # Get default branch from GitHub
-                    default_branch = check_output(['gh', 'repo', 'view', '--json', 'defaultBranchRef', '-q', '.defaultBranchRef.name'], stderr=DEVNULL).decode().strip()
-                    base = default_branch
-                    os.chdir(Path(__file__).parent)
+                    with cd(parent_dir):
+                        # Get default branch from GitHub
+                        default_branch = check_output(['gh', 'repo', 'view', '--json', 'defaultBranchRef', '-q', '.defaultBranchRef.name'], stderr=DEVNULL).decode().strip()
+                        base = default_branch
                     err(f"Auto-detected base branch: {base}")
                 else:
                     base = 'main'  # Fallback to main
@@ -446,20 +450,19 @@ def open_pr(
         parent_dir = Path('..').resolve()
         if (parent_dir / '.git').exists():
             try:
-                os.chdir(parent_dir)
-                # Use branch resolution
-                ref_name, remote_ref = resolve_remote_ref(verbose=False)
-                if ref_name:
-                    head = ref_name
-                    err(f"Auto-detected head branch: {head}")
+                with cd(parent_dir):
+                    # Use branch resolution
+                    ref_name, remote_ref = resolve_remote_ref(verbose=False)
+                    if ref_name:
+                        head = ref_name
+                        err(f"Auto-detected head branch: {head}")
 
-                if not head:
-                    # Fallback to current branch
-                    head = proc.line('git', 'rev-parse', '--abbrev-ref', 'HEAD', log=None)
-                    if head == 'HEAD':
-                        err("Error: Parent repo is in detached HEAD state. Specify --head explicitly")
-                        exit(1)
-                os.chdir(Path(__file__).parent)
+                    if not head:
+                        # Fallback to current branch
+                        head = proc.line('git', 'rev-parse', '--abbrev-ref', 'HEAD', log=None)
+                        if head == 'HEAD':
+                            err("Error: Parent repo is in detached HEAD state. Specify --head explicitly")
+                            exit(1)
             except Exception as e:
                 err(f"Error detecting head branch: {e}")
                 err("Specify --head explicitly")
