@@ -316,7 +316,7 @@ def cli():
 
 @cli.command()
 @option('-r', '--repo', help='Repository (owner/repo format)')
-@option('-b', '--base', help='Base branch (default: main/master)')
+@option('-b', '--base', help='Base branch (default: repo default branch)')
 def init(
     repo: str | None,
     base: str | None,
@@ -357,7 +357,7 @@ def init(
 
 
 @cli.command(name='open')
-@option('-b', '--base', help='Base branch (default: main/master)')
+@option('-b', '--base', help='Base branch (default: repo default branch)')
 @option('-d', '--draft', is_flag=True, help='Create as draft PR')
 @option('-h', '--head', help='Head branch (default: auto-detect from parent repo)')
 @option('-n', '--dry-run', is_flag=True, help='Show what would be done without creating the PR')
@@ -426,7 +426,20 @@ def open_pr(
         try:
             base = proc.line('git', 'config', 'pr.base', err_ok=True, log=None)
         except:
-            base = 'main'  # Default to main
+            # Try to get default branch from parent repo
+            try:
+                parent_dir = Path('..').resolve()
+                if (parent_dir / '.git').exists():
+                    os.chdir(parent_dir)
+                    # Get default branch from GitHub
+                    default_branch = check_output(['gh', 'repo', 'view', '--json', 'defaultBranchRef', '-q', '.defaultBranchRef.name'], stderr=DEVNULL).decode().strip()
+                    base = default_branch
+                    os.chdir(Path(__file__).parent)
+                    err(f"Auto-detected base branch: {base}")
+                else:
+                    base = 'main'  # Fallback to main
+            except:
+                base = 'main'  # Fallback to main
 
     # Get head branch - try to auto-detect from parent repo
     if not head:
