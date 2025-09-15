@@ -508,6 +508,49 @@ def open_pr(
                     proc.run('git', 'config', 'pr.url', output, log=None)
                     err(f"Created PR #{pr_number}: {output}")
                     err("PR info stored in git config")
+
+                    # Check for gist remote and store its ID if found
+                    try:
+                        remotes = check_output(['git', 'remote', '-v'], stderr=DEVNULL).decode().strip().split('\n')
+                        for remote_line in remotes:
+                            if 'gist.github.com' in remote_line:
+                                # Extract gist ID from URL like git@gist.github.com:GIST_ID.git
+                                gist_match = re.search(r'gist\.github\.com[:/]([a-f0-9]+)', remote_line)
+                                if gist_match:
+                                    gist_id = gist_match.group(1)
+                                    proc.run('git', 'config', 'pr.gist', gist_id, log=None)
+                                    err(f"Detected and stored gist ID: {gist_id}")
+                                    break
+                    except:
+                        pass  # Gist detection is optional
+
+                    # Update DESCRIPTION.md with PR link
+                    desc_file = Path('DESCRIPTION.md')
+                    if desc_file.exists():
+                        with open(desc_file, 'r') as f:
+                            lines = f.readlines()
+
+                        if lines:
+                            # Update first line to include PR link
+                            first_line = lines[0].strip()
+                            # Check if first line is an h1 (starts with #)
+                            if first_line.startswith('#'):
+                                # Check if it already has a PR link
+                                if not re.match(r'^#\s*\[[^]]+\]', first_line):
+                                    # Extract just the title (remove leading #)
+                                    title_only = first_line.lstrip('#').strip()
+                                    # Add PR link
+                                    lines[0] = f'# [{owner}/{repo}#{pr_number}]({output}) {title_only}\n'
+
+                                    with open(desc_file, 'w') as f:
+                                        f.writelines(lines)
+
+                                    # Commit the update
+                                    proc.run('git', 'add', 'DESCRIPTION.md', log=None)
+                                    proc.run('git', 'commit', '-m', f'Update DESCRIPTION.md with PR #{pr_number} link', log=None)
+                                    err(f"Updated DESCRIPTION.md with PR link")
+                            else:
+                                err("Warning: DESCRIPTION.md first line is not an h1, skipping link update")
                 else:
                     err(f"Created PR: {output}")
         except Exception as e:
