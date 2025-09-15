@@ -87,6 +87,14 @@ github_open_releases() {
 export -f github_open_releases
 defn ghorl github_open_releases
 
+github_open_profile() {
+    local username
+    username="$(gh api user --jq .login)"
+    open "https://github.com/$username"
+}
+export -f github_open_profile
+defn ghop github_open_profile
+
 defn ghow github-open-web.py
 defn ghowd github-open-web.py -d
 defn ghowg github-open-web.py -g  # open gist

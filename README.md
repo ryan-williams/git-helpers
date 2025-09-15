@@ -1,5 +1,5 @@
 # git-helpers
-[1,728](#count-completions) Git aliases and scripts.
+[1,730](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,11 +332,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1728 completions added by installing git-helpers
+# 1730 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 270
-# - 4 chars: 691
+# - 4 chars: 692
 # - 5 chars: 346
 ```
 
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1728 new completions:
+1730 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -937,6 +937,7 @@ ghoc       = github_open_web_commit
 ghoj       = gh_open_job
 ghol       = gh_open_last
 ghon       = github_owner_name
+ghop       = github_open_profile
 ghor       = github_open_web_ref
 ghos       = github_open_settings
 ghow       = github-open-web.py
@@ -1792,6 +1793,7 @@ gh_repo_description = gh repo view --json description "$@" | jq -r .description
 github-gist-file.py = git-helpers/github/github-gist-file.py
 github-workflows.py = git-helpers/github/github-workflows.py  # Add parent directory to path for local imports
 github_open_actions = open "$(github_url)/actions"
+github_open_profile
 github_open_web_ref = [ref]
 gh_last_workflow_run = gh run list -L 1 --json databaseId | jq -r .[0].databaseId
 gist-get-description = git-helpers/gist/gist-get-description  # Get a GitHub Gist's description
@@ -1825,7 +1827,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1728 completions added by installing git-helpers (0 removed, 3073 total)
+1730 completions added by installing git-helpers (0 removed, 3075 total)
 ```
 </details>
 
