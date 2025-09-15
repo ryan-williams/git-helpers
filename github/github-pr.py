@@ -357,15 +357,17 @@ def init(
 
 
 @cli.command(name='open')
-@option('--head', help='Head branch (default: auto-detect from parent repo)')
-@option('--base', help='Base branch (default: main/master)')
+@option('-b', '--base', help='Base branch (default: main/master)')
 @option('-d', '--draft', is_flag=True, help='Create as draft PR')
+@option('-h', '--head', help='Head branch (default: auto-detect from parent repo)')
+@option('-n', '--dry-run', is_flag=True, help='Show what would be done without creating the PR')
 @option('-w', '--web', is_flag=True, help='Open PR in web browser after creating')
 def open_pr(
     head: str | None,
     base: str | None,
     draft: bool,
     web: bool,
+    dry_run: bool,
 ) -> None:
     """Create a new PR from the current draft."""
 
@@ -454,36 +456,50 @@ def open_pr(
             exit(1)
 
     # Create the PR
-    cmd = ['gh', 'pr', 'create',
-           '-R', f'{owner}/{repo}',
-           '--title', title,
-           '--body', body,
-           '--base', base,
-           '--head', head]
+    if dry_run:
+        err(f"[DRY-RUN] Would create PR in {owner}/{repo}")
+        err(f"  Title: {title}")
+        err(f"  Base: {base}")
+        err(f"  Head: {head}")
+        if draft:
+            err("  Type: Draft PR")
+        if body:
+            err(f"  Body ({len(body)} chars):")
+            # Show first few lines of body
+            body_preview = body[:500] + ('...' if len(body) > 500 else '')
+            for line in body_preview.split('\n')[:10]:
+                err(f"    {line}")
+    else:
+        cmd = ['gh', 'pr', 'create',
+               '-R', f'{owner}/{repo}',
+               '--title', title,
+               '--body', body,
+               '--base', base,
+               '--head', head]
 
-    if draft:
-        cmd.append('--draft')
+        if draft:
+            cmd.append('--draft')
 
-    if web:
-        cmd.append('--web')
+        if web:
+            cmd.append('--web')
 
-    try:
-        output = proc.text(*cmd, log=None).strip()
-        if not web:
-            # Extract PR number from URL
-            match = re.search(r'/pull/(\d+)', output)
-            if match:
-                pr_number = match.group(1)
-                # Store PR info in git config
-                proc.run('git', 'config', 'pr.number', pr_number, log=None)
-                proc.run('git', 'config', 'pr.url', output, log=None)
-                err(f"Created PR #{pr_number}: {output}")
-                err("PR info stored in git config")
-            else:
-                err(f"Created PR: {output}")
-    except Exception as e:
-        err(f"Error creating PR: {e}")
-        exit(1)
+        try:
+            output = proc.text(*cmd, log=None).strip()
+            if not web:
+                # Extract PR number from URL
+                match = re.search(r'/pull/(\d+)', output)
+                if match:
+                    pr_number = match.group(1)
+                    # Store PR info in git config
+                    proc.run('git', 'config', 'pr.number', pr_number, log=None)
+                    proc.run('git', 'config', 'pr.url', output, log=None)
+                    err(f"Created PR #{pr_number}: {output}")
+                    err("PR info stored in git config")
+                else:
+                    err(f"Created PR: {output}")
+        except Exception as e:
+            err(f"Error creating PR: {e}")
+            exit(1)
 
 
 @cli.command()
