@@ -1,15 +1,44 @@
 #!/usr/bin/env bash
-# Checkout "ours" or "theirs" versions of all conflicting files.
+# Checkout "ours" or "theirs" versions of conflicting files.
+# Usage: git conflicting-checkout <ours|theirs> [paths...]
 
 from="$1"; shift
 if [ "$from" != "ours" ] && [ "$from" != "theirs" ]; then
-  echo "Usage: $0 <ours|theirs>" >&2
+  echo "Usage: $0 <ours|theirs> [paths...]" >&2
   exit 1
 fi
 
-# Read conflicting paths
-IFS=$'\n' read -d '' -ra conflicting_paths < <(git conflicting)
-echo "${#conflicting_paths[@]} conflicting paths:"
-printf '\t%s\n' "${conflicting_paths[@]}"
+# Use provided paths or default to all conflicting files
+if [ $# -gt 0 ]; then
+  # Use provided paths
+  paths=("$@")
+  echo "Processing ${#paths[@]} specified path(s):"
+  printf '\t%s\n' "${paths[@]}"
+else
+  # Read all conflicting paths
+  IFS=$'\n' read -d '' -ra paths < <(git conflicting)
+  echo "${#paths[@]} conflicting paths:"
+  printf '\t%s\n' "${paths[@]}"
+fi
 
-git checkout "--$from" "${conflicting_paths[@]}"
+# Process each path
+for path in "${paths[@]}"; do
+  # Check if file exists in the index
+  if git ls-files --error-unmatch "$path" &>/dev/null; then
+    # File exists, use checkout
+    git checkout "--$from" "$path"
+  else
+    # File doesn't exist (was added or deleted)
+    if [ "$from" = "theirs" ]; then
+      # Accept their changes (could be addition or deletion)
+      git add "$path"
+    else
+      # For "ours", reset to our version
+      git reset HEAD "$path" 2>/dev/null
+      # If file should exist in our version but doesn't, restore it
+      if git ls-tree HEAD "$path" &>/dev/null; then
+        git checkout HEAD -- "$path"
+      fi
+    fi
+  fi
+done
