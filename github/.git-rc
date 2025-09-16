@@ -538,8 +538,12 @@ defn ghss gh secret set
 alias ghprr='gh pr'                   # raw gh pr command
 alias ghpr='github-pr.py'             # main github-pr.py command
 alias ghpri='github-pr.py init'       # initialize new PR draft
-alias ghpro='github-pr.py open'       # create/open new PR from draft
-alias ghpron='github-pr.py open -n'   # dry-run: show what PR would be created
+alias ghpro='github-pr.py open'       # open existing PR in browser
+alias ghprog='github-pr.py open -g'   # open gist in browser
+alias ghprcr='github-pr.py create'    # create new PR from DESCRIPTION.md
+alias ghprcrn='github-pr.py create -n' # dry-run: show what PR would be created
+alias ghprsh='github-pr.py show'      # show PR and gist URLs
+alias ghprshg='github-pr.py show -g'  # show only gist URL
 alias ghprc='github-pr.py clone'      # clone existing PR
 alias ghprp='github-pr.py push'       # push to PR (auto-adds footer if gist exists)
 alias ghprpn='github-pr.py push -n'   # dry-run push

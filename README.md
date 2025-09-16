@@ -1,5 +1,5 @@
 # git-helpers
-[1,734](#count-completions) Git aliases and scripts.
+[1,738](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,7 +332,7 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1734 completions added by installing git-helpers
+# 1738 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 270
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1734 new completions:
+1738 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1713,11 +1713,13 @@ ggracl     = g graph -ac -l
 gh_job     = gh_run_and_job "$@" | jq ".job"
 ghblrs     = g head-before-last-rebase %h
 ghossa     = github_open_settings_secrets_actions
-ghpron     = github-pr.py open -n
+ghprcr     = github-pr.py create
+ghprog     = github-pr.py open -g
 ghprpF     = github-pr.py push -F
 ghprpg     = github-pr.py push -g
 ghprpn     = github-pr.py push -n
 ghprpo     = github-pr.py push -o
+ghprsh     = github-pr.py show
 ghprsn     = github-pr.py sync -n
 ghri1b     = github_run_list.py -iL1 -b
 ghrvjs     = gh_run_view_jobs
@@ -1745,6 +1747,8 @@ gsmurr     = g submodule update --recursive --rebase
 gxcapm     = <git repo dir> ['git capm' args...]
 issues     = git-helpers/github/issues
 ggracle    = g graph -ac -l -e
+ghprcrn    = github-pr.py create -n
+ghprshg    = github-pr.py show -g
 gist-id    = git-helpers/gist/gist-id  # If exactly one Git remote is a gist URL, return its ID. Otherwise, check whether `github_default_remote` is a gist URL and return its ID. Otherwise, error.
 gsmurrr    = g submodule update --recursive --rebase --remote
 gist-dir   = git-helpers/gist/gist-dir
@@ -1831,7 +1835,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1734 completions added by installing git-helpers (0 removed, 3079 total)
+1738 completions added by installing git-helpers (0 removed, 3083 total)
 ```
 </details>
 

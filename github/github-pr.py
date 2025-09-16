@@ -550,16 +550,16 @@ def init(
 
     err("Created DESCRIPTION.md template")
     err("Edit the file with your PR title and description, then commit")
-    err("Use 'github-pr.py open' to create the PR when ready")
+    err("Use 'github-pr.py create' to create the PR when ready")
 
 
-@cli.command(name='open')
+@cli.command()
 @option('-b', '--base', help='Base branch (default: repo default branch)')
 @option('-d', '--draft', is_flag=True, help='Create as draft PR')
 @option('-h', '--head', help='Head branch (default: auto-detect from parent repo)')
 @option('-n', '--dry-run', is_flag=True, help='Show what would be done without creating the PR')
 @option('-w', '--web', is_flag=True, help='Open PR in web browser after creating')
-def open_pr(
+def create(
     head: str | None,
     base: str | None,
     draft: bool,
@@ -567,7 +567,143 @@ def open_pr(
     dry_run: bool,
 ) -> None:
     """Create a new PR from the current draft."""
+    # This is the original open_pr logic for creating new PRs
+    create_new_pr(head, base, draft, web, dry_run)
 
+
+@cli.command()
+@option('-g', '--gist', is_flag=True, help='Only show gist URL')
+def show(gist: bool) -> None:
+    """Show PR and/or gist URLs for current directory."""
+    # Get PR info
+    owner, repo, pr_number = get_pr_info_from_path()
+
+    if not all([owner, repo, pr_number]):
+        # Try from git config
+        owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
+        repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
+        pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
+
+    if gist:
+        # Only show gist URL
+        gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
+        if not gist_id:
+            # Try to find from remote
+            gist_remote = find_gist_remote()
+            if gist_remote:
+                remotes = proc.lines('git', 'remote', '-v', log=None) or []
+                for remote_line in remotes:
+                    if remote_line.startswith(f"{gist_remote}\t") and 'gist.github.com' in remote_line:
+                        match = GIST_ID_PATTERN.search(remote_line)
+                        if match:
+                            gist_id = match.group(1)
+                            break
+
+        if gist_id:
+            print(f"https://gist.github.com/{gist_id}")
+        else:
+            err("No gist found for this PR")
+            exit(1)
+    else:
+        # Show both PR and gist
+        if all([owner, repo, pr_number]):
+            pr_url = f"https://github.com/{owner}/{repo}/pull/{pr_number}"
+            print(f"PR: {pr_url}")
+
+            # Check for gist
+            gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
+            if gist_id:
+                gist_url = f"https://gist.github.com/{gist_id}"
+                print(f"Gist: {gist_url}")
+
+            # Check for gist remote if no gist ID in config
+            if not gist_id:
+                gist_remote = find_gist_remote()
+                if gist_remote:
+                    remotes = proc.lines('git', 'remote', '-v', log=None) or []
+                    for remote_line in remotes:
+                        if remote_line.startswith(f"{gist_remote}\t"):
+                            if 'gist.github.com' in remote_line:
+                                match = GIST_ID_PATTERN.search(remote_line)
+                                if match:
+                                    gist_url = f"https://gist.github.com/{match.group(1)}"
+                                    print(f"Gist (from remote): {gist_url}")
+                                    break
+        else:
+            err("No PR information found in current directory")
+            exit(1)
+
+
+@cli.command(name='open')
+@option('-g', '--gist', is_flag=True, help='Open gist instead of PR')
+def open_pr(
+    gist: bool,
+) -> None:
+    """Open PR or gist in web browser."""
+    # Get PR info
+    owner, repo, pr_number = get_pr_info_from_path()
+
+    if not all([owner, repo, pr_number]):
+        # Try from git config
+        owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
+        repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
+        pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
+
+    if not all([owner, repo, pr_number]):
+        # Check for PR-specific files
+        desc_file = find_description_file()
+        if desc_file:
+            # Parse PR info from the file
+            match = PR_FILENAME_PATTERN.match(desc_file.name)
+            if match:
+                repo = match.group(1)
+                pr_number = match.group(2)
+                # Try to get owner from git config
+                owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
+
+    if gist:
+        # Open gist
+        gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
+        if not gist_id:
+            # Try to find from remote
+            gist_remote = find_gist_remote()
+            if gist_remote:
+                remotes = proc.lines('git', 'remote', '-v', log=None) or []
+                for remote_line in remotes:
+                    if remote_line.startswith(f"{gist_remote}\t") and 'gist.github.com' in remote_line:
+                        match = GIST_ID_PATTERN.search(remote_line)
+                        if match:
+                            gist_id = match.group(1)
+                            break
+
+        if gist_id:
+            gist_url = f"https://gist.github.com/{gist_id}"
+            import webbrowser
+            webbrowser.open(gist_url)
+            err(f"Opened: {gist_url}")
+        else:
+            err("No gist found for this PR")
+            exit(1)
+    else:
+        # Open PR
+        if all([owner, repo, pr_number]):
+            pr_url = f"https://github.com/{owner}/{repo}/pull/{pr_number}"
+            import webbrowser
+            webbrowser.open(pr_url)
+            err(f"Opened: {pr_url}")
+        else:
+            err("Error: No PR found in current directory")
+            exit(1)
+
+
+def create_new_pr(
+    head: str | None,
+    base: str | None,
+    draft: bool,
+    web: bool,
+    dry_run: bool,
+) -> None:
+    """Create a new PR from DESCRIPTION.md."""
     # Read DESCRIPTION.md
     if not Path('DESCRIPTION.md').exists():
         err("Error: DESCRIPTION.md not found. Run 'github-pr.py init' first")
