@@ -1,5 +1,5 @@
 # git-helpers
-[1,739](#count-completions) Git aliases and scripts.
+[1,742](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,12 +332,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1739 completions added by installing git-helpers
+# 1742 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 270
-# - 4 chars: 693
-# - 5 chars: 347
+# - 4 chars: 694
+# - 5 chars: 348
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1739 new completions:
+1742 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1084,6 +1084,7 @@ gnsh       = !git --no-pager show
 gobn       = !git_open_web_branch.py -n
 gobu       = !git_open_web_branch.py -u
 gobv       = !git_open_web_branch.py -v
+gopr       = github-open-pr.py
 gpbd       = g patch-branch-diff
 gpbf       = g push-user-branch -f
 gpbn       = g push-user-branch -n
@@ -1489,6 +1490,7 @@ ghgsd      = gist-set-description
 ghjis      = gh_job_ids
 ghlwr      = gh_last_workflow_run
 ghoby      = github_open_branches_yours
+ghopr      = github-open-pr.py
 ghorl      = github_open_releases
 ghosr      = github_open_settings_runners
 ghoss      = github_open_settings_secrets_actions
@@ -1790,6 +1792,7 @@ gitlab_maybe_api
 gitlab_open_jobs
 parse-github-url = git-helpers/github/parse-github-url
 gh_variables_eval = ghv --json name,value | jr '.[] | .name+"="+.value'
+github-open-pr.py = git-helpers/github/github-open-pr.py  # Add parent directory to path for local imports
 github_owner_name = [remote name]
 github-open-web.py = git-helpers/github/github-open-web.py  # Add parent directory to path to import util modules
 github_remote_pathNo manual entry for git-remote-path
@@ -1836,7 +1839,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1739 completions added by installing git-helpers (0 removed, 3084 total)
+1742 completions added by installing git-helpers (0 removed, 3087 total)
 ```
 </details>
 
