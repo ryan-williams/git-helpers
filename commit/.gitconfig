@@ -72,6 +72,8 @@
   get-committer-date = !git --no-pager log -1 --format=%cd
   gad   = get-author-date
   gcd   = get-committer-date
+  mc    = make-merge-commit
+  mmc   = make-merge-commit
   om    = octomerge
   pp    = commit-push-parents
   ppa   = commit-push-parents -a

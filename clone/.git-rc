@@ -9,7 +9,6 @@ alias gccd=git_clone_and_cd
 alias gclb="g clb"
 alias gcln="g cln"
 alias gcsb=". git-clone-single-branch"
-alias gmc="g mc"
 alias gsrv="g srv"
 alias gusi="g usi"
 alias gwd="g wd"

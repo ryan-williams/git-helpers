@@ -74,6 +74,8 @@ alias ggad="g gad"
 alias ggau="g gau"
 alias ggcd="g gcd"
 
+alias gmc="g mc"
+alias gmmc="g mmc"
 alias gom="g om"
 
 alias gpp="g pp"

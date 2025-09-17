@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Create and checkout a merge commit with exactly 2 parents
+# Usage: git make-merge-commit <parent1> <parent2> <message> [treeish=HEAD]
+
+set -e
+
+if [ $# -lt 3 ]; then
+    echo "Usage: git make-merge-commit <parent1> <parent2> <message> [treeish=HEAD]" >&2
+    exit 1
+fi
+
+parent1="$1"
+parent2="$2"
+message="$3"
+treeish="${4:-HEAD}"
+
+# Resolve parents to commit SHAs
+parent1_sha=$(git rev-parse "$parent1")
+parent2_sha=$(git rev-parse "$parent2")
+
+# Get tree SHA from treeish
+if [ "$treeish" = "WORKTREE" ] || [ "$treeish" = "worktree" ]; then
+    # Create tree from current worktree state
+    tree_sha=$(git write-tree)
+else
+    # Get tree from specified commit/ref
+    tree_sha=$(git rev-parse "$treeish^{tree}")
+fi
+
+# Create the merge commit with two parents
+commit_sha=$(git commit-tree "$tree_sha" -p "$parent1_sha" -p "$parent2_sha" -m "$message")
+
+# Reset current branch to the new commit
+git reset --hard "$commit_sha"
+
+echo "Created merge commit $commit_sha"
+echo "Parents: $parent1_sha $parent2_sha"
+echo "Tree: $tree_sha"
