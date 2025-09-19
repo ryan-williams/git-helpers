@@ -1,33 +1,32 @@
-#!/usr/bin/env python
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "utz",
+# ]
+# ///
 """Create placeholder GitHub Actions workflow on default branch to preserve workflow name."""
 
 import sys
 import re
 import argparse
-from subprocess import check_output, check_call, CalledProcessError, DEVNULL
 from pathlib import Path
-from functools import partial
 
-err = partial(print, file=sys.stderr)
+from utz import proc, err
 
 
-def run_git(cmd, check=True):
-    """Run a git command and return output."""
-    full_cmd = ['git'] + cmd
-    try:
-        if check:
-            return check_output(full_cmd, stderr=DEVNULL).decode().strip()
-        else:
-            return check_output(full_cmd, stderr=DEVNULL).decode().strip()
-    except CalledProcessError:
-        if check:
-            raise
-        return None
+def git(*args, lines=False, **kwargs):
+    """Git command wrapper using utz.proc."""
+    kwargs.setdefault('log', None)
+    if lines:
+        return proc.lines('git', *args, **kwargs) or []
+    else:
+        return proc.line('git', *args, **kwargs) or ''
 
 
 def get_current_branch():
     """Get the current git branch name."""
-    return run_git(['rev-parse', '--abbrev-ref', 'HEAD'])
+    return git('rev-parse', '--abbrev-ref', 'HEAD')
 
 
 def get_github_remote():
@@ -35,7 +34,7 @@ def get_github_remote():
     # Try to find the only GitHub remote
     try:
         # Look for GitHub remotes
-        remotes_output = check_output(['git', 'remote', '-v'], stderr=DEVNULL).decode()
+        remotes_output = proc.text('git', 'remote', '-v', log=None) or ''
         github_remotes = []
         for line in remotes_output.strip().split('\n'):
             if 'github.com' in line:
@@ -48,7 +47,7 @@ def get_github_remote():
         elif len(github_remotes) > 1:
             # Multiple GitHub remotes, check tracked branch
             try:
-                upstream = run_git(['rev-parse', '--abbrev-ref', '@{u}'], check=False)
+                upstream = git('rev-parse', '--abbrev-ref', '@{u}', err_ok=True)
                 if upstream:
                     remote = upstream.split('/')[0]
                     if remote in github_remotes:
@@ -59,12 +58,11 @@ def get_github_remote():
 
             # As last resort, try gh CLI default
             try:
-                result = check_output(['gh', 'repo', 'set-default', '--view'],
-                                    stderr=DEVNULL).decode().strip()
+                result = proc.line('gh', 'repo', 'set-default', '--view', log=None) or ''
                 if result:
                     # Parse remote name from the output
                     for remote in github_remotes:
-                        remote_url = run_git(['remote', 'get-url', remote], check=False)
+                        remote_url = git('remote', 'get-url', remote, err_ok=True)
                         if result in remote_url:
                             return remote
             except:
@@ -74,7 +72,7 @@ def get_github_remote():
                            "Cannot determine which to use.")
         else:
             raise ValueError("No GitHub remote found")
-    except CalledProcessError as e:
+    except Exception as e:
         raise ValueError(f"Failed to get git remotes: {e}")
 
 
@@ -82,10 +80,7 @@ def get_default_branch(remote):
     """Get the default branch for the repository from the specified remote."""
     # Try to get from GitHub via gh CLI (most reliable)
     try:
-        result = check_output(['gh', 'repo', 'view', '--json', 'defaultBranchRef'],
-                            stderr=DEVNULL).decode().strip()
-        import json
-        data = json.loads(result)
+        data = proc.json('gh', 'repo', 'view', '--json', 'defaultBranchRef', log=None) or {}
         if 'defaultBranchRef' in data and 'name' in data['defaultBranchRef']:
             branch_name = data['defaultBranchRef']['name']
             err(f"Default branch from GitHub API: {branch_name}")
@@ -96,7 +91,7 @@ def get_default_branch(remote):
     # Try to get from git remote HEAD
     try:
         # Get the symbolic ref for the remote HEAD
-        result = run_git(['symbolic-ref', f'refs/remotes/{remote}/HEAD'], check=False)
+        result = git('symbolic-ref', f'refs/remotes/{remote}/HEAD', err_ok=True)
         if result:
             # Extract branch name from refs/remotes/origin/main -> main
             branch_name = result.split('/')[-1]
@@ -105,8 +100,8 @@ def get_default_branch(remote):
 
         # Remote HEAD might not be set, try to set it
         err(f"Remote HEAD not set, fetching from {remote}...")
-        check_call(['git', 'remote', 'set-head', remote, '-a'], stderr=DEVNULL)
-        result = run_git(['symbolic-ref', f'refs/remotes/{remote}/HEAD'], check=False)
+        git('remote', 'set-head', remote, '-a')
+        result = git('symbolic-ref', f'refs/remotes/{remote}/HEAD', err_ok=True)
         if result:
             branch_name = result.split('/')[-1]
             err(f"Default branch from remote HEAD (after update): {branch_name}")
@@ -121,7 +116,7 @@ def get_default_branch(remote):
 def get_modified_workflows():
     """Get list of workflow files modified in the current commit."""
     # Get list of files changed in the last commit
-    files = run_git(['diff', '--name-only', 'HEAD~1', 'HEAD']).split('\n')
+    files = git('diff', '--name-only', 'HEAD~1', 'HEAD', lines=True)
 
     # Filter for GitHub Actions workflow files
     workflows = []
@@ -190,7 +185,7 @@ def is_placeholder_workflow(content):
 def is_placeholder_commit():
     """Check if the current HEAD commit on default branch is a placeholder commit."""
     # Check commit message
-    msg = run_git(['log', '-1', '--pretty=%s'])
+    msg = git('log', '-1', '--pretty=%s')
 
     # Common patterns for placeholder commits
     placeholder_patterns = [
@@ -209,7 +204,7 @@ def is_placeholder_commit():
     # Check if all modified workflows in the last commit are placeholders
     try:
         # Get files changed in the last commit
-        files = run_git(['diff', '--name-only', 'HEAD~1', 'HEAD']).split('\n')
+        files = git('diff', '--name-only', 'HEAD~1', 'HEAD', lines=True)
         workflow_files = [f for f in files if f.startswith('.github/workflows/') and
                          (f.endswith('.yml') or f.endswith('.yaml'))]
 
@@ -270,7 +265,7 @@ def main():
             return 1
 
     # Check if local branch exists
-    if not run_git(['show-ref', '--verify', f'refs/heads/{default_branch}'], check=False):
+    if not git('show-ref', '--verify', f'refs/heads/{default_branch}', err_ok=True):
         err(f"Error: Local branch '{default_branch}' does not exist")
         err(f"You may need to: git checkout -b {default_branch} {remote}/{default_branch}")
         return 1
@@ -312,15 +307,15 @@ def main():
     stashed = False
     if not args.dry_run:
         # Check for staged or unstaged changes (but ignore untracked files)
-        diff_output = run_git(['diff', 'HEAD', '--name-only'], check=False)
-        staged_output = run_git(['diff', '--cached', '--name-only'], check=False)
+        diff_output = git('diff', 'HEAD', '--name-only', err_ok=True)
+        staged_output = git('diff', '--cached', '--name-only', err_ok=True)
 
         if diff_output or staged_output:
             if args.stash:
                 # User explicitly requested stashing
                 err("Stashing uncommitted changes...")
                 try:
-                    run_git(['stash', 'push', '-m', 'github-placeholder-main auto-stash'])
+                    git('stash', 'push', '-m', 'github-placeholder-main auto-stash')
                     stashed = True
                 except:
                     err("Error: Failed to stash changes")
@@ -330,18 +325,20 @@ def main():
                 err("Error: You have uncommitted changes")
                 if diff_output:
                     err("  Unstaged changes in:")
-                    for f in diff_output.split('\n')[:5]:
+                    diff_files = diff_output.split('\n')
+                    for f in diff_files[:5]:
                         if f:
                             err(f"    {f}")
-                    if len(diff_output.split('\n')) > 5:
-                        err(f"    ... and {len(diff_output.split('\n')) - 5} more files")
+                    if len(diff_files) > 5:
+                        err(f"    ... and {len(diff_files) - 5} more files")
                 if staged_output:
                     err("  Staged changes in:")
-                    for f in staged_output.split('\n')[:5]:
+                    staged_files = staged_output.split('\n')
+                    for f in staged_files[:5]:
                         if f:
                             err(f"    {f}")
-                    if len(staged_output.split('\n')) > 5:
-                        err(f"    ... and {len(staged_output.split('\n')) - 5} more files")
+                    if len(staged_files) > 5:
+                        err(f"    ... and {len(staged_files) - 5} more files")
                 err("\nOptions:")
                 err("  1. Commit your changes first")
                 err("  2. Use --stash to automatically stash and restore")
@@ -352,7 +349,7 @@ def main():
         # Switch to default branch
         if not args.dry_run:
             err(f"\nSwitching from {current_branch} to {default_branch}...")
-            check_call(['git', 'checkout', default_branch])
+            git('checkout', default_branch)
         else:
             err(f"\n[DRY-RUN] Would switch from {current_branch} to {default_branch}")
 
@@ -369,16 +366,16 @@ def main():
             # Check if workflow already exists in git on default branch
             # In dry-run mode or before switching, check the target branch directly
             if args.dry_run:
-                file_exists_in_git = run_git(['ls-tree', f'{default_branch}', wf_path], check=False)
+                file_exists_in_git = git('ls-tree', f'{default_branch}', wf_path, err_ok=True)
             else:
-                file_exists_in_git = run_git(['ls-tree', 'HEAD', wf_path], check=False)
+                file_exists_in_git = git('ls-tree', 'HEAD', wf_path, err_ok=True)
 
             if file_exists_in_git and not args.force:
                 # File exists in git tree, check if it's a placeholder
                 if args.dry_run:
-                    existing_content = run_git(['show', f'{default_branch}:{wf_path}'], check=False)
+                    existing_content = git('show', f'{default_branch}:{wf_path}', err_ok=True)
                 else:
-                    existing_content = run_git(['show', f'HEAD:{wf_path}'], check=False)
+                    existing_content = git('show', f'HEAD:{wf_path}', err_ok=True)
                 if existing_content and not is_placeholder_workflow(existing_content):
                     err(f"Warning: {wf_path} already exists on {default_branch} and is not a placeholder")
                     if not args.force:
@@ -412,7 +409,7 @@ def main():
         if not args.dry_run:
             # Add the files
             for f in created_files:
-                run_git(['add', f])
+                git('add', f)
 
             # Prepare commit message
             if len(created_files) == 1:
@@ -423,15 +420,15 @@ def main():
             if should_squash:
                 # Amend the existing commit
                 err(f"Amending existing commit...")
-                run_git(['commit', '--amend', '--no-edit'])
+                git('commit', '--amend', '--no-edit')
             else:
                 # Create new commit
                 err(f"Creating commit: {commit_msg}")
-                run_git(['commit', '-m', commit_msg])
+                git('commit', '-m', commit_msg)
 
             err(f"\nSuccessfully created placeholder workflow(s) on {default_branch}")
             err(f"Returning to branch: {current_branch}")
-            check_call(['git', 'checkout', current_branch])
+            git('checkout', current_branch)
         else:
             err(f"\n[DRY-RUN] Would commit {len(created_files)} placeholder file(s)")
             if should_squash:
@@ -445,7 +442,7 @@ def main():
         if stashed and not args.dry_run:
             try:
                 err("\nRestoring stashed changes...")
-                run_git(['stash', 'pop'])
+                git('stash', 'pop')
             except:
                 err("Warning: Could not restore stashed changes automatically")
                 err("Run 'git stash pop' manually to restore")
