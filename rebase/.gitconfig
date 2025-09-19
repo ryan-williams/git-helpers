@@ -61,6 +61,7 @@
   ptc     = preserve-tree-and-committer
   rd      = rebase-diff
   rds     = rebase-diff --stat
+  ret     = rebase --edit-todo
   ri      = rebase -i
   rio     = rebase -i --onto
   rir     = rebase -i -r
