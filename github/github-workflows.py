@@ -3,23 +3,27 @@
 # requires-python = ">=3.10"
 # dependencies = [
 #     "click",
+#     "pyyaml",
+#     "utz",
 # ]
 # ///
-import json
-import os
+from datetime import timezone, datetime
+from os.path import basename, splitext, abspath, dirname
+from pathlib import Path
 import re
 import shlex
 import sys
-from os.path import basename
-from subprocess import check_output, check_call, CalledProcessError
-from sys import stderr
+import time
+import yaml
+
+from click import group, pass_context
+from utz import proc, err
+from utz.cli import flag, opt, arg
 
 # Add parent directory to path for local imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
 from util.branch_resolution import resolve_remote_ref
-
-from click import group, pass_context, option, argument
 
 SSH_REMOTE_URL_RGX = re.compile(r'git@github\.com:(?P<repo>[^/]+/[^/]+?)(?:\.git)?')
 HTTPS_REMOTE_URL_RGX = re.compile(r'https://github\.com/(?P<repo>[^/]+/[^/]+?)(?:\.git)?')
@@ -29,15 +33,11 @@ def get_github_repo(remote=None):
     if remote:
         remotes = [remote]
     else:
-        remotes = [
-            remote
-            for remote in check_output(['git', 'remote']).decode().split('\n')
-            if remote
-        ]
+        remotes = proc.lines('git', 'remote', log=None)
 
     github_repos = {}
     for remote in remotes:
-        url = check_output(['git', 'remote', 'get-url', remote]).decode().rstrip('\n')
+        url = proc.line('git', 'remote', 'get-url', remote, log=None) or ''
         m = SSH_REMOTE_URL_RGX.fullmatch(url)
         if m:
             github_repos[remote] = m['repo']
@@ -49,21 +49,21 @@ def get_github_repo(remote=None):
     if len(github_repos) == 1:
         return list(github_repos.values())[0]
     if not github_repos:
-        stderr.write(f"Found no GitHub repo remote URLs\n")
+        err(f"Found no GitHub repo remote URLs")
         return None
-    try:
-        tracked_branch = check_output([ 'git', 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}' ]).decode().rstrip('\n')
+    tracked_branch = proc.line('git', 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}', err_ok=True, log=None)
+    if tracked_branch:
         remote, *_ = tracked_branch.split('/')
-        return github_repos[remote]
-    except CalledProcessError:
-        stderr.write(f'Found {len(github_repos)} GitHub repo remote URLs: {github_repos}\n')
-        return None
+        if remote in github_repos:
+            return github_repos[remote]
+    err(f'Found {len(github_repos)} GitHub repo remote URLs: {github_repos}')
+    return None
 
 
 @group('github-workflows')
 @pass_context
-@option('-r', '--remote')
-@option('-R', '--repo')
+@opt('-r', '--remote')
+@opt('-R', '--repo')
 def github_workflows(ctx, remote, repo):
     if remote:
         remote_repo = get_github_repo(remote)
@@ -83,73 +83,65 @@ def github_workflows(ctx, remote, repo):
 @pass_context
 def github_workflows_list(ctx):
     repo = ctx.obj
-    workflows = json.loads(check_output(['gh', 'api', f'/repos/{repo}/actions/workflows']).decode())['workflows']
+    workflows_data = proc.json('gh', 'api', f'/repos/{repo}/actions/workflows', log=None)
+    workflows = workflows_data['workflows']
     workflow_names = [ basename(workflow['path']) for workflow in workflows ]
     for workflow_name in workflow_names:
         print(workflow_name)
 
 
 def get_runs(repo, workflow):
-    runs = json.loads(check_output(['gh', 'run', 'list', '-R', repo, '-w', workflow, '--json', 'databaseId']).decode())
+    runs = proc.json('gh', 'run', 'list', '-R', repo, '-w', workflow, '--json', 'databaseId', log=None)
     return [ run['databaseId'] for run in runs ]
 
 
 @github_workflows.command('runs')
 @pass_context
-@argument('workflow')
+@arg('workflow')
 def github_workflows_runs(ctx, workflow):
     repo = ctx.obj
-    check_call(['gh', 'run', 'list', '-R', repo, '-w', workflow])
+    proc.run('gh', 'run', 'list', '-R', repo, '-w', workflow)
 
 
 @github_workflows.command('delete')
 @pass_context
-@option('-n', '--dry-run', is_flag=True)
-@argument('workflow')
+@flag('-n', '--dry-run')
+@arg('workflow')
 def github_workflows_delete(ctx, dry_run, workflow):
     repo = ctx.obj
     run_ids = get_runs(repo, workflow)
     for run_id in run_ids:
         cmd = ['gh', 'api', '-X', 'DELETE', f'/repos/{repo}/actions/runs/{run_id}']
         if dry_run:
-            stderr.write(f"DRY RUN: {shlex.join(cmd)}\n")
+            err(f"DRY RUN: {shlex.join(cmd)}")
         else:
-            stderr.write(shlex.join(cmd) + "\n")
-            check_call(cmd)
+            err(shlex.join(cmd))
+            proc.run(*cmd, log=None)
 
 
 @github_workflows.command('run')
 @pass_context
-@option('-O', '--no-open', is_flag=True, help='Do not automatically open the job in browser')
-@option('-r', '--ref', help='Git reference (branch, tag, or SHA) to run workflow from')
-@option('-F', '--field', multiple=True, help='Add a field with a JSON value')
-@option('-f', '--raw-field', multiple=True, help='Add a field with a raw string value')
-@argument('workflow')
-@argument('args', nargs=-1)
+@flag('-O', '--no-open', help='Do not automatically open the job in browser')
+@opt('-r', '--ref', help='Git reference (branch, tag, or SHA) to run workflow from')
+@opt('-F', '--field', multiple=True, help='Add a field with a JSON value')
+@opt('-f', '--raw-field', multiple=True, help='Add a field with a raw string value')
+@arg('workflow')
+@arg('args', nargs=-1)
 def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
     """Trigger a workflow and optionally open the job when it starts."""
-    import time
-    import os
-    from pathlib import Path
-
     repo = ctx.obj
 
     # Handle workflow name (remove .yml extension if present)
     workflow_filename = workflow.removesuffix('.yml').removesuffix('.yaml')
 
     # Get git root directory
-    try:
-        git_root = check_output(['git', 'rev-parse', '--show-toplevel']).decode().strip()
-    except CalledProcessError:
-        stderr.write("Error: Not in a git repository\n")
+    git_root = proc.line('git', 'rev-parse', '--show-toplevel', log=None)
+    if not git_root:
+        err("Error: Not in a git repository")
         exit(1)
 
     # Get list of git-tracked workflow files
-    try:
-        tracked_files = check_output(['git', 'ls-tree', '-r', '--name-only', 'HEAD', '.github/workflows/']).decode().strip().split('\n')
-        tracked_files = [f for f in tracked_files if f]  # Remove empty strings
-    except CalledProcessError:
-        tracked_files = []
+    tracked_files = proc.lines('git', 'ls-tree', '-r', '--name-only', 'HEAD', '.github/workflows/', err_ok=True, log=None) or []
 
     # Check for exact workflow file match (only among tracked files)
     workflow_path = None
@@ -164,83 +156,78 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
         # Find all tracked workflow files that contain the substring
         matching_files = []
         for file in tracked_files:
-            filename = os.path.basename(file)
-            stem = os.path.splitext(filename)[0]
+            filename = basename(file)
+            stem = splitext(filename)[0]
             if workflow_filename.lower() in stem.lower():
                 matching_files.append(file)
 
         if len(matching_files) == 1:
             workflow_path = str(Path(git_root) / matching_files[0])
-            stderr.write(f"Found workflow by substring match: {os.path.basename(matching_files[0])}\n")
+            err(f"Found workflow by substring match: {basename(matching_files[0])}")
         elif len(matching_files) > 1:
-            stderr.write(f"Error: Multiple workflows match '{workflow_filename}':\n")
+            err(f"Error: Multiple workflows match '{workflow_filename}':")
             for f in sorted(matching_files):
-                stderr.write(f"  - {os.path.basename(f)}\n")
-            stderr.write("Please be more specific.\n")
+                err(f"  - {basename(f)}")
+            err("Please be more specific.")
             exit(1)
 
     if not workflow_path:
-        stderr.write(f"Workflow file not found: no files in .github/workflows/ match '{workflow_filename}'\n")
+        err(f"Workflow file not found: no files in .github/workflows/ match '{workflow_filename}'")
         exit(1)
 
     # Read the workflow file to get the actual workflow name
     workflow_name = None
     try:
-        import yaml
         with open(workflow_path, 'r') as f:
             workflow_data = yaml.safe_load(f)
             workflow_name = workflow_data.get('name')
             if workflow_name:
-                stderr.write(f"Workflow name: '{workflow_name}' (from file: {workflow_filename})\n")
+                err(f"Workflow name: '{workflow_name}' (from file: {workflow_filename})")
             else:
-                stderr.write(f"Warning: No 'name' field in workflow file\n")
-    except ImportError:
-        stderr.write("Warning: PyYAML not installed, cannot parse workflow file\n")
+                err(f"Warning: No 'name' field in workflow file")
     except Exception as e:
-        stderr.write(f"Warning: Failed to parse workflow file: {e}\n")
+        err(f"Warning: Failed to parse workflow file: {e}")
 
     # If we couldn't get the name from the file, try to get it from gh workflow list
     if not workflow_name:
         try:
             # List all workflows to find the one matching our filename
-            workflows_data = check_output(['gh', 'workflow', 'list', '--json', 'name,path']).decode()
-            workflows = json.loads(workflows_data)
+            workflows = proc.json('gh', 'workflow', 'list', '--json', 'name,path', log=None)
             for wf in workflows:
-                if os.path.basename(wf['path']) == os.path.basename(workflow_path):
+                if basename(wf['path']) == basename(workflow_path):
                     workflow_name = wf['name']
-                    stderr.write(f"Workflow name: '{workflow_name}' (from gh workflow list)\n")
+                    err(f"Workflow name: '{workflow_name}' (from gh workflow list)")
                     break
         except Exception as e:
-            stderr.write(f"Warning: Failed to get workflow name from gh: {e}\n")
+            err(f"Warning: Failed to get workflow name from gh: {e}")
 
     # Final fallback
     if not workflow_name:
         workflow_name = workflow_filename
-        stderr.write(f"Warning: Using filename as workflow name: {workflow_name}\n")
+        err(f"Warning: Using filename as workflow name: {workflow_name}")
 
     # If no ref specified, try to match current local ref with remote
     if not ref:
         ref, _ = resolve_remote_ref(verbose=True)
 
     # Get timestamp before triggering (more reliable than checking existing runs)
-    import datetime
-    trigger_time = datetime.datetime.now(datetime.timezone.utc)
+    trigger_time = datetime.now(timezone.utc)
 
     # Get workflow ID for more reliable matching
     workflow_id = None
     try:
-        workflows_data = check_output(['gh', 'api', f'/repos/{repo}/actions/workflows']).decode()
-        workflows = json.loads(workflows_data)['workflows']
+        workflows_data = proc.json('gh', 'api', f'/repos/{repo}/actions/workflows', log=None)
+        workflows = workflows_data['workflows']
         for wf in workflows:
-            if os.path.basename(wf['path']) == os.path.basename(workflow_path):
+            if basename(wf['path']) == basename(workflow_path):
                 workflow_id = wf['id']
-                stderr.write(f"Workflow ID: {workflow_id} (name: '{workflow_name}')\n")
+                err(f"Workflow ID: {workflow_id} (name: '{workflow_name}')")
                 break
     except Exception as e:
-        stderr.write(f"Warning: Could not get workflow ID: {e}\n")
+        err(f"Warning: Could not get workflow ID: {e}")
 
     # Build command with options
-    workflow_file = os.path.basename(workflow_path)
+    workflow_file = basename(workflow_path)
     cmd = ['gh', 'workflow', 'run', workflow_file]
 
     # Add ref if specified
@@ -256,38 +243,34 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
     # Add any remaining args
     cmd.extend(list(args))
 
-    stderr.write(f"Running: {shlex.join(cmd)}\n")
-    check_call(cmd)
+    err(f"Running: {shlex.join(cmd)}")
+    proc.run(cmd)
 
     if no_open:
         return
 
     # Poll for new workflow run
-    stderr.write("Waiting for workflow to start")
+    err("Waiting for workflow to start", end="")
     new_run_id = None
     for attempt in range(30):
         time.sleep(2)
-        stderr.write(".")
-        stderr.flush()
-
+        err(".", end="", flush=True)
         try:
             # Get runs for this specific workflow file
             if workflow_id:
                 # Use workflow ID if we have it (most reliable)
-                runs_data = check_output([
+                runs = proc.json(
                     'gh', 'api', f'/repos/{repo}/actions/workflows/{workflow_id}/runs',
                     '-q', '.workflow_runs[:10]'
-                ]).decode()
+                )
             else:
                 # Fallback to listing by workflow file
-                runs_data = check_output([
+                runs = proc.json(
                     'gh', 'run', 'list',
-                    '-w', os.path.basename(workflow_path),
+                    '-w', basename(workflow_path),
                     '-L', '10',
                     '--json', 'databaseId,workflowName,status,headBranch,createdAt,event'
-                ]).decode()
-
-            runs = json.loads(runs_data)
+                )
 
             # Look for a run created after we triggered it
             for run in runs:
@@ -296,7 +279,7 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
                 if not created_at:
                     continue
 
-                run_time = datetime.datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                run_time = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
 
                 # Check if this run was created after we triggered
                 if run_time < trigger_time:
@@ -310,7 +293,8 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
                 # Check if it's a workflow_dispatch event (what we triggered)
                 if run.get('event') == 'workflow_dispatch' or attempt > 10:
                     new_run_id = run.get('id') or run.get('databaseId')
-                    stderr.write(f"\nFound new workflow run: {new_run_id} (branch: {run_branch}, created: {created_at})\n")
+                    err()
+                    err(f"Found new workflow run: {new_run_id} (branch: {run_branch}, created: {created_at})")
                     break
 
             if new_run_id:
@@ -318,57 +302,52 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
 
         except Exception as e:
             if attempt == 0:
-                stderr.write(f"\nWarning: Failed to check runs: {e}\n")
+                err(f"\nWarning: Failed to check runs: {e}")
             pass
 
     if not new_run_id:
-        stderr.write("\nTimed out waiting for workflow to start\n")
+        err("\nTimed out waiting for workflow to start")
         exit(1)
 
     # Poll for job to start
-    stderr.write("Waiting for job to start")
+    err("Waiting for job to start", end="")
     job_started = False
     for attempt in range(30):
         time.sleep(1)
-        stderr.write(".")
-        stderr.flush()
-
+        err(".", end="", flush=True)
         try:
-            job_data = check_output([
+            jobs = proc.json(
                 'gh', 'run', 'view', str(new_run_id),
                 '--json', 'jobs'
-            ]).decode()
-            jobs = json.loads(job_data).get('jobs', [])
-
+            ).get('jobs', [])
             if len(jobs) > 0:
                 job_started = True
                 break
         except:
             pass
 
-    stderr.write("\n")
+    err()
 
     if job_started:
-        stderr.write("Job started, opening...\n")
+        err("Job started, opening...")
         # Get the job URL and open it
         try:
-            run_data = check_output([
+            data = proc.json(
                 'gh', 'run', 'view', str(new_run_id),
                 '--json', 'databaseId,jobs'
-            ]).decode()
-            data = json.loads(run_data)
+            )
             if data['jobs']:
                 job_url = data['jobs'][-1]['url']  # Get the last (most recent) job
-                check_call(['open', job_url])
+                proc.run('open', job_url)
             else:
                 raise Exception("No jobs found")
         except Exception as e:
-            stderr.write(f"Failed to open job: {e}\n")
+            err(f"Failed to open job: {e}")
             # Fallback to opening the run
-            check_call(['gh', 'run', 'view', '--web', str(new_run_id)])
+            proc.run('gh', 'run', 'view', '--web', new_run_id)
     else:
-        stderr.write("Job didn't start in time, opening workflow run instead...\n")
-        check_call(['gh', 'run', 'view', '--web', str(new_run_id)])
+        err("Job didn't start in time, opening workflow run instead...")
+        proc.run('gh', 'run', 'view', '--web', new_run_id)
 
 
 if __name__ == '__main__':
