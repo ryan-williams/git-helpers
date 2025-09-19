@@ -1,5 +1,5 @@
 # git-helpers
-[1,739](#count-completions) Git aliases and scripts.
+[1,747](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,12 +332,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1739 completions added by installing git-helpers
+# 1747 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 266
-# - 4 chars: 695
-# - 5 chars: 348
+# - 4 chars: 701
+# - 5 chars: 349
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1739 new completions:
+1747 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -854,6 +854,11 @@ gfd3       = g fetch-x --depth 3
 gfer       = g for-each-ref
 gfes       = g submodule foreach --recursive --quiet
 gfip       = g config --get-all include.path
+gfla       = g fix-trailing-newlines --all
+gflb       = g fix-trailing-newlines --both
+gflh       = g fix-trailing-newlines
+gfls       = g fix-trailing-newlines --staged
+gflu       = g fix-trailing-newlines --unstaged
 gfm1       = !git --no-pager log-1-format
 gfnp       = g find-prefix
 gfnr       = g find-only-remote
@@ -865,6 +870,7 @@ gfru       = g fetch-x --tags --recurse-submodules u
 gfta       = g fetch-x --tags --all
 gftd       = g filter-to-dir
 gftf       = g fetch-x --tags -f
+gftl       = g fix-trailing-newlines
 gfua       = g fixup-author
 gfue       = g config user.email
 gfun       = g config user.name
@@ -1452,6 +1458,7 @@ gecpm      = g edit-commit -p -m
 gecrn      = g edit-commit -r -n
 gecrp      = g edit-commit -r -p
 gecxn      = g edit-commit -n -x
+gflus      = g fix-trailing-newlines --both
 gfune      = g user
 ggaal      = g graph-all -a -l
 ggadh      = g graph -A HEAD
@@ -1836,7 +1843,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1739 completions added by installing git-helpers (0 removed, 3084 total)
+1747 completions added by installing git-helpers (0 removed, 3092 total)
 ```
 </details>
 

@@ -1,0 +1,8 @@
+[alias]
+  ftl = fix-trailing-newlines
+  flh = fix-trailing-newlines
+  fla = fix-trailing-newlines --all
+  fls = fix-trailing-newlines --staged
+  flu = fix-trailing-newlines --unstaged
+  flus = fix-trailing-newlines --both
+  flb = fix-trailing-newlines --both

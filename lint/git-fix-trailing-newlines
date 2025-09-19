@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+# git-fix-trailing-newlines
+#
+# Adds trailing newlines to text files in the working tree that are missing them.
+#
+# Usage: git-fix-trailing-newlines [--staged|--unstaged|--both|--all]
+#
+# Options:
+#   --staged    Fix only files with staged changes
+#   --unstaged  Fix only files with unstaged changes
+#   --both      Fix files with staged OR unstaged changes (default)
+#   --all       Fix all tracked text files missing newlines
+#
+# Examples:
+#   git-fix-trailing-newlines           # Fix files with changes
+#   git-fix-trailing-newlines --staged  # Fix only staged files
+#   git-fix-trailing-newlines --all     # Fix all tracked files
+
+mode="${1:---both}"
+
+# Get file list with null termination for proper handling of special characters
+case "$mode" in
+    --staged)
+        # Files with staged changes
+        git diff --cached --name-only -z ;;
+    --unstaged)
+        # Files with unstaged changes
+        git diff --name-only -z ;;
+    --both)
+        # Files with staged or unstaged changes
+        git diff HEAD --name-only -z ;;
+    --all)
+        # All tracked files
+        git ls-files -z ;;
+    *)
+        echo "Unknown option: $mode" >&2
+        echo "Use: --staged, --unstaged, --both, or --all" >&2
+        exit 1
+        ;;
+esac | while IFS= read -r -d '' file; do
+    # Skip if file doesn't exist in working tree
+    if [ ! -f "$file" ]; then
+        continue
+    fi
+
+    # Skip binary files using git's detection
+    # git diff --numstat shows '-' for binary files
+    if git diff --numstat /dev/null "$file" 2>/dev/null | grep -q "^-"; then
+        continue
+    fi
+
+    # Check if file is missing trailing newline
+    last_byte=$(tail -c1 "$file" | xxd -p)
+
+    if [ "$last_byte" != "0a" ] && [ -n "$last_byte" ]; then
+        echo >> "$file"
+        echo "Added trailing newline to: $file" >&2
+    fi
+done
