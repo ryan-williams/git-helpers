@@ -43,6 +43,7 @@
   rbb     = rebase-branches
   rbm     = rebase-head-message
   rbmb    = rebase-merge-base
+  rmb     = rebase-merge-base
   rbo     = rebase --onto
   rbr     = rebase -r
   rbro    = rebase -r --onto
