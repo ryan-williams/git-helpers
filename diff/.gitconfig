@@ -90,3 +90,13 @@
   ndc = nd --cached
   ndh = nd HEAD
   ndn = nd --name-only
+
+  ; diff of diffs (git-didi.py)
+  ddi = !git-didi.py
+  dds = !git-didi.py stat
+  ddp = !git-didi.py patch
+  ddpc = !git-didi.py patch --color=always
+  ddpq = !git-didi.py patch --quiet
+  ddpqc = !git-didi.py patch --quiet --color=always
+  ddc = !git-didi.py commits
+  ddcc = !git-didi.py commits --color=always

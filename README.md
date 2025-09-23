@@ -1,5 +1,5 @@
 # git-helpers
-[1,749](#count-completions) Git aliases and scripts.
+[1,758](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -332,12 +332,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1749 completions added by installing git-helpers
+# 1758 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 266
-# - 4 chars: 702
-# - 5 chars: 349
+# - 4 chars: 706
+# - 5 chars: 352
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -348,7 +348,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1749 new completions:
+1758 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -789,7 +789,11 @@ gdcp       = g diff --cached --submodule=diff
 gdcq       = g diff --cached --quiet
 gdcs       = g diff --stat --cached
 gdcw       = g diff --cached -w
+gddc       = !git-didi.py commits
 gddf       = g diff-filter
+gddi       = !git-didi.py
+gddp       = !git-didi.py patch
+gdds       = !git-didi.py stat
 gdeq       = g diff --exit-code --quiet
 gdex       = g diff --exit-code
 gdfm       = g diff-filter M
@@ -1436,6 +1440,9 @@ gdcss      = g diff --cached --submodule=short
 gdcsw      = g diff --cached --stat -w
 gdcw-      = g diff --cached -w --
 gdcws      = g diff --cached -w --stat
+gddcc      = !git-didi.py commits --color=always
+gddpc      = !git-didi.py patch --color=always
+gddpq      = !git-didi.py patch --quiet
 gdgif      = g diff-git.py
 gdmbr      = g delete-merged-branches --remote
 gdnoa      = g diff-name-only-all
@@ -1709,6 +1716,7 @@ gcmtrr     = g commit-tree-reset
 gcococ     = g conflicting-checkout-ours-and-continue
 gcoctc     = g conflicting-checkout-theirs-and-continue
 gcppam     = g commit-push-parents -a -m
+gddpqc     = !git-didi.py patch --quiet --color=always
 gdnpgt     = g config --global diff.noprefix true
 gdnpgu     = g config --global --unset diff.noprefix
 gdxcrr     = g diff-x -cr
@@ -1845,7 +1853,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1749 completions added by installing git-helpers (0 removed, 3094 total)
+1758 completions added by installing git-helpers (0 removed, 3103 total)
 ```
 </details>
 

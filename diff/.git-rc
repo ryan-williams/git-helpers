@@ -82,3 +82,13 @@ alias gnd="g nd"
 alias gndc="g ndc"
 alias gndh="g ndh"
 alias gndn="g ndn"
+
+# Diff of diffs (git-didi.py)
+alias gddi="g ddi"
+alias gdds="g dds"
+alias gddp="g ddp"
+alias gddpc="g ddpc"
+alias gddpq="g ddpq"
+alias gddpqc="g ddpqc"
+alias gddc="g ddc"
+alias gddcc="g ddcc"
