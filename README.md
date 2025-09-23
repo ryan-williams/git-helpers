@@ -494,9 +494,9 @@ gir        = g is-remote
 gis        = g is-submodule
 gkl        = g kill-lines
 gl1        = !git --no-pager log -1
-gla        = g diff --cached --name-only --diff-filter=A
+gla        = g list-status A.
 glb        = g local-branches
-glc        = g list-changed
+glc        = g list-status .M
 gld        = g list-status ' D'
 glf        = g log-format
 glg        = git-helpers/log/glg  # Display history of files, lookup by partial/grep matches, prompt to disambiguate if multiple.
@@ -992,13 +992,13 @@ gl1t       = g l1fT
 glaf       = g ls-new-files
 glbl       = g local-branch-shas
 glbs       = g local-branch-shas
-glc1       = g list-changed | head -n 1
-glcc       = g diff --name-only --cached --diff-filter=M
-glcs       = g diff --name-only --cached --diff-filter=M
-glcu       = g diff --name-only --diff-filter=M
-gldc       = g diff --cached --name-only --diff-filter=D
-glds       = g diff --cached --name-only --diff-filter=D
-gldu       = g diff --name-only --diff-filter=D
+glc1       = g list-status .M | head -n 1
+glcc       = g list-status M.
+glcs       = g list-status M.
+glcu       = g list-status .M
+gldc       = g list-status D.
+glds       = g list-status D.
+gldu       = g list-status DU
 glf1       = !git --no-pager log-1-format
 glfu       = g remote-list-fetch-urls
 glg1       = g log --oneline

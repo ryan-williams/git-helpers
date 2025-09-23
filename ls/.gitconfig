@@ -39,33 +39,22 @@
   lsu = list-unstaged
   lu = list-unstaged
 
-  list-added = diff --cached --name-only --diff-filter=A
-  la = diff --cached --name-only --diff-filter=A
+  la = list-status A.   # list added (staged)
+  lc = list-status .M   # list changed (unstaged)
+  ld = list-status ' D' # list deleted (unstaged)
 
-  list-changed = diff --name-only --diff-filter=M
-  lc = diff --name-only --diff-filter=M
+  # Staged versions
+  las = list-status A.  # list added staged
+  lcs = list-status M.  # list changed staged
+  lds = list-status D.  # list deleted staged
 
-  ld = list-deleted
+  # Unstaged versions (duplicates for clarity)
+  lcu = list-status .M  # list changed unstaged
+  ldu = list-status DU  # list deleted unmerged (deleted by us)
 
-  list-deleted-unstaged = diff --name-only --diff-filter=D
-  ldu = diff --name-only --diff-filter=D
-
-  list-deleted-staged = diff --cached --name-only --diff-filter=D
-  lds = diff --cached --name-only --diff-filter=D
-
-  list-deleted-cached = diff --cached --name-only --diff-filter=D
-  ldc = diff --cached --name-only --diff-filter=D
-
-  lc = list-changed
-
-  list-changed-unstaged = diff --name-only --diff-filter=M
-  lcu = diff --name-only --diff-filter=M
-
-  list-changed-staged = diff --name-only --cached --diff-filter=M
-  lcs = diff --name-only --cached --diff-filter=M
-
-  list-changed-cached = diff --name-only --cached --diff-filter=M
-  lcc = diff --name-only --cached --diff-filter=M
+  # Cached is alias for staged
+  lcc = list-status M.  # list changed cached
+  ldc = list-status D.  # list deleted cached
 
   list-mode = list-status
   lm = list-mode
