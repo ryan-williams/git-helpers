@@ -4,11 +4,11 @@ from functools import cached_property
 
 """Helpers for "pieces" of formatted output linked to certain format specifiers."""
 
-from color import color as C, color_symbol, clen
+from util.color import color as C, color_symbol, clen
 from datetime import datetime as dt
 import re
-from regexs import refname_or_tag_regex
-from reldate_util import shorten_reldate
+from util.regexs import refname_or_tag_regex
+from util.reldate_util import shorten_reldate
 import subprocess
 
 

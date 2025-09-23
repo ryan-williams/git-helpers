@@ -1,4 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "click",
+#     "utz",
+# ]
+# ///
 #
 # Visualize relevant commits in a conflicted submodule (e.g. during a rebase)
 #
@@ -37,7 +44,8 @@ import re
 from subprocess import CalledProcessError, DEVNULL, check_call, check_output
 import sys
 
-from click import command, option, argument
+from click import command
+from utz.cli import arg, flag, opt
 
 
 def read_sha(name):
@@ -83,8 +91,8 @@ class cd:
 
 
 @command()
-@option('-v', '--verbose', is_flag=True, help='Debug log to stderr')
-@argument('submodule', required=False)
+@flag('-v', '--verbose', help='Debug log to stderr')
+@arg('submodule', required=False)
 def main(submodule, verbose):
     if verbose:
         err = stderr
