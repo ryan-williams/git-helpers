@@ -8,19 +8,21 @@
 # ///
 """Clone and sync GitHub PR descriptions with local folders and GitHub gists."""
 
-import json
-import os
 import re
 import sys
 import difflib
 from functools import partial
+from os import chdir, unlink
+from os.path import abspath, dirname, exists, join
 from pathlib import Path
+from tempfile import NamedTemporaryFile, TemporaryDirectory
+import webbrowser
 
 from click import argument, Choice, group, option
 from utz import proc, err, cd
 
 # Add parent directory to path for local imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
 from util.branch_resolution import resolve_remote_ref
 
@@ -28,12 +30,98 @@ from util.branch_resolution import resolve_remote_ref
 DEFAULT_GIST_REMOTE = 'g'
 
 # Compiled regex patterns
-PR_LINK_REF_PATTERN = re.compile(r'^#\s*\[([^/]+/[^#]+#\d+)\]\s+(.*)$')  # # [org/repo#123] Title
-PR_INLINE_LINK_PATTERN = re.compile(r'^#\s*\[([^/]+)/([^#]+)#(\d+)\](?:\([^)]+\))?\s*(.*)$')  # # [org/repo#123](url) Title
+PR_LINK_REF_PATTERN = re.compile(r'^#\s*\[([^/]+/[^#]+#\d+)]\s+(.*)$')  # # [org/repo#123] Title
+PR_INLINE_LINK_PATTERN = re.compile(r'^#\s*\[([^/]+)/([^#]+)#(\d+)](?:\([^)]+\))?\s*(.*)$')  # # [org/repo#123](url) Title
+PR_TITLE_PATTERN = re.compile(r'^#\s*\[([^]]+)](?:\([^)]+\))?\s*(.*)$')  # # [owner/repo#num](url) Title
 PR_FILENAME_PATTERN = re.compile(r'^([^#]+)#(\d+)\.md$')  # repo#123.md
 PR_DIR_PATTERN = re.compile(r'^pr(\d+)$')  # pr123
-LINK_DEF_PATTERN = re.compile(r'^\[([^\]]+)\]:\s*https?://')  # [ref]: url (matches at line start)
+LINK_DEF_PATTERN = re.compile(r'^\[([^]]+)]:\s*https?://')  # [ref]: url (matches at line start)
 GIST_ID_PATTERN = re.compile(r'gist\.github\.com[:/]([a-f0-9]{20,32})')  # GitHub gist IDs are typically 20-32 hex chars
+GIST_URL_PATTERN = re.compile(r'https://gist\.github\.com/[a-f0-9]+(?:/[a-f0-9]+)?')  # Full gist URL
+GIST_URL_WITH_USER_PATTERN = re.compile(r'gist\.github\.com/(?:[^/]+/)?([a-f0-9]+)(?:/([a-f0-9]+))?')  # Gist URL with optional user
+GIST_FOOTER_VISIBLE_PATTERN = re.compile(r'\[gist\]\((https://gist\.github\.com/[a-f0-9]+(?:/[a-f0-9]+)?)\)')  # [gist](url) in markdown
+GIST_FOOTER_HIDDEN_PATTERN = re.compile(r'<!-- Synced with (https://gist\.github\.com/[a-f0-9]+(?:/[a-f0-9]+)?)')  # HTML comment footer
+GITHUB_URL_PATTERN = re.compile(r'github\.com[:/]([^/]+)/([^/\s]+?)(?:\.git)?$')  # GitHub URL pattern
+GITHUB_PR_URL_PATTERN = re.compile(r'https://github\.com/([^/]+)/([^/]+)/pull/(\d+)')  # Full PR URL
+PR_SPEC_PATTERN = re.compile(r'([^/]+)/([^#]+)#(\d+)')  # owner/repo#number format
+H1_TITLE_PATTERN = re.compile(r'^#\s+(.+)$')  # # Title
+PR_LINK_IN_H1_PATTERN = re.compile(r'^#\s*\[[^]]+]')  # Check if H1 has [...]
+
+
+def extract_title_from_first_line(first_line: str) -> str:
+    """Extract title from first line of PR description, removing PR reference."""
+    title_match = PR_TITLE_PATTERN.match(first_line.strip())
+    if title_match:
+        return title_match.group(2).strip()
+    else:
+        # Fallback to just removing the #
+        return first_line.strip().lstrip('#').strip()
+
+
+def parse_pr_spec(pr_spec: str) -> tuple[str | None, str | None, str | None]:
+    """Parse PR specification in various formats.
+
+    Args:
+        pr_spec: Can be:
+            - Full URL: https://github.com/owner/repo/pull/123
+            - Short format: owner/repo#123
+            - Just number: 123 (requires being in repo)
+
+    Returns:
+        Tuple of (owner, repo, pr_number) or (None, None, number) for just number
+    """
+    # Full URL
+    url_match = GITHUB_PR_URL_PATTERN.match(pr_spec)
+    if url_match:
+        return url_match.groups()
+
+    # owner/repo#number format
+    spec_match = PR_SPEC_PATTERN.match(pr_spec)
+    if spec_match:
+        return spec_match.groups()
+
+    # Just a number
+    if pr_spec.isdigit():
+        return None, None, pr_spec
+
+    return None, None, None
+
+
+def create_gist(
+    file_path: str | Path,
+    description: str,
+    is_public: bool = False,
+    store_id: bool = True,
+) -> str:
+    """Create a GitHub gist and optionally store its ID in git config.
+
+    Args:
+        file_path: Path to the file to upload
+        description: Description for the gist
+        is_public: Whether the gist should be public (default: secret/unlisted)
+        store_id: Whether to store the gist ID in git config (default: True)
+
+    Returns:
+        Gist ID
+    """
+    # Create gist using gh CLI
+    cmd = [
+        'gh', 'gist', 'create',
+        '--desc', description,
+        '--public' if is_public else None,
+        file_path
+    ]
+    result_str = proc.text(*cmd, log=None)
+    # Extract gist ID from URL (last part of the path)
+    gist_url = result_str.strip()
+    gist_id = gist_url.split('/')[-1]
+
+    if store_id:
+        # Store gist ID in git config
+        proc.run('git', 'config', 'pr.gist', gist_id, log=None)
+
+    err(f"Created gist: {gist_url}")
+    return gist_id
 
 
 def find_gist_remote() -> str | None:
@@ -49,17 +137,13 @@ def find_gist_remote() -> str | None:
     4. Fall back to DEFAULT_GIST_REMOTE if it exists
     """
     # First check config
-    try:
-        configured = proc.line('git', 'config', 'pr.gist-remote', err_ok=True)
-        if configured:
-            return configured
-    except:
-        pass
+    configured = proc.line('git', 'config', 'pr.gist-remote', err_ok=True)
+    if configured:
+        return configured
 
     # Get all remotes
-    try:
-        remotes = proc.lines('git', 'remote', '-v') or []
-    except:
+    remotes = proc.lines('git', 'remote', '-v', err_ok=True) or []
+    if not remotes:
         return None
 
     # Parse remotes to find gist URLs
@@ -113,7 +197,7 @@ def get_pr_info_from_path(path: Path | None = None) -> tuple[str | None, str | N
 
     while current != current.parent:
         # Check if this dir matches pr<number>
-        match = re.match(r'^pr(\d+)$', current.name)
+        match = PR_DIR_PATTERN.match(current.name)
         if match:
             pr_number = match.group(1)
             repo_path = current.parent
@@ -123,11 +207,11 @@ def get_pr_info_from_path(path: Path | None = None) -> tuple[str | None, str | N
     if not pr_number:
         # Check if we're in a directory with DESCRIPTION.md that has metadata
         desc_file = path / 'DESCRIPTION.md'
-        if desc_file.exists():
+        if exists(desc_file):
             with open(desc_file, 'r') as f:
                 first_line = f.readline().strip()
                 # Look for pattern like # [owner/repo#123] or # [owner/repo#123](url)
-                match = re.match(r'^#\s*\[([^/]+)/([^#]+)#(\d+)\](?:\([^)]+\))?', first_line)
+                match = PR_INLINE_LINK_PATTERN.match(first_line)
                 if match:
                     return match.group(1), match.group(2), match.group(3)
 
@@ -136,7 +220,7 @@ def get_pr_info_from_path(path: Path | None = None) -> tuple[str | None, str | N
         return None, None, None
 
     # Get repo info from parent directory
-    os.chdir(repo_path)
+    chdir(repo_path)
 
     # Try to get owner/repo from git remote
     try:
@@ -149,15 +233,18 @@ def get_pr_info_from_path(path: Path | None = None) -> tuple[str | None, str | N
             try:
                 url = proc.line('git', 'remote', 'get-url', remote, err_ok=True, log=None) or ''
                 # Match GitHub URLs
-                match = re.search(r'github\.com[:/]([^/]+)/([^/\s]+?)(?:\.git)?$', url)
+                match = GITHUB_URL_PATTERN.search(url)
                 if match:
                     owner = match.group(1)
                     repo = match.group(2)
                     return owner, repo, pr_number
-            except:
+            except Exception as e:
+                # Log but continue checking other remotes
+                err(f"Warning: Could not get URL for remote {remote}: {e}")
                 continue
-    except:
-        pass
+    except Exception as e:
+        err(f"Error while checking git remotes: {e}")
+        raise
 
     err("Error: Could not determine repository from git remotes")
     return None, None, pr_number
@@ -178,7 +265,6 @@ def get_pr_metadata(owner: str, repo: str, pr_number: str) -> dict | None:
 
 def extract_gist_footer(body: str | None) -> tuple[str | None, str | None]:
     """Extract gist footer from body and return (body_without_footer, gist_url)."""
-    import re
 
     if not body:
         return body, None
@@ -191,7 +277,7 @@ def extract_gist_footer(body: str | None) -> tuple[str | None, str | None]:
             lines[-2].strip() == '---' and
             'Synced with [gist](' in lines[-1]):
             # Extract URL from markdown link
-            match = re.search(r'\[gist\]\((https://gist\.github\.com/[a-f0-9]+(?:/[a-f0-9]+)?)\)', lines[-1])
+            match = GIST_FOOTER_VISIBLE_PATTERN.search(lines[-1])
             if match:
                 gist_url = match.group(1)
                 # Remove the footer (last 3 lines)
@@ -204,7 +290,7 @@ def extract_gist_footer(body: str | None) -> tuple[str | None, str | None]:
         match = re.match(r'<!-- Synced with (https://gist\.github\.com/[a-f0-9]+(?:/[a-f0-9]+)?) via \[github-pr\.py\].*-->', lines[-1].strip())
         if not match:
             # Try old format without attribution (with or without revision)
-            match = re.match(r'<!-- Synced with (https://gist\.github\.com/[a-f0-9]+(?:/[a-f0-9]+)?) -->', lines[-1].strip())
+            match = GIST_FOOTER_HIDDEN_PATTERN.match(lines[-1].strip())
         if match:
             gist_url = match.group(1)
             # Remove the footer line
@@ -214,15 +300,18 @@ def extract_gist_footer(body: str | None) -> tuple[str | None, str | None]:
     return body, None
 
 
-def add_gist_footer(body: str | None, gist_url: str, visible: bool = False) -> str:
+def add_gist_footer(
+    body: str | None,
+    gist_url: str,
+    visible: bool = False,
+) -> str:
     """Add or update gist footer in body."""
     body_without_footer, _ = extract_gist_footer(body)
 
     if visible:
         # Extract gist ID and revision from URL if available
         # URL format: https://gist.github.com/user/gist_id or https://gist.github.com/gist_id/revision
-        import re
-        gist_match = re.search(r'gist\.github\.com/(?:[^/]+/)?([a-f0-9]+)(?:/([a-f0-9]+))?', gist_url)
+        gist_match = GIST_URL_WITH_USER_PATTERN.search(gist_url)
         if gist_match:
             gist_id = gist_match.group(1)
             revision = gist_match.group(2)
@@ -243,7 +332,11 @@ def add_gist_footer(body: str | None, gist_url: str, visible: bool = False) -> s
         return footer
 
 
-def upload_image_to_github(image_path: str, owner: str, repo: str) -> str | None:
+def upload_image_to_github(
+    image_path: str,
+    owner: str,
+    repo: str,
+) -> str | None:
     """Upload an image to GitHub and get the user-attachments URL.
 
     GitHub stores PR images in a special user-attachments area.
@@ -252,15 +345,15 @@ def upload_image_to_github(image_path: str, owner: str, repo: str) -> str | None
     import base64
     import mimetypes
 
-    if not Path(image_path).exists():
-        err(f"Warning: Image file not found: {image_path}")
-        return None
+    if not exists(image_path):
+        err(f"Error: Image file not found: {image_path}")
+        raise FileNotFoundError(f"Image file not found: {image_path}")
 
     # Determine MIME type
     mime_type, _ = mimetypes.guess_type(image_path)
     if not mime_type or not mime_type.startswith('image/'):
-        err(f"Warning: {image_path} doesn't appear to be an image (mime: {mime_type})")
-        return None
+        err(f"Error: {image_path} doesn't appear to be an image (mime: {mime_type})")
+        raise ValueError(f"File is not an image: {mime_type}")
 
     # Read and encode the image
     with open(image_path, 'rb') as f:
@@ -284,26 +377,24 @@ def upload_image_to_github(image_path: str, owner: str, repo: str) -> str | None
             '-f', 'mode=gfm',
             '-f', f'context={owner}/{repo}'
         ]
-        result = proc.text(*cmd, log=None) or ''
+        result = proc.text(*cmd, log=None)
 
         # Extract the uploaded image URL from the rendered HTML
-        import re
         match = re.search(r'src="(https://github\.com/user-attachments/assets/[^"]+)"', result)
         if match:
             url = match.group(1)
             err(f"Uploaded {image_path} -> {url}")
             return url
         else:
-            err(f"Warning: Could not extract URL from upload response for {image_path}")
-            return None
+            err(f"Error: Could not extract URL from upload response for {image_path}")
+            raise ValueError("Could not extract URL from upload response")
     except Exception as e:
-        err(f"Warning: Failed to upload {image_path}: {e}")
-        return None
+        err(f"Error: Failed to upload {image_path}: {e}")
+        raise
 
 
 def process_images_in_description(body: str, owner: str, repo: str, dry_run: bool = False) -> str:
     """Find local image references and upload them to GitHub."""
-    import re
 
     if dry_run:
         # Just find and report what would be uploaded
@@ -360,7 +451,7 @@ def find_description_file(path: Path = None) -> Path | None:
 
     # Fallback to DESCRIPTION.md
     desc_file = path / 'DESCRIPTION.md'
-    if desc_file.exists():
+    if exists(desc_file):
         return desc_file
 
     return None
@@ -377,12 +468,15 @@ def read_description_from_git(ref: str = 'HEAD', path: Path = None) -> tuple[str
         return None, None
 
     try:
-        content = proc.text('git', 'show', f'{ref}:{desc_file.name}')
-        # Normalize line endings
-        content = content.replace('\r\n', '\n')
-        return content, desc_file
-    except:
+        content = proc.text('git', 'show', f'{ref}:{desc_file.name}', err_ok=True)
+        if content:
+            # Normalize line endings
+            content = content.replace('\r\n', '\n')
+            return content, desc_file
         return None, None
+    except Exception as e:
+        err(f"Error: Could not read {desc_file.name} from {ref}: {e}")
+        raise
 
 
 def write_description_with_link_ref(
@@ -415,7 +509,7 @@ def write_description_with_link_ref(
     footer_lines = lines[footer_start:]
 
     # Check if our link def already exists in the footer
-    pr_link_pattern = re.compile(r'^\[' + re.escape(pr_ref) + r'\]:')
+    pr_link_pattern = re.compile(r'^\[' + re.escape(pr_ref) + r']:')
     link_exists = any(pr_link_pattern.match(line) for line in footer_lines)
 
     # Write the file
@@ -493,7 +587,7 @@ def read_description_file(path: Path = None) -> tuple[str | None, str | None]:
         return title, body
 
     # Fallback: first line might just be # Title
-    match = re.match(r'^#\s+(.+)$', first_line)
+    match = H1_TITLE_PATTERN.match(first_line)
     if match:
         title = match.group(1).strip()
         body_lines = lines[1:]
@@ -520,12 +614,12 @@ def init(
 ) -> None:
     """Initialize a new PR draft in the current directory."""
     # Check if we're already in a PR directory
-    if Path('DESCRIPTION.md').exists():
+    if exists('DESCRIPTION.md'):
         err("Error: DESCRIPTION.md already exists. Are you already managing a PR here?")
         exit(1)
 
     # Initialize git repo if needed
-    if not Path('.git').exists():
+    if not exists('.git'):
         proc.run('git', 'init', '-q', log=None)
         err("Initialized git repository")
 
@@ -591,7 +685,7 @@ def show(gist: bool) -> None:
             # Try to find from remote
             gist_remote = find_gist_remote()
             if gist_remote:
-                remotes = proc.lines('git', 'remote', '-v', log=None) or []
+                remotes = proc.lines('git', 'remote', '-v', log=None)
                 for remote_line in remotes:
                     if remote_line.startswith(f"{gist_remote}\t") and 'gist.github.com' in remote_line:
                         match = GIST_ID_PATTERN.search(remote_line)
@@ -620,7 +714,7 @@ def show(gist: bool) -> None:
             if not gist_id:
                 gist_remote = find_gist_remote()
                 if gist_remote:
-                    remotes = proc.lines('git', 'remote', '-v', log=None) or []
+                    remotes = proc.lines('git', 'remote', '-v', log=None)
                     for remote_line in remotes:
                         if remote_line.startswith(f"{gist_remote}\t"):
                             if 'gist.github.com' in remote_line:
@@ -668,7 +762,7 @@ def open_pr(
             # Try to find from remote
             gist_remote = find_gist_remote()
             if gist_remote:
-                remotes = proc.lines('git', 'remote', '-v', log=None) or []
+                remotes = proc.lines('git', 'remote', '-v', log=None)
                 for remote_line in remotes:
                     if remote_line.startswith(f"{gist_remote}\t") and 'gist.github.com' in remote_line:
                         match = GIST_ID_PATTERN.search(remote_line)
@@ -705,7 +799,7 @@ def create_new_pr(
 ) -> None:
     """Create a new PR from DESCRIPTION.md."""
     # Read DESCRIPTION.md
-    if not Path('DESCRIPTION.md').exists():
+    if not exists('DESCRIPTION.md'):
         err("Error: DESCRIPTION.md not found. Run 'github-pr.py init' first")
         exit(1)
 
@@ -722,7 +816,7 @@ def create_new_pr(
     if first_line.startswith('#'):
         title = first_line.lstrip('#').strip()
         # Remove any [owner/repo#NUM] prefix if present
-        title = re.sub(r'^\[?[^/\]]+/[^#\]]+#\d+\]?\s*', '', title)
+        title = re.sub(r'^\[?[^/\]]+/[^#\]]+#\d+]?\s*', '', title)
         title = re.sub(r'^[^/]+/[^#]+#\w+\s+', '', title)  # Handle owner/repo#NUMBER format
     else:
         title = first_line
@@ -734,18 +828,13 @@ def create_new_pr(
     body = '\n'.join(body_lines).strip()
 
     # Get repo info from config or parent directory
-    owner = None
-    repo = None
-    try:
-        owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or None
-        repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or None
-    except:
-        pass
+    owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None)
+    repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None)
 
     if not owner or not repo:
         # Try to get from parent directory
         parent_dir = Path('..').resolve()
-        if (parent_dir / '.git').exists():
+        if exists(join(parent_dir, '.git')):
             try:
                 with cd(parent_dir):
                     repo_data = proc.json('gh', 'repo', 'view', '--json', 'owner,name', log=None)
@@ -761,13 +850,12 @@ def create_new_pr(
 
     # Get base branch from config or default
     if not base:
-        try:
-            base = proc.line('git', 'config', 'pr.base', err_ok=True, log=None)
-        except:
+        base = proc.line('git', 'config', 'pr.base', err_ok=True, log=None)
+        if not base:
             # Try to get default branch from parent repo
             try:
                 parent_dir = Path('..').resolve()
-                if (parent_dir / '.git').exists():
+                if exists(join(parent_dir, '.git')):
                     with cd(parent_dir):
                         # Get default branch from GitHub
                         default_branch = proc.line('gh', 'repo', 'view', '--json', 'defaultBranchRef', '-q', '.defaultBranchRef.name', log=None)
@@ -775,13 +863,14 @@ def create_new_pr(
                     err(f"Auto-detected base branch: {base}")
                 else:
                     base = 'main'  # Fallback to main
-            except:
-                base = 'main'  # Fallback to main
+            except Exception as e:
+                err(f"Error: Could not detect base branch: {e}")
+                raise
 
     # Get head branch - try to auto-detect from parent repo
     if not head:
         parent_dir = Path('..').resolve()
-        if (parent_dir / '.git').exists():
+        if exists(join(parent_dir, '.git')):
             try:
                 with cd(parent_dir):
                     # Use branch resolution
@@ -847,25 +936,26 @@ def create_new_pr(
 
                     # Check for gist remote and store its ID if found
                     try:
-                        remotes = proc.lines('git', 'remote', '-v', log=None) or []
+                        remotes = proc.lines('git', 'remote', '-v', log=None)
                         for remote_line in remotes:
                             if 'gist.github.com' in remote_line:
                                 # Extract gist ID from URL like git@gist.github.com:GIST_ID.git
-                                gist_match = re.search(r'gist\.github\.com[:/]([a-f0-9]+)', remote_line)
+                                gist_match = GIST_ID_PATTERN.search(remote_line)
                                 if gist_match:
                                     gist_id = gist_match.group(1)
                                     proc.run('git', 'config', 'pr.gist', gist_id, log=None)
                                     err(f"Detected and stored gist ID: {gist_id}")
                                     break
-                    except:
-                        pass  # Gist detection is optional
+                    except Exception:
+                        # Gist detection is optional, silently continue
+                        pass
 
                     # Rename DESCRIPTION.md to PR-specific name and update with PR link
                     old_file = Path('DESCRIPTION.md')
                     new_filename = f'{repo}#{pr_number}.md'
                     new_file = Path(new_filename)
 
-                    if old_file.exists():
+                    if exists(old_file):
                         with open(old_file, 'r') as f:
                             lines = f.readlines()
 
@@ -875,7 +965,7 @@ def create_new_pr(
                             # Check if first line is an h1 (starts with #)
                             if first_line.startswith('#'):
                                 # Check if it already has a PR link
-                                if not re.match(r'^#\s*\[[^]]+\]', first_line):
+                                if not PR_LINK_IN_H1_PATTERN.match(first_line):
                                     # Extract just the title (remove leading #)
                                     title_only = first_line.lstrip('#').strip()
                                     # Add PR link
@@ -922,33 +1012,21 @@ def clone(
     """
 
     # Parse PR spec
-    owner = None
-    repo = None
-    pr_number = None
-
     if pr_spec:
         # Try to parse different formats
-        # Full URL
-        url_match = re.match(r'https://github\.com/([^/]+)/([^/]+)/pull/(\d+)', pr_spec)
-        if url_match:
-            owner, repo, pr_number = url_match.groups()
-        else:
-            # owner/repo#number format
-            spec_match = re.match(r'([^/]+)/([^#]+)#(\d+)', pr_spec)
-            if spec_match:
-                owner, repo, pr_number = spec_match.groups()
-            else:
-                # Just a number (need to be in a repo)
-                if pr_spec.isdigit():
-                    pr_number = pr_spec
-                    # Get owner/repo from current directory
-                    try:
-                        repo_data = proc.json('gh', 'repo', 'view', '--json', 'owner,name', log=None)
-                        owner = repo_data['owner']['login']
-                        repo = repo_data['name']
-                    except:
-                        err("Error: Could not determine repository. Use owner/repo#number format.")
-                        exit(1)
+        owner, repo, pr_number = parse_pr_spec(pr_spec)
+
+        # If just a number, need to get owner/repo from current directory
+        if pr_number and not owner:
+            # Get owner/repo from current directory
+            try:
+                repo_data = proc.json('gh', 'repo', 'view', '--json', 'owner,name', log=None)
+                owner = repo_data['owner']['login']
+                repo = repo_data['name']
+            except Exception as e:
+                err(f"Error: Could not determine repository: {e}")
+                err("Use owner/repo#number format.")
+                exit(1)
     else:
         # Try to infer from current directory
         owner, repo, pr_number = get_pr_info_from_path()
@@ -965,7 +1043,7 @@ def clone(
     target_path = Path(directory)
 
     # Check if directory already exists
-    if target_path.exists():
+    if exists(target_path):
         err(f"Error: Directory {directory} already exists")
         exit(1)
 
@@ -977,7 +1055,7 @@ def clone(
 
     # Create directory and initialize git repo
     target_path.mkdir(parents=True)
-    os.chdir(target_path)
+    chdir(target_path)
 
     proc.run('git', 'init', '-q', log=None)
 
@@ -1007,7 +1085,7 @@ def clone(
     # Create or use existing gist unless --no-gist was specified
     if not no_gist:
         gist_id = None
-        gist_url = None
+        gist_url = None  # Initialize to avoid potential undefined variable
 
         # Check if PR already has a gist in its footer
         if existing_gist_url:
@@ -1040,58 +1118,45 @@ def clone(
             try:
                 is_private = proc.json('gh', 'api', f'repos/{owner}/{repo}', '--jq', '.private', log=None)
                 gist_private = is_private if isinstance(is_private, bool) else True
-            except:
-                gist_private = True  # Default to private if can't determine
+            except Exception as e:
+                err(f"Error: Could not determine repo visibility: {e}")
+                raise
 
             # Create the gist
             description = f'{owner}/{repo}#{pr_number} - 2-way sync via github-pr.py (ryan-williams/git-helpers)'
+            gist_id = create_gist(desc_file, description, is_public=not gist_private)
 
-            # Create gist using the file directly
-            visibility = '--private' if gist_private else '--public'
-            cmd = ['gh', 'gist', 'create', visibility, '--desc', description, desc_file]
-            result_str = proc.text(*cmd, log=None)
+            # Add gist as remote
+            proc.run('git', 'remote', 'add', DEFAULT_GIST_REMOTE, f'git@gist.github.com:{gist_id}.git', log=None)
+            proc.run('git', 'config', 'pr.gist-remote', DEFAULT_GIST_REMOTE, log=None)
 
-            if result_str:
-                # Extract gist ID from URL (last part of the path)
-                gist_url = result_str.strip()
-                gist_id = gist_url.split('/')[-1]
+            # Fetch and push
+            proc.run('git', 'fetch', DEFAULT_GIST_REMOTE, log=None)
+            proc.run('git', 'push', '--set-upstream', DEFAULT_GIST_REMOTE, 'main', '--force', log=None)
+            err("Pushed to gist")
 
-                # Store gist ID
-                proc.run('git', 'config', 'pr.gist', gist_id, log=None)
-                err(f"Created gist: {gist_url}")
+            # Construct gist URL
+            gist_url = f"https://gist.github.com/{gist_id}"
 
-                # Add gist as remote
-                proc.run('git', 'remote', 'add', DEFAULT_GIST_REMOTE, f'git@gist.github.com:{gist_id}.git', log=None)
-                proc.run('git', 'config', 'pr.gist-remote', DEFAULT_GIST_REMOTE, log=None)
+            # Open the gist in browser (first time creation)
+            webbrowser.open(gist_url)
+            err("Opened gist in browser")
 
-                # Fetch and push
-                proc.run('git', 'fetch', DEFAULT_GIST_REMOTE, log=None)
-                proc.run('git', 'push', '--set-upstream', DEFAULT_GIST_REMOTE, 'main', '--force', log=None)
-                err("Pushed to gist")
+            # Add gist footer to PR (default behavior)
+            err("Adding gist footer to PR...")
+            body_with_footer = add_gist_footer(body, gist_url, visible=False)
 
-                # Open the gist in browser (first time creation)
-                import webbrowser
-                webbrowser.open(gist_url)
-                err(f"Opened gist in browser")
+            # Update PR with footer
+            with NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+                f.write(body_with_footer)
+                temp_file = f.name
 
-                # Add gist footer to PR (default behavior)
-                err("Adding gist footer to PR...")
-                body_with_footer = add_gist_footer(body, gist_url, visible=False)
-
-                # Update PR with footer
-                import tempfile
-                with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
-                    f.write(body_with_footer)
-                    temp_file = f.name
-
-                try:
-                    proc.run('gh', 'pr', 'edit', str(pr_number), '-R', f'{owner}/{repo}',
-                            '--body-file', temp_file, log=None)
-                    err("Added gist footer to PR")
-                finally:
-                    os.unlink(temp_file)
-            else:
-                err("Warning: Failed to create gist")
+            try:
+                proc.run('gh', 'pr', 'edit', str(pr_number), '-R', f'{owner}/{repo}',
+                        '--body-file', temp_file, log=None)
+                err("Added gist footer to PR")
+            finally:
+                unlink(temp_file)
 
     err(f"Successfully cloned PR to {target_path}")
     err(f"URL: {pr_data['url']}")
@@ -1125,8 +1190,8 @@ def push(
             owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
             repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
             pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
-        except:
-            err("Error: Could not determine PR from directory or git config")
+        except Exception as e:
+            err(f"Error: Could not determine PR from directory or git config: {e}")
             exit(1)
 
     # Read the current description file (from HEAD, not working directory)
@@ -1145,12 +1210,7 @@ def push(
     # Parse the file
     first_line = lines[0].strip()
     # Remove the [owner/repo#num] or [owner/repo#num](url) prefix to get the title
-    title_match = re.match(r'^#\s*\[([^]]+)\](?:\([^)]+\))?\s*(.*)$', first_line)
-    if title_match:
-        title = title_match.group(2).strip()
-    else:
-        # Fallback to just removing the #
-        title = first_line.lstrip('#').strip()
+    title = extract_title_from_first_line(first_line)
 
     # Get body (skip first line and any immediately following blank lines)
     body_lines = lines[1:]
@@ -1164,12 +1224,13 @@ def push(
         body = process_images_in_description(body, owner, repo, dry_run)
 
     # Check if we have an existing gist
-    has_gist = False
     try:
         gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
         has_gist = bool(gist_id)
-    except:
-        pass
+    except Exception:
+        # Reading git config is optional, silently set to False
+        has_gist = False
+        gist_id = None
 
     # Determine footer behavior
     if no_footer:
@@ -1216,7 +1277,8 @@ def push(
         else:
             err(f"Added {'visible' if footer_visible else 'hidden'} footer with gist URL: {gist_url}")
     elif should_add_footer and not gist_url:
-        err("Warning: Should add footer but no gist URL available")
+        err("Error: Should add footer but no gist URL available")
+        raise ValueError("Footer requires gist URL but none available")
 
     # Update the PR
     if dry_run:
@@ -1237,8 +1299,7 @@ def push(
 
         if body is not None:  # Allow empty body
             # Use --body-file to avoid command line length issues and special character problems
-            import tempfile
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+            with NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
                 f.write(body)
                 body_file = f.name
 
@@ -1247,14 +1308,13 @@ def push(
         try:
             proc.run(*cmd, log=None)
             if body is not None:
-                os.unlink(body_file)  # Clean up temp file
+                unlink(body_file)  # Clean up temp file
             err("Successfully updated PR")
 
             # Get PR URL if we need to open it
             if open_browser:
-                try:
-                    pr_url = proc.line('git', 'config', 'pr.url', err_ok=True, log=None)
-                except:
+                pr_url = proc.line('git', 'config', 'pr.url', err_ok=True, log=None)
+                if not pr_url:
                     pr_url = f"https://github.com/{owner}/{repo}/pull/{pr_number}"
 
                 import webbrowser
@@ -1272,7 +1332,7 @@ def sync_to_gist(
     content: str,
     return_url: bool = False,
     add_remote: bool = True,
-    gist_private: bool | None = None,
+    gist_private: bool = None,
 ) -> str | None:
     """Sync PR description to a gist.
 
@@ -1290,14 +1350,11 @@ def sync_to_gist(
     """
 
     # Check if we already have a gist ID stored
-    try:
-        gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
-    except:
-        gist_id = None
+    gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
 
     # Find the gist remote intelligently
     gist_remote = find_gist_remote()
-    if not gist_remote and not dry_run:
+    if not gist_remote:
         # Only set a default if we're actually going to use it
         if gist_id or add_remote:
             gist_remote = DEFAULT_GIST_REMOTE
@@ -1310,20 +1367,19 @@ def sync_to_gist(
         err(f"Using explicit gist visibility: {'PUBLIC' if is_public else 'PRIVATE'}")
     else:
         # Check repository visibility to determine gist visibility
-        is_public = True  # Default to public
         try:
             repo_data = proc.json('gh', 'repo', 'view', f'{owner}/{repo}', '--json', 'visibility', err_ok=True, log=None) or {}
             is_public = repo_data.get('visibility', 'PUBLIC').upper() == 'PUBLIC'
             err(f"Repository visibility: {'PUBLIC' if is_public else 'PRIVATE'}, gist will match")
         except Exception as e:
-            err(f"Warning: Could not determine repository visibility, defaulting to public gist: {e}")
+            err(f"Error: Could not determine repository visibility: {e}")
+            raise
 
     # Use PR-specific filename for better gist organization
     pr_filename = f'{repo}#{pr_number}.md'
     local_filename = pr_filename  # Use same filename locally
     description = f'{owner}/{repo}#{pr_number} - 2-way sync via github-pr.py (ryan-williams/git-helpers)'
     gist_url = None
-    revision = None
 
     if gist_id:
         # Update existing gist
@@ -1352,7 +1408,8 @@ def sync_to_gist(
                 proc.run('gh', 'api', f'gists/{gist_id}', '-X', 'PATCH',
                            '-f', f'description={description}', log=None)
         except Exception as e:
-            err(f"Warning: Could not update gist metadata: {e}")
+            err(f"Error: Could not update gist metadata: {e}")
+            raise
 
         # Check if remote exists and push to it
         if add_remote:
@@ -1360,21 +1417,25 @@ def sync_to_gist(
                 # Commit any changes and push to gist
                 proc.run('git', 'add', local_filename, log=None)
                 proc.run('git', 'commit', '-m', f'Update PR description for {owner}/{repo}#{pr_number}', log=None)
-            except:
-                pass  # May already be committed
+            except Exception:
+                # May already be committed - check if there are changes
+                if proc.line('git', 'diff', '--cached', '--name-only', local_filename, err_ok=True, log=None):
+                    raise  # Re-raise if there were actual changes that failed to commit
 
             try:
                 proc.run('git', 'push', gist_remote, 'main', '--force', log=None)
                 err(f"Pushed to gist remote '{gist_remote}'")
-            except:
-                err(f"Warning: Could not push to gist remote '{gist_remote}'")
+            except Exception as e:
+                err(f"Error: Could not push to gist remote '{gist_remote}': {e}")
+                raise
 
         # Get the latest revision SHA
         try:
             gist_info = proc.line('gh', 'api', f'gists/{gist_id}', '--jq', '.history[0].version', log=None)
             revision = gist_info
-        except:
-            revision = None
+        except Exception as e:
+            err(f"Error: Could not get gist revision: {e}")
+            raise
 
         if revision:
             gist_url = f"https://gist.github.com/{gist_id}/{revision}"
@@ -1386,10 +1447,7 @@ def sync_to_gist(
         err(f"Creating new {'public' if is_public else 'secret'} gist...")
 
         # Create a temporary file with the PR-specific name for gist creation
-        import tempfile
-        import shutil
-
-        with tempfile.TemporaryDirectory() as tmpdir:
+        with TemporaryDirectory() as tmpdir:
             # Create temp file with PR-specific name
             temp_file = Path(tmpdir) / pr_filename
             with open(temp_file, 'w') as f:
@@ -1402,18 +1460,17 @@ def sync_to_gist(
 
             try:
                 # Create gist from PR-specific filename (visibility based on repo)
-                gist_cmd = ['gh', 'gist', 'create', '-d', description]
-                if is_public:
-                    gist_cmd.append('--public')
-                gist_cmd.append(str(temp_file))
-                output = proc.text(*gist_cmd, err_ok=True, log=None)
+                output = None
+                gist_id_from_creation = create_gist(temp_file, description, is_public=is_public, store_id=False)
+                if gist_id_from_creation:
+                    output = f"https://gist.github.com/{gist_id_from_creation}"
                 if not output:
-                    err(f"Error creating gist")
+                    err("Error creating gist")
                     return None
                 output = output.strip()
                 err(f"Gist create output: {output}")
                 # Extract gist ID from URL (format: https://gist.github.com/username/gist_id or https://gist.github.com/gist_id)
-                match = re.search(r'gist\.github\.com/(?:[^/]+/)?([a-f0-9]+)', output)
+                match = GIST_URL_WITH_USER_PATTERN.search(output)
                 if match:
                     gist_id = match.group(1)
                     proc.run('git', 'config', 'pr.gist', gist_id, log=None)
@@ -1429,7 +1486,7 @@ def sync_to_gist(
                                 # Update existing remote
                                 proc.run('git', 'remote', 'set-url', gist_remote, gist_ssh_url, log=None)
                                 err(f"Updated remote '{gist_remote}' to {gist_ssh_url}")
-                        except:
+                        except Exception:
                             # Add new remote
                             proc.run('git', 'remote', 'add', gist_remote, gist_ssh_url, log=None)
                             err(f"Added remote '{gist_remote}': {gist_ssh_url}")
@@ -1437,8 +1494,9 @@ def sync_to_gist(
                     # Fetch from the gist remote first
                     try:
                         proc.run('git', 'fetch', gist_remote, log=None)
-                    except:
-                        pass  # Fetch might fail if gist is empty
+                    except Exception as e:
+                        # Fetch might fail if gist is empty, which is OK for new gists
+                        err(f"Note: Could not fetch from gist (may be empty): {e}")
 
                     # Set up branch tracking
                     try:
@@ -1452,7 +1510,7 @@ def sync_to_gist(
                     try:
                         # Check if there are uncommitted changes
                         proc.check('git', 'diff', '--quiet', 'DESCRIPTION.md', log=None)
-                    except:
+                    except Exception:
                         # There are changes, commit them
                         proc.run('git', 'add', 'DESCRIPTION.md', log=None)
                         proc.run('git', 'commit', '-m', f'Sync PR {owner}/{repo}#{pr_number} to gist', log=None)
@@ -1462,15 +1520,17 @@ def sync_to_gist(
                             proc.run('git', 'push', gist_remote, 'main', '--force', log=None)
                             err(f"Pushed to gist remote '{gist_remote}'")
                         except Exception as e:
-                            err(f"Warning: Could not push to gist remote '{gist_remote}': {e}")
+                            err(f"Error: Could not push to gist remote '{gist_remote}': {e}")
+                            raise
 
                     # Get the revision SHA for the newly created gist
                     try:
                         gist_info = proc.line('gh', 'api', f'gists/{gist_id}', '--jq', '.history[0].version', log=None)
                         revision = gist_info
                         gist_url = f"https://gist.github.com/{gist_id}/{revision}"
-                    except:
-                        gist_url = output  # Fallback to the output URL
+                    except Exception as e:
+                        err(f"Error: Could not get gist revision: {e}")
+                        raise
 
                     err(f"Created gist: {gist_url}")
             except Exception as e:
@@ -1503,15 +1563,13 @@ def upload(
             owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
             repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
             pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
-        except:
-            err("Error: Could not determine PR from directory or git config")
+        except Exception as e:
+            err(f"Error: Could not determine PR from directory or git config: {e}")
             exit(1)
 
     # Get or create gist
-    try:
-        gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
-    except:
-        gist_id = None
+    # Read gist ID from git config (optional)
+    gist_id = proc.line('git', 'config', 'pr.gist', err_ok=True, log=None)
 
     if not gist_id:
         # Create a gist for this PR
@@ -1532,7 +1590,7 @@ def upload(
     remote_name = None
     try:
         # Check all remotes to see if any point to this gist
-        remotes = proc.lines('git', 'remote', log=None) or []
+        remotes = proc.lines('git', 'remote', log=None)
         for remote in remotes:
             if not remote:
                 continue
@@ -1543,9 +1601,11 @@ def upload(
                     remote_name = remote
                     err(f"Already in gist repository with remote '{remote}'")
                     break
-            except:
+            except Exception:
+                # Remote URL doesn't match gist pattern, continue checking others
                 continue
-    except:
+    except Exception:
+        # Not in a gist repo, which is expected for PR directories
         pass
 
     # Prepare files for upload
@@ -1604,8 +1664,8 @@ def diff(
             owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
             repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
             pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
-        except:
-            err("Error: Could not determine PR from directory or git config")
+        except Exception as e:
+            err(f"Error: Could not determine PR from directory or git config: {e}")
             exit(1)
 
     # Get remote PR data
@@ -1617,7 +1677,7 @@ def diff(
     # Read local description from git
     desc_content, desc_file = read_description_from_git('HEAD')
     if not desc_content or not desc_file:
-        err(f"Error: Could not read description file from HEAD")
+        err("Error: Could not read description file from HEAD")
         err("Make sure you've committed your changes")
         exit(1)
 
@@ -1628,11 +1688,7 @@ def diff(
         exit(1)
 
     first_line = lines[0].strip()
-    title_match = re.match(r'^#\s*\[([^]]+)\](?:\([^)]+\))?\s*(.*)$', first_line)
-    if title_match:
-        local_title = title_match.group(2).strip()
-    else:
-        local_title = first_line.lstrip('#').strip()
+    local_title = extract_title_from_first_line(first_line)
 
     body_lines = lines[1:]
     while body_lines and not body_lines[0].strip():
@@ -1712,11 +1768,11 @@ def pull(
     owner, repo, pr_number = get_pr_info_from_path()
 
     if not all([owner, repo, pr_number]):
-        try:
-            owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
-            repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
-            pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
-        except:
+        owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
+        repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
+        pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
+
+        if not all([owner, repo, pr_number]):
             err("Error: Could not determine PR")
             exit(1)
 
@@ -1738,14 +1794,13 @@ def pull(
     write_description_with_link_ref(desc_file, owner, repo, pr_number, title, body_without_footer, url)
 
     # Check if there are changes
-    try:
-        proc.check('git', 'diff', '--exit-code', 'DESCRIPTION.md', log=None)
+    if proc.check('git', 'diff', '--exit-code', 'DESCRIPTION.md', log=None):
         err("No changes from PR")
-    except Exception:
+    else:
         # There are changes, commit them
         if not dry_run:
             proc.run('git', 'add', 'DESCRIPTION.md', log=None)
-            proc.run('git', 'commit', '-m', f'Sync from PR (pulled latest)', log=None)
+            proc.run('git', 'commit', '-m', 'Sync from PR (pulled latest)', log=None)
             err("Pulled and committed changes from PR")
         else:
             err("[DRY-RUN] Would pull and commit changes from PR")
@@ -1779,11 +1834,11 @@ def sync(
     # Use provided directory or current directory
     target_dir = directory if directory else Path.cwd()
 
-    if not target_dir.exists():
+    if not exists(target_dir):
         err(f"Error: Directory {target_dir} does not exist")
         exit(1)
 
-    if not (target_dir / '.git').exists():
+    if not exists(target_dir / '.git'):
         err(f"Error: {target_dir} is not a git repository")
         exit(1)
 
@@ -1829,7 +1884,7 @@ def sync(
                         if link_match:
                             link_ref = link_match.group(1)  # e.g., "org/repo#123"
                             # Parse the reference directly
-                            ref_parts = re.match(r'([^/]+)/([^#]+)#(\d+)', link_ref)
+                            ref_parts = PR_SPEC_PATTERN.match(link_ref)
                             if ref_parts:
                                 if not owner:
                                     owner = ref_parts.group(1)
@@ -1867,7 +1922,7 @@ def sync(
                 err(f"Stored pr.number = {pr_number}")
 
         if not all([owner, repo, pr_number]):
-            err(f"Error: Could not determine PR information")
+            err("Error: Could not determine PR information")
             err(f"  Owner: {owner or 'MISSING'}")
             err(f"  Repo: {repo or 'MISSING'}")
             err(f"  PR: {pr_number or 'MISSING'}")
@@ -1882,13 +1937,13 @@ def sync(
         new_file = Path(new_filename)
 
         # If already using new name, check if content needs updating
-        if new_file.exists() and not old_file.exists():
+        if exists(new_file) and not exists(old_file):
             # Check if h1 has PR link
             with open(new_file, 'r') as f:
                 first_line = f.readline().strip()
 
             # Check if first line already has the PR link
-            if not re.match(r'^#\s*\[[^]]+\]', first_line):
+            if not PR_LINK_IN_H1_PATTERN.match(first_line):
                 if dry_run:
                     err(f"[DRY-RUN] Would update h1 in {new_filename} with PR link")
                 else:
@@ -1910,10 +1965,10 @@ def sync(
             else:
                 err(f"Already using {new_filename} with PR link")
             # Still check if gist needs updating
-        elif old_file.exists():
+        elif exists(old_file):
             if dry_run:
                 err(f"[DRY-RUN] Would rename {old_file} to {new_file}")
-                err(f"[DRY-RUN] Would update h1 with PR link")
+                err("[DRY-RUN] Would update h1 with PR link")
             else:
                 # Read content and parse
                 title, body = read_description_file(Path.cwd())
@@ -1968,8 +2023,9 @@ def sync(
                 try:
                     is_private = proc.json('gh', 'api', f'repos/{owner}/{repo}', '--jq', '.private', log=None)
                     gist_private = is_private if isinstance(is_private, bool) else True
-                except:
-                    gist_private = True  # Default to private if can't determine
+                except Exception as e:
+                    err(f"Error: Could not determine repo visibility: {e}")
+                    raise
 
                 # Create the gist
                 err("Creating gist for PR...")
@@ -1981,37 +2037,22 @@ def sync(
                     err("Error: No description file found")
                     exit(1)
 
-                # Create gist using the file directly
-                visibility = '--private' if gist_private else '--public'
-                cmd = ['gh', 'gist', 'create', visibility, '--desc', description, desc_file]
-                result_str = proc.text(*cmd, log=None)
+                gist_id = create_gist(desc_file, description, is_public=not gist_private)
 
-                if result_str:
-                    # Extract gist ID from URL (last part of the path)
-                    gist_url = result_str.strip()
-                    gist_id = gist_url.split('/')[-1]
+                # Add gist as remote
+                proc.run('git', 'remote', 'add', 'g', f'git@gist.github.com:{gist_id}.git', log=None)
+                proc.run('git', 'config', 'pr.gist-remote', 'g', log=None)
+                err(f"Added gist as remote '{DEFAULT_GIST_REMOTE}'")
 
-                    # Store gist ID
-                    proc.run('git', 'config', 'pr.gist', gist_id, log=None)
-                    err(f"Created gist: {gist_url}")
-
-                    # Add gist as remote
-                    proc.run('git', 'remote', 'add', 'g', f'git@gist.github.com:{gist_id}.git', log=None)
-                    proc.run('git', 'config', 'pr.gist-remote', 'g', log=None)
-                    err(f"Added gist as remote '{DEFAULT_GIST_REMOTE}'")
-
-                    # Fetch and push
-                    proc.run('git', 'fetch', 'g', log=None)
-                    proc.run('git', 'push', '--set-upstream', 'g', 'main', '--force', log=None)
-                    err("Pushed to gist")
-                else:
-                    err("Error: Failed to create gist")
-                    exit(1)
+                # Fetch and push
+                proc.run('git', 'fetch', 'g', log=None)
+                proc.run('git', 'push', '--set-upstream', 'g', 'main', '--force', log=None)
+                err("Pushed to gist")
 
         if gist_id:
             # Push to gist remote if it exists
             gist_remote = find_gist_remote() or DEFAULT_GIST_REMOTE
-            remotes = proc.lines('git', 'remote', log=None) or []
+            remotes = proc.lines('git', 'remote', log=None)
 
             if gist_remote in remotes:
                 # Check if there are actually changes to push
@@ -2019,9 +2060,9 @@ def sync(
                     # Check for unpushed commits
                     unpushed = proc.line('git', 'rev-list', f'{gist_remote}/main..HEAD', '--count', err_ok=True, log=None)
                     has_changes = unpushed and int(unpushed) > 0
-                except:
-                    # If we can't determine, assume there might be changes
-                    has_changes = True
+                except Exception as e:
+                    err(f"Error: Could not check for unpushed commits: {e}")
+                    raise
 
                 if has_changes:
                     if dry_run:
@@ -2037,15 +2078,18 @@ def sync(
                             try:
                                 proc.run('gh', 'api', f'gists/{gist_id}', '-X', 'PATCH',
                                            '-f', f'description={description}', log=None)
-                                err(f"Updated gist description")
-                            except:
-                                pass  # Description update is optional
+                                err("Updated gist description")
+                            except Exception as e:
+                                err(f"Error: Could not update gist description: {e}")
+                                raise
                         except Exception as e:
-                            err(f"Warning: Could not push to gist: {e}")
+                            err(f"Error: Could not push to gist: {e}")
+                            raise
                 else:
                     err("No changes to push to gist")
             else:
-                err(f"Warning: Gist remote '{gist_remote}' not found")
+                err(f"Error: Gist remote '{gist_remote}' not found")
+                raise ValueError(f"Gist remote '{gist_remote}' not found")
 
         # Check if PR needs gist footer
         if gist_id:
@@ -2062,12 +2106,11 @@ def sync(
                     if dry_run:
                         err(f"[DRY-RUN] Would add gist footer to PR {owner}/{repo}#{pr_number}")
                     else:
-                        err(f"Adding gist footer to PR...")
+                        err("Adding gist footer to PR...")
                         body_with_footer = add_gist_footer(current_body, gist_url, visible=False)
 
                         # Update PR with footer
-                        import tempfile
-                        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+                        with NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
                             f.write(body_with_footer)
                             temp_file = f.name
 
@@ -2076,7 +2119,7 @@ def sync(
                                     '--body-file', temp_file, log=None)
                             err("Added gist footer to PR")
                         finally:
-                            os.unlink(temp_file)
+                            unlink(temp_file)
                 else:
                     err("PR already has gist footer")
 
