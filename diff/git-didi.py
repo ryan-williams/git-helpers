@@ -45,8 +45,9 @@ import sys
 from subprocess import run, PIPE, Popen
 from io import StringIO
 
-from click import argument, Choice, group, option, echo, style
+from click import Choice, echo, group, style
 from utz import err
+from utz.cli import arg, flag, opt
 
 
 def should_use_color(color_option: str) -> bool:
@@ -139,17 +140,17 @@ def cli():
 
 
 @cli.command()
-@option('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
-@option('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
-@argument('refspec1')
-@argument('refspec2')
+@opt('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
+@opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
+@arg('refspec1')
+@arg('refspec2')
 def stat(
-    refspec1: str,
-    refspec2: str,
     color: str,
     pager: str,
+    refspec1: str,
+    refspec2: str,
 ) -> None:
-    """Compare git diff --stat output between two ranges.
+    """Compare git diff --stat output between two refspecs.
 
     Example: git-didi.py stat rmb..m/rw/ee m/main..ee
     """
@@ -199,26 +200,26 @@ def stat(
 
 
 @cli.command()
-@option('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
-@option('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
-@option('-q', '--quiet', is_flag=True, help='Only show files with differences')
-@argument('refspec1')
-@argument('refspec2')
+@opt('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
+@opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
+@flag('-q', '--quiet', help='Only show files with differences')
+@arg('refspec1')
+@arg('refspec2')
 def patch(
-    refspec1: str,
-    refspec2: str,
     color: str,
     pager: str,
     quiet: bool,
+    refspec1: str,
+    refspec2: str,
 ) -> None:
-    """Compare patches file-by-file between two ranges.
+    """Compare patches file-by-file between two refspecs.
 
     Shows only files where the patches differ.
     """
     use_color = should_use_color(color)
 
     with Pager(pager):
-        # Get list of changed files in both ranges
+        # Get list of changed files in both refspecs
         files1 = get_changed_files(refspec1)
         files2 = get_changed_files(refspec2)
 
@@ -227,7 +228,7 @@ def patch(
         different_files = []
 
         for filepath in all_files:
-            # Get diff for this file in both ranges
+            # Get diff for this file in both refspecs
             diff1 = get_file_diff(refspec1, filepath)
             diff2 = get_file_diff(refspec2, filepath)
 
@@ -276,17 +277,17 @@ def patch(
 
 
 @cli.command()
-@option('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
-@option('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
-@argument('refspec1')
-@argument('refspec2')
+@opt('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
+@opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
+@arg('refspec1')
+@arg('refspec2')
 def commits(
     refspec1: str,
     refspec2: str,
     color: str,
     pager: str,
 ) -> None:
-    """Compare commits between two ranges.
+    """Compare commits between two refspecs.
 
     First verifies that commits correspond (same count and messages),
     then shows per-commit differences.
@@ -294,7 +295,7 @@ def commits(
     use_color = should_use_color(color)
 
     with Pager(pager):
-        # Get commit info for both ranges
+        # Get commit info for both refspecs
         commits1 = get_commits(refspec1)
         commits2 = get_commits(refspec2)
 
@@ -349,9 +350,9 @@ def commits(
                 echo(f"[{i+1}] {msg} - identical")
 
 
-def get_changed_files(range_spec: str) -> list[str]:
-    """Get list of files changed in a git range."""
-    result = run(['git', 'diff', '--name-only', range_spec], capture_output=True, text=True)
+def get_changed_files(refspec: str) -> list[str]:
+    """Get list of files changed in a git refspec."""
+    result = run(['git', 'diff', '--name-only', refspec], capture_output=True, text=True)
     if result.returncode != 0:
         return []
     return [f for f in result.stdout.strip().split('\n') if f]
@@ -369,17 +370,17 @@ def normalize_diff(diff_text: str) -> str:
     return '\n'.join(lines)
 
 
-def get_file_diff(range_spec: str, filepath: str) -> str:
-    """Get diff for a specific file in a range."""
-    result = run(['git', 'diff', range_spec, '--', filepath], capture_output=True, text=True)
+def get_file_diff(refspec: str, filepath: str) -> str:
+    """Get diff for a specific file in a refspec."""
+    result = run(['git', 'diff', refspec, '--', filepath], capture_output=True, text=True)
     return result.stdout
 
 
-def get_commits(range_spec: str) -> list[str]:
-    """Get list of commits in a range."""
-    result = run(['git', 'log', '--oneline', range_spec], capture_output=True, text=True)
+def get_commits(refspec: str) -> list[str]:
+    """Get list of commits in a refspec."""
+    result = run(['git', 'log', '--oneline', refspec], capture_output=True, text=True)
     if result.returncode != 0:
-        err(f"Error getting commits for {range_spec}: {result.stderr}")
+        err(f"Error getting commits for {refspec}: {result.stderr}")
         return []
     return [line for line in result.stdout.strip().split('\n') if line]
 
