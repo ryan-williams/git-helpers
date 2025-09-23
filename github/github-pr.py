@@ -18,8 +18,9 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 import webbrowser
 
-from click import argument, Choice, group, option
+from click import Choice, group
 from utz import proc, err, cd
+from utz.cli import arg, flag, opt
 
 # Add parent directory to path for local imports
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
@@ -606,8 +607,8 @@ def cli():
 
 
 @cli.command()
-@option('-r', '--repo', help='Repository (owner/repo format)')
-@option('-b', '--base', help='Base branch (default: repo default branch)')
+@opt('-r', '--repo', help='Repository (owner/repo format)')
+@opt('-b', '--base', help='Base branch (default: repo default branch)')
 def init(
     repo: str | None,
     base: str | None,
@@ -648,11 +649,11 @@ def init(
 
 
 @cli.command()
-@option('-b', '--base', help='Base branch (default: repo default branch)')
-@option('-d', '--draft', is_flag=True, help='Create as draft PR')
-@option('-h', '--head', help='Head branch (default: auto-detect from parent repo)')
-@option('-n', '--dry-run', is_flag=True, help='Show what would be done without creating the PR')
-@option('-w', '--web', is_flag=True, help='Open PR in web browser after creating')
+@opt('-b', '--base', help='Base branch (default: repo default branch)')
+@flag('-d', '--draft', help='Create as draft PR')
+@opt('-h', '--head', help='Head branch (default: auto-detect from parent repo)')
+@flag('-n', '--dry-run', help='Show what would be done without creating the PR')
+@flag('-w', '--web', help='Open PR in web browser after creating')
 def create(
     head: str | None,
     base: str | None,
@@ -666,7 +667,7 @@ def create(
 
 
 @cli.command()
-@option('-g', '--gist', is_flag=True, help='Only show gist URL')
+@flag('-g', '--gist', help='Only show gist URL')
 def show(gist: bool) -> None:
     """Show PR and/or gist URLs for current directory."""
     # Get PR info
@@ -729,7 +730,7 @@ def show(gist: bool) -> None:
 
 
 @cli.command(name='open')
-@option('-g', '--gist', is_flag=True, help='Open gist instead of PR')
+@flag('-g', '--gist', help='Open gist instead of PR')
 def open_pr(
     gist: bool,
 ) -> None:
@@ -995,9 +996,9 @@ def create_new_pr(
 
 
 @cli.command()
-@option('-d', '--directory', help='Directory to clone into (default: pr{number})')
-@option('-G', '--no-gist', is_flag=True, help='Skip creating a gist')
-@argument('pr_spec', required=False)
+@opt('-d', '--directory', help='Directory to clone into (default: pr{number})')
+@flag('-G', '--no-gist', help='Skip creating a gist')
+@arg('pr_spec', required=False)
 def clone(
     directory: str | None,
     no_gist: bool,
@@ -1163,13 +1164,13 @@ def clone(
 
 
 @cli.command()
-@option('-g', '--gist', is_flag=True, help='Also sync to gist')
-@option('-n', '--dry-run', is_flag=True, help='Show what would be done without making changes')
-@option('-f', '--footer', count=True, help='Footer level: -f = hidden footer, -ff = visible footer')
-@option('-F', '--no-footer', is_flag=True, help='Disable footer completely')
-@option('-o', '--open', 'open_browser', is_flag=True, help='Open PR in browser after pushing')
-@option('-i', '--images', is_flag=True, help='Upload local images and replace references')
-@option('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
+@flag('-g', '--gist', help='Also sync to gist')
+@flag('-n', '--dry-run', help='Show what would be done without making changes')
+@opt('-f', '--footer', count=True, help='Footer level: -f = hidden footer, -ff = visible footer')
+@flag('-F', '--no-footer', help='Disable footer completely')
+@flag('-o', '--open', 'open_browser', help='Open PR in browser after pushing')
+@flag('-i', '--images', help='Upload local images and replace references')
+@opt('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
 def push(
     gist: bool,
     dry_run: bool,
@@ -1542,10 +1543,10 @@ def sync_to_gist(
 
 
 @cli.command()
-@argument('files', nargs=-1, required=True)
-@option('-b', '--branch', default='assets', help='Branch name in gist (default: assets)')
-@option('-f', '--format', type=Choice(['url', 'markdown', 'img', 'auto']), default='auto', help='Output format (default: auto - img for images, url for others)')
-@option('-a', '--alt', help='Alt text for markdown/img format')
+@arg('files', nargs=-1, required=True)
+@opt('-b', '--branch', default='assets', help='Branch name in gist (default: assets)')
+@opt('-f', '--format', type=Choice(['url', 'markdown', 'img', 'auto']), default='auto', help='Output format (default: auto - img for images, url for others)')
+@opt('-a', '--alt', help='Alt text for markdown/img format')
 def upload(
     files: tuple[str, ...],
     branch: str,
@@ -1634,7 +1635,7 @@ def upload(
 
 
 @cli.command()
-@option('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
+@opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
 def diff(
     color: str,
 ) -> None:
@@ -1748,11 +1749,11 @@ def diff(
 
 
 @cli.command()
-@option('-g', '--gist', is_flag=True, help='Also sync to gist')
-@option('-n', '--dry-run', is_flag=True, help='Show what would be done')
-@option('-f/-F', '--footer/--no-footer', default=None, help='Add gist footer to PR (default: auto - add if gist exists)')
-@option('-o', '--open', 'open_browser', is_flag=True, help='Open PR in browser after pulling')
-@option('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
+@flag('-g', '--gist', help='Also sync to gist')
+@flag('-n', '--dry-run', help='Show what would be done')
+@opt('-f/-F', '--footer/--no-footer', default=None, help='Add gist footer to PR (default: auto - add if gist exists)')
+@flag('-o', '--open', 'open_browser', help='Open PR in browser after pulling')
+@opt('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
 def pull(
     gist: bool,
     dry_run: bool,
@@ -1813,8 +1814,8 @@ def pull(
 
 
 @cli.command()
-@argument('directory', required=False, type=Path)
-@option('-n', '--dry-run', is_flag=True, help='Show what would be done without making changes')
+@arg('directory', required=False, type=Path)
+@flag('-n', '--dry-run', help='Show what would be done without making changes')
 def sync(
     directory: Path | None,
     dry_run: bool,
