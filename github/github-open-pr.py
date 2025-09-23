@@ -1,4 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "click",
+# ]
+# ///
 """Open PR associated with the current branch."""
 
 import os
