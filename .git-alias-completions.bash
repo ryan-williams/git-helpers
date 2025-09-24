@@ -19,71 +19,44 @@ if ! declare -f __git_complete &>/dev/null; then
     done
 fi
 
-# grh - git reset --hard (accepts refs)
-_grh_completion() {
-    local cur="${COMP_WORDS[COMP_CWORD]}"
+# Only set up completions if __git_complete is available
+if declare -f __git_complete &>/dev/null; then
+    # Use __git_complete for standard git alias completions
+    __git_complete gco _git_checkout
+    __git_complete gb _git_branch
+    __git_complete gd _git_diff
+    __git_complete gl _git_log
+    __git_complete gs _git_status
+    __git_complete ga _git_add
+    __git_complete gm _git_merge
+    __git_complete gp _git_push
+    __git_complete gf _git_fetch
+    __git_complete gr _git_rebase
 
-    # Complete with git refs (branches, tags, commits)
-    __gitcomp_nl "$(__git_refs)"
-}
+    # grh - git reset --hard (custom completion)
+    _grh_completion() {
+        local cur words cword prev
+        _get_comp_words_by_ref -n =: cur words cword prev
 
-# gbc - git branch-reset -c (accepts branch name then ref)
-_gbc_completion() {
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local prev="${COMP_WORDS[COMP_CWORD-1]}"
-
-    # First argument: branch name
-    if [ $COMP_CWORD -eq 1 ]; then
-        __gitcomp_nl "$(__git_heads)"
-    # Second argument: ref to reset to
-    elif [ $COMP_CWORD -eq 2 ]; then
+        # Complete with git refs (branches, tags, commits)
         __gitcomp_nl "$(__git_refs)"
-    fi
-}
-
-# gco - git checkout (accepts branches, refs, files)
-_gco_completion() {
-    # Use git's built-in checkout completion
-    _git_checkout
-}
-
-# Register completions
-complete -F _grh_completion grh
-complete -F _gbc_completion gbc
-complete -F _gco_completion gco
-
-# Also register for the 'g' prefixed versions if they exist
-if type -t g &>/dev/null; then
-    # For commands that go through 'g' wrapper
-    _g_completion() {
-        local cur="${COMP_WORDS[COMP_CWORD]}"
-        local cmd="${COMP_WORDS[1]}"
-
-        case "$cmd" in
-            rh)
-                # Simulate grh completion
-                COMP_WORDS[0]="grh"
-                unset 'COMP_WORDS[1]'
-                COMP_WORDS=("${COMP_WORDS[@]}")
-                ((COMP_CWORD--))
-                _grh_completion
-                ;;
-            bc)
-                # Simulate gbc completion
-                COMP_WORDS[0]="gbc"
-                unset 'COMP_WORDS[1]'
-                COMP_WORDS=("${COMP_WORDS[@]}")
-                ((COMP_CWORD--))
-                _gbc_completion
-                ;;
-            co)
-                # Simulate gco completion
-                COMP_WORDS[0]="gco"
-                unset 'COMP_WORDS[1]'
-                COMP_WORDS=("${COMP_WORDS[@]}")
-                ((COMP_CWORD--))
-                _gco_completion
-                ;;
-        esac
     }
+
+    # gbc - git branch-reset -c (custom completion)
+    _gbc_completion() {
+        local cur words cword prev
+        _get_comp_words_by_ref -n =: cur words cword prev
+
+        # First argument: branch name
+        if [ $cword -eq 1 ]; then
+            __gitcomp_nl "$(__git_heads)"
+        # Second argument: ref to reset to
+        elif [ $cword -eq 2 ]; then
+            __gitcomp_nl "$(__git_refs)"
+        fi
+    }
+
+    # Register custom completions using __git_func_wrap pattern
+    __git_complete grh grh_completion
+    __git_complete gbc gbc_completion
 fi
