@@ -44,6 +44,8 @@ GIST_FOOTER_VISIBLE_PATTERN = re.compile(r'\[gist\]\((https://gist\.github\.com/
 GIST_FOOTER_HIDDEN_PATTERN = re.compile(r'<!-- Synced with (https://gist\.github\.com/[a-f0-9]+(?:/[a-f0-9]+)?)')  # HTML comment footer
 GITHUB_URL_PATTERN = re.compile(r'github\.com[:/]([^/]+)/([^/\s]+?)(?:\.git)?$')  # GitHub URL pattern
 GITHUB_PR_URL_PATTERN = re.compile(r'https://github\.com/([^/]+)/([^/]+)/pull/(\d+)')  # Full PR URL
+GITHUB_ISSUE_URL_PATTERN = re.compile(r'https://github\.com/([^/]+)/([^/]+)/issues/(\d+)')  # Full Issue URL
+GITHUB_ITEM_URL_PATTERN = re.compile(r'https://github\.com/([^/]+)/([^/]+)/(pull|issues)/(\d+)')  # Full PR or Issue URL
 PR_SPEC_PATTERN = re.compile(r'([^/]+)/([^#]+)#(\d+)')  # owner/repo#number format
 H1_TITLE_PATTERN = re.compile(r'^#\s+(.+)$')  # # Title
 PR_LINK_IN_H1_PATTERN = re.compile(r'^#\s*\[[^]]+]')  # Check if H1 has [...]
@@ -59,33 +61,34 @@ def extract_title_from_first_line(first_line: str) -> str:
         return first_line.strip().lstrip('#').strip()
 
 
-def parse_pr_spec(pr_spec: str) -> tuple[str | None, str | None, str | None]:
-    """Parse PR specification in various formats.
+def parse_pr_spec(pr_spec: str) -> tuple[str | None, str | None, str | None, str | None]:
+    """Parse PR/Issue specification in various formats.
 
     Args:
         pr_spec: Can be:
-            - Full URL: https://github.com/owner/repo/pull/123
+            - Full URL: https://github.com/owner/repo/pull/123 or /issues/123
             - Short format: owner/repo#123
             - Just number: 123 (requires being in repo)
 
     Returns:
-        Tuple of (owner, repo, pr_number) or (None, None, number) for just number
+        Tuple of (owner, repo, number, type) where type is 'pr' or 'issue'
     """
-    # Full URL
-    url_match = GITHUB_PR_URL_PATTERN.match(pr_spec)
+    # Full PR/Issue URL
+    url_match = GITHUB_ITEM_URL_PATTERN.match(pr_spec)
     if url_match:
-        return url_match.groups()
+        owner, repo, item_type, number = url_match.groups()
+        return owner, repo, number, 'pr' if item_type == 'pull' else 'issue'
 
-    # owner/repo#number format
+    # owner/repo#number format (assume PR by default, will detect later)
     spec_match = PR_SPEC_PATTERN.match(pr_spec)
     if spec_match:
-        return spec_match.groups()
+        return spec_match.groups() + (None,)  # Type will be detected
 
-    # Just a number
+    # Just a number (assume PR by default, will detect later)
     if pr_spec.isdigit():
-        return None, None, pr_spec
+        return None, None, pr_spec, None
 
-    return None, None, None
+    return None, None, None, None
 
 
 def create_gist(
@@ -251,17 +254,48 @@ def get_pr_info_from_path(path: Path | None = None) -> tuple[str | None, str | N
     return None, None, pr_number
 
 
-def get_pr_metadata(owner: str, repo: str, pr_number: str) -> dict | None:
-    """Get PR metadata from GitHub."""
+def get_item_metadata(owner: str, repo: str, number: str, item_type: str | None = None) -> tuple[dict | None, str]:
+    """Get PR or Issue metadata from GitHub.
+
+    Returns:
+        Tuple of (metadata dict, item_type) where item_type is 'pr' or 'issue'
+    """
+    # Try to detect type if not specified
+    if not item_type:
+        # Try PR first
+        try:
+            data = proc.json('gh', 'pr', 'view', number, '-R', f'{owner}/{repo}', '--json', 'title,body,number,url', log=None)
+            # Normalize line endings from GitHub (convert \r\n to \n)
+            if data.get('body'):
+                data['body'] = data['body'].replace('\r\n', '\n')
+            return data, 'pr'
+        except Exception:
+            # Try issue
+            try:
+                data = proc.json('gh', 'issue', 'view', number, '-R', f'{owner}/{repo}', '--json', 'title,body,number,url', log=None)
+                if data.get('body'):
+                    data['body'] = data['body'].replace('\r\n', '\n')
+                return data, 'issue'
+            except Exception as e:
+                err(f"Error fetching PR/Issue metadata: {e}")
+                return None, item_type or 'pr'
+
+    # Use specified type
+    cmd = 'pr' if item_type == 'pr' else 'issue'
     try:
-        data = proc.json('gh', 'pr', 'view', pr_number, '-R', f'{owner}/{repo}', '--json', 'title,body,number,url', log=None)
+        data = proc.json('gh', cmd, 'view', number, '-R', f'{owner}/{repo}', '--json', 'title,body,number,url', log=None)
         # Normalize line endings from GitHub (convert \r\n to \n)
         if data.get('body'):
             data['body'] = data['body'].replace('\r\n', '\n')
-        return data
+        return data, item_type
     except Exception as e:
-        err(f"Error fetching PR metadata: {e}")
-        return None
+        err(f"Error fetching {item_type} metadata: {e}")
+        return None, item_type
+
+def get_pr_metadata(owner: str, repo: str, pr_number: str) -> dict | None:
+    """Legacy function for backwards compatibility."""
+    data, _ = get_item_metadata(owner, repo, pr_number, 'pr')
+    return data
 
 
 def extract_gist_footer(body: str | None) -> tuple[str | None, str | None]:
@@ -996,29 +1030,29 @@ def create_new_pr(
 
 
 @cli.command()
-@opt('-d', '--directory', help='Directory to clone into (default: pr{number})')
+@opt('-d', '--directory', help='Directory to clone into (default: pr{number} or issue{number})')
 @flag('-G', '--no-gist', help='Skip creating a gist')
-@arg('pr_spec', required=False)
+@arg('spec', required=False)
 def clone(
     directory: str | None,
     no_gist: bool,
-    pr_spec: str | None,
+    spec: str | None,
 ) -> None:
-    """Clone a PR description to a local directory.
+    """Clone a PR or Issue description to a local directory.
 
-    PR_SPEC can be:
-    - A PR number (when run from within a repo)
+    SPEC can be:
+    - A PR/Issue number (when run from within a repo)
     - owner/repo#number format
-    - A full PR URL
+    - A full PR/Issue URL
     """
 
-    # Parse PR spec
-    if pr_spec:
+    # Parse spec
+    if spec:
         # Try to parse different formats
-        owner, repo, pr_number = parse_pr_spec(pr_spec)
+        owner, repo, number, item_type = parse_pr_spec(spec)
 
         # If just a number, need to get owner/repo from current directory
-        if pr_number and not owner:
+        if number and not owner:
             # Get owner/repo from current directory
             try:
                 repo_data = proc.json('gh', 'repo', 'view', '--json', 'owner,name', log=None)
@@ -1030,16 +1064,24 @@ def clone(
                 exit(1)
     else:
         # Try to infer from current directory
-        owner, repo, pr_number = get_pr_info_from_path()
+        owner, repo, number = get_pr_info_from_path()
+        item_type = None
 
-    if not all([owner, repo, pr_number]):
-        err("Error: Could not determine PR to clone")
-        err("Usage: github-pr clone [PR_NUMBER | owner/repo#NUMBER | PR_URL]")
+    if not all([owner, repo, number]):
+        err("Error: Could not determine PR/Issue to clone")
+        err("Usage: github-pr clone [NUMBER | owner/repo#NUMBER | URL]")
         exit(1)
 
-    # Determine target directory
+    # Get metadata and detect type
+    err(f"Fetching {owner}/{repo}#{number}...")
+    item_data, detected_type = get_item_metadata(owner, repo, number, item_type)
+    if not item_data:
+        exit(1)
+
+    # Use detected type for directory naming if not specified
     if not directory:
-        directory = f'pr{pr_number}'
+        prefix = 'issue' if detected_type == 'issue' else 'pr'
+        directory = f'{prefix}{number}'
 
     target_path = Path(directory)
 
@@ -1048,11 +1090,9 @@ def clone(
         err(f"Error: Directory {directory} already exists")
         exit(1)
 
-    # Get PR metadata
-    err(f"Fetching PR {owner}/{repo}#{pr_number}...")
-    pr_data = get_pr_metadata(owner, repo, pr_number)
-    if not pr_data:
-        exit(1)
+    # Report what we found
+    item_label = 'issue' if detected_type == 'issue' else 'PR'
+    err(f"Found {item_label}: {item_data.get('title', 'No title')}")
 
     # Create directory and initialize git repo
     target_path.mkdir(parents=True)
@@ -1060,28 +1100,30 @@ def clone(
 
     proc.run('git', 'init', '-q', log=None)
 
-    # Create PR-specific filename
-    new_filename = get_expected_description_filename(owner, repo, pr_number)
+    # Create item-specific filename
+    new_filename = get_expected_description_filename(owner, repo, number)
     desc_file = Path(new_filename)
-    title = pr_data['title']
-    body = pr_data['body'] or ''
-    url = pr_data['url']
+    title = item_data['title']
+    body = item_data['body'] or ''
+    url = item_data['url']
 
     # Strip any gist footer from the body before saving locally
     body_without_footer, existing_gist_url = extract_gist_footer(body)
 
     # Write using helper to avoid duplicate link definitions
-    write_description_with_link_ref(desc_file, owner, repo, pr_number, title, body_without_footer, url)
+    write_description_with_link_ref(desc_file, owner, repo, number, title, body_without_footer, url)
 
     # Store metadata in git config
     proc.run('git', 'config', 'pr.owner', owner, log=None)
     proc.run('git', 'config', 'pr.repo', repo, log=None)
-    proc.run('git', 'config', 'pr.number', str(pr_number), log=None)
-    proc.run('git', 'config', 'pr.url', pr_data['url'], log=None)
+    proc.run('git', 'config', 'pr.number', str(number), log=None)
+    proc.run('git', 'config', 'pr.url', item_data['url'], log=None)
+    proc.run('git', 'config', 'pr.type', detected_type, log=None)  # Store the type
 
     # Initial commit
+    item_label = 'issue' if detected_type == 'issue' else 'PR'
     proc.run('git', 'add', new_filename, log=None)
-    proc.run('git', 'commit', '-m', f'Initial clone of {owner}/{repo}#{pr_number}', log=None)
+    proc.run('git', 'commit', '-m', f'Initial clone of {item_label} {owner}/{repo}#{number}', log=None)
 
     # Create or use existing gist unless --no-gist was specified
     if not no_gist:
@@ -1095,7 +1137,7 @@ def clone(
             if match:
                 gist_id = match.group(1)
                 gist_url = existing_gist_url
-                err(f"Found existing gist in PR description: {gist_url}")
+                err(f"Found existing gist in {item_label} description: {gist_url}")
 
                 # Store gist ID
                 proc.run('git', 'config', 'pr.gist', gist_id, log=None)
@@ -1113,7 +1155,7 @@ def clone(
 
         # Create new gist if none exists
         if not gist_id:
-            err("Creating gist for PR sync...")
+            err(f"Creating gist for {item_label} sync...")
 
             # Get repository visibility to determine gist visibility
             try:
@@ -1124,7 +1166,8 @@ def clone(
                 raise
 
             # Create the gist
-            description = f'{owner}/{repo}#{pr_number} - 2-way sync via github-pr.py (ryan-williams/git-helpers)'
+            item_label_lower = item_label.lower()
+            description = f'{owner}/{repo}#{number} ({item_label_lower}) - 2-way sync via github-pr.py (ryan-williams/git-helpers)'
             gist_id = create_gist(desc_file, description, is_public=not gist_private)
 
             # Add gist as remote
@@ -1143,24 +1186,25 @@ def clone(
             webbrowser.open(gist_url)
             err("Opened gist in browser")
 
-            # Add gist footer to PR (default behavior)
-            err("Adding gist footer to PR...")
+            # Add gist footer to item (default behavior)
+            err(f"Adding gist footer to {item_label}...")
             body_with_footer = add_gist_footer(body, gist_url, visible=False)
 
-            # Update PR with footer
+            # Update item with footer
             with NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
                 f.write(body_with_footer)
                 temp_file = f.name
 
             try:
-                proc.run('gh', 'pr', 'edit', str(pr_number), '-R', f'{owner}/{repo}',
+                gh_cmd = 'pr' if detected_type == 'pr' else 'issue'
+                proc.run('gh', gh_cmd, 'edit', str(number), '-R', f'{owner}/{repo}',
                         '--body-file', temp_file, log=None)
-                err("Added gist footer to PR")
+                err(f"Added gist footer to {item_label}")
             finally:
                 unlink(temp_file)
 
-    err(f"Successfully cloned PR to {target_path}")
-    err(f"URL: {pr_data['url']}")
+    err(f"Successfully cloned {item_label} to {target_path}")
+    err(f"URL: {item_data['url']}")
 
     # Check if we should ingest user-attachments
     from os import environ
@@ -1203,25 +1247,34 @@ def push(
     images: bool,
     gist_private: bool | None,
 ) -> None:
-    """Push local description changes back to the PR."""
+    """Push local description changes back to the PR/Issue."""
 
-    # Get PR info from current directory
-    owner, repo, pr_number = get_pr_info_from_path()
+    # Get item info from current directory
+    owner, repo, number = get_pr_info_from_path()
+    item_type = None
 
-    if not all([owner, repo, pr_number]):
+    if not all([owner, repo, number]):
         # Try git config
         try:
             owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None) or ''
             repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None) or ''
-            pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
+            number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None) or ''
+            item_type = proc.line('git', 'config', 'pr.type', err_ok=True, log=None)
         except Exception as e:
-            err(f"Error: Could not determine PR from directory or git config: {e}")
+            err(f"Error: Could not determine PR/Issue from directory or git config: {e}")
             exit(1)
+
+    # Detect type if not specified
+    if not item_type:
+        # Try to detect by checking both PR and issue
+        _, item_type = get_item_metadata(owner, repo, number)
+
+    item_label = 'issue' if item_type == 'issue' else 'PR'
 
     # Read the current description file (from HEAD, not working directory)
     desc_content, desc_file = read_description_from_git('HEAD')
     if not desc_content:
-        expected_filename = get_expected_description_filename(owner, repo, pr_number)
+        expected_filename = get_expected_description_filename(owner, repo, number)
         err(f"Error: Could not read {expected_filename} or DESCRIPTION.md from HEAD")
         err("Make sure you've committed your changes")
         exit(1)
@@ -1255,6 +1308,9 @@ def push(
         # Reading git config is optional, silently set to False
         has_gist = False
         gist_id = None
+
+    # Compatibility: support pr_number variable name for now
+    pr_number = number
 
     # Determine footer behavior
     if no_footer:
@@ -1304,9 +1360,9 @@ def push(
         err("Error: Should add footer but no gist URL available")
         raise ValueError("Footer requires gist URL but none available")
 
-    # Update the PR
+    # Update the PR/Issue
     if dry_run:
-        err(f"[DRY-RUN] Would update PR {owner}/{repo}#{pr_number}")
+        err(f"[DRY-RUN] Would update {item_label} {owner}/{repo}#{pr_number}")
         err(f"  Title: {title}")
         err(f"  Body ({len(body)} chars):")
         # Show first few lines of body
@@ -1314,9 +1370,11 @@ def push(
         for line in body_preview.split('\n'):
             err(f"    {line}")
     else:
-        err(f"Updating PR {owner}/{repo}#{pr_number}...")
+        err(f"Updating {item_label} {owner}/{repo}#{pr_number}...")
 
-        cmd = ['gh', 'pr', 'edit', pr_number, '-R', f'{owner}/{repo}']
+        # Use appropriate command for PR vs issue
+        gh_cmd = 'pr' if item_type == 'pr' else 'issue'
+        cmd = ['gh', gh_cmd, 'edit', pr_number, '-R', f'{owner}/{repo}']
 
         if title:
             cmd.extend(['--title', title])
@@ -1333,19 +1391,20 @@ def push(
             proc.run(*cmd, log=None)
             if body is not None:
                 unlink(body_file)  # Clean up temp file
-            err("Successfully updated PR")
+            err(f"Successfully updated {item_label}")
 
-            # Get PR URL if we need to open it
+            # Get item URL if we need to open it
             if open_browser:
-                pr_url = proc.line('git', 'config', 'pr.url', err_ok=True, log=None)
-                if not pr_url:
-                    pr_url = f"https://github.com/{owner}/{repo}/pull/{pr_number}"
+                item_url = proc.line('git', 'config', 'pr.url', err_ok=True, log=None)
+                if not item_url:
+                    path_part = 'pull' if item_type == 'pr' else 'issues'
+                    item_url = f"https://github.com/{owner}/{repo}/{path_part}/{pr_number}"
 
                 import webbrowser
-                webbrowser.open(pr_url)
-                err(f"Opened: {pr_url}")
+                webbrowser.open(item_url)
+                err(f"Opened: {item_url}")
         except Exception as e:
-            err(f"Error updating PR: {e}")
+            err(f"Error updating {item_label}: {e}")
             exit(1)
 
 
@@ -1871,6 +1930,7 @@ def sync(
         owner = proc.line('git', 'config', 'pr.owner', err_ok=True, log=None)
         repo = proc.line('git', 'config', 'pr.repo', err_ok=True, log=None)
         pr_number = proc.line('git', 'config', 'pr.number', err_ok=True, log=None)
+        item_type = proc.line('git', 'config', 'pr.type', err_ok=True, log=None)
 
         # If missing info, try to parse from existing files
         if not all([owner, repo, pr_number]):
@@ -2039,7 +2099,7 @@ def sync(
         # Create gist if needed
         if not gist_id:
             if dry_run:
-                err("[DRY-RUN] Would create new gist for PR")
+                err("[DRY-RUN] Would create new gist")
                 err(f"[DRY-RUN] Would add gist as remote '{DEFAULT_GIST_REMOTE}'")
                 err("[DRY-RUN] Would push to new gist")
             else:
@@ -2051,9 +2111,15 @@ def sync(
                     err(f"Error: Could not determine repo visibility: {e}")
                     raise
 
+                # Detect type if not already known
+                if not item_type:
+                    _, item_type = get_item_metadata(owner, repo, pr_number)
+
+                item_label = 'issue' if item_type == 'issue' else 'PR'
+
                 # Create the gist
-                err("Creating gist for PR...")
-                description = f'{owner}/{repo}#{pr_number} - 2-way sync via github-pr.py (ryan-williams/git-helpers)'
+                err(f"Creating gist for {item_label}...")
+                description = f'{owner}/{repo}#{pr_number} ({item_label.lower()}) - 2-way sync via github-pr.py (ryan-williams/git-helpers)'
 
                 # Find current file
                 desc_file = find_description_file()
@@ -2127,25 +2193,32 @@ def sync(
 
                 if not existing_gist_url:
                     # PR is missing gist footer
+                    # Get item type if not known
+                    if not item_type:
+                        _, item_type = get_item_metadata(owner, repo, pr_number)
+
+                    item_label = 'issue' if item_type == 'issue' else 'PR'
+
                     if dry_run:
-                        err(f"[DRY-RUN] Would add gist footer to PR {owner}/{repo}#{pr_number}")
+                        err(f"[DRY-RUN] Would add gist footer to {item_label} {owner}/{repo}#{pr_number}")
                     else:
-                        err("Adding gist footer to PR...")
+                        err(f"Adding gist footer to {item_label}...")
                         body_with_footer = add_gist_footer(current_body, gist_url, visible=False)
 
-                        # Update PR with footer
+                        # Update item with footer
                         with NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
                             f.write(body_with_footer)
                             temp_file = f.name
 
                         try:
-                            proc.run('gh', 'pr', 'edit', str(pr_number), '-R', f'{owner}/{repo}',
+                            gh_cmd = 'pr' if item_type == 'pr' else 'issue'
+                            proc.run('gh', gh_cmd, 'edit', str(pr_number), '-R', f'{owner}/{repo}',
                                     '--body-file', temp_file, log=None)
-                            err("Added gist footer to PR")
+                            err(f"Added gist footer to {item_label}")
                         finally:
                             unlink(temp_file)
                 else:
-                    err("PR already has gist footer")
+                    err(f"{item_label} already has gist footer")
 
 
 @cli.command(name='ingest-attachments')
