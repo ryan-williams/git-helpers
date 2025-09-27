@@ -4,20 +4,25 @@
 #
 # Adds trailing newlines to text files in the working tree that are missing them.
 #
-# Usage: git-fix-trailing-newlines [--staged|--unstaged|--both|--all]
+# Usage: git-fix-trailing-newlines [--staged|--unstaged|--both|--all|<commit>|<refspec>]
 #
 # Options:
+#   (no args)   Fix all tracked text files missing newlines (default)
 #   --staged    Fix only files with staged changes
 #   --unstaged  Fix only files with unstaged changes
-#   --both      Fix files with staged OR unstaged changes (default)
-#   --all       Fix all tracked text files missing newlines
+#   --both      Fix files with staged OR unstaged changes
+#   --all       Fix all tracked text files missing newlines (same as no args)
+#   <commit>    Fix files modified in the specified commit
+#   <refspec>   Fix files modified in the specified range (e.g., HEAD~3..HEAD)
 #
 # Examples:
-#   git-fix-trailing-newlines           # Fix files with changes
+#   git-fix-trailing-newlines           # Fix all tracked files
 #   git-fix-trailing-newlines --staged  # Fix only staged files
-#   git-fix-trailing-newlines --all     # Fix all tracked files
+#   git-fix-trailing-newlines --both    # Fix files with changes
+#   git-fix-trailing-newlines HEAD~1    # Fix files modified in the last commit
+#   git-fix-trailing-newlines main..HEAD # Fix files modified since main
 
-mode="${1:---both}"
+mode="${1:---all}"
 
 # Get file list with null termination for proper handling of special characters
 case "$mode" in
@@ -34,9 +39,26 @@ case "$mode" in
         # All tracked files
         git ls-files -z ;;
     *)
-        echo "Unknown option: $mode" >&2
-        echo "Use: --staged, --unstaged, --both, or --all" >&2
-        exit 1
+        # Check if it's a range (contains ".." or "...")
+        if [[ "$mode" == *".."* ]] || [[ "$mode" == *"..."* ]]; then
+            # It's a range - validate and get files changed in the range
+            if git diff --name-only -z "$mode" 2>/dev/null; then
+                :  # Success - output already produced
+            else
+                echo "Invalid range: $mode" >&2
+                exit 1
+            fi
+        # Check if it's a valid single commit/ref
+        elif git rev-parse --verify "$mode" >/dev/null 2>&1; then
+            # Single commit - get files changed in that commit
+            # Try to get parent commit, if that fails (e.g., for root commit), just diff against empty
+            git diff --name-only -z "$mode^..$mode" 2>/dev/null || \
+            git diff-tree --root --name-only -z -r "$mode"
+        else
+            echo "Unknown option or invalid commit/refspec: $mode" >&2
+            echo "Use: --staged, --unstaged, --both, --all, or a valid commit/refspec" >&2
+            exit 1
+        fi
         ;;
 esac | while IFS= read -r -d '' file; do
     # Skip if file doesn't exist in working tree
