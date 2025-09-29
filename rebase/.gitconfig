@@ -111,6 +111,12 @@
   srw     = show-rebase-head -w
   swr     = show-rebase-head -w
   tw      = throw.py
+  twa     = throw.py -a
+  twap    = throw.py -a HEAD^
+  twap2   = throw.py -a HEAD~2
+  twap3   = throw.py -a HEAD~3
+  twap4   = throw.py -a HEAD~4
+  twap5   = throw.py -a HEAD~5
   twp     = throw.py HEAD^
   twp2    = throw.py HEAD~2
   twp3    = throw.py HEAD~3

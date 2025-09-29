@@ -1,5 +1,5 @@
 # git-helpers
-[1,758](#count-completions) Git aliases and scripts.
+[1,764](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -107,6 +107,8 @@ git-throw.py --help
 #   "Throw" (squash) uncommitted changes onto an arbitrary previous commit.
 #
 # Options:
+#   -a, --all           Stage all tracked files before committing (pass -a to
+#                       git commit).
 #   -m, --message TEXT  Optional message to use for ephemeral commit (before it
 #                       is squashed onto the commit pointed to by `dst`).
 #   -n, --dry-run       1x: commit changes, print rebase todo list; 2x: don't
@@ -332,12 +334,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1758 completions added by installing git-helpers
+# 1764 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 266
-# - 4 chars: 706
-# - 5 chars: 352
+# - 4 chars: 707
+# - 5 chars: 353
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -348,7 +350,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1758 new completions:
+1764 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1325,6 +1327,7 @@ gtrh       = g ls-tree HEAD
 gtrp       = g ls-tree HEAD^
 gtrr       = g ls-tree -r
 gtsz       = g total-size
+gtwa       = g throw.py -a
 gtwh       = g throw-head
 gtwp       = g throw.py HEAD^
 guat       = g set-attr-type.py -u
@@ -1692,6 +1695,7 @@ gsrpw      = g show-rebase-parent -w
 gsshc      = g ssh-command
 gsurq      = g submodule update --recursive --quiet
 gsysq      = g symbolic-ref --short -q
+gtwap      = g throw.py -a HEAD^
 gtwhn      = g throw-head -n
 gtwp2      = g throw.py HEAD~2
 gtwp3      = g throw.py HEAD~3
@@ -1761,6 +1765,10 @@ gsmshs     = g submodule-shas
 gsmurf     = g submodule update --init --recursive -f
 gsmurq     = g submodule update --recursive --quiet
 gsmurr     = g submodule update --recursive --rebase
+gtwap2     = g throw.py -a HEAD~2
+gtwap3     = g throw.py -a HEAD~3
+gtwap4     = g throw.py -a HEAD~4
+gtwap5     = g throw.py -a HEAD~5
 gxcapm     = <git repo dir> ['git capm' args...]
 issues     = git-helpers/github/issues
 ggracle    = g graph -ac -l -e
@@ -1853,7 +1861,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1758 completions added by installing git-helpers (0 removed, 3103 total)
+1764 completions added by installing git-helpers (0 removed, 3109 total)
 ```
 </details>
 
