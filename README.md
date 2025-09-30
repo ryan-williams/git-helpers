@@ -1,5 +1,5 @@
 # git-helpers
-[1,765](#count-completions) Git aliases and scripts.
+[1,768](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -334,12 +334,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1765 completions added by installing git-helpers
+# 1768 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 266
-# - 4 chars: 708
-# - 5 chars: 353
+# - 4 chars: 709
+# - 5 chars: 354
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -350,7 +350,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1765 new completions:
+1768 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -921,6 +921,7 @@ ghax       = gh api -X
 ghbi       = g blob-hash -i
 ghbs       = g blob-hash -s
 ghby       = github_branches_yours
+ghdb       = github_get_default_branch
 ghdr       = github_default_remote
 ghds       = github-docs-snapshot
 ghgc       = gh gist create
@@ -1498,6 +1499,7 @@ ghdru      = gh repo set-default --unset
 ghdss      = github-docs-snapshot -s
 ghgcd      = gh gist create --web -d
 ghgco      = gh gist clone
+ghgdb      = github_get_default_branch
 ghgdr      = gh repo set-default --view
 ghgdy      = gh gist delete --yes
 ghggd      = gist-get-description
@@ -1849,6 +1851,7 @@ gh_runners_offline_list
 git_branch_force_parent = <branch>
 github_unprotect_branch
 gitlab_unprotect_branch
+github_get_default_branch = [remote]
 github_protected_branches = [remote]
 github_set_default_branch
 github_set_default_remote = [remote name]
@@ -1862,7 +1865,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1765 completions added by installing git-helpers (0 removed, 3110 total)
+1768 completions added by installing git-helpers (0 removed, 3113 total)
 ```
 </details>
 

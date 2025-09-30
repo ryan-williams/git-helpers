@@ -479,6 +479,25 @@ github_maybe_api() {
 }
 export -f github_maybe_api
 
+github_get_default_branch() {
+  if [ $# -eq 0 ]; then
+    remote="$(github_default_remote)"
+    if [ -z "$remote" ]; then
+      return 1
+    fi
+  elif [ $# -eq 1 ]; then
+    remote="$1"; shift
+  else
+    echo "Usage: github_get_default_branch [remote]" >&2
+    return 1
+  fi
+  project_id="$(git remote-path "$remote")"
+  gh api "repos/$project_id" --jq .default_branch
+}
+export -f github_get_default_branch
+defn ghdb github_get_default_branch
+defn ghgdb github_get_default_branch
+
 github_set_default_branch() {
   local remote=
   local branch=
