@@ -1,4 +1,5 @@
 - Git "helper" scripts and aliases are loosely grouped into subdirs according to which Git command they wrap, extend, or most closely relate to (e.g. `diff/`, `log/`, ...).
 - Most cmd-subdirs have a `.gitconfig` which defines Git aliases, and a `.git-rc` that defines Bash aliases (that are just trivial wrappers for the Git configs; I don't repeat the actual Git aliases' "implementations" in the Bash aliases).
 - When adding new aliases, check that you're not overwriting existing ones.
+- When removing aliases, just remove them, don't leave a commented out  alias (or comment about the removal)
 - cmd-subdirs are "declared" in top-level `.git-rc` (which is typically `source`d in turn by a user's higher-level "dotfiles").
