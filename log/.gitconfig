@@ -65,17 +65,28 @@
   lw = log --follow
   lws = log --follow --stat
   m0 = msg HEAD
+  m0p = msgp HEAD
   m1 = msg HEAD@{1}
+  m1p = msgp HEAD@{1}
   m2 = msg HEAD@{2}
+  m2p = msgp HEAD@{2}
   m3 = msg HEAD@{3}
+  m3p = msgp HEAD@{3}
   mp = msg HEAD^
+  mpp = msgp HEAD^
   ms = msg
   ms0 = msg HEAD
+  ms0p = msgp HEAD
   ms1 = msg HEAD@{1}
+  ms1p = msgp HEAD@{1}
   ms2 = msg HEAD@{2}
+  ms2p = msgp HEAD@{2}
   ms3 = msg HEAD@{3}
+  ms3p = msgp HEAD@{3}
   msh1 = msg HEAD@{1}
+  msh1p = msgp HEAD@{1}
   msp = msg HEAD^
+  mspp = msgp HEAD^
   hash-message = log -1 '--format=%h %s'
   hm = !git --no-pager log -1 '--format=%h %s'
   sbj = !git --no-pager log -1 --format=%s

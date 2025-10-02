@@ -1,5 +1,5 @@
 # git-helpers
-[1,768](#count-completions) Git aliases and scripts.
+[1,780](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -334,12 +334,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1768 completions added by installing git-helpers
+# 1780 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 266
-# - 4 chars: 709
-# - 5 chars: 354
+# - 4 chars: 714
+# - 5 chars: 360
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
@@ -350,7 +350,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1768 new completions:
+1780 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1063,6 +1063,10 @@ glus       = gitlab_url_ssh
 gluw       = gitlab_url
 glws       = g log --follow --stat
 glzo       = g ls-files --other --exclude-standard --directory --no-empty-directory -z
+gm0p       = g msgp HEAD
+gm1p       = g msgp HEAD@{1}
+gm2p       = g msgp HEAD@{2}
+gm3p       = g msgp HEAD@{3}
 gmbo       = g merge-base --octopus
 gmbp       = g merge-base-parents
 gmbt       = g merge-base-tracked-branch
@@ -1073,6 +1077,7 @@ gmmh       = g merge-base-merge-head
 gmne       = g merge --no-edit
 gmnf       = g merge --no-ff
 gmnm       = g merge --no-edit -m
+gmpp       = g msgp HEAD^
 gms0       = g msg HEAD
 gms1       = g msg HEAD@{1}
 gms2       = g msg HEAD@{2}
@@ -1575,7 +1580,14 @@ glubn      = gitlab_unprotect_branch -n
 gmmne      = g merge main --no-edit
 gmnef      = g merge --no-edit --no-ff
 gmnnf      = g merge --no-edit --no-ff
+gms0p      = g msgp HEAD
+gms1p      = g msgp HEAD@{1}
+gms2p      = g msgp HEAD@{2}
+gms3p      = g msgp HEAD@{3}
+gmsgp     No manual entry for gitmsgp
+ = g msgp
 gmsh1      = g msg HEAD@{1}
+gmspp      = g msgp HEAD^
 gmtnb      = g mergetool -y -t nbdime
 gmune      = g merge upstream/HEAD --no-edit
 gnshs      = !git --no-pager show
@@ -1749,6 +1761,7 @@ ghri1b     = github_run_list.py -iL1 -b
 ghrvjs     = gh_run_view_jobs
 ghrvlj     = gh run view --log --job
 github     = git-helpers/github/github
+gmsh1p     = g msgp HEAD@{1}
 gphufn     = g push-head-upstream -f -n
 gprhlh     = g pre-rebase-head-log
 gprnts     = !git-parents.py
@@ -1865,7 +1878,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1768 completions added by installing git-helpers (0 removed, 3113 total)
+1780 completions added by installing git-helpers (0 removed, 3125 total)
 ```
 </details>
 

@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 
 # Get the full message of a commit or tag
-# Usage: git msg [ref]
+# Usage: git msg [-p] [ref]
+# -p: Use pager (default: no pager)
 # If no ref provided, uses HEAD
+
+use_pager=false
+if [ "$1" = "-p" ]; then
+  use_pager=true
+  shift
+fi
 
 ref="${1:-HEAD}"
 
@@ -13,11 +20,17 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+if [ "$use_pager" = true ]; then
+  pager_opt=""
+else
+  pager_opt="--no-pager"
+fi
+
 if [ "$type" = "tag" ]; then
   # It's an annotated tag - get the full tag message
-  git tag -l --format='%(contents)' "$ref"
+  git $pager_opt tag -l --format='%(contents)' "$ref" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}'
 else
   # It's a commit (or lightweight tag pointing to a commit)
-  # Get the full commit message
-  git log -1 --format='%B' "$ref"
+  # Get the full commit message (strip trailing newlines)
+  git $pager_opt log -1 --format='%B' "$ref" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}'
 fi
