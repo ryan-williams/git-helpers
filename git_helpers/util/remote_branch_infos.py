@@ -1,14 +1,15 @@
 """Info about remote branches."""
 
 import sys
+from os.path import dirname, abspath
 
 if __name__ == '__main__':
-    sys.path.append('.')
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
 import fileinput
 
-from util.branch_infos import BranchInfos
-from util.remote_branch_info import RemoteBranchInfo
+from git_helpers.util.branch_infos import BranchInfos
+from git_helpers.util.remote_branch_info import RemoteBranchInfo
 
 
 class RemoteBranchInfos(BranchInfos):

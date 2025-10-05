@@ -5,7 +5,7 @@ Run via:
     nosetests
 '''
 
-from util.remotes import Remote
+from git_helpers.util.remotes import Remote
 
 from nose.tools import *
 

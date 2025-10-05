@@ -56,7 +56,17 @@ if declare -f __git_complete &>/dev/null; then
         fi
     }
 
+    # gbd - git branch -D (custom completion for local branches only)
+    _git_bd() {
+        local cur words cword prev
+        _get_comp_words_by_ref -n =: cur words cword prev
+
+        # Complete with local branch names only
+        __gitcomp_nl "$(__git_heads)"
+    }
+
     # Register custom completions using __git_func_wrap pattern
     __git_complete grh grh_completion
     __git_complete gbc gbc_completion
+    __git_complete gbd _git_bd
 fi

@@ -11,7 +11,7 @@ if __name__ == '__main__':
     root_dir = os.path.dirname(branches_dir)
     sys.path.insert(0, root_dir)
 
-from util.tags import print_recent_tags
+from git_helpers.util.tags import print_recent_tags
 
 from argparse import ArgumentParser
 parser = ArgumentParser()

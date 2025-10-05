@@ -3,7 +3,7 @@
 from collections import OrderedDict
 import re
 
-from util.remotes import get_remotes
+from git_helpers.util.remotes import get_remotes
 
 
 def _uniqueify(iterable):

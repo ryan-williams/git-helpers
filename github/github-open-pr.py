@@ -17,7 +17,7 @@ from sys import stderr
 # Add parent directory to path for local imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from util.branch_resolution import resolve_remote_ref
+from git_helpers.util.branch_resolution import resolve_remote_ref
 
 from click import command, option
 

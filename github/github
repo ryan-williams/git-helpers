@@ -10,8 +10,8 @@ if __name__ == '__main__':
     root_dir = os.path.dirname(github_dir)
     sys.path.insert(0, root_dir)
 
-from util import github_util
-from util.root import git_root
+from git_helpers.util import github_util
+from git_helpers.util.root import git_root
 
 
 PAGES = ['', 'issues', 'pulls', 'commits', 'wiki', 'pulse', 'graphs']

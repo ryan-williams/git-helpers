@@ -14,7 +14,7 @@ if __name__ == '__main__':
     root_dir = os.path.dirname(log_dir)
     sys.path.insert(0, root_dir)
 
-from util.piece import Pieces
+from git_helpers.util.piece import Pieces
 
 if len(sys.argv) > 3:
     raise Exception('Maximum 2 args')

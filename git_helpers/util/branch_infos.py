@@ -7,8 +7,8 @@ import sys
 from fnmatch import fnmatch
 from typing import Sequence
 
-from util.branch_info import BranchInfo
-from util.color import clen
+from git_helpers.util.branch_info import BranchInfo
+from git_helpers.util.color import clen
 
 
 class BranchInfos:

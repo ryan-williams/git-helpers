@@ -14,7 +14,7 @@ if __name__ == '__main__':
     root_dir = os.path.dirname(branches_dir)
     sys.path.insert(0, root_dir)
 
-from util.remotes import get_mirror_remote
+from git_helpers.util.remotes import get_mirror_remote
 
 remote = get_mirror_remote()
 

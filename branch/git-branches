@@ -11,6 +11,6 @@ if __name__ == '__main__':
     root_dir = os.path.dirname(branches_dir)
     sys.path.insert(0, root_dir)
 
-from util.branch_infos import BranchInfos
+from git_helpers.util.branch_infos import BranchInfos
 
 BranchInfos(patterns=sys.argv[1:])

@@ -25,7 +25,7 @@ from utz.cli import arg, flag, opt
 # Add parent directory to path for local imports
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
-from util.branch_resolution import resolve_remote_ref
+from git_helpers.util.branch_resolution import resolve_remote_ref
 
 # Constants
 DEFAULT_GIST_REMOTE = 'g'

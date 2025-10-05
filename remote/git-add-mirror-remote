@@ -14,7 +14,7 @@ if __name__ == '__main__':
     sys.path.insert(0, root_dir)
 
 from subprocess import CalledProcessError, check_call, check_output
-from util.remotes import get_remotes, maybe_remove_remote_if_exists, prompt
+from git_helpers.util.remotes import get_remotes, maybe_remove_remote_if_exists, prompt
 
 if len(sys.argv) < 3:
     remote_name = os.getenv('DEFAULT_MIRROR_REMOTE_NAME')

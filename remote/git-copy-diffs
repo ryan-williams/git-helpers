@@ -9,9 +9,9 @@ if __name__ == '__main__':
     root_dir = os.path.dirname(branches_dir)
     sys.path.insert(0, root_dir)
 
-from dir import GitDirPath
-from util.remotes import get_mirror_remote
-from util.root import git_root
+from git_helpers.util.dir import GitDirPath
+from git_helpers.util.remotes import get_mirror_remote
+from git_helpers.util.root import git_root
 import errno
 import subprocess
 from subprocess import CalledProcessError, PIPE, Popen

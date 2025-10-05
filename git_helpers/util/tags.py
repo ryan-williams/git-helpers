@@ -1,7 +1,7 @@
 from subprocess import check_output
 from sys import exit, stderr
 
-from util.piece import Pieces
+from git_helpers.util.piece import Pieces
 
 
 def get_tags(n=None):

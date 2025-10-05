@@ -6,7 +6,7 @@ Run via:
     nosetests
 '''
 
-from util.branch_info import BranchInfo
+from git_helpers.util.branch_info import BranchInfo
 
 from nose.tools import *
 

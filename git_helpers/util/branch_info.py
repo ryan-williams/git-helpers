@@ -5,9 +5,9 @@ __author__ = 'ryan'
 import re
 
 from datetime import datetime as dt
-from util.color import clen, color
-from util.regexs import refname_regex, captured_whitespace_regex, hash_regex
-from util.reldate_util import shorten_reldate
+from git_helpers.util.color import clen, color
+from git_helpers.util.regexs import refname_regex, captured_whitespace_regex, hash_regex
+from git_helpers.util.reldate_util import shorten_reldate
 
 def fixed(width, s, left_justified=False):
     spaces = (' ' * (width - clen(s)))

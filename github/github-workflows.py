@@ -23,7 +23,7 @@ from utz.cli import flag, opt, arg
 # Add parent directory to path for local imports
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
-from util.branch_resolution import resolve_remote_ref
+from git_helpers.util.branch_resolution import resolve_remote_ref
 
 SSH_REMOTE_URL_RGX = re.compile(r'git@github\.com:(?P<repo>[^/]+/[^/]+?)(?:\.git)?')
 HTTPS_REMOTE_URL_RGX = re.compile(r'https://github\.com/(?P<repo>[^/]+/[^/]+?)(?:\.git)?')
