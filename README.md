@@ -1,5 +1,5 @@
 # git-helpers
-[1,780](#count-completions) Git aliases and scripts.
+[1,780](#meta) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -342,7 +342,7 @@ scripts/count-completions.sh -c
 # - 5 chars: 360
 ```
 
-A goal of this repo is to help me always be within a couple keystrokes of most common Git commands.
+A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
 
 Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`](.git-rc):
 
