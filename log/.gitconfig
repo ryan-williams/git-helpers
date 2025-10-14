@@ -64,6 +64,7 @@
   lpwf = log -p -w --follow
   lw = log --follow
   lws = log --follow --stat
+  lx = log -p --ext-diff
   m0 = msg HEAD
   m0p = msgp HEAD
   m1 = msg HEAD@{1}
