@@ -13,6 +13,7 @@
   db   = diff-branch-reflog
   dbr  = diff-branch-reflog
   dph  = diff HEAD^..HEAD
+  dp2p = diff HEAD~2..HEAD^
   dc   = diff --cached
   dcd  = diff --cached --submodule=diff
   dcp  = diff --cached --submodule=diff
