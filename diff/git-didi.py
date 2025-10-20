@@ -144,26 +144,35 @@ def cli():
 @opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
 @arg('refspec1')
 @arg('refspec2')
+@arg('paths', nargs=-1)
 def stat(
     color: str,
     pager: str,
     refspec1: str,
     refspec2: str,
+    paths: tuple[str, ...],
 ) -> None:
     """Compare git diff --stat output between two refspecs.
 
     Example: git-didi.py stat rmb..m/rw/ee m/main..ee
+    Optionally filter to specific paths.
     """
     use_color = should_use_color(color)
 
     with Pager(pager):
         # Get diff --stat for both ranges
-        result1 = run(['git', 'diff', '--stat', refspec1], capture_output=True, text=True)
+        cmd1 = ['git', 'diff', '--stat', refspec1]
+        if paths:
+            cmd1.extend(['--', *paths])
+        result1 = run(cmd1, capture_output=True, text=True)
         if result1.returncode != 0:
             err(f"Error getting diff for {refspec1}: {result1.stderr}")
             sys.exit(1)
 
-        result2 = run(['git', 'diff', '--stat', refspec2], capture_output=True, text=True)
+        cmd2 = ['git', 'diff', '--stat', refspec2]
+        if paths:
+            cmd2.extend(['--', *paths])
+        result2 = run(cmd2, capture_output=True, text=True)
         if result2.returncode != 0:
             err(f"Error getting diff for {refspec2}: {result2.stderr}")
             sys.exit(1)
@@ -205,23 +214,26 @@ def stat(
 @flag('-q', '--quiet', help='Only show files with differences')
 @arg('refspec1')
 @arg('refspec2')
+@arg('paths', nargs=-1)
 def patch(
     color: str,
     pager: str,
     quiet: bool,
     refspec1: str,
     refspec2: str,
+    paths: tuple[str, ...],
 ) -> None:
     """Compare patches file-by-file between two refspecs.
 
     Shows only files where the patches differ.
+    Optionally filter to specific paths.
     """
     use_color = should_use_color(color)
 
     with Pager(pager):
         # Get list of changed files in both refspecs
-        files1 = get_changed_files(refspec1)
-        files2 = get_changed_files(refspec2)
+        files1 = get_changed_files(refspec1, paths)
+        files2 = get_changed_files(refspec2, paths)
 
         all_files = sorted(set(files1) | set(files2))
 
@@ -350,9 +362,12 @@ def commits(
                 echo(f"[{i+1}] {msg} - identical")
 
 
-def get_changed_files(refspec: str) -> list[str]:
-    """Get list of files changed in a git refspec."""
-    result = run(['git', 'diff', '--name-only', refspec], capture_output=True, text=True)
+def get_changed_files(refspec: str, paths: tuple[str, ...] = ()) -> list[str]:
+    """Get list of files changed in a git refspec, optionally filtered by paths."""
+    cmd = ['git', 'diff', '--name-only', refspec]
+    if paths:
+        cmd.extend(['--', *paths])
+    result = run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         return []
     return [f for f in result.stdout.strip().split('\n') if f]
