@@ -64,8 +64,34 @@ def get_gist_id():
 def github_open_web(branch, default, remote, repo, gist):
     """Open GitHub repository or gist in web browser."""
 
+    # Resolve remote ref once and reuse for both gist detection and branch resolution
+    resolved_ref = None
+    resolved_remote_ref = None
+    if not remote:
+        resolved_ref, resolved_remote_ref = resolve_remote_ref(verbose=False)
+
+    # Determine which remote to check for gist detection
+    check_remote = None
+    if not remote:
+        if resolved_remote_ref and '/' in resolved_remote_ref:
+            check_remote = resolved_remote_ref.split('/', 1)[0]
+    else:
+        check_remote = remote
+
+    is_gist = False
+    if check_remote:
+        # Check if this specific remote is a gist
+        try:
+            url = check_output(['git', 'remote', 'get-url', check_remote], stderr=DEVNULL).decode().strip()
+            is_gist = 'gist.github.com' in url
+        except:
+            pass
+    elif not remote and not repo:
+        # No upstream, no explicit remote - fall back to checking all remotes
+        is_gist = is_gist_repo()
+
     # Check if this is a gist or if gist mode is forced
-    if gist or (not repo and not remote and is_gist_repo()):
+    if gist or (not repo and is_gist):
         # Handle gist mode
         if repo:
             # User provided a gist ID
@@ -81,22 +107,26 @@ def github_open_web(branch, default, remote, repo, gist):
         cmd = ['gh', 'gist', 'view', '--web', gist_id]
     else:
         # Regular repository mode
-        # Handle remote option
-        if remote:
+        # Handle remote option (use check_remote if remote was not explicitly provided)
+        effective_remote = remote or check_remote
+        if effective_remote:
             # Get the repository path from the specified remote
             try:
-                remote_url = check_output(['git', 'remote', 'get-url', remote], stderr=DEVNULL).decode().strip()
+                remote_url = check_output(['git', 'remote', 'get-url', effective_remote], stderr=DEVNULL).decode().strip()
                 # Parse GitHub owner/repo from the URL
                 # Handle both SSH and HTTPS URLs
                 match = re.match(r'(?:git@github\.com:|https://github\.com/)([^/]+/[^/]+?)(?:\.git)?$', remote_url)
                 if match:
                     repo = match.group(1)
-                    stderr.write(f"Using remote '{remote}': {repo}\n")
+                    if remote:
+                        stderr.write(f"Using remote '{effective_remote}': {repo}\n")
+                    else:
+                        stderr.write(f"Using upstream remote '{effective_remote}': {repo}\n")
                 else:
-                    stderr.write(f"Error: Could not parse GitHub repo from remote '{remote}': {remote_url}\n")
+                    stderr.write(f"Error: Could not parse GitHub repo from remote '{effective_remote}': {remote_url}\n")
                     exit(1)
             except CalledProcessError:
-                stderr.write(f"Error: Remote '{remote}' not found\n")
+                stderr.write(f"Error: Remote '{effective_remote}' not found\n")
                 exit(1)
 
         # Build command with repository as positional argument
@@ -124,8 +154,9 @@ def github_open_web(branch, default, remote, repo, gist):
                 if current_branch == default_branch:
                     stderr.write(f"Opening default branch: {default_branch}\n")
                 else:
-                    # Try to resolve which remote ref to use
-                    ref, remote_ref = resolve_remote_ref(verbose=False)
+                    # Use the already-resolved remote ref
+                    ref = resolved_ref
+                    remote_ref = resolved_remote_ref
 
                     if ref:
                         # We found a matching remote ref
