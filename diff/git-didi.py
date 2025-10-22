@@ -140,14 +140,16 @@ def cli():
 
 
 @cli.command()
-@opt('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
+@opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
 @opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
+@flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
 @arg('refspec1')
 @arg('refspec2')
 @arg('paths', nargs=-1)
 def stat(
     color: str,
     pager: str,
+    ignore_whitespace: bool,
     refspec1: str,
     refspec2: str,
     paths: tuple[str, ...],
@@ -160,8 +162,11 @@ def stat(
     use_color = should_use_color(color)
 
     with Pager(pager):
-        # Get diff --stat for both ranges
-        cmd1 = ['git', 'diff', '--stat', refspec1]
+        # Use --numstat for machine-readable output (fixed format, no spacing issues)
+        cmd1 = ['git', 'diff', '--numstat']
+        if ignore_whitespace:
+            cmd1.append('-w')
+        cmd1.append(refspec1)
         if paths:
             cmd1.extend(['--', *paths])
         result1 = run(cmd1, capture_output=True, text=True)
@@ -169,7 +174,10 @@ def stat(
             err(f"Error getting diff for {refspec1}: {result1.stderr}")
             sys.exit(1)
 
-        cmd2 = ['git', 'diff', '--stat', refspec2]
+        cmd2 = ['git', 'diff', '--numstat']
+        if ignore_whitespace:
+            cmd2.append('-w')
+        cmd2.append(refspec2)
         if paths:
             cmd2.extend(['--', *paths])
         result2 = run(cmd2, capture_output=True, text=True)
@@ -184,8 +192,8 @@ def stat(
         diff = difflib.unified_diff(
             lines1,
             lines2,
-            fromfile=f'git diff --stat {refspec1}',
-            tofile=f'git diff --stat {refspec2}',
+            fromfile=f'git diff --numstat {refspec1}',
+            tofile=f'git diff --numstat {refspec2}',
             lineterm=''
         )
 
@@ -194,11 +202,11 @@ def stat(
             has_changes = True
             if use_color:
                 if line.startswith('+'):
-                    echo(style(line, fg='green'))
+                    echo(style(line, fg='green'), color=True)
                 elif line.startswith('-'):
-                    echo(style(line, fg='red'))
+                    echo(style(line, fg='red'), color=True)
                 elif line.startswith('@'):
-                    echo(style(line, fg='cyan'))
+                    echo(style(line, fg='cyan'), color=True)
                 else:
                     echo(line)
             else:
@@ -212,6 +220,7 @@ def stat(
 @opt('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
 @opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
 @flag('-q', '--quiet', help='Only show files with differences')
+@flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
 @arg('refspec1')
 @arg('refspec2')
 @arg('paths', nargs=-1)
@@ -219,6 +228,7 @@ def patch(
     color: str,
     pager: str,
     quiet: bool,
+    ignore_whitespace: bool,
     refspec1: str,
     refspec2: str,
     paths: tuple[str, ...],
@@ -241,8 +251,8 @@ def patch(
 
         for filepath in all_files:
             # Get diff for this file in both refspecs
-            diff1 = get_file_diff(refspec1, filepath)
-            diff2 = get_file_diff(refspec2, filepath)
+            diff1 = get_file_diff(refspec1, filepath, ignore_whitespace)
+            diff2 = get_file_diff(refspec2, filepath, ignore_whitespace)
 
             # Normalize diffs to ignore index SHAs
             norm_diff1 = normalize_diff(diff1)
@@ -291,13 +301,15 @@ def patch(
 @cli.command()
 @opt('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
 @opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
+@flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
 @arg('refspec1')
 @arg('refspec2')
 def commits(
-    refspec1: str,
-    refspec2: str,
     color: str,
     pager: str,
+    ignore_whitespace: bool,
+    refspec1: str,
+    refspec2: str,
 ) -> None:
     """Compare commits between two refspecs.
 
@@ -336,8 +348,17 @@ def commits(
             msg = c1.split(' ', 1)[1]
 
             # Get diff for each commit
-            diff1 = run(['git', 'diff', f'{sha1}^', sha1], capture_output=True, text=True).stdout
-            diff2 = run(['git', 'diff', f'{sha2}^', sha2], capture_output=True, text=True).stdout
+            cmd1 = ['git', 'diff']
+            if ignore_whitespace:
+                cmd1.append('-w')
+            cmd1.extend([f'{sha1}^', sha1])
+            diff1 = run(cmd1, capture_output=True, text=True).stdout
+
+            cmd2 = ['git', 'diff']
+            if ignore_whitespace:
+                cmd2.append('-w')
+            cmd2.extend([f'{sha2}^', sha2])
+            diff2 = run(cmd2, capture_output=True, text=True).stdout
 
             # Normalize to ignore index SHAs
             norm_diff1 = normalize_diff(diff1)
@@ -352,8 +373,8 @@ def commits(
                 all_files = sorted(set(files1) | set(files2))
 
                 for filepath in all_files:
-                    file_diff1 = get_file_diff(f'{sha1}^..{sha1}', filepath)
-                    file_diff2 = get_file_diff(f'{sha2}^..{sha2}', filepath)
+                    file_diff1 = get_file_diff(f'{sha1}^..{sha1}', filepath, ignore_whitespace)
+                    file_diff2 = get_file_diff(f'{sha2}^..{sha2}', filepath, ignore_whitespace)
 
                     # Normalize to ignore index SHAs
                     if normalize_diff(file_diff1) != normalize_diff(file_diff2):
@@ -385,9 +406,13 @@ def normalize_diff(diff_text: str) -> str:
     return '\n'.join(lines)
 
 
-def get_file_diff(refspec: str, filepath: str) -> str:
+def get_file_diff(refspec: str, filepath: str, ignore_whitespace: bool = False) -> str:
     """Get diff for a specific file in a refspec."""
-    result = run(['git', 'diff', refspec, '--', filepath], capture_output=True, text=True)
+    cmd = ['git', 'diff']
+    if ignore_whitespace:
+        cmd.append('-w')
+    cmd.extend([refspec, '--', filepath])
+    result = run(cmd, capture_output=True, text=True)
     return result.stdout
 
 
