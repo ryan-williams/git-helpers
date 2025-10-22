@@ -217,7 +217,7 @@ def stat(
 
 
 @cli.command()
-@opt('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
+@opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
 @opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
 @flag('-q', '--quiet', help='Only show files with differences')
 @flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
@@ -277,11 +277,11 @@ def patch(
                     for line in diff_lines:
                         if use_color:
                             if line.startswith('+'):
-                                echo(style(line, fg='green'))
+                                echo(style(line, fg='green'), color=True)
                             elif line.startswith('-'):
-                                echo(style(line, fg='red'))
+                                echo(style(line, fg='red'), color=True)
                             elif line.startswith('@'):
-                                echo(style(line, fg='cyan'))
+                                echo(style(line, fg='cyan'), color=True)
                             else:
                                 echo(line)
                         else:
@@ -299,7 +299,7 @@ def patch(
 
 
 @cli.command()
-@opt('--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
+@opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
 @opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
 @flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
 @arg('refspec1')
