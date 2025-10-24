@@ -61,8 +61,16 @@ def get_gist_id():
 @click.option('-r', '--remote', help='Git remote name to use (e.g. origin, upstream)')
 @click.option('-R', '--repo', help='Repository (owner/name format) or gist ID')
 @click.option('-g', '--gist', is_flag=True, help='Force gist mode')
-def github_open_web(branch, default, remote, repo, gist):
-    """Open GitHub repository or gist in web browser."""
+@click.argument('remote_arg', required=False)
+def github_open_web(branch, default, remote, repo, gist, remote_arg):
+    """Open GitHub repository or gist in web browser.
+
+    REMOTE_ARG: Optional remote name (alternative to -r/--remote)
+    """
+
+    # If remote_arg was provided and -r wasn't used, use remote_arg as remote
+    if remote_arg and not remote:
+        remote = remote_arg
 
     # Resolve remote ref once and reuse for both gist detection and branch resolution
     resolved_ref = None
