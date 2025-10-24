@@ -57,7 +57,20 @@ def resolve_remote_ref(current_branch=None, current_sha=None, verbose=True):
                 return ref, remote_ref
 
             elif len(matching_sha_refs) > 1:
-                # Multiple refs point to the same SHA - still ambiguous
+                # Multiple refs point to the same SHA - check if current branch has a tracking branch
+                try:
+                    upstream = check_output(['git', 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']).decode().strip()
+                    # Convert format like 'gh/main' to match remote_ref format
+                    if upstream in matching_sha_refs:
+                        remote_ref = upstream
+                        ref = remote_ref.split('/', 1)[1] if '/' in remote_ref else remote_ref
+                        if verbose:
+                            stderr.write(f"Using ref: {ref} (from tracking branch {remote_ref})\n")
+                        return ref, remote_ref
+                except:
+                    pass
+
+                # Still ambiguous after checking tracking branch
                 stderr.write(f"Error: Multiple remote refs match current branch '{current_branch}' and SHA:\n")
                 for r in matching_sha_refs:
                     stderr.write(f"  - {r}\n")
