@@ -89,24 +89,65 @@ def main(remote, branch, dry_run):
     # Extract branch name from remote ref
     branch_name = ref_name if ref_name else branch
 
-    stderr.write(f"Searching for PR from {repo} with branch {branch_name}...\n")
+    # Search for PRs in multiple places:
+    # 1. In the fork repo (e.g., ryan-williams/parquet2json with head limit)
+    # 2. In upstream repos with head repo:branch (e.g., ryan-williams:limit)
 
-    # Use gh to find PRs with this head branch
+    repos_to_search = [repo]
+
+    # Check if there's a parent/upstream repo
     try:
-        pr_data_raw = check_output([
-            'gh', 'pr', 'list',
-            '--repo', repo,
-            '--head', branch_name,
-            '--json', 'number,url,state',
-            '--limit', '100'
+        parent_data_raw = check_output([
+            'gh', 'repo', 'view', repo,
+            '--json', 'parent'
         ]).decode()
-        pr_data = json.loads(pr_data_raw)
-    except CalledProcessError as e:
-        stderr.write(f"Error running gh pr list: {e}\n")
-        sys.exit(1)
-    except json.JSONDecodeError as e:
-        stderr.write(f"Error parsing PR data: {e}\n")
-        sys.exit(1)
+        parent_data = json.loads(parent_data_raw)
+        if parent_data.get('parent'):
+            parent_owner = parent_data['parent']['owner']['login']
+            parent_name = parent_data['parent']['name']
+            parent_repo = f"{parent_owner}/{parent_name}"
+            repos_to_search.append(parent_repo)
+            stderr.write(f"Detected parent repo: {parent_repo}\n")
+    except Exception as e:
+        stderr.write(f"Warning: Could not check for parent repo: {e}\n")
+
+    pr_data = []
+    for search_repo in repos_to_search:
+        stderr.write(f"Searching for PR in {search_repo} with branch {branch_name}...\n")
+
+        try:
+            # Search with just branch name (for PRs within the same repo)
+            pr_data_raw = check_output([
+                'gh', 'pr', 'list',
+                '--repo', search_repo,
+                '--head', branch_name,
+                '--json', 'number,url,state',
+                '--limit', '100'
+            ]).decode()
+            prs = json.loads(pr_data_raw)
+            if prs:
+                pr_data.extend(prs)
+
+            # If searching parent/upstream, also try with repo:branch format
+            if search_repo != repo:
+                head_with_repo = f"{repo.split('/')[0]}:{branch_name}"
+                stderr.write(f"Searching for PR in {search_repo} with head {head_with_repo}...\n")
+                pr_data_raw = check_output([
+                    'gh', 'pr', 'list',
+                    '--repo', search_repo,
+                    '--head', head_with_repo,
+                    '--json', 'number,url,state',
+                    '--limit', '100'
+                ]).decode()
+                prs = json.loads(pr_data_raw)
+                if prs:
+                    pr_data.extend(prs)
+        except CalledProcessError as e:
+            stderr.write(f"Error running gh pr list: {e}\n")
+            continue
+        except json.JSONDecodeError as e:
+            stderr.write(f"Error parsing PR data: {e}\n")
+            continue
 
     if not pr_data:
         stderr.write(f"No PR found for branch {branch_name}\n")
