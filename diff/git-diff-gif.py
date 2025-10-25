@@ -6,6 +6,7 @@
 # ]
 # ///
 import shlex
+import shutil
 import sys
 from os import environ, makedirs
 from os.path import splitext, exists, dirname, isdir
@@ -50,6 +51,23 @@ def get_changed_imgs(refspec, *paths):
     ]
 
 
+def add_watermark(input_path, output_path, label, ref_info):
+    """Add a watermark label to an image using ImageMagick."""
+    # Use ImageMagick to add text overlay
+    # Position: top-left corner with padding
+    # White text with black shadow for visibility on any background
+    run(
+        'magick', input_path,
+        '-gravity', 'NorthWest',
+        '-pointsize', '24',
+        '-fill', 'black',
+        '-annotate', '+11+11', f'{label}\n{ref_info}',
+        '-fill', 'white',
+        '-annotate', '+10+10', f'{label}\n{ref_info}',
+        output_path
+    )
+
+
 @click.command()
 @click.option('-a', '--after', 'after_ref', help='Git ref for the "after" image; default: current worktree file')
 @click.option('-b', '--before', 'before_ref', help='Git ref for the "before" image; default: `HEAD`')
@@ -88,15 +106,30 @@ def main(before_ref, after_ref, delay, force, out_path, no_open, paths):
     with TemporaryDirectory() as tmpdir:
         for path in paths:
             name, ext = splitext(path)
-            before_path = f'{tmpdir}/before{ext}'
-            with open(before_path, 'wb') as f:
+            before_path_raw = f'{tmpdir}/before_raw{ext}'
+            with open(before_path_raw, 'wb') as f:
                 run('git', 'show', f'{before_ref}:{path}', stdout=f)
+
+            # Get short SHA for before ref
+            before_sha = check_output(['git', 'rev-parse', '--short', before_ref]).decode().strip()
+
             if after_ref:
-                after_path = f'{tmpdir}/after{ext}'
-                with open(after_path, 'wb') as f:
-                    run('git', 'show', f'{before_ref}:{path}', stdout=f)
+                after_path_raw = f'{tmpdir}/after_raw{ext}'
+                with open(after_path_raw, 'wb') as f:
+                    run('git', 'show', f'{after_ref}:{path}', stdout=f)
+                after_sha = check_output(['git', 'rev-parse', '--short', after_ref]).decode().strip()
+                after_info = f'{after_ref} ({after_sha})'
             else:
-                after_path = path
+                # Copy worktree file to temp location to avoid ImageMagick issues with special chars (e.g., colons)
+                after_path_raw = f'{tmpdir}/after_raw{ext}'
+                shutil.copy2(path, after_path_raw)
+                after_info = 'worktree'
+
+            # Add watermarks
+            before_path = f'{tmpdir}/before{ext}'
+            after_path = f'{tmpdir}/after{ext}'
+            add_watermark(before_path_raw, before_path, 'Before', f'{before_ref} ({before_sha})')
+            add_watermark(after_path_raw, after_path, 'After', after_info)
 
             if out_dir:
                 out_path = f'{out_dir}/{name}.gif'
@@ -112,7 +145,7 @@ def main(before_ref, after_ref, delay, force, out_path, no_open, paths):
                     raise RuntimeError(f'--output {out_path} exists; pass -f/--force to overwrite')
 
             makedirs(dirname(out_path), exist_ok=True)
-            run('convert', '-delay', delay, '-dispose', 'previous', before_path, after_path, out_path)
+            run('magick', '-delay', delay, '-dispose', 'previous', before_path, after_path, out_path)
             out_paths.append(out_path)
 
         do_open = not no_open
