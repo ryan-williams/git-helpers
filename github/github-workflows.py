@@ -243,7 +243,6 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
     # Add any remaining args
     cmd.extend(list(args))
 
-    err(f"Running: {shlex.join(cmd)}")
     proc.run(cmd)
 
     if no_open:
