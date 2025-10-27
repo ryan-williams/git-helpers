@@ -390,7 +390,8 @@ def get_changed_files(refspec: str, paths: tuple[str, ...] = ()) -> list[str]:
         cmd.extend(['--', *paths])
     result = run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
-        return []
+        err(f"Error getting changed files for {refspec}: {result.stderr.strip()}")
+        sys.exit(1)
     return [f for f in result.stdout.strip().split('\n') if f]
 
 
