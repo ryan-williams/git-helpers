@@ -409,7 +409,7 @@ def normalize_diff(diff_text: str) -> str:
 
 def get_file_diff(refspec: str, filepath: str, ignore_whitespace: bool = False) -> str:
     """Get diff for a specific file in a refspec."""
-    cmd = ['git', 'diff']
+    cmd = ['git', 'diff', '--follow']
     if ignore_whitespace:
         cmd.append('-w')
     cmd.extend([refspec, '--', filepath])
