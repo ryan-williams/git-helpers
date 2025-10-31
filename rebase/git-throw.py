@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "utz",
+#     "utz[cli]",
 # ]
 # ///
 import shlex
