@@ -219,6 +219,8 @@ def stat(
 @cli.command()
 @opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
 @opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
+@opt('-C', '--find-copies', type=str, metavar='[<n>]', help='Detect copies as well as renames (similarity threshold, e.g., 50% or 0.5)')
+@opt('-M', '--find-renames', type=str, metavar='[<n>]', help='Detect renames (similarity threshold, e.g., 50% or 0.5)')
 @opt('-U', '--unified', type=int, default=3, help='Number of context lines to show (default: 3)')
 @flag('-q', '--quiet', help='Only show files with differences')
 @flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
@@ -228,6 +230,8 @@ def stat(
 def patch(
     color: str,
     pager: str,
+    find_copies: str,
+    find_renames: str,
     unified: int,
     quiet: bool,
     ignore_whitespace: bool,
@@ -253,8 +257,8 @@ def patch(
 
         for filepath in all_files:
             # Get diff for this file in both refspecs
-            diff1 = get_file_diff(refspec1, filepath, ignore_whitespace, unified)
-            diff2 = get_file_diff(refspec2, filepath, ignore_whitespace, unified)
+            diff1 = get_file_diff(refspec1, filepath, ignore_whitespace, unified, find_renames, find_copies)
+            diff2 = get_file_diff(refspec2, filepath, ignore_whitespace, unified, find_renames, find_copies)
 
             # Normalize diffs to ignore index SHAs
             norm_diff1 = normalize_diff(diff1)
@@ -303,6 +307,8 @@ def patch(
 @cli.command()
 @opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
 @opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
+@opt('-C', '--find-copies', type=str, metavar='[<n>]', help='Detect copies as well as renames (similarity threshold, e.g., 50% or 0.5)')
+@opt('-M', '--find-renames', type=str, metavar='[<n>]', help='Detect renames (similarity threshold, e.g., 50% or 0.5)')
 @opt('-U', '--unified', type=int, default=3, help='Number of context lines to show (default: 3)')
 @flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
 @arg('refspec1')
@@ -310,6 +316,8 @@ def patch(
 def commits(
     color: str,
     pager: str,
+    find_copies: str,
+    find_renames: str,
     unified: int,
     ignore_whitespace: bool,
     refspec1: str,
@@ -377,8 +385,8 @@ def commits(
                 all_files = sorted(set(files1) | set(files2))
 
                 for filepath in all_files:
-                    file_diff1 = get_file_diff(f'{sha1}^..{sha1}', filepath, ignore_whitespace, unified)
-                    file_diff2 = get_file_diff(f'{sha2}^..{sha2}', filepath, ignore_whitespace, unified)
+                    file_diff1 = get_file_diff(f'{sha1}^..{sha1}', filepath, ignore_whitespace, unified, find_renames, find_copies)
+                    file_diff2 = get_file_diff(f'{sha2}^..{sha2}', filepath, ignore_whitespace, unified, find_renames, find_copies)
 
                     # Normalize to ignore index SHAs
                     if normalize_diff(file_diff1) != normalize_diff(file_diff2):
@@ -411,11 +419,22 @@ def normalize_diff(diff_text: str) -> str:
     return '\n'.join(lines)
 
 
-def get_file_diff(refspec: str, filepath: str, ignore_whitespace: bool = False, unified: int = 3) -> str:
+def get_file_diff(
+    refspec: str,
+    filepath: str,
+    ignore_whitespace: bool = False,
+    unified: int = 3,
+    find_renames: str = None,
+    find_copies: str = None,
+) -> str:
     """Get diff for a specific file in a refspec."""
     cmd = ['git', 'diff', '--follow', f'-U{unified}']
     if ignore_whitespace:
         cmd.append('-w')
+    if find_renames:
+        cmd.append(f'-M{find_renames}')
+    if find_copies:
+        cmd.append(f'-C{find_copies}')
     cmd.extend([refspec, '--', filepath])
     result = run(cmd, capture_output=True, text=True)
     return result.stdout
