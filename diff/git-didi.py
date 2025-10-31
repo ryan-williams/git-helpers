@@ -42,6 +42,7 @@ that change even when the actual patch content is identical.
 import difflib
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from subprocess import run, PIPE, Popen
 from io import StringIO
 
@@ -265,12 +266,23 @@ def patch(
 
         all_files = sorted(set(files1) | set(files2))
 
-        different_files = []
-
-        for filepath in all_files:
-            # Get diff for this file in both refspecs
+        # Fetch all diffs in parallel
+        def fetch_diffs(filepath):
             diff1 = get_file_diff(refspec1, filepath, ignore_whitespace, unified, find_renames, find_copies)
             diff2 = get_file_diff(refspec2, filepath, ignore_whitespace, unified, find_renames, find_copies)
+            return filepath, diff1, diff2
+
+        file_diffs = {}
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            futures = {executor.submit(fetch_diffs, fp): fp for fp in all_files}
+            for future in as_completed(futures):
+                filepath, diff1, diff2 = future.result()
+                file_diffs[filepath] = (diff1, diff2)
+
+        # Process results in order
+        different_files = []
+        for filepath in all_files:
+            diff1, diff2 = file_diffs[filepath]
 
             # Normalize diffs to ignore index SHAs
             norm_diff1 = normalize_diff(diff1)
