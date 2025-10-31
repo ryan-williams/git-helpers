@@ -19,9 +19,9 @@
   dcp  = diff --cached --submodule=diff
   dcq  = diff --cached --quiet
   dcss = diff --cached --submodule=short
-  dcsw = diff --cached --stat -w
+  dcsw = diff --cached --numstat -w
   dcw  = diff --cached -w
-  dcws = diff --cached -w --stat
+  dcws = diff --cached -w --numstat
   df   = diff-filter
   dfm  = diff-filter M
   dg   = diff-gif.py
@@ -43,18 +43,20 @@
   dp2 = diff-vs-parent 2
   dq   = diff --quiet
   dqc  = diff --quiet --cached
-  ds   = diff --stat
-  dsc  = diff --stat --cached
-  dcs  = diff --stat --cached
-  dsh  = diff --stat HEAD
-  dsn  = diff --numstat
-  dsnc = diff --numstat --cached
-  dsnh = diff --numstat HEAD
-  dsnw = diff --numstat -w
-  dsw  = diff --stat -w
-  dws  = diff -w --stat
-  dsp  = diff --stat HEAD^
-  dsph = diff --stat HEAD^..HEAD
+  ds   = diff --numstat
+  dsc  = diff --numstat --cached
+  dcs  = diff --numstat --cached
+  dsh  = diff --numstat HEAD
+  dsw  = diff --numstat -w
+  dws  = diff -w --numstat
+  dsp  = diff --numstat HEAD^
+  dsph = diff --numstat HEAD^..HEAD
+  dst  = diff --stat
+  dstc = diff --stat --cached
+  dsth = diff --stat HEAD
+  dstw = diff --stat -w
+  dstp = diff --stat HEAD^
+  dstph = diff --stat HEAD^..HEAD
   dsu  = diff-stat-parent
   dt   = diff-tree
   dtp  = diff-tree -p

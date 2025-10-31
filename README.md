@@ -1,5 +1,5 @@
 # git-helpers
-[1,787](#count-completions) Git aliases and scripts.
+[1,789](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -334,12 +334,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1787 completions added by installing git-helpers
+# 1789 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 267
 # - 4 chars: 715
-# - 5 chars: 365
+# - 5 chars: 366
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -350,7 +350,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1787 new completions:
+1789 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -432,7 +432,7 @@ gdn        = g diff --name-status
 gdo        = gist-dir -o
 gdq        = g diff --quiet
 gdr        = g rev-parse --git-dir
-gds        = g diff --stat
+gds        = g diff --numstat
 gdt        = g diff-tree
 gdu        = g diff -u
 gdw        = g diff -w
@@ -790,7 +790,7 @@ gdbu       = g list-status DU
 gdc-       = g diff --cached --
 gdcp       = g diff --cached --submodule=diff
 gdcq       = g diff --cached --quiet
-gdcs       = g diff --stat --cached
+gdcs       = g diff --numstat --cached
 gdcw       = g diff --cached -w
 gddc       = !git-didi.py commits
 gddf       = g diff-filter
@@ -825,16 +825,16 @@ gdrn       = g default-remote -n
 gdrt       = g default-remote
 gdrv       = g default-remote -v
 gds1       = !git --no-pager dates -1 --date=iso
-gdsc       = g diff --stat --cached
+gdsc       = g diff --numstat --cached
 gdsd       = g diff --submodule=diff
-gdsh       = g diff --stat HEAD
+gdsh       = g diff --numstat HEAD
 gdsl       = g diff --submodule=log
 gdsm       = g config --global diff.submodule
-gdsn       = g diff --numstat
-gdsp       = g diff --stat HEAD^
+gdsp       = g diff --numstat HEAD^
 gdss       = g diff --submodule=short
+gdst       = g diff --stat
 gdsu       = g diff-stat-parent
-gdsw       = g diff --stat -w
+gdsw       = g diff --numstat -w
 gdt1       = g details -1
 gdtc       = g diff-theirs-conflicting
 gdth       = g diff-theirs
@@ -844,7 +844,7 @@ gdts       = g dates
 gdw-       = g diff -w --
 gdwc       = g diff -w --cached
 gdwh       = g diff -w HEAD
-gdws       = g diff -w --stat
+gdws       = g diff -w --numstat
 gdxc       = g diff-x -c
 gdxr       = g diff-x -R
 gdxw       = g diff-x -w
@@ -1449,9 +1449,9 @@ gctgu      = g config-diff-command -tgu
 gcuga      = g config --unset-all --global
 gdcno      = g diff --name-only --cached
 gdcss      = g diff --cached --submodule=short
-gdcsw      = g diff --cached --stat -w
+gdcsw      = g diff --cached --numstat -w
 gdcw-      = g diff --cached -w --
-gdcws      = g diff --cached -w --stat
+gdcws      = g diff --cached -w --numstat
 gddcc      = !git-didi.py commits --color=always
 gddpc      = !git-didi.py patch --color=always
 gddpq      = !git-didi.py patch --quiet
@@ -1468,10 +1468,11 @@ gdptg      = g config --global diff.noprefix true
 gdpug      = g config --global --unset diff.noprefix
 gdsca      = g describe --all
 gdsml      = g config --global diff.submodule log
-gdsnc      = g diff --numstat --cached
-gdsnh      = g diff --numstat HEAD
-gdsnw      = g diff --numstat -w
-gdsph      = g diff --stat HEAD^..HEAD
+gdsph      = g diff --numstat HEAD^..HEAD
+gdstc      = g diff --stat --cached
+gdsth      = g diff --stat HEAD
+gdstp      = g diff --stat HEAD^
+gdstw      = g diff --stat -w
 gdthc      = g diff-theirs-conflicting
 gdts1      = !git --no-pager dates -1
 gdxcr      = g diff-x -cR
@@ -1745,6 +1746,7 @@ gcppam     = g commit-push-parents -a -m
 gddpqc     = !git-didi.py patch --quiet --color=always
 gdnpgt     = g config --global diff.noprefix true
 gdnpgu     = g config --global --unset diff.noprefix
+gdstph     = g diff --stat HEAD^..HEAD
 gdxcrr     = g diff-x -cr
 gdxwrr     = g diff-x -wr
 gecrpn     = g edit-commit -r -p -n
@@ -1885,7 +1887,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1787 completions added by installing git-helpers (0 removed, 3132 total)
+1789 completions added by installing git-helpers (0 removed, 3134 total)
 ```
 </details>
 
