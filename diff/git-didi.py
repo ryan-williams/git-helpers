@@ -50,6 +50,24 @@ from utz import err
 from utz.cli import arg, flag, opt
 
 
+# Common option decorators
+color_opt = opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
+pager_opt = opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
+find_copies_opt = opt('-C', '--find-copies', type=str, metavar='[<n>]', help='Detect copies as well as renames (similarity threshold, e.g., 50% or 0.5)')
+find_renames_opt = opt('-M', '--find-renames', type=str, metavar='[<n>]', help='Detect renames (similarity threshold, e.g., 50% or 0.5)')
+ignore_whitespace_flag = flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
+
+
+def common_opts(func):
+    """Apply common options to all commands."""
+    func = color_opt(func)
+    func = pager_opt(func)
+    func = find_copies_opt(func)
+    func = find_renames_opt(func)
+    func = ignore_whitespace_flag(func)
+    return func
+
+
 def should_use_color(color_option: str) -> bool:
     """Determine if color should be used based on option and TTY status."""
     if color_option == 'always':
@@ -140,15 +158,15 @@ def cli():
 
 
 @cli.command()
-@opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
-@opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
-@flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
+@common_opts
 @arg('refspec1')
 @arg('refspec2')
 @arg('paths', nargs=-1)
 def stat(
     color: str,
     pager: str,
+    find_copies: str,
+    find_renames: str,
     ignore_whitespace: bool,
     refspec1: str,
     refspec2: str,
@@ -163,10 +181,8 @@ def stat(
 
     with Pager(pager):
         # Use --numstat for machine-readable output (fixed format, no spacing issues)
-        cmd1 = ['git', 'diff', '--numstat']
-        if ignore_whitespace:
-            cmd1.append('-w')
-        cmd1.append(refspec1)
+        cmd1 = build_diff_cmd(ignore_whitespace, find_renames, find_copies)
+        cmd1.extend(['--numstat', refspec1])
         if paths:
             cmd1.extend(['--', *paths])
         result1 = run(cmd1, capture_output=True, text=True)
@@ -174,10 +190,8 @@ def stat(
             err(f"Error getting diff for {refspec1}: {result1.stderr}")
             sys.exit(1)
 
-        cmd2 = ['git', 'diff', '--numstat']
-        if ignore_whitespace:
-            cmd2.append('-w')
-        cmd2.append(refspec2)
+        cmd2 = build_diff_cmd(ignore_whitespace, find_renames, find_copies)
+        cmd2.extend(['--numstat', refspec2])
         if paths:
             cmd2.extend(['--', *paths])
         result2 = run(cmd2, capture_output=True, text=True)
@@ -217,13 +231,9 @@ def stat(
 
 
 @cli.command()
-@opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
-@opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
-@opt('-C', '--find-copies', type=str, metavar='[<n>]', help='Detect copies as well as renames (similarity threshold, e.g., 50% or 0.5)')
-@opt('-M', '--find-renames', type=str, metavar='[<n>]', help='Detect renames (similarity threshold, e.g., 50% or 0.5)')
+@common_opts
 @opt('-U', '--unified', type=int, default=3, help='Number of context lines to show (default: 3)')
 @flag('-q', '--quiet', help='Only show files with differences')
-@flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
 @arg('refspec1')
 @arg('refspec2')
 @arg('paths', nargs=-1)
@@ -305,12 +315,8 @@ def patch(
 
 
 @cli.command()
-@opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
-@opt('--pager', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use pager (default: auto)')
-@opt('-C', '--find-copies', type=str, metavar='[<n>]', help='Detect copies as well as renames (similarity threshold, e.g., 50% or 0.5)')
-@opt('-M', '--find-renames', type=str, metavar='[<n>]', help='Detect renames (similarity threshold, e.g., 50% or 0.5)')
+@common_opts
 @opt('-U', '--unified', type=int, default=3, help='Number of context lines to show (default: 3)')
-@flag('-w', '--ignore-whitespace', help='Pass -w to git diff commands to ignore whitespace')
 @arg('refspec1')
 @arg('refspec2')
 def commits(
@@ -395,6 +401,22 @@ def commits(
                 echo(f"[{i+1}] {msg} - identical")
 
 
+def build_diff_cmd(
+    ignore_whitespace: bool = False,
+    find_renames: str = None,
+    find_copies: str = None,
+) -> list[str]:
+    """Build base git diff command with common options."""
+    cmd = ['git', 'diff', '--follow']
+    if ignore_whitespace:
+        cmd.append('-w')
+    if find_renames:
+        cmd.append(f'-M{find_renames}')
+    if find_copies:
+        cmd.append(f'-C{find_copies}')
+    return cmd
+
+
 def get_changed_files(refspec: str, paths: tuple[str, ...] = ()) -> list[str]:
     """Get list of files changed in a git refspec, optionally filtered by paths."""
     cmd = ['git', 'diff', '--name-only', refspec]
@@ -428,14 +450,8 @@ def get_file_diff(
     find_copies: str = None,
 ) -> str:
     """Get diff for a specific file in a refspec."""
-    cmd = ['git', 'diff', '--follow', f'-U{unified}']
-    if ignore_whitespace:
-        cmd.append('-w')
-    if find_renames:
-        cmd.append(f'-M{find_renames}')
-    if find_copies:
-        cmd.append(f'-C{find_copies}')
-    cmd.extend([refspec, '--', filepath])
+    cmd = build_diff_cmd(ignore_whitespace, find_renames, find_copies)
+    cmd.extend([f'-U{unified}', refspec, '--', filepath])
     result = run(cmd, capture_output=True, text=True)
     return result.stdout
 
