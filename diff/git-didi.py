@@ -181,7 +181,9 @@ def stat(
 
     with Pager(pager):
         # Use --numstat for machine-readable output (fixed format, no spacing issues)
-        cmd1 = build_diff_cmd(ignore_whitespace, find_renames, find_copies)
+        # Only use --follow when filtering to a single path
+        use_follow = len(paths) == 1
+        cmd1 = build_diff_cmd(ignore_whitespace, find_renames, find_copies, follow=use_follow)
         cmd1.extend(['--numstat', refspec1])
         if paths:
             cmd1.extend(['--', *paths])
@@ -190,7 +192,7 @@ def stat(
             err(f"Error getting diff for {refspec1}: {result1.stderr}")
             sys.exit(1)
 
-        cmd2 = build_diff_cmd(ignore_whitespace, find_renames, find_copies)
+        cmd2 = build_diff_cmd(ignore_whitespace, find_renames, find_copies, follow=use_follow)
         cmd2.extend(['--numstat', refspec2])
         if paths:
             cmd2.extend(['--', *paths])
@@ -405,9 +407,12 @@ def build_diff_cmd(
     ignore_whitespace: bool = False,
     find_renames: str = None,
     find_copies: str = None,
+    follow: bool = False,
 ) -> list[str]:
     """Build base git diff command with common options."""
-    cmd = ['git', 'diff', '--follow']
+    cmd = ['git', 'diff']
+    if follow:
+        cmd.append('--follow')
     if ignore_whitespace:
         cmd.append('-w')
     if find_renames:
@@ -450,7 +455,7 @@ def get_file_diff(
     find_copies: str = None,
 ) -> str:
     """Get diff for a specific file in a refspec."""
-    cmd = build_diff_cmd(ignore_whitespace, find_renames, find_copies)
+    cmd = build_diff_cmd(ignore_whitespace, find_renames, find_copies, follow=True)
     cmd.extend([f'-U{unified}', refspec, '--', filepath])
     result = run(cmd, capture_output=True, text=True)
     return result.stdout
