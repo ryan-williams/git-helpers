@@ -1,5 +1,5 @@
 # git-helpers
-[1,783](#count-completions) Git aliases and scripts.
+[1,787](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -334,12 +334,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1783 completions added by installing git-helpers
+# 1787 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 267
-# - 4 chars: 714
-# - 5 chars: 362
+# - 4 chars: 715
+# - 5 chars: 365
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -350,7 +350,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1783 new completions:
+1787 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -830,6 +830,7 @@ gdsd       = g diff --submodule=diff
 gdsh       = g diff --stat HEAD
 gdsl       = g diff --submodule=log
 gdsm       = g config --global diff.submodule
+gdsn       = g diff --numstat
 gdsp       = g diff --stat HEAD^
 gdss       = g diff --submodule=short
 gdsu       = g diff-stat-parent
@@ -1467,6 +1468,9 @@ gdptg      = g config --global diff.noprefix true
 gdpug      = g config --global --unset diff.noprefix
 gdsca      = g describe --all
 gdsml      = g config --global diff.submodule log
+gdsnc      = g diff --numstat --cached
+gdsnh      = g diff --numstat HEAD
+gdsnw      = g diff --numstat -w
 gdsph      = g diff --stat HEAD^..HEAD
 gdthc      = g diff-theirs-conflicting
 gdts1      = !git --no-pager dates -1
@@ -1881,7 +1885,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1783 completions added by installing git-helpers (0 removed, 3128 total)
+1787 completions added by installing git-helpers (0 removed, 3132 total)
 ```
 </details>
 

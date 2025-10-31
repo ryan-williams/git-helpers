@@ -47,6 +47,10 @@
   dsc  = diff --stat --cached
   dcs  = diff --stat --cached
   dsh  = diff --stat HEAD
+  dsn  = diff --numstat
+  dsnc = diff --numstat --cached
+  dsnh = diff --numstat HEAD
+  dsnw = diff --numstat -w
   dsw  = diff --stat -w
   dws  = diff -w --stat
   dsp  = diff --stat HEAD^
