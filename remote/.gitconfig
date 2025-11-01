@@ -19,6 +19,7 @@
   gor       = get-only-remote
 
   ra        = remote add
+  raf       = remote add -f
   rao       = remote add origin
   rah       = remote-add.py --https
   ras       = remote-add.py --ssh

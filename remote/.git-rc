@@ -19,6 +19,7 @@ defn gmr g mr
 defn gr g r
 defn gr0 g r0
 defn gra g ra
+defn graf g raf
 defn grao g rao
 defn grah g rah
 defn gras g ras
