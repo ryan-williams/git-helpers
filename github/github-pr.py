@@ -700,6 +700,101 @@ def create(
     create_new_pr(head, base, draft, web, dry_run)
 
 
+def get_current_github_user() -> str | None:
+    """Get the currently authenticated GitHub user."""
+    try:
+        user = proc.line('gh', 'api', 'user', '--jq', '.login', log=None)
+        return user
+    except Exception as e:
+        err(f"Warning: Could not get current GitHub user: {e}")
+        return None
+
+
+def get_item_comments(owner: str, repo: str, number: str, item_type: str) -> list[dict]:
+    """Fetch all comments for a PR or Issue from GitHub.
+
+    Returns:
+        List of comment dicts with keys: id, user.login, created_at, updated_at, body
+    """
+    try:
+        if item_type == 'pr':
+            comments = proc.json('gh', 'api', f'repos/{owner}/{repo}/issues/{number}/comments', log=None)
+        else:
+            comments = proc.json('gh', 'api', f'repos/{owner}/{repo}/issues/{number}/comments', log=None)
+
+        # Normalize line endings in comment bodies
+        for comment in comments:
+            if comment.get('body'):
+                comment['body'] = comment['body'].replace('\r\n', '\n')
+
+        return comments
+    except Exception as e:
+        err(f"Error fetching comments: {e}")
+        return []
+
+
+def write_comment_file(comment_id: str, author: str, created_at: str, updated_at: str | None, body: str) -> Path:
+    """Write a comment to a z{comment_id}.md file.
+
+    Returns:
+        Path to the created file
+    """
+    filename = f'z{comment_id}.md'
+    filepath = Path(filename)
+
+    content_lines = [
+        f'<!-- author: {author} -->',
+        f'<!-- created_at: {created_at} -->',
+    ]
+
+    if updated_at and updated_at != created_at:
+        content_lines.append(f'<!-- updated_at: {updated_at} -->')
+
+    content_lines.extend(['', body.rstrip(), ''])
+
+    with open(filepath, 'w') as f:
+        f.write('\n'.join(content_lines))
+
+    return filepath
+
+
+def read_comment_file(filepath: Path) -> tuple[str | None, str | None, str | None, str]:
+    """Parse a comment file and extract metadata.
+
+    Returns:
+        Tuple of (author, created_at, updated_at, body)
+    """
+    with open(filepath, 'r') as f:
+        lines = f.readlines()
+
+    author = None
+    created_at = None
+    updated_at = None
+    body_start = 0
+
+    for i, line in enumerate(lines):
+        line = line.strip()
+        if line.startswith('<!-- author:'):
+            author = line.replace('<!-- author:', '').replace('-->', '').strip()
+        elif line.startswith('<!-- created_at:'):
+            created_at = line.replace('<!-- created_at:', '').replace('-->', '').strip()
+        elif line.startswith('<!-- updated_at:'):
+            updated_at = line.replace('<!-- updated_at:', '').replace('-->', '').strip()
+        elif not line.startswith('<!--'):
+            body_start = i
+            break
+
+    body = ''.join(lines[body_start:]).strip()
+    return author, created_at, updated_at, body
+
+
+def get_comment_id_from_filename(filename: str) -> str | None:
+    """Extract comment ID from z{id}.md filename."""
+    if filename.startswith('z') and filename.endswith('.md'):
+        return filename[1:-3]  # Remove 'z' prefix and '.md' suffix
+    return None
+
+
 @cli.command()
 @flag('-g', '--gist', help='Only show gist URL')
 def show(gist: bool) -> None:
@@ -1206,6 +1301,35 @@ def clone(
     err(f"Successfully cloned {item_label} to {target_path}")
     err(f"URL: {item_data['url']}")
 
+    # Fetch and store comments
+    err(f"Fetching comments for {item_label}...")
+    comments = get_item_comments(owner, repo, number, detected_type)
+    if comments:
+        err(f"Found {len(comments)} comment(s)")
+        for comment in comments:
+            comment_id = str(comment['id'])
+            author = comment['user']['login']
+            created_at = comment['created_at']
+            updated_at = comment.get('updated_at')
+            body = comment.get('body', '')
+
+            # Write comment file
+            comment_file = write_comment_file(comment_id, author, created_at, updated_at, body)
+            proc.run('git', 'add', str(comment_file), log=None)
+
+        # Commit all comments
+        proc.run('git', 'commit', '-m', f'Add {len(comments)} comment(s)', log=None)
+        err(f"Committed {len(comments)} comment(s)")
+
+        # Push comments to gist if one was created
+        if gist_url:
+            gist_remote = find_gist_remote()
+            if gist_remote:
+                proc.run('git', 'push', gist_remote, 'main', '--force', log=None)
+                err("Pushed comments to gist")
+    else:
+        err("No comments found")
+
     # Check if we should ingest user-attachments
     from os import environ
     should_ingest = environ.get('GHPR_INGEST_ATTACHMENTS', '1') != '0'
@@ -1238,6 +1362,8 @@ def clone(
 @flag('-o', '--open', 'open_browser', help='Open PR in browser after pushing')
 @flag('-i', '--images', help='Upload local images and replace references')
 @opt('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
+@flag('-c', '--comments', help='Also push comment changes')
+@flag('-C', '--force-others', help='Allow pushing edits to other users\' comments (may fail at API level)')
 def push(
     gist: bool,
     dry_run: bool,
@@ -1246,6 +1372,8 @@ def push(
     open_browser: bool,
     images: bool,
     gist_private: bool | None,
+    comments: bool,
+    force_others: bool,
 ) -> None:
     """Push local description changes back to the PR/Issue."""
 
@@ -1406,6 +1534,86 @@ def push(
         except Exception as e:
             err(f"Error updating {item_label}: {e}")
             exit(1)
+
+    # Handle comment pushing if requested
+    if comments:
+        err("Checking for comment changes...")
+        current_user = get_current_github_user()
+
+        # Find all local comment files (z*.md)
+        from glob import glob
+        comment_files = sorted(glob('z*.md'))
+
+        if not comment_files:
+            err("No comment files found")
+        else:
+            err(f"Found {len(comment_files)} comment file(s)")
+
+            # Get remote comments to check which are new vs edited
+            remote_comments = get_item_comments(owner, repo, number, item_type)
+            remote_comment_ids = {str(c['id']) for c in remote_comments}
+            remote_comments_by_id = {str(c['id']): c for c in remote_comments}
+
+            comments_pushed = 0
+            comments_skipped = 0
+
+            for comment_file_path in comment_files:
+                comment_id = get_comment_id_from_filename(comment_file_path)
+                if not comment_id:
+                    err(f"Warning: Skipping invalid filename: {comment_file_path}")
+                    continue
+
+                # Read local comment
+                author, created_at, updated_at, body = read_comment_file(Path(comment_file_path))
+
+                if not author:
+                    err(f"Warning: Skipping {comment_file_path} - no author metadata")
+                    continue
+
+                # Check if we own this comment
+                if author != current_user and not force_others:
+                    err(f"Skipping {comment_file_path} (author: {author}, not you). Use --force-others to try anyway.")
+                    comments_skipped += 1
+                    continue
+
+                # Check if this is a new comment or an edit
+                if comment_id in remote_comment_ids:
+                    # Editing existing comment
+                    remote_comment = remote_comments_by_id[comment_id]
+                    remote_body = remote_comment.get('body', '').replace('\r\n', '\n')
+
+                    if body == remote_body:
+                        err(f"Skipping {comment_file_path} - no changes")
+                        comments_skipped += 1
+                        continue
+
+                    if dry_run:
+                        err(f"[DRY-RUN] Would update comment {comment_id}")
+                    else:
+                        # Update existing comment
+                        try:
+                            # Create temp file for body
+                            with NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+                                f.write(body)
+                                temp_file = f.name
+
+                            proc.run('gh', 'api', '-X', 'PATCH',
+                                    f'repos/{owner}/{repo}/issues/comments/{comment_id}',
+                                    '-f', f'body=@{temp_file}', log=None)
+                            unlink(temp_file)
+                            err(f"Updated comment {comment_id}")
+                            comments_pushed += 1
+                        except Exception as e:
+                            err(f"Error updating comment {comment_id}: {e}")
+                            if temp_file and exists(temp_file):
+                                unlink(temp_file)
+                else:
+                    # New comment - but we can't create with specific ID
+                    err(f"Warning: {comment_file_path} is a new comment (ID not found remotely)")
+                    err("  Cannot push new comments yet (ID would change)")
+                    comments_skipped += 1
+
+            err(f"Comments: {comments_pushed} pushed, {comments_skipped} skipped")
 
 
 def sync_to_gist(
@@ -1718,10 +1926,12 @@ def upload(
 
 @cli.command()
 @opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
+@flag('-C', '--comments', help='Also diff comments')
 def diff(
     color: str,
+    comments: bool,
 ) -> None:
-    """Show differences between local and remote PR descriptions."""
+    """Show differences between local and remote PR/Issue descriptions and comments."""
 
     # Determine if we should use color
     use_color = False
@@ -1751,9 +1961,13 @@ def diff(
             err(f"Error: Could not determine PR from directory or git config: {e}")
             exit(1)
 
-    # Get remote PR data
-    err(f"Fetching PR {owner}/{repo}#{pr_number}...")
-    pr_data = get_pr_metadata(owner, repo, pr_number)
+    # Get item type
+    item_type = proc.line('git', 'config', 'pr.type', err_ok=True, log=None)
+
+    # Get remote PR/Issue data
+    item_label = 'issue' if item_type == 'issue' else 'PR'
+    err(f"Fetching {item_label} {owner}/{repo}#{pr_number}...")
+    pr_data, item_type = get_item_metadata(owner, repo, pr_number, item_type)
     if not pr_data:
         exit(1)
 
@@ -1828,6 +2042,78 @@ def diff(
                 print(line.rstrip())
     else:
         err(f"\n{BOLD}{CYAN}=== Body: No differences ==={RESET}")
+
+    # Handle comment diffing if requested
+    if comments:
+        err(f"\n{BOLD}=== Checking comments ==={RESET}")
+
+        # Get item type
+        item_type = proc.line('git', 'config', 'pr.type', err_ok=True, log=None)
+        if not item_type:
+            _, item_type = get_item_metadata(owner, repo, pr_number)
+
+        # Get remote comments
+        remote_comments = get_item_comments(owner, repo, pr_number, item_type)
+        remote_comments_by_id = {str(c['id']): c for c in remote_comments}
+
+        # Find all local comment files
+        from glob import glob
+        comment_files = sorted(glob('z*.md'))
+
+        if not comment_files and not remote_comments:
+            err(f"{CYAN}No comments (local or remote){RESET}")
+        else:
+            local_comment_ids = set()
+            for comment_file_path in comment_files:
+                comment_id = get_comment_id_from_filename(comment_file_path)
+                if not comment_id:
+                    continue
+                local_comment_ids.add(comment_id)
+
+                author, created_at, updated_at, local_body = read_comment_file(Path(comment_file_path))
+
+                if comment_id in remote_comments_by_id:
+                    # Compare with remote
+                    remote_comment = remote_comments_by_id[comment_id]
+                    remote_body = remote_comment.get('body', '').replace('\r\n', '\n')
+
+                    if local_body != remote_body:
+                        err(f"\n{BOLD}{YELLOW}=== Comment {comment_id} (by {author}) - Differences ==={RESET}")
+                        local_lines = local_body.splitlines(keepends=True)
+                        remote_lines = remote_body.splitlines(keepends=True)
+
+                        diff_lines = difflib.unified_diff(
+                            remote_lines,
+                            local_lines,
+                            fromfile=f'Remote comment {comment_id}',
+                            tofile=f'Local {comment_file_path}',
+                            lineterm=''
+                        )
+
+                        for line in diff_lines:
+                            if line.startswith('+++'):
+                                print(f"{BOLD}{line.rstrip()}{RESET}")
+                            elif line.startswith('---'):
+                                print(f"{BOLD}{line.rstrip()}{RESET}")
+                            elif line.startswith('@@'):
+                                print(f"{CYAN}{line.rstrip()}{RESET}")
+                            elif line.startswith('+'):
+                                print(f"{GREEN}{line.rstrip()}{RESET}")
+                            elif line.startswith('-'):
+                                print(f"{RED}{line.rstrip()}{RESET}")
+                            else:
+                                print(line.rstrip())
+                    else:
+                        err(f"{CYAN}Comment {comment_id} (by {author}): No differences{RESET}")
+                else:
+                    err(f"{YELLOW}Comment {comment_id} exists locally but not remotely{RESET}")
+
+            # Check for remote comments not present locally
+            for remote_comment in remote_comments:
+                comment_id = str(remote_comment['id'])
+                if comment_id not in local_comment_ids:
+                    author = remote_comment['user']['login']
+                    err(f"{YELLOW}Comment {comment_id} (by {author}) exists remotely but not locally{RESET}")
 
 
 @cli.command()
@@ -2219,6 +2505,73 @@ def sync(
                             unlink(temp_file)
                 else:
                     err(f"{item_label} already has gist footer")
+
+        # Sync comments from remote
+        err("Syncing comments from remote...")
+        if not item_type:
+            _, item_type = get_item_metadata(owner, repo, pr_number)
+
+        remote_comments = get_item_comments(owner, repo, pr_number, item_type)
+        if remote_comments:
+            # Find existing local comment files
+            from glob import glob
+            existing_files = glob('z*.md')
+            existing_ids = {get_comment_id_from_filename(f) for f in existing_files if get_comment_id_from_filename(f)}
+
+            new_comments = 0
+            updated_comments = 0
+
+            for comment in remote_comments:
+                comment_id = str(comment['id'])
+                author = comment['user']['login']
+                created_at = comment['created_at']
+                updated_at = comment.get('updated_at')
+                body = comment.get('body', '')
+
+                if comment_id in existing_ids:
+                    # Check if it needs updating
+                    comment_file = Path(f'z{comment_id}.md')
+                    _, _, _, local_body = read_comment_file(comment_file)
+                    if local_body != body:
+                        if dry_run:
+                            err(f"[DRY-RUN] Would update comment {comment_id}")
+                        else:
+                            write_comment_file(comment_id, author, created_at, updated_at, body)
+                            proc.run('git', 'add', f'z{comment_id}.md', log=None)
+                            updated_comments += 1
+                else:
+                    # New comment
+                    if dry_run:
+                        err(f"[DRY-RUN] Would add comment {comment_id} by {author}")
+                    else:
+                        comment_file = write_comment_file(comment_id, author, created_at, updated_at, body)
+                        proc.run('git', 'add', str(comment_file), log=None)
+                        new_comments += 1
+
+            if new_comments > 0 or updated_comments > 0:
+                if dry_run:
+                    err(f"[DRY-RUN] Would commit {new_comments} new, {updated_comments} updated comments")
+                else:
+                    msg_parts = []
+                    if new_comments > 0:
+                        msg_parts.append(f'{new_comments} new')
+                    if updated_comments > 0:
+                        msg_parts.append(f'{updated_comments} updated')
+                    commit_msg = f'Sync comments: {", ".join(msg_parts)}'
+                    proc.run('git', 'commit', '-m', commit_msg, log=None)
+                    err(f"Synced comments: {new_comments} new, {updated_comments} updated")
+
+                    # Push to gist if remote exists
+                    if gist_id:
+                        gist_remote = find_gist_remote() or DEFAULT_GIST_REMOTE
+                        remotes = proc.lines('git', 'remote', log=None)
+                        if gist_remote in remotes:
+                            proc.run('git', 'push', gist_remote, 'main', '--force', log=None)
+                            err("Pushed comment changes to gist")
+            else:
+                err("All comments are up to date")
+        else:
+            err("No comments found remotely")
 
 
 @cli.command(name='ingest-attachments')
