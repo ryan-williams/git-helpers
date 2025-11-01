@@ -20,11 +20,19 @@ shift "$((OPTIND -1))"
 
 # Exec+Update README code blocks
 if [ -n "$mdcmd" ]; then
-    mdcmd -C
+    if ! mdcmd -C; then
+        echo "Error: mdcmd -C failed" >&2
+        exit 1
+    fi
 fi
 
 # Update README subtitle
-n="$(grep -m1 '^# .* completions added' README.md  | awk '{print $2}')"
+# Extract count from count-completions.sh output in README
+n="$(grep -m1 '^# [0-9]' README.md | awk '{print $2}')"
+if [ -z "$n" ]; then
+  echo "Error: Could not extract completion count from README (did count-completions.sh run successfully?)" >&2
+  exit 1
+fi
 ns="$(LC_NUMERIC=en_US.UTF-8 printf "%'d" "$n")"
 
 in=README.md
