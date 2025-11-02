@@ -1,5 +1,5 @@
 # git-helpers
-[1,790](#count-completions) Git aliases and scripts.
+[1,793](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -334,12 +334,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1790 completions added by installing git-helpers
+# 1793 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 267
-# - 4 chars: 716
-# - 5 chars: 366
+# - 4 chars: 717
+# - 5 chars: 368
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -350,7 +350,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1790 new completions:
+1793 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1226,6 +1226,7 @@ grxs       = g rebase-exec-step
 grxx       = g rebase-exec-step
 gsac       = g submodule-auto-commit
 gsad       = g set-author-date
+gsae       = g set-id
 gsaf       = g submodule add -f
 gsat       = g set-attr-type.py
 gsau       = g set-author
@@ -1505,6 +1506,7 @@ ggrec      = g graph -e -C
 ggrht      = g graph -t -H
 ggrhu      = g graph -u HEAD
 ggrth      = g graph -t -H
+ggsae      = g set-id -g
 ggsid      = g set-id -g
 ggsie      = g set-id -g
 ghbis      = g blob-hash -is
@@ -1660,6 +1662,7 @@ gsaca      = g submodule-auto-commit -a
 gsacm      = g submodule-auto-commit -m
 gsacn      = g submodule-auto-commit -n
 gsadr      = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
+gsaeg      = g set-id -g
 gsard      = !git --no-pager log -1 --format= --diff-filter=ADR --name-status
 gsaut      = g set-author
 gscpw      = g show-cherry-pick-parent -w
@@ -1888,7 +1891,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1790 completions added by installing git-helpers (0 removed, 3135 total)
+1793 completions added by installing git-helpers (0 removed, 3138 total)
 ```
 </details>
 

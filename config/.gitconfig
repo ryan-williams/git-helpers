@@ -153,6 +153,9 @@
         gsid = set-id -g
         sidg = set-id -g
         sig = set-id -g
+        sae = set-id
+        gsae = set-id -g
+        saeg = set-id -g
         gid = get-id
         gidg = get-id -g
         ggid = get-id -g
