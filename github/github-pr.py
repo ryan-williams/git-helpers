@@ -1127,13 +1127,15 @@ def create_new_pr(
 @cli.command()
 @opt('-d', '--directory', help='Directory to clone into (default: pr{number} or issue{number})')
 @flag('-G', '--no-gist', help='Skip creating a gist')
+@flag('--no-comments', help='Skip cloning comments')
 @arg('spec', required=False)
 def clone(
     directory: str | None,
     no_gist: bool,
+    no_comments: bool,
     spec: str | None,
 ) -> None:
-    """Clone a PR or Issue description to a local directory.
+    """Clone a PR or Issue description and comments to a local directory.
 
     SPEC can be:
     - A PR/Issue number (when run from within a repo)
@@ -1301,34 +1303,35 @@ def clone(
     err(f"Successfully cloned {item_label} to {target_path}")
     err(f"URL: {item_data['url']}")
 
-    # Fetch and store comments
-    err(f"Fetching comments for {item_label}...")
-    comments = get_item_comments(owner, repo, number, detected_type)
-    if comments:
-        err(f"Found {len(comments)} comment(s)")
-        for comment in comments:
-            comment_id = str(comment['id'])
-            author = comment['user']['login']
-            created_at = comment['created_at']
-            updated_at = comment.get('updated_at')
-            body = comment.get('body', '')
+    # Fetch and store comments (default enabled, skip if --no-comments)
+    if not no_comments:
+        err(f"Fetching comments for {item_label}...")
+        comments = get_item_comments(owner, repo, number, detected_type)
+        if comments:
+            err(f"Found {len(comments)} comment(s)")
+            for comment in comments:
+                comment_id = str(comment['id'])
+                author = comment['user']['login']
+                created_at = comment['created_at']
+                updated_at = comment.get('updated_at')
+                body = comment.get('body', '')
 
-            # Write comment file
-            comment_file = write_comment_file(comment_id, author, created_at, updated_at, body)
-            proc.run('git', 'add', str(comment_file), log=None)
+                # Write comment file
+                comment_file = write_comment_file(comment_id, author, created_at, updated_at, body)
+                proc.run('git', 'add', str(comment_file), log=None)
 
-        # Commit all comments
-        proc.run('git', 'commit', '-m', f'Add {len(comments)} comment(s)', log=None)
-        err(f"Committed {len(comments)} comment(s)")
+            # Commit all comments
+            proc.run('git', 'commit', '-m', f'Add {len(comments)} comment(s)', log=None)
+            err(f"Committed {len(comments)} comment(s)")
 
-        # Push comments to gist if one was created
-        if gist_url:
-            gist_remote = find_gist_remote()
-            if gist_remote:
-                proc.run('git', 'push', gist_remote, 'main', '--force', log=None)
-                err("Pushed comments to gist")
-    else:
-        err("No comments found")
+            # Push comments to gist if one was created
+            if gist_url:
+                gist_remote = find_gist_remote()
+                if gist_remote:
+                    proc.run('git', 'push', gist_remote, 'main', '--force', log=None)
+                    err("Pushed comments to gist")
+        else:
+            err("No comments found")
 
     # Check if we should ingest user-attachments
     from os import environ
@@ -1362,7 +1365,7 @@ def clone(
 @flag('-o', '--open', 'open_browser', help='Open PR in browser after pushing')
 @flag('-i', '--images', help='Upload local images and replace references')
 @opt('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
-@flag('-c', '--comments', help='Also push comment changes')
+@flag('--no-comments', help='Skip pushing comment changes')
 @flag('-C', '--force-others', help='Allow pushing edits to other users\' comments (may fail at API level)')
 def push(
     gist: bool,
@@ -1372,10 +1375,10 @@ def push(
     open_browser: bool,
     images: bool,
     gist_private: bool | None,
-    comments: bool,
+    no_comments: bool,
     force_others: bool,
 ) -> None:
-    """Push local description changes back to the PR/Issue."""
+    """Push local description and comments to the PR/Issue."""
 
     # Get item info from current directory
     owner, repo, number = get_pr_info_from_path()
@@ -1535,8 +1538,8 @@ def push(
             err(f"Error updating {item_label}: {e}")
             exit(1)
 
-    # Handle comment pushing if requested
-    if comments:
+    # Handle comment pushing (default enabled, skip if --no-comments)
+    if not no_comments:
         err("Checking for comment changes...")
         current_user = get_current_github_user()
 
@@ -1926,10 +1929,10 @@ def upload(
 
 @cli.command()
 @opt('-c', '--color', type=Choice(['auto', 'always', 'never']), default='auto', help='When to use colored output (default: auto)')
-@flag('-C', '--comments', help='Also diff comments')
+@flag('--no-comments', help='Skip diffing comments')
 def diff(
     color: str,
-    comments: bool,
+    no_comments: bool,
 ) -> None:
     """Show differences between local and remote PR/Issue descriptions and comments."""
 
@@ -2043,8 +2046,8 @@ def diff(
     else:
         err(f"\n{BOLD}{CYAN}=== Body: No differences ==={RESET}")
 
-    # Handle comment diffing if requested
-    if comments:
+    # Handle comment diffing (default enabled, skip if --no-comments)
+    if not no_comments:
         err(f"\n{BOLD}=== Checking comments ==={RESET}")
 
         # Get item type
@@ -2122,14 +2125,16 @@ def diff(
 @opt('-f/-F', '--footer/--no-footer', default=None, help='Add gist footer to PR (default: auto - add if gist exists)')
 @flag('-o', '--open', 'open_browser', help='Open PR in browser after pulling')
 @opt('-p/-P', '--private/--public', 'gist_private', default=None, help='Gist visibility: -p = private, -P = public (default: match repo visibility)')
+@flag('--no-comments', help='Skip syncing comments')
 def pull(
     gist: bool,
     dry_run: bool,
     footer: bool | None,
     open_browser: bool,
     gist_private: bool | None,
+    no_comments: bool,
 ) -> None:
-    """Pull latest from PR and optionally push changes back."""
+    """Pull latest description and comments from GitHub PR/Issue."""
     # First pull
     err("Pulling latest from PR...")
 
@@ -2174,11 +2179,70 @@ def pull(
         else:
             err("[DRY-RUN] Would pull and commit changes from PR")
 
+    # Sync comments (default enabled, skip if --no-comments)
+    if not no_comments:
+        err("Syncing comments from remote...")
+        # Get item type
+        item_type = proc.line('git', 'config', 'pr.type', err_ok=True, log=None)
+        if not item_type:
+            _, item_type = get_item_metadata(owner, repo, pr_number)
+
+        remote_comments = get_item_comments(owner, repo, pr_number, item_type)
+        if remote_comments:
+            from glob import glob
+            existing_files = glob('z*.md')
+            existing_ids = {get_comment_id_from_filename(f) for f in existing_files if get_comment_id_from_filename(f)}
+
+            new_comments = 0
+            updated_comments = 0
+
+            for comment in remote_comments:
+                comment_id = str(comment['id'])
+                author = comment['user']['login']
+                created_at = comment['created_at']
+                updated_at = comment.get('updated_at')
+                body = comment.get('body', '')
+
+                if comment_id in existing_ids:
+                    comment_file = Path(f'z{comment_id}.md')
+                    _, _, _, local_body = read_comment_file(comment_file)
+                    if local_body != body:
+                        if dry_run:
+                            err(f"[DRY-RUN] Would update comment {comment_id}")
+                        else:
+                            write_comment_file(comment_id, author, created_at, updated_at, body)
+                            proc.run('git', 'add', f'z{comment_id}.md', log=None)
+                            updated_comments += 1
+                else:
+                    if dry_run:
+                        err(f"[DRY-RUN] Would add comment {comment_id} by {author}")
+                    else:
+                        comment_file = write_comment_file(comment_id, author, created_at, updated_at, body)
+                        proc.run('git', 'add', str(comment_file), log=None)
+                        new_comments += 1
+
+            if new_comments > 0 or updated_comments > 0:
+                if dry_run:
+                    err(f"[DRY-RUN] Would commit {new_comments} new, {updated_comments} updated comments")
+                else:
+                    msg_parts = []
+                    if new_comments > 0:
+                        msg_parts.append(f'{new_comments} new')
+                    if updated_comments > 0:
+                        msg_parts.append(f'{updated_comments} updated')
+                    commit_msg = f'Pull comments: {", ".join(msg_parts)}'
+                    proc.run('git', 'commit', '-m', commit_msg, log=None)
+                    err(f"Pulled comments: {new_comments} new, {updated_comments} updated")
+            else:
+                err("All comments are up to date")
+        else:
+            err("No comments found remotely")
+
     # Now push our version back
     err("Pushing to PR...")
     # Convert pull's footer boolean to push's footer count
     footer_count = 1 if footer else 0 if footer is False else 0
-    push.callback(gist, dry_run, footer_count, no_footer=False, open_browser=open_browser, images=False, gist_private=gist_private)
+    push.callback(gist, dry_run, footer_count, no_footer=False, open_browser=open_browser, images=False, gist_private=gist_private, no_comments=no_comments, force_others=False)
 
 
 @cli.command()
