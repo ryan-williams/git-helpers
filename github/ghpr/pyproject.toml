@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ghpr-py"
+version = "0.1.0"
+description = "GitHub PR/Issue management: clone, sync, and iterate on PR/issue descriptions and comments locally, with gist mirroring"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Ryan Williams", email = "ryan@runsascoded.com"},
+]
+keywords = ["github", "pr", "issue", "gist", "cli"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "click>=8.0",
+    "utz>=0.1.0",
+]
+
+[project.urls]
+Repository = "https://github.com/ryan-williams/git-helpers"
+Issues = "https://github.com/ryan-williams/git-helpers/issues"
+
+[project.scripts]
+ghpr = "ghpr.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
