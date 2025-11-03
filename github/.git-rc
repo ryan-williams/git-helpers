@@ -554,29 +554,28 @@ defn ghs gh secret list
 defn ghsd gh secret delete
 defn ghss gh secret set
 
+# ghpr - GitHub PR/Issue management (https://github.com/runsascoded/ghpr)
+# Load shell integration: eval "$(ghpr shell-integration bash)"
 alias ghprr='gh pr'                            # raw gh pr command
-alias ghpr='github-pr.py'                      # main github-pr.py command
-alias ghpri='github-pr.py init'                # initialize new PR draft
-alias ghpro='github-pr.py open'                # open existing PR in browser
-alias ghprog='github-pr.py open -g'            # open gist in browser
+alias ghpri='ghpr init'                        # initialize new PR draft
+alias ghpro='ghpr open'                        # open existing PR in browser
+alias ghprog='ghpr open -g'                    # open gist in browser
 alias ghopr='github-open-pr.py'                # open PR for current branch
 alias gopr='github-open-pr.py'                 # open PR for current branch
-alias ghprcr='github-pr.py create'             # create new PR from DESCRIPTION.md
-alias ghprcrn='github-pr.py create -n'         # dry-run: show what PR would be created
-alias ghprsh='github-pr.py show'               # show PR and gist URLs
-alias ghprshg='github-pr.py show -g'           # show only gist URL
-alias ghprc='github-pr.py clone'               # clone existing PR
-alias ghprp='github-pr.py push'                # push to PR (auto-adds footer if gist exists)
-alias ghprpn='github-pr.py push -n'            # dry-run push
-alias ghprl='github-pr.py pull'                # pull from PR (and optionally push back)
-alias ghprpg='github-pr.py push -g'            # push with gist backup (auto-footer)
-alias ghprpo='github-pr.py push -o'            # push and open in browser
-alias ghprpF='github-pr.py push -F'            # push WITHOUT footer
-alias ghprd='github-pr.py diff'                # diff local vs remote PR
-alias ghpria='github-pr.py ingest-attachments' # ingest user-attachments from PR
-alias ghpru='github-pr.py upload'              # upload images to PR's gist
-alias ghprs='github-pr.py sync'                # sync/update PR clones to new naming
-alias ghprsn='github-pr.py sync -n'            # dry-run sync
+alias ghprcr='ghpr create'                     # create new PR from description
+alias ghprcrn='ghpr create -n'                 # dry-run: show what PR would be created
+alias ghprsh='ghpr show'                       # show PR and gist URLs
+alias ghprshg='ghpr show -g'                   # show only gist URL
+alias ghprc='ghpr clone'                       # clone existing PR
+alias ghprp='ghpr push'                        # push to PR (auto-adds footer if gist exists)
+alias ghprpn='ghpr push -n'                    # dry-run push
+alias ghprl='ghpr pull'                        # pull from PR (and optionally push back)
+alias ghprpg='ghpr push -g'                    # push with gist backup (auto-footer)
+alias ghprpo='ghpr push -o'                    # push and open in browser
+alias ghprpF='ghpr push -F'                    # push WITHOUT footer
+alias ghprd='ghpr diff'                        # diff local vs remote PR
+alias ghpria='ghpr ingest-attachments'         # ingest user-attachments from PR
+alias ghpru='ghpr upload'                      # upload images to PR's gist
 alias ghui='gh-upload-img.py'                  # upload images to GitHub
 alias prv='gh pr view'
 alias pre='gh pr edit'

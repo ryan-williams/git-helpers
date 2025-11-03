@@ -257,6 +257,7 @@ def patch(
     Shows only files where the patches differ.
     Optionally filter to specific paths.
     """
+    # Determine color BEFORE pager redirects stdout
     use_color = should_use_color(color)
 
     with Pager(pager):
@@ -306,12 +307,89 @@ def patch(
 
                     for line in diff_lines:
                         if use_color:
-                            if line.startswith('+'):
-                                echo(style(line, fg='green'), color=True)
-                            elif line.startswith('-'):
+                            # Handle unified diff headers from outer diff first (---, +++, @@)
+                            # These are lines from the outer diff, not nested patterns
+                            if line.startswith('---') and not line.startswith('----'):
+                                # Real outer diff header - red fg
                                 echo(style(line, fg='red'), color=True)
-                            elif line.startswith('@'):
+                                continue
+                            elif line.startswith('+++') and not line.startswith('++++'):
+                                # Real outer diff header - green fg
+                                echo(style(line, fg='green'), color=True)
+                                continue
+                            elif line.startswith('@@') and not (line.startswith('-@@') or line.startswith('+@@') or line.startswith(' @@')):
+                                # Hunk header from outer diff (not nested)
                                 echo(style(line, fg='cyan'), color=True)
+                                continue
+                            elif line.startswith('-@@') or line.startswith('-index ') or line.startswith('-diff ') or line.startswith('----') or line.startswith('-+++'):
+                                # Nested metadata in removed section - red fg only
+                                echo(style(line, fg='red'), color=True)
+                                continue
+                            elif line.startswith('+@@') or line.startswith('+index ') or line.startswith('+diff ') or line.startswith('++++') or line.startswith('+---'):
+                                # Nested metadata in added section - green fg only
+                                echo(style(line, fg='green'), color=True)
+                                continue
+
+                            # Handle nested diff patterns (diff of diffs)
+                            # Use 256-color palette matching Claude's diff colors
+                            # Greens: 28 (brighter #00a858-like), 22 (darker #005e25-like)
+                            # Reds: 161 (brighter #c1536a-like), 88 (darker #852135-like)
+                            # Background determined by FIRST char: + = green, - = red
+                            # First 2 chars get their own bg colors based on symbols
+                            # All lines in the nested diff have outer prefix (+, -, or space)
+                            if len(line) >= 2 and line[0] in '+-':
+                                prefix = line[:2]
+                                rest = line[2:]
+
+                                # Determine prefix backgrounds based on each char
+                                prefix_bg = []
+                                for char in prefix:
+                                    if char == '+':
+                                        prefix_bg.append('28')  # bright green
+                                    elif char == '-':
+                                        prefix_bg.append('161')  # bright red
+                                    else:  # space
+                                        prefix_bg.append('0')  # black/clear
+
+                                # Determine line background based on first char
+                                if line[0] == '+':
+                                    line_bg_bright = '28'
+                                    line_bg_dark = '22'
+                                    line_bg_vdark = '23'
+                                else:  # '-'
+                                    line_bg_bright = '161'
+                                    line_bg_dark = '88'
+                                    line_bg_vdark = '52'
+
+                                if line.startswith('++'):
+                                    # Added line in added section - white on bright green (bold)
+                                    print(f'\033[1;38;5;231;48;5;{prefix_bg[0]}m{prefix[0]}\033[48;5;{prefix_bg[1]}m{prefix[1]}\033[48;5;{line_bg_bright}m{rest}\033[0m')
+                                elif line.startswith('--'):
+                                    # Removed line in removed section - white on bright red (bold)
+                                    print(f'\033[1;38;5;231;48;5;{prefix_bg[0]}m{prefix[0]}\033[48;5;{prefix_bg[1]}m{prefix[1]}\033[48;5;{line_bg_bright}m{rest}\033[0m')
+                                elif line.startswith('+ '):
+                                    # Context line in added section - white on very dark green
+                                    print(f'\033[38;5;231;48;5;{prefix_bg[0]}m{prefix[0]}\033[48;5;{prefix_bg[1]}m{prefix[1]}\033[48;5;{line_bg_vdark}m{rest}\033[0m')
+                                elif line.startswith('- '):
+                                    # Context line in removed section - white on very dark red
+                                    print(f'\033[38;5;231;48;5;{prefix_bg[0]}m{prefix[0]}\033[48;5;{prefix_bg[1]}m{prefix[1]}\033[48;5;{line_bg_vdark}m{rest}\033[0m')
+                                elif line.startswith('+-'):
+                                    # Line in added section (+ first char = green bg)
+                                    print(f'\033[38;5;231;48;5;{prefix_bg[0]}m{prefix[0]}\033[48;5;{prefix_bg[1]}m{prefix[1]}\033[48;5;{line_bg_dark}m{rest}\033[0m')
+                                elif line.startswith('-+'):
+                                    # Line in removed section (- first char = red bg)
+                                    print(f'\033[38;5;231;48;5;{prefix_bg[0]}m{prefix[0]}\033[48;5;{prefix_bg[1]}m{prefix[1]}\033[48;5;{line_bg_dark}m{rest}\033[0m')
+                                elif line.startswith('+'):
+                                    # Any other line in added section (e.g., +diff, +index)
+                                    print(f'\033[38;5;231;48;5;{prefix_bg[0]}m{prefix[0]}\033[48;5;{prefix_bg[1] if len(prefix) > 1 else line_bg_dark}m{prefix[1] if len(prefix) > 1 else ""}\033[48;5;{line_bg_dark}m{rest}\033[0m')
+                                elif line.startswith('-'):
+                                    # Any other line in removed section (e.g., -diff, -index)
+                                    print(f'\033[38;5;231;48;5;{prefix_bg[0]}m{prefix[0]}\033[48;5;{prefix_bg[1] if len(prefix) > 1 else line_bg_dark}m{prefix[1] if len(prefix) > 1 else ""}\033[48;5;{line_bg_dark}m{rest}\033[0m')
+                                else:
+                                    echo(line)
+                            elif line.startswith(' '):
+                                # Context line from outer diff (no color)
+                                echo(line)
                             else:
                                 echo(line)
                         else:
@@ -326,6 +404,72 @@ def patch(
             err("No differences in patches")
         else:
             err(f"\n{len(different_files)} file(s) have different patches")
+
+
+@cli.command()
+@color_opt
+def swatches(color: str) -> None:
+    """Display color swatches for all 6 nested diff patterns.
+
+    Shows example lines formatted as they would appear in a diff-of-diffs,
+    demonstrating all possible combinations of outer and inner diff markers.
+    """
+    use_color = should_use_color(color)
+
+    if not use_color:
+        err("Color swatches require color output. Use --color=always")
+        return
+
+    echo(style("\ngddp Color Swatches - Diff of Diffs Patterns", fg='yellow', bold=True))
+    echo(style("=" * 50, fg='blue'))
+    echo("\nSimulated diff-of-diffs output showing all 6 patterns:\n")
+
+    # Simulate a diff context
+    echo(style("@@ -10,6 +10,6 @@ def example():", fg='cyan'))
+
+    # ++ pattern
+    prefix = '++'
+    rest = 'version = "2.0.0"  # Added line in added section'
+    print(f'\033[1;38;5;231;48;5;28m{prefix[0]}\033[48;5;28m{prefix[1]}\033[48;5;28m{rest}\033[0m')
+
+    # -- pattern
+    prefix = '--'
+    rest = 'version = "1.0.0"  # Removed line in removed section'
+    print(f'\033[1;38;5;231;48;5;161m{prefix[0]}\033[48;5;161m{prefix[1]}\033[48;5;161m{rest}\033[0m')
+
+    # + (space) pattern
+    prefix = '+ '
+    rest = 'author = "example"  # Context in added section'
+    print(f'\033[38;5;231;48;5;28m{prefix[0]}\033[48;5;0m{prefix[1]}\033[48;5;23m{rest}\033[0m')
+
+    # - (space) pattern
+    prefix = '- '
+    rest = 'license = "MIT"  # Context in removed section'
+    print(f'\033[38;5;231;48;5;161m{prefix[0]}\033[48;5;0m{prefix[1]}\033[48;5;52m{rest}\033[0m')
+
+    # +- pattern
+    prefix = '+-'
+    rest = 'status = "deprecated"  # Line type changed (+- mixed)'
+    print(f'\033[38;5;231;48;5;28m{prefix[0]}\033[48;5;161m{prefix[1]}\033[48;5;22m{rest}\033[0m')
+
+    # -+ pattern
+    prefix = '-+'
+    rest = 'status = "active"  # Line type changed (-+ mixed)'
+    print(f'\033[38;5;231;48;5;161m{prefix[0]}\033[48;5;28m{prefix[1]}\033[48;5;88m{rest}\033[0m')
+
+    echo("\n" + style("Color Key:", fg='yellow', bold=True))
+    echo("  First 2 chars: Individual bg colors per symbol")
+    echo("    + → bright green (28)")
+    echo("    - → bright red (161)")
+    echo("    (space) → black/clear (0)")
+    echo("\n  Rest of line: Background based on first char")
+    echo("    ++ → bright green (28, bold)")
+    echo("    -- → bright red (161, bold)")
+    echo("    + (space) → very dark green (23)")
+    echo("    - (space) → very dark red (52)")
+    echo("    +- → dark green (22)")
+    echo("    -+ → dark red (88)")
+    echo()
 
 
 @cli.command()
