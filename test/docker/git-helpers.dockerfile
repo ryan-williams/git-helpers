@@ -1,8 +1,9 @@
 FROM ubuntu:22.04
 
 RUN apt-get update -y \
- && apt-get install -y bzip2 git man-db parallel wget \
- && yes | unminimize
+ && apt-get install -y bzip2 git man-db parallel wget python3 python3-pip \
+ && yes | unminimize \
+ && pip3 install ghpr-py==0.1.3 git-didi==0.1.1
 
 WORKDIR /root
 SHELL ["/bin/bash", "-ic"]

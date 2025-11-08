@@ -1,5 +1,5 @@
 # git-helpers
-[1,789](#count-completions) Git aliases and scripts.
+[1,790](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -127,7 +127,6 @@ Pass the above SHAs to `git show`.
 <!-- `bmdf git-throw.py -- --help` -->
 ```bash
 git-throw.py --help
-# Installed 3 packages in 5ms
 # Usage: git-throw.py [OPTIONS] DST
 #
 #   "Throw" (squash) uncommitted changes onto an arbitrary previous commit.
@@ -269,7 +268,6 @@ Create a commit with a given tree and parents:
 <!-- `bmdf -- github_run_list.py --help` -->
 ```bash
 github_run_list.py --help
-# Installed 3 packages in 1ms
 # Usage: github_run_list.py [OPTIONS] [REF]
 #
 #   Wrapper around `gh run list`, supporting multiple values and fuzzy-matching
@@ -329,7 +327,6 @@ alias ghaw="github_run_list.py -aw"
 <!-- `bmdf -- git-set-attr-type.py --help` -->
 ```bash
 git-set-attr-type.py --help
-# Installed 3 packages in 2ms
 # Usage: git-set-attr-type.py [OPTIONS] EXTENSION [NAME]
 #
 #   Manage "attr type" for one or more file extensions.
@@ -362,12 +359,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1789 completions added by installing git-helpers
+# 1790 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 267
 # - 4 chars: 716
-# - 5 chars: 367
+# - 5 chars: 368
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -378,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1789 new completions:
+1790 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -820,11 +817,11 @@ gdcp       = g diff --cached --submodule=diff
 gdcq       = g diff --cached --quiet
 gdcs       = g diff --numstat --cached
 gdcw       = g diff --cached -w
-gddc       = !git-didi commits
+gddc       = git-didi commits
 gddf       = g diff-filter
-gddi       = !git-didi
-gddp       = !git-didi patch
-gdds       = !git-didi stat
+gddi       = git-didi
+gddp       = git-didi patch
+gdds       = git-didi stat
 gdeq       = g diff --exit-code --quiet
 gdex       = g diff --exit-code
 gdfm       = g diff-filter M
@@ -1481,10 +1478,11 @@ gdcss      = g diff --cached --submodule=short
 gdcsw      = g diff --cached --numstat -w
 gdcw-      = g diff --cached -w --
 gdcws      = g diff --cached -w --numstat
-gddcc      = !git-didi commits --color=always
-gddpc      = !git-didi patch --color=always
-gddpq      = !git-didi patch --quiet
-gddsc      = !git-didi stat --color=always
+gddcc      = git-didi commits --color=always
+gddpc      = git-didi patch --color=always
+gddpq      = git-didi patch --quiet
+gddsc      = git-didi stat --color=always
+gddsw      = git-didi swatches
 gdgif      = g diff-git.py
 gdmbr      = g delete-merged-branches --remote
 gdnoa      = g diff-name-only-all
@@ -1563,7 +1561,7 @@ ghpbs      = github_protected_branches
 ghpom      = github-placeholder-main.py
 ghprc      = ghpr clone
 ghprd      = ghpr diff
-ghpri      = ghpr init
+ghpri      = ghpr init "$@" && cd gh/new
 ghprl      = ghpr pull
 ghpro      = ghpr open
 ghprp      = ghpr push
@@ -1773,7 +1771,7 @@ gcmtrr     = g commit-tree-reset
 gcococ     = g conflicting-checkout-ours-and-continue
 gcoctc     = g conflicting-checkout-theirs-and-continue
 gcppam     = g commit-push-parents -a -m
-gddpqc     = !git-didi patch --quiet --color=always
+gddpqc     = git-didi patch --quiet --color=always
 gdnpgt     = g config --global diff.noprefix true
 gdnpgu     = g config --global --unset diff.noprefix
 gdstph     = g diff --stat HEAD^..HEAD
@@ -1915,8 +1913,8 @@ github-submodule-check-commits = git-helpers/submodule/github-submodule-check-co
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
-1345 completions present before and after installing git-helpers
-1789 completions added by installing git-helpers (0 removed, 3134 total)
+1631 completions present before and after installing git-helpers
+1790 completions added by installing git-helpers (0 removed, 3421 total)
 ```
 </details>
 

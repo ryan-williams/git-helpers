@@ -91,12 +91,6 @@ alias gndh="g ndh"
 alias gndn="g ndn"
 
 # Diff of diffs (git-didi - install via: pipx install git-didi)
-alias gddi="g ddi"
-alias gdds="g dds"
-alias gddsc="g ddsc"
-alias gddp="g ddp"
-alias gddpc="g ddpc"
-alias gddpq="g ddpq"
-alias gddpqc="g ddpqc"
-alias gddc="g ddc"
-alias gddcc="g ddcc"
+if command -v git-didi &>/dev/null; then
+    eval "$(git-didi shell-integration bash)"
+fi
