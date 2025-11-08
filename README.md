@@ -1,5 +1,5 @@
 # git-helpers
-[1,793](#count-completions) Git aliases and scripts.
+[1,789](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -39,6 +39,31 @@ echo ". $PWD/.git-rc" >> ~/.bashrc  # Configure new shells to load `git-helpers`
 This will load all aliases from this repo, add relevant directories to `$PATH`, and set up `PYTHONPATH` for Python utilities.
 
 `pip install -r requirements.txt` ensures `python-dateutil` is installed, which some scripts here require.
+
+### Optional: GitHub PR/Issue Management
+
+The shell integrations include aliases for [`ghpr`], a CLI tool for managing GitHub PRs and Issues locally with bidirectional sync and gist mirroring. Install it separately via:
+
+```bash
+pipx install ghpr-py
+```
+
+See the [ghpr documentation] for more details.
+
+[ghpr documentation]: https://github.com/runsascoded/ghpr
+
+### Optional: Diff-of-Diffs Tool
+
+The shell integrations include aliases for [`git-didi`], a CLI tool for comparing patches between Git ranges (diff-of-diffs). Install it separately via:
+
+```bash
+pipx install git-didi
+```
+
+See the [git-didi documentation] for more details.
+
+[`git-didi`]: https://github.com/ryan-williams/git-didi
+[git-didi documentation]: https://github.com/ryan-williams/git-didi
 
 
 ## Commands <a id="commands"></a>
@@ -102,6 +127,7 @@ Pass the above SHAs to `git show`.
 <!-- `bmdf git-throw.py -- --help` -->
 ```bash
 git-throw.py --help
+# Installed 3 packages in 5ms
 # Usage: git-throw.py [OPTIONS] DST
 #
 #   "Throw" (squash) uncommitted changes onto an arbitrary previous commit.
@@ -243,6 +269,7 @@ Create a commit with a given tree and parents:
 <!-- `bmdf -- github_run_list.py --help` -->
 ```bash
 github_run_list.py --help
+# Installed 3 packages in 1ms
 # Usage: github_run_list.py [OPTIONS] [REF]
 #
 #   Wrapper around `gh run list`, supporting multiple values and fuzzy-matching
@@ -302,6 +329,7 @@ alias ghaw="github_run_list.py -aw"
 <!-- `bmdf -- git-set-attr-type.py --help` -->
 ```bash
 git-set-attr-type.py --help
+# Installed 3 packages in 2ms
 # Usage: git-set-attr-type.py [OPTIONS] EXTENSION [NAME]
 #
 #   Manage "attr type" for one or more file extensions.
@@ -334,12 +362,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1793 completions added by installing git-helpers
+# 1789 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 267
-# - 4 chars: 717
-# - 5 chars: 368
+# - 4 chars: 716
+# - 5 chars: 367
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -350,7 +378,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1793 new completions:
+1789 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -792,11 +820,11 @@ gdcp       = g diff --cached --submodule=diff
 gdcq       = g diff --cached --quiet
 gdcs       = g diff --numstat --cached
 gdcw       = g diff --cached -w
-gddc       = !git-didi.py commits
+gddc       = !git-didi commits
 gddf       = g diff-filter
-gddi       = !git-didi.py
-gddp       = !git-didi.py patch
-gdds       = !git-didi.py stat
+gddi       = !git-didi
+gddp       = !git-didi patch
+gdds       = !git-didi stat
 gdeq       = g diff --exit-code --quiet
 gdex       = g diff --exit-code
 gdfm       = g diff-filter M
@@ -956,7 +984,6 @@ ghow       = github-open-web.py
 ghpb       = github_protected_branches
 ghpj       = gh api -H "Accept: application/vnd.github+json"
 ghpm       = github-placeholder-main.py
-ghpr       = github-pr.py
 ghpx       = gh api -X
 ghr1       = github_run_list.py -L1
 ghra       = github_run_list.py -a
@@ -1454,10 +1481,10 @@ gdcss      = g diff --cached --submodule=short
 gdcsw      = g diff --cached --numstat -w
 gdcw-      = g diff --cached -w --
 gdcws      = g diff --cached -w --numstat
-gddcc      = !git-didi.py commits --color=always
-gddpc      = !git-didi.py patch --color=always
-gddpq      = !git-didi.py patch --quiet
-gddsc      = !git-didi.py stat --color=always
+gddcc      = !git-didi commits --color=always
+gddpc      = !git-didi patch --color=always
+gddpq      = !git-didi patch --quiet
+gddsc      = !git-didi stat --color=always
 gdgif      = g diff-git.py
 gdmbr      = g delete-merged-branches --remote
 gdnoa      = g diff-name-only-all
@@ -1534,15 +1561,14 @@ ghowg      = github-open-web.py -g
 ghowr      = github-open-web.py -r
 ghpbs      = github_protected_branches
 ghpom      = github-placeholder-main.py
-ghprc      = github-pr.py clone
-ghprd      = github-pr.py diff
-ghpri      = github-pr.py init
-ghprl      = github-pr.py pull
-ghpro      = github-pr.py open
-ghprp      = github-pr.py push
+ghprc      = ghpr clone
+ghprd      = ghpr diff
+ghpri      = ghpr init
+ghprl      = ghpr pull
+ghpro      = ghpr open
+ghprp      = ghpr push
 ghprr      = gh pr
-ghprs      = github-pr.py sync
-ghpru      = github-pr.py upload
+ghpru      = ghpr upload
 ghr1b      = github_run_list.py -L1 -b
 ghraj      = gh_run_and_job
 ghrbb      = github_run_list.py -b
@@ -1747,7 +1773,7 @@ gcmtrr     = g commit-tree-reset
 gcococ     = g conflicting-checkout-ours-and-continue
 gcoctc     = g conflicting-checkout-theirs-and-continue
 gcppam     = g commit-push-parents -a -m
-gddpqc     = !git-didi.py patch --quiet --color=always
+gddpqc     = !git-didi patch --quiet --color=always
 gdnpgt     = g config --global diff.noprefix true
 gdnpgu     = g config --global --unset diff.noprefix
 gdstph     = g diff --stat HEAD^..HEAD
@@ -1761,15 +1787,14 @@ ggracl     = g graph -ac -l
 gh_job     = gh_run_and_job "$@" | jq ".job"
 ghblrs     = g head-before-last-rebase %h
 ghossa     = github_open_settings_secrets_actions
-ghprcr     = github-pr.py create
-ghpria     = github-pr.py ingest-attachments
-ghprog     = github-pr.py open -g
-ghprpF     = github-pr.py push -F
-ghprpg     = github-pr.py push -g
-ghprpn     = github-pr.py push -n
-ghprpo     = github-pr.py push -o
-ghprsh     = github-pr.py show
-ghprsn     = github-pr.py sync -n
+ghprcr     = ghpr create
+ghpria     = ghpr ingest-attachments
+ghprog     = ghpr open -g
+ghprpF     = ghpr push -F
+ghprpg     = ghpr push -g
+ghprpn     = ghpr push -n
+ghprpo     = ghpr push -o
+ghprsh     = ghpr show
 ghri1b     = github_run_list.py -iL1 -b
 ghrvjs     = gh_run_view_jobs
 ghrvlj     = gh run view --log --job
@@ -1801,8 +1826,8 @@ gtwap5     = g throw.py -a HEAD~5
 gxcapm     = <git repo dir> ['git capm' args...]
 issues     = git-helpers/github/issues
 ggracle    = g graph -ac -l -e
-ghprcrn    = github-pr.py create -n
-ghprshg    = github-pr.py show -g
+ghprcrn    = ghpr create -n
+ghprshg    = ghpr show -g
 gist-id    = git-helpers/gist/gist-id  # If exactly one Git remote is a gist URL, return its ID. Otherwise, check whether `github_default_remote` is a gist URL and return its ID. Otherwise, error.
 gsmurrr    = g submodule update --recursive --rebase --remote
 gist-dir   = git-helpers/gist/gist-dir
@@ -1820,7 +1845,6 @@ gist-upload = git-helpers/gist/gist-upload  # Upload files to GitHub Gist preser
 git_set_sha = export sha="$(git sha)"
 clone_org.py = git-helpers/github/clone_org.py  # Add current directory to path for local imports
 gh_open_last
-github-pr.py = git-helpers/github/github-pr.py  # Add parent directory to path for local imports
 gh_runners_ls
 gh_runners_rm
 git_dir_curry = <exported_function_name> <git-git-dir_param1> <git-git-dir_param2> ...
@@ -1858,6 +1882,7 @@ github-workflows.py = git-helpers/github/github-workflows.py  # Add parent direc
 github_open_actions = open "$(github_url)/actions"
 github_open_profile
 github_open_web_ref = [ref]
+test-gddp-colors.sh = git-helpers/diff/test-gddp-colors.sh  # Test script to display gddp color swatches for all 6 nested diff patterns
 gh_last_workflow_run = gh run list -L 1 --json databaseId | jq -r .[0].databaseId
 gist-get-description = git-helpers/gist/gist-get-description  # Get a GitHub Gist's description
 gist-set-description = git-helpers/gist/gist-set-description  # Set or update a GitHub Gist's description
@@ -1891,7 +1916,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1345 completions present before and after installing git-helpers
-1793 completions added by installing git-helpers (0 removed, 3138 total)
+1789 completions added by installing git-helpers (0 removed, 3134 total)
 ```
 </details>
 
@@ -1960,5 +1985,3 @@ history | awk '{print $2}' | grep '^g' | sort | uniq -c | sort -rn | head -n 30
 [`git-show-rebase-head`]: rebase/git-show-rebase-head
 [`git-show-cherry-pick-head`]: cherry-pick/git-show-cherry-pick-head
 [`git-set-attr-type.py`]: config/git-set-attr-type.py
-
-[`github-pr.py`]: github/github-pr.py
