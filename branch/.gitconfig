@@ -48,9 +48,8 @@
 
   mtb = mount-branch
 
-  bd = branch-delete
-  bdf = branch-delete -f
-  bdd = branch-delete -f
+  bd = branch-delete -f
+  bds = branch-delete
 
   upstream = rev-parse --abbrev-ref --symbolic-full-name @{u}
   us = upstream
