@@ -50,7 +50,7 @@
 
   bd = branch-delete
   bdf = branch-delete -f
-  bD = branch-delete -f
+  bdd = branch-delete -f
 
   upstream = rev-parse --abbrev-ref --symbolic-full-name @{u}
   us = upstream

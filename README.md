@@ -1,5 +1,5 @@
 # git-helpers
-[1,790](#count-completions) Git aliases and scripts.
+[1,791](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,11 +359,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1790 completions added by installing git-helpers
+# 1791 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
-# - 3 chars: 267
-# - 4 chars: 716
+# - 3 chars: 266
+# - 4 chars: 717
 # - 5 chars: 368
 ```
 
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1790 new completions:
+1791 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -412,10 +412,9 @@ gan        = g add -n
 gap        = g add -p
 gar        = g add-rebase-continue
 gau        = g add -u
-gbD        = g branch -D
 gbb        = !git-branches.py -b
 gbc        = g branch-reset -c
-gbd        = g branch -D
+gbd        = g branch-delete
 gbe        = g branch-exists
 gbf        = g branch-reset
 gbh        = g blob-hash
@@ -698,7 +697,8 @@ gaut       = g author
 gawt       = g amend-worktree
 gb1c       = !git-blob-first-commit
 gbcc       = g copy-branch-checkout
-gbdf       = g branch -D
+gbdd       = g branch-delete -f
+gbdf       = g branch-delete -f
 gbeb       = git bisect-earliest-bad
 gber       = g be -r
 gbfc       = g branch-reset -c
@@ -1914,7 +1914,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1631 completions present before and after installing git-helpers
-1790 completions added by installing git-helpers (0 removed, 3421 total)
+1791 completions added by installing git-helpers (0 removed, 3422 total)
 ```
 </details>
 
