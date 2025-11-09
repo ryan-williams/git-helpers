@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Delete git branches, with support for wildcard patterns
+# Usage: git branch-delete [-f] <branch-pattern>...
+
+set -e
+
+force=
+if [ "$1" = "-f" ] || [ "$1" = "-F" ]; then
+    force="-D"
+    shift
+else
+    force="-d"
+fi
+
+if [ $# -eq 0 ]; then
+    echo "Usage: git branch-delete [-f] <branch-pattern>..." >&2
+    echo "  -f: force delete (use -D instead of -d)" >&2
+    echo "  Supports wildcard patterns like 'feature-*'" >&2
+    exit 1
+fi
+
+branches=()
+for pattern in "$@"; do
+    # Check if pattern contains wildcards
+    if [[ "$pattern" == *\** ]] || [[ "$pattern" == *\?* ]] || [[ "$pattern" == *\[* ]]; then
+        # Expand pattern using git branch --list
+        while IFS= read -r branch; do
+            # git branch output has leading spaces, strip them
+            branch="${branch#"${branch%%[![:space:]]*}"}"
+            [ -n "$branch" ] && branches+=("$branch")
+        done < <(git branch --list "$pattern")
+    else
+        # No wildcards, use as-is
+        branches+=("$pattern")
+    fi
+done
+
+if [ ${#branches[@]} -eq 0 ]; then
+    echo "No branches matched the pattern(s)" >&2
+    exit 1
+fi
+
+git branch "$force" "${branches[@]}"
