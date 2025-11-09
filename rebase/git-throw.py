@@ -21,7 +21,8 @@ from utz.cli import arg, cmd, flag, opt
 def main(all, message, dry_run, dst):
     """"Throw" (squash) uncommitted changes onto an arbitrary previous commit."""
     dst = proc.line('git', 'log', '-1', '--format=%H', dst)
-    root = proc.line('git', 'rev-list', '--max-parents=0', 'HEAD')
+    roots = proc.lines('git', 'rev-list', '--max-parents=0', 'HEAD')
+    root = roots[0] if len(roots) == 1 else None
     if not message:
         message = f'Temporary commit, to be squashed into {dst}'
 
@@ -34,7 +35,7 @@ def main(all, message, dry_run, dst):
     else:
         err(f'Would run: {shlex.join(commit_cmd)}')
 
-    if root == dst:
+    if root and root == dst:
         rebase_args = [ '--root' ]
         log_args = []
     else:
