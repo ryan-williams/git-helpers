@@ -1,5 +1,5 @@
 # git-helpers
-[1,792](#count-completions) Git aliases and scripts.
+[1,807](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,12 +359,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1792 completions added by installing git-helpers
+# 1807 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
 # - 3 chars: 266
-# - 4 chars: 718
-# - 5 chars: 368
+# - 4 chars: 721
+# - 5 chars: 376
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1792 new completions:
+1807 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -460,7 +460,7 @@ gds        = g diff --numstat
 gdt        = g diff-tree
 gdu        = g diff -u
 gdw        = g diff -w
-gdx        = g diff-x
+gdx        = git diff-x
 gea        = git_expand_alias
 gec        = g edit-commit
 gef        = g config --global --get-all core.excludesfile
@@ -869,9 +869,12 @@ gdw-       = g diff -w --
 gdwc       = g diff -w --cached
 gdwh       = g diff -w HEAD
 gdws       = g diff -w --numstat
-gdxc       = g diff-x -c
-gdxr       = g diff-x -R
-gdxw       = g diff-x -w
+gdxc       = git diff-x --color
+gdxf       = git diff-x -R
+gdxn       = git diff-x --no-color
+gdxr       = git diff-x -r
+gdxs       = git diff-x --staged
+gdxw       = git diff-x -w
 geav       = git_expand_alias -v
 gecm       = g edit-commit -m
 gecn       = g edit-commit -n
@@ -1502,9 +1505,17 @@ gdstp      = g diff --stat HEAD^
 gdstw      = g diff --stat -w
 gdthc      = g diff-theirs-conflicting
 gdts1      = !git --no-pager dates -1
-gdxcr      = g diff-x -cR
-gdxrr      = g diff-x -r
-gdxwr      = g diff-x -wR
+gdxfc      = git diff-x -R --color
+gdxfn      = git diff-x -R --no-color
+gdxfw      = git diff-x -Rw
+gdxrc      = git diff-x -r --color
+gdxrn      = git diff-x -r --no-color
+gdxrw      = git diff-x -rw
+gdxsc      = git diff-x --staged --color
+gdxsn      = git diff-x --staged --no-color
+gdxsw      = git diff-x --staged -w
+gdxwc      = git diff-x -w --color
+gdxwn      = git diff-x -w --no-color
 gecnp      = g edit-commit -n -p
 gecnx      = g edit-commit -n -x
 gecpm      = g edit-commit -p -m
@@ -1774,8 +1785,12 @@ gddpqc     = git-didi patch --quiet --color=always
 gdnpgt     = g config --global diff.noprefix true
 gdnpgu     = g config --global --unset diff.noprefix
 gdstph     = g diff --stat HEAD^..HEAD
-gdxcrr     = g diff-x -cr
-gdxwrr     = g diff-x -wr
+gdxfwc     = git diff-x -Rw --color
+gdxfwn     = git diff-x -Rw --no-color
+gdxrwc     = git diff-x -rw --color
+gdxrwn     = git diff-x -rw --no-color
+gdxswc     = git diff-x --staged -w --color
+gdxswn     = git diff-x --staged -w --no-color
 gecrpn     = g edit-commit -r -p -n
 gfiles     = g diff-tree --no-commit-id --name-only -r
 gfiles     = g diff-tree --no-commit-id --name-only -r
@@ -1910,8 +1925,8 @@ github-submodule-check-commits = git-helpers/submodule/github-submodule-check-co
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
-1631 completions present before and after installing git-helpers
-1792 completions added by installing git-helpers (0 removed, 3423 total)
+1635 completions present before and after installing git-helpers
+1807 completions added by installing git-helpers (0 removed, 3442 total)
 ```
 </details>
 

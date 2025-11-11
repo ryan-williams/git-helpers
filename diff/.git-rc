@@ -63,15 +63,12 @@ alias gdu="g du"
 alias gdw="g dw"
 alias gdwc="g dwc"
 alias gdwh="g dwh"
-alias gdx="g dx"
-alias gdxc="g dxc"
-alias gdxcr="g dxcr"
-alias gdxcrr="g dxcrr"
-alias gdxr="g dxr"
-alias gdxrr="g dxrr"
-alias gdxw="g dxw"
-alias gdxwr="g dxwr"
-alias gdxwrr="g dxwrr"
+# dffs - diff/comm utilities (https://github.com/runsascoded/dffs)
+# Install via: pipx install dffs
+# Only load git-diff-x aliases (gdx*), not diff-x (dx*) or comm-x (cx*)
+if command -v dffs-shell-integration &>/dev/null; then
+    eval "$(dffs-shell-integration bash git-diff-x)"
+fi
 
 alias gd-="g d-"
 alias gdw-="g dw-"
