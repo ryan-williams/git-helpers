@@ -10,10 +10,60 @@ set -- "${@:1:$(($#-1))}"
 # split last arg by commas
 IFS=',' read -r -a remotes <<< "$last"
 
+# Check if --tags is in the arguments
+has_tags=false
+args_without_tags=()
+for arg in "$@"; do
+  if [[ "$arg" == "--tags" ]]; then
+    has_tags=true
+  else
+    args_without_tags+=("$arg")
+  fi
+done
+
+fetch_remote() {
+  local remote="$1"
+  shift
+  local args=("$@")
+
+  if [[ "$has_tags" == "true" ]]; then
+    # Fetch branches first (without --tags)
+    git fetch "${args_without_tags[@]}" "$remote"
+    local branch_exit=$?
+
+    # Then try to fetch tags (may fail due to conflicts)
+    git fetch --tags "${args_without_tags[@]}" "$remote" 2>&1
+    local tag_exit=$?
+    if [[ $tag_exit -ne 0 ]]; then
+      echo "Warning: Failed to fetch some tags from $remote (tag conflicts), but branches were updated" >&2
+    fi
+
+    # Return branch exit code if it failed, otherwise return tag exit code
+    if [[ $branch_exit -ne 0 ]]; then
+      return $branch_exit
+    else
+      return $tag_exit
+    fi
+  else
+    # Normal fetch without special --tags handling
+    git fetch "$@" "$remote"
+  fi
+}
+
+exit_code=0
 if which parallel &>/dev/null; then
-  parallel -j0 -k --env PATH git fetch "$@" ::: "${remotes[@]}"
+  export -f fetch_remote
+  export has_tags
+  export -a args_without_tags
+  parallel -j0 -k --env PATH --env fetch_remote --env has_tags --env args_without_tags \
+    fetch_remote ::: "${remotes[@]}" ::: "$@"
+  exit_code=$?
 else
   for remote in "${remotes[@]}"; do
-      git fetch "$@" "$remote"
+    fetch_remote "$remote" "$@"
+    if [[ $? -ne 0 ]]; then
+      exit_code=$?
+    fi
   done
 fi
+exit $exit_code
