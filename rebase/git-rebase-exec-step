@@ -32,10 +32,10 @@ if [ "$1" = -a ] || [ "$1" = --amend ]; then
 fi
 
 echo "$(basename "$0") executing: $*" >&2
-"$@"
+eval "$*"
 
+sha="$(git log -1 --format=%h)"
 if ! git diff --exit-code; then
-  sha="$(git log -1 --format=%h)"
   echo -n "$sha: found updated files; " >&2
   if [ -n "$amend" ]; then
     echo "amending" >&2

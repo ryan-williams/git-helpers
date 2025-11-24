@@ -22,7 +22,7 @@ command="$1"
 shift
 
 # Use git-rebase-exec-step with -a flag to amend changes
-exec_cmd="git-rebase-exec-step -a $command"
+exec_cmd="git-rebase-exec-step -a '$command'"
 
 # Run the rebase with the exec command
 echo "Starting rebase with automatic amending for: $command" >&2
