@@ -1108,8 +1108,7 @@ gms0       = g msg HEAD
 gms1       = g msg HEAD@{1}
 gms2       = g msg HEAD@{2}
 gms3       = g msg HEAD@{3}
-gmsg      No manual entry for git-msg
- = g msg
+gmsg       = g msg
 gmsp       = g msg HEAD^
 gmtb       = g mount-branch
 gmun       = g merge upstream/HEAD --no-edit
@@ -1620,8 +1619,7 @@ gms0p      = g msgp HEAD
 gms1p      = g msgp HEAD@{1}
 gms2p      = g msgp HEAD@{2}
 gms3p      = g msgp HEAD@{3}
-gmsgp     No manual entry for gitmsgp
- = g msgp
+gmsgp      = g msgp
 gmsh1      = g msg HEAD@{1}
 gmspp      = g msgp HEAD^
 gmtnb      = g mergetool -y -t nbdime
@@ -1869,11 +1867,9 @@ gh_variables_eval = ghv --json name,value | jr '.[] | .name+"="+.value'
 github-open-pr.py = git-helpers/github/github-open-pr.py  # Add parent directory to path for local imports
 github_owner_name = [remote name]
 github-open-web.py = git-helpers/github/github-open-web.py  # Add parent directory to path to import util modules
-github_remote_pathNo manual entry for git-remote-path
- = git remote-path "$@" "$(github_default_remote)"
+github_remote_path = git remote-path "$@" "$(github_default_remote)"
 github_run_list.py = git-helpers/github/github_run_list.py  # Wrapper around `gh run list`, supporting:
-gitlab_remote_pathNo manual entry for git-remote-path
- = git remote-path "$@" "$(gitlab_remote)"
+gitlab_remote_path = git remote-path "$@" "$(gitlab_remote)"
 init-mirror-remote = git-helpers/remote/init-mirror-remote
 gh_repo_description = gh repo view --json description "$@" | jq -r .description
 github-gist-file.py = git-helpers/github/github-gist-file.py

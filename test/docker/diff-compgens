@@ -63,7 +63,7 @@ lookup_name() {
     (( s=10-$n ))
     printf "% ${s}s" ""
   fi
-  gea="$(gea "$name" || true)"
+  gea="$(gea "$name" 2>/dev/null || true)"
   # Filter out uv script metadata markers
   gea="$(echo "$gea" | sed 's/  # \/\/\/ script$//')"
   if [ -n "$gea" ]; then
