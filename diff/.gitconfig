@@ -52,6 +52,8 @@
   dsp  = diff --numstat HEAD^
   dsph = diff --numstat HEAD^..HEAD
   dst  = diff --stat
+  dsct = diff --cached --stat
+  dcst = diff --cached --stat
   dstc = diff --stat --cached
   dsth = diff --stat HEAD
   dstw = diff --stat -w
