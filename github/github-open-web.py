@@ -55,22 +55,70 @@ def get_gist_id():
     return None
 
 
+def parse_ref_arg(ref_arg):
+    """Parse a ref argument like 'r/dist' or 'origin/main' into (remote, branch).
+
+    Returns (remote, branch) tuple. If no '/' found, assumes it's a remote name.
+    """
+    if not ref_arg:
+        return None, None
+
+    # Check if it looks like remote/branch
+    if '/' in ref_arg:
+        # Could be remote/branch - verify the remote exists
+        parts = ref_arg.split('/', 1)
+        potential_remote = parts[0]
+        potential_branch = parts[1]
+
+        try:
+            check_output(['git', 'remote', 'get-url', potential_remote], stderr=DEVNULL)
+            # Remote exists, so this is remote/branch
+            return potential_remote, potential_branch
+        except CalledProcessError:
+            # Remote doesn't exist, could be a branch name with '/' in it
+            # Fall through to treat it as a branch
+            return None, ref_arg
+
+    # No slash - check if it's a remote name
+    try:
+        check_output(['git', 'remote', 'get-url', ref_arg], stderr=DEVNULL)
+        return ref_arg, None
+    except CalledProcessError:
+        # Not a remote, could be a branch name
+        return None, ref_arg
+
+
 @click.command('github-open-web')
 @click.option('-b', '--branch', help='Branch to open (defaults to current branch)')
 @click.option('-d', '--default', is_flag=True, help='Open default branch')
 @click.option('-r', '--remote', help='Git remote name to use (e.g. origin, upstream)')
 @click.option('-R', '--repo', help='Repository (owner/name format) or gist ID')
 @click.option('-g', '--gist', is_flag=True, help='Force gist mode')
-@click.argument('remote_arg', required=False)
-def github_open_web(branch, default, remote, repo, gist, remote_arg):
+@click.argument('ref_arg', required=False)
+@click.argument('branch_arg', required=False)
+def github_open_web(branch, default, remote, repo, gist, ref_arg, branch_arg):
     """Open GitHub repository or gist in web browser.
 
-    REMOTE_ARG: Optional remote name (alternative to -r/--remote)
+    REF_ARG: Optional remote name, branch name, or remote/branch (e.g. 'origin', 'main', 'origin/main')
+    BRANCH_ARG: Optional branch name when REF_ARG is a remote (e.g. 'ghow origin main')
     """
 
-    # If remote_arg was provided and -r wasn't used, use remote_arg as remote
-    if remote_arg and not remote:
-        remote = remote_arg
+    # Parse the ref_arg to determine remote and/or branch
+    parsed_remote, parsed_branch = parse_ref_arg(ref_arg)
+
+    # If branch_arg is provided, it overrides parsed_branch
+    if branch_arg:
+        parsed_branch = branch_arg
+        # If ref_arg was parsed as a branch (not a remote), that's an error
+        if parsed_remote is None and ref_arg:
+            stderr.write(f"Error: '{ref_arg}' is not a valid remote name\n")
+            exit(1)
+
+    # Apply parsed values if explicit options weren't provided
+    if not remote and parsed_remote:
+        remote = parsed_remote
+    if not branch and parsed_branch:
+        branch = parsed_branch
 
     # Resolve remote ref once and reuse for both gist detection and branch resolution
     resolved_ref = None
