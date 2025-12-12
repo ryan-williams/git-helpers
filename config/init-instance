@@ -36,5 +36,7 @@ git global-gitignore \
   ".jupyter" \
   ".python-version" \
   ".vite" \
-  "node_modules"
+  "node_modules" \
+  ".venv" \
+  ".envrc"
 
