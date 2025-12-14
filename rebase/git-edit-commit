@@ -79,7 +79,12 @@ plan_file="$(mktemp)"
   done
 ) > "$plan_file"
 
-git rebase-noninteractive "${dry_run[@]}" -f "$plan_file" "$ref^"
+# Check if ref is the root commit (has no parent)
+if git rev-parse --verify "$ref^" >/dev/null 2>&1; then
+  git rebase-noninteractive "${dry_run[@]}" -f "$plan_file" "$ref^"
+else
+  git rebase-noninteractive "${dry_run[@]}" -f "$plan_file" --root
+fi
 
 cleanup() {
   rm -f "$plan_file"
