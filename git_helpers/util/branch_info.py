@@ -16,7 +16,8 @@ def fixed(width, s, left_justified=False):
 
 class BranchInfo(object):
 
-    line_begin_regex = r"(?P<line_begin>^(?:(?P<is_active>\*)| ) )"
+    # Line begins with: * (active), + (checked out in worktree), or space (other)
+    line_begin_regex = r"(?P<line_begin>^(?:(?P<is_active>\*)|(?P<is_worktree>\+)| ) )"
 
     ahead_regex = "ahead (?P<ahead>[0-9]+)"
     behind_regex = "behind (?P<behind>[0-9]+)"
@@ -26,6 +27,9 @@ class BranchInfo(object):
     tracking_info_regex = r"(?:\s\[%s(?:: %s|%s)?\])?" % (
         refname_regex('tracking_name'), ahead_behind_regex, upstream_gone_regex)
 
+    # Worktree path shown for branches checked out in other worktrees: (/path/to/worktree)
+    worktree_path_regex = r"(?:\s\((?P<worktree_path>[^)]+)\))?"
+
     description_regex = r"\s(?P<description>.*)"
 
     regex_pieces = [
@@ -33,6 +37,7 @@ class BranchInfo(object):
         refname_regex('name'),
         captured_whitespace_regex('pre_hash'),
         hash_regex,
+        worktree_path_regex,
         tracking_info_regex,
         description_regex
     ]
@@ -76,6 +81,7 @@ class BranchInfo(object):
         self.name = self.get('name')
         self.pre_hash = self.get('pre_hash')
         self.hash = self.get('hash')
+        self.worktree_path = self.get('worktree_path')
 
         self.remote = self.get('tracking_name')
 
