@@ -19,8 +19,23 @@ if ! declare -f __git_complete &>/dev/null; then
     done
 fi
 
-# Only set up completions if __git_complete is available
-if declare -f __git_complete &>/dev/null; then
+# Only set up completions if __git_complete AND _git_status are available
+# Both are needed: __git_complete creates wrappers, _git_* functions do the actual completion
+if ! declare -f _git_status &>/dev/null; then
+    # _git_status not loaded yet - source git completions directly
+    for completion_file in \
+        /opt/homebrew/share/bash-completion/completions/git \
+        /usr/local/share/bash-completion/completions/git \
+        /usr/share/bash-completion/completions/git \
+        ~/.git-completion.bash; do
+        if [ -f "$completion_file" ]; then
+            source "$completion_file"
+            break
+        fi
+    done
+fi
+
+if declare -f __git_complete &>/dev/null && declare -f _git_status &>/dev/null; then
     # Use __git_complete for standard git alias completions
     __git_complete gco _git_checkout
     __git_complete gb _git_branch
