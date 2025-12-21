@@ -43,6 +43,19 @@ def check(*cmd, stdout=DEVNULL, stderr=DEVNULL, **kwargs):
         return False
 
 
+def get_repo_root():
+    """Get the root directory of the git repository."""
+    return check_output(['git', 'rev-parse', '--show-toplevel']).decode().strip()
+
+
+def to_repo_path(path):
+    """Convert a path (possibly relative to cwd) to a path relative to repo root."""
+    from os.path import abspath, relpath
+    repo_root = get_repo_root()
+    abs_path = abspath(path)
+    return relpath(abs_path, repo_root)
+
+
 def get_changed_imgs(refspec, *paths):
     return [
         path
@@ -73,10 +86,11 @@ def add_watermark(input_path, output_path, label, ref_info):
 @click.option('-b', '--before', 'before_ref', help='Git ref for the "before" image; default: `HEAD`')
 @click.option('-d', '--delay', default='100', help='Gif delay between frames, in 1/100ths of a second')
 @click.option('-f', '--force', is_flag=True, help='Overwrite an existing .gif at the --output path')
-@click.option('-o', '--output', 'out_path', help="Write resulting .gif(s) here. By default, they're written to a tempdir, and cleaned up on program exit. If more than one <path> is passed, this is interpreted as a directory, .gif paths are relativized inside it, and their extensions are replaced with `.gif`")
+@click.option('-o', '--output', 'out_dir', help="Write resulting .gif(s) to this directory (default: next to source image)")
 @click.option('-O', '--no-open', is_flag=True, help='Skip `open`ing the generated .gif')
+@click.option('-t', '--tmpdir', 'use_tmpdir', is_flag=True, help='Write .gif(s) to a tmpdir (cleaned up on exit)')
 @click.argument('paths', nargs=-1)  # Paths to Git-tracked image to make diff-gifs of
-def main(before_ref, after_ref, delay, force, out_path, no_open, paths):
+def main(before_ref, after_ref, delay, force, out_dir, no_open, use_tmpdir, paths):
     if after_ref:
         if not before_ref:
             before_ref = f'{after_ref}^'
@@ -95,20 +109,17 @@ def main(before_ref, after_ref, delay, force, out_path, no_open, paths):
     else:
         paths = get_changed_imgs(refspec)
 
-    out_dir = None
-    tmp_out_paths = True
-    if out_path:
-        tmp_out_paths = False
-        if len(paths) > 1:
-            out_dir = out_path
+    tmp_out_paths = use_tmpdir
 
     out_paths = []
     with TemporaryDirectory() as tmpdir:
         for path in paths:
+            # Convert to repo-relative path for git show
+            repo_path = to_repo_path(path)
             name, ext = splitext(path)
             before_path_raw = f'{tmpdir}/before_raw{ext}'
             with open(before_path_raw, 'wb') as f:
-                run('git', 'show', f'{before_ref}:{path}', stdout=f)
+                run('git', 'show', f'{before_ref}:{repo_path}', stdout=f)
 
             # Get short SHA for before ref
             before_sha = check_output(['git', 'rev-parse', '--short', before_ref]).decode().strip()
@@ -116,7 +127,7 @@ def main(before_ref, after_ref, delay, force, out_path, no_open, paths):
             if after_ref:
                 after_path_raw = f'{tmpdir}/after_raw{ext}'
                 with open(after_path_raw, 'wb') as f:
-                    run('git', 'show', f'{after_ref}:{path}', stdout=f)
+                    run('git', 'show', f'{after_ref}:{repo_path}', stdout=f)
                 after_sha = check_output(['git', 'rev-parse', '--short', after_ref]).decode().strip()
                 after_info = f'{after_ref} ({after_sha})'
             else:
@@ -131,22 +142,25 @@ def main(before_ref, after_ref, delay, force, out_path, no_open, paths):
             add_watermark(before_path_raw, before_path, 'Before', f'{before_ref} ({before_sha})')
             add_watermark(after_path_raw, after_path, 'After', after_info)
 
-            if out_dir:
-                out_path = f'{out_dir}/{name}.gif'
-                makedirs(dirname(out_path), exist_ok=True)
-            elif len(paths) == 1 and out_path:
-                out_path = f'{name}.gif'
+            basename = splitext(path.split('/')[-1])[0]
+            if use_tmpdir:
+                cur_out_path = f'{tmpdir}/{basename}.gif'
+            elif out_dir:
+                cur_out_path = f'{out_dir}/{basename}.gif'
+                makedirs(out_dir, exist_ok=True)
             else:
-                out_path = f'{tmpdir}/{name}.gif'
-            if exists(out_path):
+                # Default: put .gif next to the source image (using original path)
+                cur_out_path = f'{name}.gif'
+                if dirname(cur_out_path):
+                    makedirs(dirname(cur_out_path), exist_ok=True)
+            if exists(cur_out_path):
                 if force:
-                    stderr(f'Overwriting {out_path}')
+                    stderr(f'Overwriting {cur_out_path}')
                 else:
-                    raise RuntimeError(f'--output {out_path} exists; pass -f/--force to overwrite')
+                    raise RuntimeError(f'--output {cur_out_path} exists; pass -f/--force to overwrite')
 
-            makedirs(dirname(out_path), exist_ok=True)
-            run('magick', '-delay', delay, '-dispose', 'previous', before_path, after_path, out_path)
-            out_paths.append(out_path)
+            run('magick', '-delay', delay, '-dispose', 'previous', before_path, after_path, cur_out_path)
+            out_paths.append(cur_out_path)
 
         do_open = not no_open
         if do_open:
