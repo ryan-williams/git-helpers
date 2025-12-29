@@ -49,7 +49,8 @@ version_from_diff() {
 }
 
 if [ $# -eq 0 ]; then
-  msg="$(git msg)"
+  # Use commit subject (first line)
+  msg="$(git subject)"
   if [[ $msg =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     preserve_tag "$msg"
   else
