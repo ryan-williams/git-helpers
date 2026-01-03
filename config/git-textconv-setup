@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Configure textconv for a file pattern
+# Usage: git textconv-setup <cmd> <pattern> [type]
+# Example: git textconv-setup pqc "*.pqt"
+
+set -eo pipefail
+
+err() { echo "$@" >&2; }
+
+if [ $# -lt 2 ]; then
+    err "Usage: $0 <cmd> <pattern> [type]"
+    err "  cmd:     command to convert files to text (e.g., pqc)"
+    err "  pattern: gitattributes pattern (e.g., *.pqt)"
+    err "  type:    diff type name (default: cmd name)"
+    exit 1
+fi
+
+cmd="$1"
+pattern="$2"
+type="${3:-$cmd}"
+
+err "Setting diff.$type.textconv = $cmd"
+git config "diff.$type.textconv" "$cmd"
+
+err "Setting diff.$type.cachetextconv = true"
+git config "diff.$type.cachetextconv" true
+
+# Add to .gitattributes if not already present
+escaped_pattern="${pattern//\*/\\*}"
+if ! grep -qE "^${escaped_pattern}[[:space:]]+diff=$type" .gitattributes 2>/dev/null; then
+    echo "$pattern diff=$type" >> .gitattributes
+    err "Added '$pattern diff=$type' to .gitattributes"
+else
+    err "'$pattern diff=$type' already in .gitattributes"
+fi

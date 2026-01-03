@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Remove textconv configuration for a diff type
+# Usage: git textconv-unset <type> [pattern]
+# Example: git textconv-unset pqc "*.pqt"
+
+set -eo pipefail
+
+err() { echo "$@" >&2; }
+
+if [ $# -lt 1 ]; then
+    err "Usage: $0 <type> [pattern]"
+    err "  type:    diff type name (e.g., pqc)"
+    err "  pattern: gitattributes pattern to remove (optional)"
+    exit 1
+fi
+
+type="$1"
+pattern="${2:-}"
+
+# Unset git config
+for key in "diff.$type.textconv" "diff.$type.cachetextconv"; do
+    if git config --get "$key" >/dev/null 2>&1; then
+        val="$(git config "$key")"
+        err "Unsetting $key (was: $val)"
+        git config --unset "$key"
+    fi
+done
+
+# Remove from .gitattributes if pattern provided
+if [ -n "$pattern" ] && [ -f .gitattributes ]; then
+    escaped_pattern="${pattern//\*/\\*}"
+    if grep -qE "^${escaped_pattern}[[:space:]]+diff=$type" .gitattributes 2>/dev/null; then
+        # Use sed to remove the line
+        sed -i.bak "/^${escaped_pattern}[[:space:]][[:space:]]*diff=$type/d" .gitattributes
+        rm -f .gitattributes.bak
+        err "Removed '$pattern diff=$type' from .gitattributes"
+    fi
+fi

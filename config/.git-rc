@@ -104,6 +104,8 @@ alias gxf="g xf"
 alias gxfa="g xfa"
 alias grft="g rft"
 alias grtg="g rtg"
+alias gtcs="g tcs"
+alias gtcu="g tcu"
 
 alias grcp="g rcp"
 

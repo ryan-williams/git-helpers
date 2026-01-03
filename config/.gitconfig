@@ -97,6 +97,8 @@
         xfa = config --global --add core.excludesfile
         rft = register-file-type
         rtg = register-file-type -g
+        tcs = textconv-setup
+        tcu = textconv-unset
 
         ip = config --global --get-all include.path
         ipa = config --global --add include.path
