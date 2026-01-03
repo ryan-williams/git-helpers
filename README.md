@@ -1,5 +1,5 @@
 # git-helpers
-[1,809](#count-completions) Git aliases and scripts.
+[1,819](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,12 +359,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1809 completions added by installing git-helpers
+# 1819 completions added by installing git-helpers
 # By length:
 # - 2 chars: 21
-# - 3 chars: 266
-# - 4 chars: 721
-# - 5 chars: 378
+# - 3 chars: 267
+# - 4 chars: 725
+# - 5 chars: 383
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1809 new completions:
+1819 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -564,6 +564,7 @@ goc        = g original-commit
 goh        = g original-head
 gom        = g octomerge
 gop        = gh gist create --web
+got        = g rebase-onto
 gpb        = g previous-branch
 gpd        = g push --delete
 gpf        = g push -f
@@ -836,6 +837,8 @@ gdno       = g diff --name-only
 gdnp       = g config diff.noprefix
 gdns       = g diff --name-status
 gdop       = gist-dir -op
+gdot       = g diff-onto-theirs
+gdou       = g diff-onto-ours
 gdp1       = g diff-vs-parent 1
 gdp2       = g diff-vs-parent 2
 gdpg       = g config --global diff.noprefix
@@ -1129,6 +1132,7 @@ gobu       = !git_open_web_branch.py -u
 gobv       = !git_open_web_branch.py -v
 gopp       = gh gist create --web -p
 gopr       = github-open-pr.py
+gors       = g ours-refspec
 gpbd       = g patch-branch-diff
 gpbf       = g push-user-branch -f
 gpbn       = g push-user-branch -n
@@ -1364,6 +1368,7 @@ gtr0       = g empty-tree
 gtrh       = g ls-tree HEAD
 gtrp       = g ls-tree HEAD^
 gtrr       = g ls-tree -r
+gtrs       = g theirs-refspec
 gtsz       = g total-size
 gtwa       = g throw.py -a
 gtwh       = g throw-head
@@ -1494,6 +1499,10 @@ gdnoc      = g diff --name-only --cached
 gdnpg      = g config --global diff.noprefix
 gdnpt      = g config diff.noprefix true
 gdnpu      = g config --unset diff.noprefix
+gdoto      = g diff-onto-theirs
+gdots      = !git diff --stat $(git onto)..$(git original-head)
+gdour      = g diff-onto-ours
+gdous      = !git diff --stat $(git onto)..$(git rebase-head)
 gdp2p      = g diff HEAD~2..HEAD^
 gdptg      = g config --global diff.noprefix true
 gdpug      = g config --global --unset diff.noprefix
@@ -1640,6 +1649,7 @@ gmune      = g merge upstream/HEAD --no-edit
 gnshs      = !git --no-pager show
 gobnu      = !git_open_web_branch.py -nu
 gobnv      = !git_open_web_branch.py -nv
+gonto      = g rebase-onto
 gpdcg      = g config --global push.default current
 gpdug      = g config --global push.default upstream
 gpftn      = g push -f --tags -n
@@ -1928,7 +1938,7 @@ github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1635 completions present before and after installing git-helpers
-1809 completions added by installing git-helpers (0 removed, 3444 total)
+1819 completions added by installing git-helpers (0 removed, 3454 total)
 ```
 </details>
 

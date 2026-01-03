@@ -92,6 +92,24 @@
   rn      = add-rebase-continue-no-edit
   oc      = original-commit
   oh      = original-head
+  ot      = rebase-onto
+  onto    = rebase-onto
+  ; Refspec ranges during rebase:
+  ; - "theirs": the branch being rebased (onto..ORIG_HEAD)
+  ; - "ours": rebase progress so far (onto..REBASE_HEAD)
+  ours-refspec = "!echo $(git onto)..$(git rebase-head)"
+  theirs-refspec = "!echo $(git onto)..$(git original-head)"
+  ors     = ours-refspec
+  trs     = theirs-refspec
+  ; Diff shortcuts for those ranges
+  diff-onto-theirs = "!git diff $(git onto)..$(git original-head)"
+  diff-onto-ours = "!git diff $(git onto)..$(git rebase-head)"
+  dot     = diff-onto-theirs
+  doto    = diff-onto-theirs
+  dou     = diff-onto-ours
+  dour    = diff-onto-ours
+  dots    = "!git diff --stat $(git onto)..$(git original-head)"
+  dous    = "!git diff --stat $(git onto)..$(git rebase-head)"
   roc     = reorder-commits
   rocn    = reorder-commits -n
   sho     = squash-head-onto
