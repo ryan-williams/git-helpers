@@ -86,10 +86,35 @@ gitlab_maybe_api() {
 }
 export -f gitlab_maybe_api
 
+gitlab_list_protected_branches() {
+  local remote=
+  local project_id=
+  if [ "$1" == "-n" ]; then
+    shift
+  fi
+  if [ $# -eq 0 ]; then
+    remote="$(gitlab_remote)"
+    if [ -z "$remote" ]; then
+      return 1
+    fi
+  else
+    remote="$1"
+  fi
+  project_id="$(git remote-path -e "$remote")"
+  glab api "projects/$project_id/protected_branches" | jq -r '.[].name'
+}
+export -f gitlab_list_protected_branches
+defn gllpb gitlab_list_protected_branches
+
 gitlab_protect_branch() {
   local remote=
   local branch=
   local project_id=
+  # List protected branches if no args (or just -n)
+  if [ $# -eq 0 ] || { [ $# -eq 1 ] && [ "$1" == "-n" ]; }; then
+    gitlab_list_protected_branches "$@"
+    return
+  fi
   if ! gitlab_parse_remote_and_branch gitlab_protect_branch "$@"; then
     return 1
   fi
