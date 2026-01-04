@@ -20,27 +20,29 @@ preserve_tag() {
     # Tag doesn't exist, create normally
     git tag -f "$tag" "$@"
   fi
+  echo "$tag"
 }
 
 # Extract version from commit diff (pyproject.toml or package.json)
+# Supports semver with optional pre-release suffix (e.g., 1.2.3, 1.2.3rc1, 1.2.3-alpha.1)
 version_from_diff() {
   local commit="${1:-HEAD}"
   local version=""
 
-  # Check pyproject.toml for version = "X.Y.Z" changes
+  # Check pyproject.toml for version = "X.Y.Z" changes (with optional pre-release suffix)
   version=$(git show "$commit" -- pyproject.toml 2>/dev/null | \
     grep -E '^\+.*version\s*=' | \
-    grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+    grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9._-]*' | head -1)
 
   if [ -n "$version" ]; then
     echo "$version"
     return
   fi
 
-  # Check package.json for "version": "X.Y.Z" changes
+  # Check package.json for "version": "X.Y.Z" changes (with optional pre-release suffix)
   version=$(git show "$commit" -- package.json 2>/dev/null | \
     grep -E '^\+.*"version"' | \
-    grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+    grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9._-]*' | head -1)
 
   if [ -n "$version" ]; then
     echo "$version"
@@ -51,7 +53,8 @@ version_from_diff() {
 if [ $# -eq 0 ]; then
   # Use commit subject (first line)
   msg="$(git subject)"
-  if [[ $msg =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  # Match semver with optional pre-release suffix (e.g., v1.2.3, 1.2.3rc1, v1.2.3-alpha.1)
+  if [[ $msg =~ ^v?[0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9._-]*$ ]]; then
     preserve_tag "$msg"
   else
     # Try to extract version from the commit diff
