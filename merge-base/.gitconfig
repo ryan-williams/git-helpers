@@ -1,6 +1,6 @@
 [alias]
   bp = branch-point
-  mb = merge-base-plus
+  mb = mb
   mbo = merge-base --octopus
   mbp = merge-base-parents
   mbt = merge-base-tracked-branch

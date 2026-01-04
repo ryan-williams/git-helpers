@@ -94,22 +94,43 @@
   oh      = original-head
   ot      = rebase-onto
   onto    = rebase-onto
-  ; Refspec ranges during rebase:
-  ; - "theirs": the branch being rebased (onto..ORIG_HEAD)
-  ; - "ours": rebase progress so far (onto..REBASE_HEAD)
-  ours-refspec = "!echo $(git onto)..$(git rebase-head)"
-  theirs-refspec = "!echo $(git onto)..$(git original-head)"
-  ors     = ours-refspec
-  trs     = theirs-refspec
-  ; Diff shortcuts for those ranges
-  diff-onto-theirs = "!git diff $(git onto)..$(git original-head)"
-  diff-onto-ours = "!git diff $(git onto)..$(git rebase-head)"
-  dot     = diff-onto-theirs
-  doto    = diff-onto-theirs
-  dou     = diff-onto-ours
-  dour    = diff-onto-ours
-  dots    = "!git diff --stat $(git onto)..$(git original-head)"
-  dous    = "!git diff --stat $(git onto)..$(git rebase-head)"
+  mb      = rebase-merge-base
+
+  ; Refspec range aliases for rebase comparisons
+  ; See rebase/REBASE-REFSPECS.md for documentation
+  ;
+  ; Key refs during rebase:
+  ;   mb = merge-base(oh, ot) — where feature diverged
+  ;   oh = ORIG_HEAD — original feature tip
+  ;   ot = onto — commit we're rebasing onto
+  ;   rh = REBASE_HEAD — commit currently being replayed
+  ;   h  = HEAD — current position on new lineage
+  ;
+  ; Useful comparison pairs for git-didi:
+  ;   1. mboh vs mbot — feature changes vs upstream changes
+  ;   2. mbrhp vs oth — mid-rebase: processed so far vs replayed
+  ;   3. mboh vs oth — post-rebase: all original vs all replayed
+
+  ; Refspec range aliases (print range string)
+  mb-to-oh = "!echo $(git mb)..$(git oh)"
+  mb-to-ot = "!echo $(git mb)..$(git ot)"
+  mb-to-rhp = "!echo $(git mb)..$(git rbh)^"
+  ot-to-h = "!echo $(git ot)..HEAD"
+  mboh    = mb-to-oh
+  mbot    = mb-to-ot
+  mbrhp   = mb-to-rhp
+  oth     = ot-to-h
+
+  ; Diff shortcuts for common comparisons
+  diff-mboh = "!git diff $(git mb)..$(git oh)"
+  diff-mbot = "!git diff $(git mb)..$(git ot)"
+  diff-oth = "!git diff $(git ot)..HEAD"
+  dmboh   = diff-mboh
+  dmbot   = diff-mbot
+  doth    = diff-oth
+  dmbohs  = "!git diff --stat $(git mb)..$(git oh)"
+  dmbots  = "!git diff --stat $(git mb)..$(git ot)"
+  doths   = "!git diff --stat $(git ot)..HEAD"
   roc     = reorder-commits
   rocn    = reorder-commits -n
   sho     = squash-head-onto

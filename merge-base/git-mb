@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Smart merge-base: pass-through with args, auto-detect rebase/merge state with no args
+#
+# Usage:
+#   git mb              # auto-detect: rebase → merge-base(onto, oh), merge → merge-base(HEAD, MERGE_HEAD)
+#   git mb <args>...    # pass through to `git merge-base`
+
+set -e
+
+if [ $# -gt 0 ]; then
+    # Pass through to git merge-base
+    exec git merge-base "$@"
+fi
+
+# No args: auto-detect state
+rebase_dir="$(git rev-parse --git-path rebase-merge 2>/dev/null)"
+rebase_apply_dir="$(git rev-parse --git-path rebase-apply 2>/dev/null)"
+merge_head="$(git rev-parse --git-path MERGE_HEAD 2>/dev/null)"
+
+if [ -d "$rebase_dir" ] || [ -d "$rebase_apply_dir" ]; then
+    # In a rebase
+    onto="$(git rebase-onto)" || {
+        echo "Could not determine rebase onto" >&2
+        exit 1
+    }
+    original_head="$(git original-head)" || {
+        echo "Could not determine original head" >&2
+        exit 1
+    }
+    git merge-base "$onto" "$original_head"
+elif [ -f "$merge_head" ]; then
+    # In a merge
+    git merge-base HEAD MERGE_HEAD
+else
+    echo "Not in a rebase or merge state. Usage: git mb <commit1> <commit2> [...]" >&2
+    exit 1
+fi

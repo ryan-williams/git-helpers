@@ -1,5 +1,5 @@
 # git-helpers
-[1,825](#count-completions) Git aliases and scripts.
+[1,833](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,11 +359,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1825 completions added by installing git-helpers
+# 1833 completions added by installing git-helpers
 # By length:
-# - 2 chars: 21
-# - 3 chars: 267
-# - 4 chars: 727
+# - 2 chars: 22
+# - 3 chars: 268
+# - 4 chars: 726
 # - 5 chars: 384
 ```
 
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1825 new completions:
+1833 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -396,6 +396,7 @@ gt         = g tags
 gu         = gist-upload
 gx         = git-git-dir
 hb         = hub browse
+mb         = g mb
 ra         = ! git diff HEAD --name-only | xargs -I {} git sub 's/ +$//' -- {}
 rb         = git-helpers/rebase/rb  # Interactive rebase over the last <arg> commits.
 rt         = g remove-trailing-spaces
@@ -544,7 +545,7 @@ gm1        = g msg HEAD@{1}
 gm2        = g msg HEAD@{2}
 gm3        = g msg HEAD@{3}
 gma        = g merge --abort
-gmb        = g merge-base-plus
+gmb        = g mb
 gmc        = g make-merge-commit
 gmf        = g merge --ff-only
 gmh        = g merge-head
@@ -659,6 +660,7 @@ gxs        = <git repo dir> ['git s' args...]
 gxt        = <git repo dir> ['git t' args...]
 hds        = github-docs-snapshot
 hpr        = hub pr
+oth        = g ot-to-h
 pgr        = parse-github-url
 pre        = gh pr edit
 prv        = gh pr view
@@ -837,8 +839,6 @@ gdno       = g diff --name-only
 gdnp       = g config diff.noprefix
 gdns       = g diff --name-status
 gdop       = gist-dir -op
-gdot       = g diff-onto-theirs
-gdou       = g diff-onto-ours
 gdp1       = g diff-vs-parent 1
 gdp2       = g diff-vs-parent 2
 gdpg       = g config --global diff.noprefix
@@ -1132,7 +1132,7 @@ gobu       = !git_open_web_branch.py -u
 gobv       = !git_open_web_branch.py -v
 gopp       = gh gist create --web -p
 gopr       = github-open-pr.py
-gors       = g ours-refspec
+goth       = g ot-to-h
 gpbd       = g patch-branch-diff
 gpbf       = g push-user-branch -f
 gpbn       = g push-user-branch -n
@@ -1370,7 +1370,6 @@ gtr0       = g empty-tree
 gtrh       = g ls-tree HEAD
 gtrp       = g ls-tree HEAD^
 gtrr       = g ls-tree -r
-gtrs       = g theirs-refspec
 gtsz       = g total-size
 gtwa       = g throw.py -a
 gtwh       = g throw-head
@@ -1393,6 +1392,8 @@ gxca       = <git repo dir> ['git ca' args...]
 gxfa       = g config --global --add core.excludesfile
 hdss       = github-docs-snapshot -s
 hprq       = hub pull-request
+mboh       = g mb-to-oh
+mbot       = g mb-to-ot
 gaafp      = g amend-force-push -a
 gaapf      = g amend-force-push -a
 gacpc      = g add-and-cherry-pick-continue
@@ -1501,10 +1502,7 @@ gdnoc      = g diff --name-only --cached
 gdnpg      = g config --global diff.noprefix
 gdnpt      = g config diff.noprefix true
 gdnpu      = g config --unset diff.noprefix
-gdoto      = g diff-onto-theirs
-gdots      = !git diff --stat $(git onto)..$(git original-head)
-gdour      = g diff-onto-ours
-gdous      = !git diff --stat $(git onto)..$(git rebase-head)
+gdoth      = g diff-oth
 gdp2p      = g diff HEAD~2..HEAD^
 gdptg      = g config --global diff.noprefix true
 gdpug      = g config --global --unset diff.noprefix
@@ -1637,6 +1635,8 @@ glthr      = g ls-tree -r HEAD
 gltrn      = g ls-tree -r --name-only
 gltsh      = g ls-tree --abbrev HEAD
 glubn      = gitlab_unprotect_branch -n
+gmboh      = g mb-to-oh
+gmbot      = g mb-to-ot
 gmmne      = g merge main --no-edit
 gmnef      = g merge --no-edit --no-ff
 gmnnf      = g merge --no-edit --no-ff
@@ -1777,6 +1777,7 @@ gtwp2      = g throw.py HEAD~2
 gtwp3      = g throw.py HEAD~3
 gxcam      = <git repo dir> ['git cam' args...]
 gxcap      = <git repo dir> ['git cap' args...]
+mbrhp      = g mb-to-rhp
 gaapfu     = g amend-force-push -a u
 gb1cor     = !git-blob-first-commit -o -r
 gb1cur     = !git-blob-first-commit -u -r
@@ -1797,8 +1798,11 @@ gcococ     = g conflicting-checkout-ours-and-continue
 gcoctc     = g conflicting-checkout-theirs-and-continue
 gcppam     = g commit-push-parents -a -m
 gddpqc     = git-didi patch --quiet --color=always
+gdmboh     = g diff-mboh
+gdmbot     = g diff-mbot
 gdnpgt     = g config --global diff.noprefix true
 gdnpgu     = g config --global --unset diff.noprefix
+gdoths     = !git diff --stat $(git ot)..HEAD
 gdstph     = g diff --stat HEAD^..HEAD
 gdxfwc     = git diff-x -Rw --color
 gdxfwn     = git diff-x -Rw --no-color
@@ -1826,6 +1830,7 @@ ghri1b     = github_run_list.py -iL1 -b
 ghrvjs     = gh_run_view_jobs
 ghrvlj     = gh run view --log --job
 github     = git-helpers/github/github
+gmbrhp     = g mb-to-rhp
 gmsh1p     = g msgp HEAD@{1}
 gphufn     = g push-head-upstream -f -n
 gprhlh     = g pre-rebase-head-log
@@ -1852,6 +1857,8 @@ gtwap4     = g throw.py -a HEAD~4
 gtwap5     = g throw.py -a HEAD~5
 gxcapm     = <git repo dir> ['git capm' args...]
 issues     = git-helpers/github/issues
+gdmbohs    = !git diff --stat $(git mb)..$(git oh)
+gdmbots    = !git diff --stat $(git mb)..$(git ot)
 ggracle    = g graph -ac -l -e
 ghprcrn    = ghpr create -n
 ghprshg    = ghpr show -g
@@ -1942,7 +1949,7 @@ gitlab_list_protected_branches
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1635 completions present before and after installing git-helpers
-1825 completions added by installing git-helpers (0 removed, 3460 total)
+1833 completions added by installing git-helpers (0 removed, 3468 total)
 ```
 </details>
 
