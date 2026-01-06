@@ -1,5 +1,5 @@
 # git-helpers
-[1,833](#count-completions) Git aliases and scripts.
+[1,841](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,12 +359,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1833 completions added by installing git-helpers
+# 1841 completions added by installing git-helpers
 # By length:
-# - 2 chars: 22
-# - 3 chars: 268
-# - 4 chars: 726
-# - 5 chars: 384
+# - 2 chars: 23
+# - 3 chars: 270
+# - 4 chars: 729
+# - 5 chars: 386
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1833 new completions:
+1841 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -399,7 +399,9 @@ hb         = hub browse
 mb         = g mb
 ra         = ! git diff HEAD --name-only | xargs -I {} git sub 's/ +$//' -- {}
 rb         = git-helpers/rebase/rb  # Interactive rebase over the last <arg> commits.
+rh         = g rebase-head
 rt         = g remove-trailing-spaces
+crs        = g commit-refspec
 g1f        = !git --no-pager log-1-format
 ga.        = g add .
 gab        = g all-branches
@@ -664,6 +666,7 @@ oth        = g ot-to-h
 pgr        = parse-github-url
 pre        = gh pr edit
 prv        = gh pr view
+rbh        = g rebase-head
 rbo        = g rebase --onto
 rta        = ! git diff HEAD --name-only | xargs -I {} git sub 's/ +$//' -- {}
 rts        = g remove-trailing-spaces
@@ -800,6 +803,7 @@ gcpp       = g commit-push-parents
 gcps       = g cherry-pick --skip
 gcrb       = g checkout-and-rebase
 gcrh       = g commit-rebase-head
+gcrs       = g commit-refspec
 gcs3       = g check-s3-buckets
 gcsb       = . git-clone-single-branch
 gcsp       = g set-parents
@@ -1394,6 +1398,8 @@ hdss       = github-docs-snapshot -s
 hprq       = hub pull-request
 mboh       = g mb-to-oh
 mbot       = g mb-to-ot
+mbrp       = g mb-to-rhp
+rprh       = g rh-parent-to-rh
 gaafp      = g amend-force-push -a
 gaapf      = g amend-force-push -a
 gacpc      = g add-and-cherry-pick-continue
@@ -1637,6 +1643,7 @@ gltsh      = g ls-tree --abbrev HEAD
 glubn      = gitlab_unprotect_branch -n
 gmboh      = g mb-to-oh
 gmbot      = g mb-to-ot
+gmbrp      = g mb-to-rhp
 gmmne      = g merge main --no-edit
 gmnef      = g merge --no-edit --no-ff
 gmnnf      = g merge --no-edit --no-ff
@@ -1688,6 +1695,7 @@ grmut      = g rm-untracked
 grneh      = g revert --no-edit HEAD
 grnin      = g rebase-noninteractive -n
 grocn      = g reorder-commits -n
+grprh      = g rh-parent-to-rh
 grrio      = g rebase -r -i --onto
 grsh1      = g reset HEAD@{1}
 grsh2      = g reset HEAD@{2}
@@ -1949,7 +1957,7 @@ gitlab_list_protected_branches
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1635 completions present before and after installing git-helpers
-1833 completions added by installing git-helpers (0 removed, 3468 total)
+1841 completions added by installing git-helpers (0 removed, 3476 total)
 ```
 </details>
 

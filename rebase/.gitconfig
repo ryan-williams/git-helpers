@@ -116,10 +116,16 @@
   mb-to-ot = "!echo $(git mb)..$(git ot)"
   mb-to-rhp = "!echo $(git mb)..$(git rbh)^"
   ot-to-h = "!echo $(git ot)..HEAD"
+  rh-parent-to-rh = "!echo $(git rbh)^..$(git rbh)"
   mboh    = mb-to-oh
   mbot    = mb-to-ot
   mbrhp   = mb-to-rhp
+  mbrp    = mb-to-rhp
   oth     = ot-to-h
+  rprh    = rh-parent-to-rh
+  ; commit-refspec: expand ref to ref^..ref
+  commit-refspec = "!echo $1^..$1 #"
+  crs     = commit-refspec
 
   ; Diff shortcuts for common comparisons
   diff-mboh = "!git diff $(git mb)..$(git oh)"

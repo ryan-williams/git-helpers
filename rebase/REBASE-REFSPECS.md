@@ -29,8 +29,10 @@ During a rebase:
 |-------|-------|----------|
 | `mboh` | `mb..oh` | All original feature commits |
 | `mbot` | `mb..ot` | Upstream changes since diverge |
-| `mbrhp` | `mb..rh^` | Original commits processed so far |
+| `mbrhp` / `mbrp` | `mb..rh^` | Original commits processed so far |
 | `oth` | `ot..HEAD` | Replayed commits so far |
+| `rprh` | `rh^..rh` | Current commit being replayed |
+| `crs <ref>` | `ref^..ref` | Expand any ref to single-commit range |
 
 ## Comparison Pairs
 
