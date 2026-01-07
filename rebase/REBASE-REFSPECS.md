@@ -29,6 +29,7 @@ During a rebase:
 |-------|-------|----------|
 | `mboh` | `mb..oh` | All original feature commits |
 | `mbot` | `mb..ot` | Upstream changes since diverge |
+| `mbrh` | `mb..rh` | Original commits up to current (inclusive) |
 | `mbrhp` / `mbrp` | `mb..rh^` | Original commits processed so far |
 | `oth` | `ot..HEAD` | Replayed commits so far |
 | `rprh` | `rh^..rh` | Current commit being replayed |

@@ -112,13 +112,16 @@
   ;   3. mboh vs oth — post-rebase: all original vs all replayed
 
   ; Refspec range aliases (print range string)
-  mb-to-oh = "!echo $(git mb)..$(git oh)"
-  mb-to-ot = "!echo $(git mb)..$(git ot)"
-  mb-to-rhp = "!echo $(git mb)..$(git rbh)^"
-  ot-to-h = "!echo $(git ot)..HEAD"
-  rh-parent-to-rh = "!echo $(git rbh)^..$(git rbh)"
+  ; Use explicit error checking so failures propagate (not swallowed by echo)
+  mb-to-oh = "!mb=$(git mb) || exit $?; oh=$(git oh) || exit $?; echo $mb..$oh"
+  mb-to-ot = "!mb=$(git mb) || exit $?; ot=$(git ot) || exit $?; echo $mb..$ot"
+  mb-to-rh = "!mb=$(git mb) || exit $?; rh=$(git rbh) || exit $?; echo $mb..$rh"
+  mb-to-rhp = "!mb=$(git mb) || exit $?; rh=$(git rbh) || exit $?; echo $mb..$rh^"
+  ot-to-h = "!ot=$(git ot) || exit $?; echo $ot..HEAD"
+  rh-parent-to-rh = "!rh=$(git rbh) || exit $?; echo $rh^..$rh"
   mboh    = mb-to-oh
   mbot    = mb-to-ot
+  mbrh    = mb-to-rh
   mbrhp   = mb-to-rhp
   mbrp    = mb-to-rhp
   oth     = ot-to-h

@@ -1,5 +1,5 @@
 # git-helpers
-[1,841](#count-completions) Git aliases and scripts.
+[1,843](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,12 +359,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1841 completions added by installing git-helpers
+# 1843 completions added by installing git-helpers
 # By length:
 # - 2 chars: 23
 # - 3 chars: 270
-# - 4 chars: 729
-# - 5 chars: 386
+# - 4 chars: 730
+# - 5 chars: 387
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1841 new completions:
+1843 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1398,6 +1398,7 @@ hdss       = github-docs-snapshot -s
 hprq       = hub pull-request
 mboh       = g mb-to-oh
 mbot       = g mb-to-ot
+mbrh       = g mb-to-rh
 mbrp       = g mb-to-rhp
 rprh       = g rh-parent-to-rh
 gaafp      = g amend-force-push -a
@@ -1643,6 +1644,7 @@ gltsh      = g ls-tree --abbrev HEAD
 glubn      = gitlab_unprotect_branch -n
 gmboh      = g mb-to-oh
 gmbot      = g mb-to-ot
+gmbrh      = g mb-to-rh
 gmbrp      = g mb-to-rhp
 gmmne      = g merge main --no-edit
 gmnef      = g merge --no-edit --no-ff
@@ -1957,7 +1959,7 @@ gitlab_list_protected_branches
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 1635 completions present before and after installing git-helpers
-1841 completions added by installing git-helpers (0 removed, 3476 total)
+1843 completions added by installing git-helpers (0 removed, 3478 total)
 ```
 </details>
 
