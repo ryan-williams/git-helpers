@@ -23,5 +23,11 @@ if [ -z "$keep_platform" ] && [ -n "$DOCKER_DEFAULT_PLATFORM" ]; then
   unset DOCKER_DEFAULT_PLATFORM
 fi
 
-docker build -t git-helpers -f test/docker/git-helpers.dockerfile .
-docker run "${rm[@]}" -it --name git-helpers git-helpers "${args[@]}" "$@" | tr -d '\r'
+docker build -q -t git-helpers -f test/docker/git-helpers.dockerfile . >&2
+tty_flag=()
+if [ -t 0 ]; then
+  tty_flag=(-it)
+else
+  tty_flag=(-i)
+fi
+docker run "${rm[@]}" "${tty_flag[@]}" --name git-helpers git-helpers "${args[@]}" "$@" | tr -d '\r'
