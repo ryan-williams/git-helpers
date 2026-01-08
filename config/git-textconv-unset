@@ -17,15 +17,6 @@ fi
 type="$1"
 pattern="${2:-}"
 
-# Unset git config
-for key in "diff.$type.textconv" "diff.$type.cachetextconv"; do
-    if git config --get "$key" >/dev/null 2>&1; then
-        val="$(git config "$key")"
-        err "Unsetting $key (was: $val)"
-        git config --unset "$key"
-    fi
-done
-
 # Remove from .gitattributes if pattern provided
 if [ -n "$pattern" ] && [ -f .gitattributes ]; then
     escaped_pattern="${pattern//\*/\\*}"
@@ -35,4 +26,22 @@ if [ -n "$pattern" ] && [ -f .gitattributes ]; then
         rm -f .gitattributes.bak
         err "Removed '$pattern diff=$type' from .gitattributes"
     fi
+fi
+
+# Check if driver is still in use by other patterns
+still_in_use=
+if [ -f .gitattributes ] && grep -qE "diff=$type" .gitattributes 2>/dev/null; then
+    still_in_use=1
+    err "Driver '$type' still in use by other patterns, keeping config"
+fi
+
+# Unset git config only if driver is no longer used
+if [ -z "$still_in_use" ]; then
+    for key in "diff.$type.textconv" "diff.$type.cachetextconv"; do
+        if git config --get "$key" >/dev/null 2>&1; then
+            val="$(git config "$key")"
+            err "Unsetting $key (was: $val)"
+            git config --unset "$key"
+        fi
+    done
 fi
