@@ -5,6 +5,7 @@
   it = is-tag
 
   t  = tags
+  tt = tags  # `gt` shadows ~/c/go/bin/gt (Gas Town)
   td = tag -d
   tf = tag-f
   tg = tag

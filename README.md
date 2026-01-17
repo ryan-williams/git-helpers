@@ -361,8 +361,8 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 scripts/count-completions.sh -c
 # 1846 completions added by installing git-helpers
 # By length:
-# - 2 chars: 23
-# - 3 chars: 270
+# - 2 chars: 22
+# - 3 chars: 271
 # - 4 chars: 731
 # - 5 chars: 388
 ```
@@ -392,7 +392,6 @@ gn         = git --no-pager
 gp         = g push-x
 gr         = g remote -vv
 gs         = g status
-gt         = g tags
 gu         = gist-upload
 gx         = git-git-dir
 hb         = hub browse
@@ -636,6 +635,7 @@ gtn        = g tags -n
 gtp        = g tag --format='%(color:green)%(objectname:short)%(color:reset)%09%(color:yellow)%(refname:strip=2)%(color:reset)%09%(color:red)%(creatordate:iso)%(color:reset)%09%(color:blue)%(creatordate:relative)%(color:reset)'
 gtr        = g ls-tree
 gts        = g tree-sha
+gtt        = g tags
 gtw        = g throw.py
 gub        = g upstream-branch
 gud        = g undelete

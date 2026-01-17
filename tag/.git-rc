@@ -1,7 +1,7 @@
 alias gctgs="g ctgs"
 alias ggt="g gt"
 
-alias gt="g t"
+alias gtt="g tt"  # `gt` shadows ~/c/go/bin/gt (Gas Town)
 alias gtd="g td"
 alias gtf="g tf"
 alias gtg="g tg"
