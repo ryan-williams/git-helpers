@@ -62,6 +62,20 @@ github_open_actions() {
 export -f github_open_actions
 defn ghoa github_open_actions
 
+github_open_pages() {
+    local owner_repo
+    owner_repo="$(github_owner_name "$@")"
+    if [ -z "$owner_repo" ]; then
+        return 1
+    fi
+    local owner="${owner_repo%%/*}"
+    local repo="${owner_repo#*/}"
+    open "https://$owner.github.io/$repo/"
+}
+export -f github_open_pages
+defn oghp github_open_pages
+defn ghohp github_open_pages
+
 github_open_settings() {
     open "$(github_url)/settings"
 }
