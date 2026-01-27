@@ -1,5 +1,5 @@
 # git-helpers
-[1,853](#count-completions) Git aliases and scripts.
+[1,855](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,10 +359,10 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1853 completions added by installing git-helpers
+# 1855 completions added by installing git-helpers
 # By length:
 # - 2 chars: 22
-# - 3 chars: 271
+# - 3 chars: 273
 # - 4 chars: 731
 # - 5 chars: 391
 ```
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1853 new completions:
+1855 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -563,9 +563,11 @@ gnd        = !git --no-pager diff
 gnx        = !git-git-dir -n
 gob        = !git_open_web_branch.py
 goc        = g original-commit
+gof        = gh gist create --web -f
 goh        = g original-head
 gom        = g octomerge
-gop        = gh gist create --web
+gop        = gh gist create --web -p
+gos        = gh gist create --web
 got        = g rebase-onto
 gpb        = g previous-branch
 gpd        = g push --delete
@@ -1134,7 +1136,7 @@ gnsh       = !git --no-pager show
 gobn       = !git_open_web_branch.py -n
 gobu       = !git_open_web_branch.py -u
 gobv       = !git_open_web_branch.py -v
-gopp       = gh gist create --web -p
+gopf       = gh gist create --web -p -f
 gopr       = github-open-pr.py
 goth       = g ot-to-h
 gpbd       = g patch-branch-diff
@@ -1969,7 +1971,7 @@ github_org_open_settings_variables
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 github_open_settings_variables_actions = open "$(github_url)/settings/variables/actions"
 1635 completions present before and after installing git-helpers
-1853 completions added by installing git-helpers (0 removed, 3488 total)
+1855 completions added by installing git-helpers (0 removed, 3490 total)
 ```
 </details>
 

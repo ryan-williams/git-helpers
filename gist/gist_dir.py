@@ -88,7 +88,7 @@ def gist_dir(
     branch='gist',
     copy_url=False,
     open_gist=False,
-    private=False,
+    public=False,
     files=None,
     restore_branch=False,
     gist=None,
@@ -127,7 +127,7 @@ def gist_dir(
 
             # Prepare gh gist create cmd with actual files
             cmd = ['gh', 'gist', 'create']
-            if not private:
+            if public:
                 cmd.append('--public')
             cmd.extend(gist_files)
 
@@ -221,7 +221,7 @@ if __name__ == '__main__':
                         help="Specify a single directory to make a gist from; any positional arguments must point to files in this directory")
     parser.add_argument('-g', '--gist', help="URL of an existing Gist (will overwrite that Gist's contents!)")
     parser.add_argument('-o', '--open', default=False, action='store_true', help="Open the gist when finished running")
-    parser.add_argument('-p', '--private', default=False, action='store_true', help="Make the gist private")
+    parser.add_argument('-p', '--public', default=False, action='store_true', help="Make the gist public (default is secret)")
     parser.add_argument('-r', '--remote', default='g',
                         help='Name to use for a git remote created in each repo/directory, which points at the created gist (defaults to "g", falls back to "gist" if "g" is taken).')
     args = parser.parse_args()
@@ -231,7 +231,7 @@ if __name__ == '__main__':
     remote = args.remote
     copy_url = args.copy
     open_gist = args.open
-    private = args.private
+    public = args.public
     restore_branch = args.restore_branch
 
     gist = args.gist
@@ -264,7 +264,7 @@ if __name__ == '__main__':
             branch=branch,
             copy_url=copy_url,
             open_gist=open_gist,
-            private=private,
+            public=public,
             files=files,
             restore_branch=restore_branch,
             gist=gist,

@@ -10,7 +10,7 @@ set -euo pipefail
 
 # Default values
 OPEN_AFTER=false
-PRIVATE_FLAG=""
+PUBLIC_FLAG=""
 DESCRIPTION=""
 FILES=()
 
@@ -21,8 +21,8 @@ while [[ $# -gt 0 ]]; do
             OPEN_AFTER=true
             shift
             ;;
-        -p|--private)
-            PRIVATE_FLAG="--public=false"
+        -p|--public)
+            PUBLIC_FLAG="--public"
             shift
             ;;
         -d|--description)
@@ -41,15 +41,15 @@ Usage: $(basename "$0") [OPTIONS] file1 [file2 ...]
 
 Options:
   -o, --open         Open gist in browser after creation
-  -p, --private      Make gist private (default is public)
+  -p, --public       Make gist public (default is secret)
   -d, --description  Add description to gist
   -h, --help         Show this help message
 
 Examples:
-  # Upload single file publicly
+  # Upload single file (secret by default)
   $(basename "$0") script.sh
 
-  # Upload multiple files as private gist with description
+  # Upload multiple files as public gist with description
   $(basename "$0") -p -d "Config files" .bashrc .vimrc
 
   # Upload and open in browser
@@ -88,9 +88,9 @@ fi
 # Build the gh gist create command
 GH_CMD=(gh gist create)
 
-# Add private flag if set
-if [[ -n "$PRIVATE_FLAG" ]]; then
-    GH_CMD+=($PRIVATE_FLAG)
+# Add public flag if set
+if [[ -n "$PUBLIC_FLAG" ]]; then
+    GH_CMD+=($PUBLIC_FLAG)
 fi
 
 # Add description if provided
