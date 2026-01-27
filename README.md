@@ -1,5 +1,5 @@
 # git-helpers
-[1,846](#count-completions) Git aliases and scripts.
+[1,853](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,12 +359,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1846 completions added by installing git-helpers
+# 1853 completions added by installing git-helpers
 # By length:
 # - 2 chars: 22
 # - 3 chars: 271
 # - 4 chars: 731
-# - 5 chars: 388
+# - 5 chars: 391
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1846 new completions:
+1853 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1580,10 +1580,13 @@ ghjis      = gh_job_ids
 ghlwr      = gh_last_workflow_run
 ghoby      = github_open_branches_yours
 ghohp      = github_open_pages
+ghoos      = github_org_open_settings_secrets
+ghoov      = github_org_open_settings_variables
 ghopr      = github-open-pr.py
 ghorl      = github_open_releases
 ghosr      = github_open_settings_runners
 ghoss      = github_open_settings_secrets_actions
+ghosv      = github_open_settings_variables_actions
 ghowb      = gh repo view --web -b
 ghowd      = github-open-web.py -d
 ghowg      = github-open-web.py -g
@@ -1830,6 +1833,7 @@ ggracl     = g graph -ac -l
 gh_job     = gh_run_and_job "$@" | jq ".job"
 ghblrs     = g head-before-last-rebase %h
 ghossa     = github_open_settings_secrets_actions
+ghosva     = github_open_settings_variables_actions
 ghprcr     = ghpr create
 ghpria     = ghpr ingest-attachments
 ghprog     = ghpr open -g
@@ -1960,9 +1964,12 @@ github-submodule-check-commits = git-helpers/submodule/github-submodule-check-co
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 gitlab_list_protected_branches
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
+github_org_open_settings_secrets
+github_org_open_settings_variables
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
+github_open_settings_variables_actions = open "$(github_url)/settings/variables/actions"
 1635 completions present before and after installing git-helpers
-1846 completions added by installing git-helpers (0 removed, 3481 total)
+1853 completions added by installing git-helpers (0 removed, 3488 total)
 ```
 </details>
 

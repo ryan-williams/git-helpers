@@ -89,6 +89,29 @@ export -f github_open_settings_secrets_actions
 defn ghossa github_open_settings_secrets_actions
 defn ghoss github_open_settings_secrets_actions
 
+github_open_settings_variables_actions() {
+    open "$(github_url)/settings/variables/actions"
+}
+export -f github_open_settings_variables_actions
+defn ghosva github_open_settings_variables_actions
+defn ghosv github_open_settings_variables_actions
+
+github_org_open_settings_secrets() {
+    local org
+    org="$(gh repo view --json owner -q .owner.login)"
+    open "https://github.com/organizations/$org/settings/secrets/actions"
+}
+export -f github_org_open_settings_secrets
+defn ghoos github_org_open_settings_secrets
+
+github_org_open_settings_variables() {
+    local org
+    org="$(gh repo view --json owner -q .owner.login)"
+    open "https://github.com/organizations/$org/settings/variables/actions"
+}
+export -f github_org_open_settings_variables
+defn ghoov github_org_open_settings_variables
+
 github_open_settings_runners() {
     open "$(github_url)/settings/actions/runners"
 }
