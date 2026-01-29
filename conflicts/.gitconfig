@@ -9,3 +9,7 @@
   conflicting-checkout-ours = conflicting-checkout ours
   conflicting-checkout-theirs = conflicting-checkout theirs
   uu = !git --no-pager conflicting
+
+  # Remove files deleted by ours/theirs during conflicts
+  rmdo = rm-deleted-by-ours
+  rmdt = rm-deleted-by-them

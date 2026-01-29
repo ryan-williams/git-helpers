@@ -64,9 +64,11 @@
 
   deleted-by-them = list-status UD
   dbt = list-status UD
+  ldt = list-status UD
 
   deleted-by-us = list-status DU
   dbu = list-status DU
+  ldo = list-status DU
 
   added-by-them = list-status UA
   abt = list-status UA

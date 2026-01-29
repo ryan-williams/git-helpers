@@ -55,6 +55,8 @@ alias glsu="g lsu"
 
 alias gdbt="g dbt"
 alias gdbu="g dbu"
+alias gldt="g ldt"
+alias gldo="g ldo"
 
 alias gabt="g abt"
 alias gabu="g abu"

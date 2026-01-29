@@ -23,22 +23,24 @@ fi
 
 # Process each path
 for path in "${paths[@]}"; do
-  # Check if file exists in the index
-  if git ls-files --error-unmatch "$path" &>/dev/null; then
-    # File exists, use checkout
-    git checkout "--$from" "$path"
-  else
-    # File doesn't exist (was added or deleted)
-    if [ "$from" = "theirs" ]; then
-      # Accept their changes (could be addition or deletion)
-      git add "$path"
+  if [ "$from" = "theirs" ]; then
+    # Check if file exists in theirs (MERGE_HEAD or rebase's "theirs")
+    if git ls-tree -r MERGE_HEAD -- "$path" &>/dev/null 2>&1 || \
+       git ls-tree -r REBASE_HEAD -- "$path" &>/dev/null 2>&1; then
+      # File exists in theirs, checkout their version
+      git checkout --theirs "$path" && git add "$path"
     else
-      # For "ours", reset to our version
-      git reset HEAD "$path" 2>/dev/null
-      # If file should exist in our version but doesn't, restore it
-      if git ls-tree HEAD "$path" &>/dev/null; then
-        git checkout HEAD -- "$path"
-      fi
+      # File deleted by theirs, remove it
+      git rm -f "$path"
+    fi
+  else
+    # "ours" - check if file exists in ours (HEAD)
+    if git ls-tree -r HEAD -- "$path" &>/dev/null 2>&1; then
+      # File exists in ours, checkout our version
+      git checkout --ours "$path" && git add "$path"
+    else
+      # File deleted by ours, remove it
+      git rm -f "$path"
     fi
   fi
 done

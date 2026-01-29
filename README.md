@@ -1,5 +1,5 @@
 # git-helpers
-[1,855](#count-completions) Git aliases and scripts.
+[1,861](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,12 +359,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1855 completions added by installing git-helpers
+# 1861 completions added by installing git-helpers
 # By length:
 # - 2 chars: 22
 # - 3 chars: 273
-# - 4 chars: 731
-# - 5 chars: 391
+# - 4 chars: 733
+# - 5 chars: 393
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1855 new completions:
+1861 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1043,7 +1043,9 @@ glcc       = g list-status M.
 glcs       = g list-status M.
 glcu       = g list-status .M
 gldc       = g list-status D.
+gldo       = g list-status DU
 glds       = g list-status D.
+gldt       = g list-status UD
 gldu       = g list-status DU
 glf1       = !git --no-pager log-1-format
 glfu       = g remote-list-fetch-urls
@@ -1697,6 +1699,8 @@ grlfp      = g rev-list-first-parents
 grlp1      = g rev-list --parents -n1
 grlrb      = g revert-last-rebase
 grmcf      = g rm --cached -f
+grmdo      = g rm-deleted-by-ours
+grmdt      = g rm-deleted-by-them
 grmlo      = g rm-untracked
 grmpe      = g remote-path -e
 grmrc      = g rm -r --cached
@@ -1971,7 +1975,7 @@ github_org_open_settings_variables
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 github_open_settings_variables_actions = open "$(github_url)/settings/variables/actions"
 1635 completions present before and after installing git-helpers
-1855 completions added by installing git-helpers (0 removed, 3490 total)
+1861 completions added by installing git-helpers (0 removed, 3496 total)
 ```
 </details>
 
