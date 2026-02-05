@@ -74,6 +74,7 @@
   rro     = rebase -r --onto
   rud     = rebase-upstream-diff
   rix     = rebase -i -x
+  rtx     = rebase --root -x
   rx      = rebase -x
   rhm     = rebase-head-message
   rim     = rebase -i master

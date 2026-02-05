@@ -1,5 +1,5 @@
 # git-helpers
-[1,861](#count-completions) Git aliases and scripts.
+[1,862](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,11 +359,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1861 completions added by installing git-helpers
+# 1862 completions added by installing git-helpers
 # By length:
 # - 2 chars: 22
 # - 3 chars: 273
-# - 4 chars: 733
+# - 4 chars: 734
 # - 5 chars: 393
 ```
 
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1861 new completions:
+1862 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1251,6 +1251,7 @@ grsu       = g remote-set-url
 grtc       = g root-commits
 grtg       = g register-file-type -g
 grts       = g remove-trailing-spaces
+grtx       = g rebase --root -x
 grud       = g rebase-upstream-diff
 gruh       = g remote-url-to-https
 grvl       = g rev-list
@@ -1975,7 +1976,7 @@ github_org_open_settings_variables
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 github_open_settings_variables_actions = open "$(github_url)/settings/variables/actions"
 1635 completions present before and after installing git-helpers
-1861 completions added by installing git-helpers (0 removed, 3496 total)
+1862 completions added by installing git-helpers (0 removed, 3497 total)
 ```
 </details>
 
