@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# Loop: shelve conflicting untracked files, then `git rebase --continue`, until
+# the rebase completes or no more conflicts remain. Restores shelved files at
+# the end.
+
+set -eo pipefail
+
+git_dir="$(git dir)"
+rebase_dir="$git_dir/rebase-merge"
+
+while [ -d "$rebase_dir" ]; do
+    git rebase-shelve || break
+    git rebase --continue || true
+done
+
+git rebase-unshelve

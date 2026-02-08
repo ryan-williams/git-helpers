@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# Restore files previously shelved by `git rebase-shelve`. Files that already
+# exist in the worktree are skipped. Cleans up the stash directory afterward.
+
+set -eo pipefail
+
+git_dir="$(git dir)"
+stash_dir="$git_dir/rebase-untracked-stash"
+
+if ! [ -d "$stash_dir" ]; then
+    echo "No shelved files found ($stash_dir doesn't exist)" >&2
+    exit 0
+fi
+
+restored=0
+while IFS= read -r f; do
+    rel="${f#$stash_dir/}"
+    if ! [ -e "$rel" ]; then
+        mkdir -p "$(dirname "$rel")"
+        mv "$f" "$rel"
+        echo "Restored: $rel" >&2
+        restored=$((restored + 1))
+    else
+        echo "Skipped (already exists): $rel" >&2
+    fi
+done < <(find "$stash_dir" -type f)
+
+rm -rf "$stash_dir"
+if [ "$restored" -gt 0 ]; then
+    echo "Restored $restored shelved file(s)" >&2
+fi

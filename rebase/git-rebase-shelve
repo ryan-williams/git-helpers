@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+#
+# Shelve untracked files that conflict with the next commit to be replayed
+# during a rebase. Moves them to $GIT_DIR/rebase-untracked-stash/, preserving
+# relative paths.
+#
+# Use `git rebase-unshelve` to restore shelved files afterward.
+#
+# Useful with `git rebase --root -x`, where commits may contain files that are
+# currently untracked, causing "untracked working tree files would be overwritten".
+
+set -eo pipefail
+
+git_dir="$(git dir)"
+rebase_dir="$git_dir/rebase-merge"
+if ! [ -d "$rebase_dir" ]; then
+    echo "No active rebase found ($rebase_dir doesn't exist)" >&2
+    exit 1
+fi
+
+stash_dir="$git_dir/rebase-untracked-stash"
+
+# Get the next commit SHA to be replayed
+# REBASE_HEAD is set when paused on a conflict
+rebase_head="$git_dir/REBASE_HEAD"
+if [ -f "$rebase_head" ]; then
+    sha="$(cat "$rebase_head")"
+else
+    # Fall back to first pick/edit in the todo list
+    todo="$rebase_dir/git-rebase-todo"
+    if [ -f "$todo" ]; then
+        sha="$(grep -E '^(pick|edit) ' "$todo" | head -1 | awk '{print $2}' || true)"
+    fi
+fi
+
+if [ -z "$sha" ]; then
+    echo "No next commit SHA found" >&2
+    exit 1
+fi
+
+# Find untracked files that also exist in the commit being replayed
+conflicts="$(comm -12 <(git ls-files --others --exclude-standard | sort) <(git ls-tree -r --name-only "$sha" | sort) 2>/dev/null)" || true
+
+if [ -z "$conflicts" ]; then
+    echo "No conflicting untracked files for $sha" >&2
+    exit 0
+fi
+
+echo "Shelving $(echo "$conflicts" | wc -l | tr -d ' ') untracked file(s) conflicting with $sha:" >&2
+while IFS= read -r f; do
+    echo "  $f" >&2
+    dest="$stash_dir/$f"
+    mkdir -p "$(dirname "$dest")"
+    mv "$f" "$dest"
+done <<< "$conflicts"
