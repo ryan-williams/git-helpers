@@ -7,12 +7,23 @@ import re
 import tempfile
 import shutil
 from functools import partial
-from subprocess import check_output, check_call, CalledProcessError, DEVNULL
+from subprocess import check_output, check_call, run, CalledProcessError, DEVNULL, PIPE
 from pathlib import Path
 from urllib.parse import quote
 
 
 err = partial(print, file=sys.stderr)
+
+
+def run_quiet(cmd, **kwargs):
+    """Run a command, suppressing stderr unless it fails."""
+    result = run(cmd, stderr=PIPE, **kwargs)
+    if result.returncode != 0:
+        stderr_text = result.stderr.decode().strip() if result.stderr else ''
+        if stderr_text:
+            err(stderr_text)
+        raise CalledProcessError(result.returncode, cmd)
+    return result
 
 
 def get_github_username():
@@ -53,8 +64,8 @@ def create_gist(description="Image assets", content="# Image Assets\nThis gist s
             '-'
         ], input=content.encode()).decode().strip()
 
-        # Extract gist ID from URL
-        match = re.search(r'gist\.github\.com/([a-f0-9]+)', output)
+        # Extract gist ID from URL (may include username: gist.github.com/user/hash)
+        match = re.search(r'gist\.github\.com/(?:[^/]+/)?([a-f0-9]+)', output)
         if match:
             return match.group(1)
     except CalledProcessError as e:
@@ -182,7 +193,7 @@ def upload_files_to_gist(files, gist_id, branch='assets', is_local_clone=False, 
             check_call(['git', 'update-ref', f'refs/heads/{branch}', commit_hash])
 
             # Push the branch
-            check_call(['git', 'push', remote_name, f'{branch}:{branch}'], stderr=DEVNULL)
+            run_quiet(['git', 'push', remote_name, f'{branch}:{branch}'])
             if verbose:
                 err(f"Pushed to branch '{branch}'")
 
@@ -204,21 +215,24 @@ def upload_files_to_gist(files, gist_id, branch='assets', is_local_clone=False, 
 
         try:
             gist_url = f"git@gist.github.com:{gist_id}.git"
-            check_call(['git', 'clone', gist_url, temp_dir], stderr=DEVNULL)
+            run_quiet(['git', 'clone', gist_url, temp_dir])
 
             os.chdir(temp_dir)
 
+            # Detect the clone's remote name (respects clone.defaultRemoteName)
+            clone_remote = check_output(['git', 'remote']).decode().strip().split('\n')[0]
+
             # Create or switch to branch
             try:
-                check_call(['git', 'checkout', '-b', branch], stderr=DEVNULL)
+                run_quiet(['git', 'checkout', '-b', branch])
                 if verbose:
                     err(f"Created branch '{branch}'")
-            except:
+            except CalledProcessError:
                 try:
-                    check_call(['git', 'checkout', branch], stderr=DEVNULL)
+                    run_quiet(['git', 'checkout', branch])
                     if verbose:
                         err(f"Using existing branch '{branch}'")
-                except:
+                except CalledProcessError:
                     if verbose:
                         err(f"Warning: Could not checkout branch '{branch}', using main")
                     branch = 'main'
@@ -233,8 +247,8 @@ def upload_files_to_gist(files, gist_id, branch='assets', is_local_clone=False, 
             # Commit and push
             if not commit_msg:
                 commit_msg = f'Add assets'
-            check_call(['git', 'commit', '-m', commit_msg], stderr=DEVNULL)
-            check_call(['git', 'push', 'origin', branch], stderr=DEVNULL)
+            run_quiet(['git', 'commit', '-m', commit_msg])
+            run_quiet(['git', 'push', clone_remote, branch])
 
             # Get the commit hash for the URL
             commit_hash = check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
