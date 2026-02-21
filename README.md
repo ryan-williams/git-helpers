@@ -1,5 +1,5 @@
 # git-helpers
-[1,868](#count-completions) Git aliases and scripts.
+[1,870](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,11 +359,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1868 completions added by installing git-helpers
+# 1870 completions added by installing git-helpers
 # By length:
 # - 2 chars: 22
 # - 3 chars: 273
-# - 4 chars: 734
+# - 4 chars: 735
 # - 5 chars: 396
 ```
 
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1868 new completions:
+1870 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -1009,6 +1009,7 @@ ghrp       = github_remote_path
 ghrv       = gh run view
 ghrw       = github_run_list.py -w
 ghsd       = gh secret delete
+ghse       = github_set_secret_env
 ghsh       = g full-hash
 ghss       = gh secret set
 ghsu       = github_url_ssh
@@ -1951,6 +1952,7 @@ github_open_settings = open "$(github_url)/settings"
 pop_commit_from_file = git-helpers/cherry-pick/pop_commit_from_file  # Cherry-pick a commit from a file; if successful, remove it from the file.
 github_branches_yours
 github_default_remote
+github_set_secret_env
 gitlab_protect_branch
 gh_runners_offline_ids
 git_open_web_branch.py = git-helpers/remote/git_open_web_branch.py
@@ -1979,7 +1981,7 @@ github_org_open_settings_variables
 github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
 github_open_settings_variables_actions = open "$(github_url)/settings/variables/actions"
 1635 completions present before and after installing git-helpers
-1868 completions added by installing git-helpers (0 removed, 3503 total)
+1870 completions added by installing git-helpers (0 removed, 3505 total)
 ```
 </details>
 

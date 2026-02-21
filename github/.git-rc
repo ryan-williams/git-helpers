@@ -597,6 +597,31 @@ defn ghs gh secret list
 defn ghsd gh secret delete
 defn ghss gh secret set
 
+github_set_secret_env() {
+    local org_flags=()
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -o) org_flags+=(-o "$(gh repo view --json owner -q .owner.login)"); shift ;;
+            *) break ;;
+        esac
+    done
+    for name in "$@"; do
+        local val="${!name}"
+        if [ -z "$val" ]; then
+            echo "ghse: \$$name is empty or unset" >&2
+            return 1
+        fi
+        echo "$val" | gh secret set "$name" "${org_flags[@]}"
+    done
+}
+export -f github_set_secret_env
+defn ghse github_set_secret_env
+_ghse_completions() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    COMPREPLY=($(compgen -v -- "$cur"))
+}
+complete -F _ghse_completions ghse github_set_secret_env
+
 # ghpr - GitHub PR/Issue management (https://github.com/runsascoded/ghpr)
 # Install via: pipx install ghpr-py
 if command -v ghpr &>/dev/null; then
