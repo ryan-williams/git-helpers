@@ -27,9 +27,13 @@ alias glow="glab repo view --web"
 alias glowb="glab repo view --web -b"
 
 gitlab_open_jobs() {
-    web_url="$(glab repo view -F json | jq -r .web_url)"
-    jobs_url="$web_url/-/jobs"
-    open "$jobs_url"
+    local web_url
+    web_url="$(glab repo view -F json | jq -r .web_url)" || return
+    if [ -z "$web_url" ] || [ "$web_url" = "null" ]; then
+        echo "gitlab_open_jobs: couldn't get repo URL" >&2
+        return 1
+    fi
+    open "$web_url/-/jobs"
 }
 export -f gitlab_open_jobs
 defn globj gitlab_open_jobs

@@ -1899,7 +1899,7 @@ gh_job_url = gh_job "$@" | jq -r .url
 github_url = gh repo view --json url "$@" | jq -r .url
 gitlab_api
 gitlab_url = gh repo view --json url | jq -r .url
-gh_open_job = open "$(gh_job_url "$@")"
+gh_open_job
 gh_run_open
 gist-upload = git-helpers/gist/gist-upload  # Upload files to GitHub Gist preserving their filenames
 git_set_sha = export sha="$(git sha)"

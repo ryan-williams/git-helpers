@@ -464,7 +464,13 @@ export -f gh_job_url
 defn ghju gh_job_url
 
 gh_open_job() {
-    open "$(gh_job_url "$@")"
+    local url
+    url="$(gh_job_url "$@")" || return
+    if [ -z "$url" ] || [ "$url" = "null" ]; then
+        echo "gh_open_job: couldn't get job URL" >&2
+        return 1
+    fi
+    open "$url"
 }
 export -f gh_open_job
 defn ghoj gh_open_job
