@@ -158,6 +158,34 @@ alias gun="g un"
 alias gune="g une"
 alias gusr="g usr"
 
+_gea_precompute() {
+    # Build caches for git_expand_alias batch operations.
+    # Call before loops that invoke gea many times (e.g. diff-compgens).
+    declare -gA _GEA_BASH_ALIASES=()
+    declare -gA _GEA_GIT_ALIASES=()
+    local _line
+    while IFS= read -r _line; do
+        local _name="${_line#alias }"
+        _name="${_name%%=*}"
+        local _val="${_line#*=\'}"
+        _val="${_val%\'}"
+        _GEA_BASH_ALIASES["$_name"]="$_val"
+    done < <(alias)
+    while IFS= read -r _line; do
+        local _rest="${_line#alias.}"
+        local _name="${_rest%% *}"
+        local _val="${_rest#* }"
+        _GEA_GIT_ALIASES["$_name"]="$_val"
+    done < <(git config --get-regexp '^alias\.' 2>/dev/null)
+    _GEA_PRECOMPUTED=1
+}
+export -f _gea_precompute
+
+_gea_cleanup() {
+    unset _GEA_BASH_ALIASES _GEA_GIT_ALIASES _GEA_PRECOMPUTED
+}
+export -f _gea_cleanup
+
 git_expand_alias() {
     log() {
         return 0
@@ -174,13 +202,16 @@ git_expand_alias() {
     fi
 
     local pre=()
-    if alias "$1" &>/dev/null; then
-      log "found alias $1" >&2
-      # Extract alias value using bash builtins (avoid perl)
-      local _aval
+    local _aval=
+    if [ -n "${_GEA_PRECOMPUTED-}" ] && [ -n "${_GEA_BASH_ALIASES[$1]+x}" ]; then
+      _aval="${_GEA_BASH_ALIASES[$1]}"
+    elif alias "$1" &>/dev/null; then
       _aval="$(alias "$1" 2>/dev/null)"
       _aval="${_aval#*=\'}"
       _aval="${_aval%\'}"
+    fi
+    if [ -n "$_aval" ]; then
+      log "found alias $1" >&2
       set -- $_aval
       log "$# new args: $*"
       if [ "$1" = g ] || [ "$1" = git ] || [ "$1" = gn ]; then
@@ -194,13 +225,20 @@ git_expand_alias() {
       log "found function $1" >&2
       local fline=
       local multiline=
-      while read -r line; do
+      local _func_def
+      _func_def="$(declare -f "$1" 2>/dev/null)" || true
+      while IFS= read -r line; do
+        [[ "$line" == "    "* ]] || continue
+        line="${line#    }"
         log "function line: $line"
-        # Check for Usage string
+        # Check for Usage string (e.g. echo "Usage: func <args>" >&2)
         if [[ "$line" == *"Usage: "* ]] && [[ "$line" == *'>&2'* || "$line" == *'1>&2'* ]]; then
           local _usage="${line#*Usage: }"
           _usage="${_usage#* }"  # skip script/function name
-          _usage="${_usage%%[\"\']*}"
+          # Strip trailing quote + >&2 + semicolon (e.g. `" >&2;` or `' 1>&2`)
+          _usage="${_usage%%\"*>&2*}"
+          _usage="${_usage%%\'*>&2*}"
+          _usage="${_usage%;}"
           if [ -n "$_usage" ]; then
             echo "$_usage"
             return 0
@@ -212,7 +250,7 @@ git_expand_alias() {
         elif [ -n "$fline" ]; then
           multiline=1
         fi
-      done < <(type "$1" 2>/dev/null | sed -n 's/^    //p')
+      done <<< "$_func_def"
       if [ -n "$multiline" ]; then
         fline=
       fi
@@ -225,8 +263,9 @@ git_expand_alias() {
           local _fn _src_line _src_file
           read -r _fn _src_line _src_file <<< "$(declare -F "$1" 2>/dev/null)"
           if [ -n "$_src_file" ] && [ -f "$_src_file" ] && [ -n "$_src_line" ]; then
-            local _next_line
-            _next_line="$(sed -n "$((${_src_line} + 1))p" "$_src_file")"
+            local _lines
+            mapfile -t -s "$_src_line" -n 1 _lines < "$_src_file"
+            local _next_line="${_lines[0]}"
             local _trimmed="${_next_line#"${_next_line%%[! ]*}"}"
             if [[ "$_trimmed" == "# "* ]]; then
               echo "# ${_trimmed#\# }"
@@ -255,7 +294,7 @@ git_expand_alias() {
       fi
     else
       log "looking for cmd $1"
-      local which="$(which "$1" 2>/dev/null)"
+      local which="$(type -P "$1" 2>/dev/null)"
       if [ -n "$which" ]; then
         which="${which#$PWD/}"
         log "found command $1" >&2
@@ -278,14 +317,22 @@ git_expand_alias() {
     if [ $# -gt 0 ]; then
       local git_alias="$1"; shift
       post=("$@")
-      # Use git config instead of git help | head | perl (3 processes → 1)
-      local git_alias2="$(git config --get "alias.$git_alias" 2>/dev/null)"
-      log "$git_alias -> $git_alias2"
-      if [ -n "$git_alias2" ]; then
-        git_alias="$git_alias2"
+      if [ -n "${_GEA_PRECOMPUTED-}" ] && [ -n "${_GEA_GIT_ALIASES[$git_alias]+x}" ]; then
+        log "$git_alias -> ${_GEA_GIT_ALIASES[$git_alias]} (cached)"
+        git_alias="${_GEA_GIT_ALIASES[$git_alias]}"
+      else
+        # Use git help to expand alias, parse with bash builtins (avoid head|perl)
+        local _help_line
+        _help_line="$(git help "$git_alias" 2>/dev/null | head -n1)"
+        if [[ "$_help_line" == *"is aliased to '"*"'"* ]]; then
+          local git_alias2="${_help_line#*is aliased to \'}"
+          git_alias2="${git_alias2%\'*}"
+          log "$git_alias -> $git_alias2"
+          git_alias="$git_alias2"
+        fi
       fi
       set -- $git_alias
-      log "$# new args via git config: $*"
+      log "$# new args via git help: $*"
       if [[ $1 == "!"* ]]; then
         log "git shell config: $*"
         echo "$@"

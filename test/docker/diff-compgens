@@ -65,7 +65,7 @@ lookup_name() {
   fi
   gea="$(gea "$name" 2>/dev/null || true)"
   # Filter out uv script metadata markers
-  gea="$(echo "$gea" | sed 's/  # \/\/\/ script$//')"
+  gea="${gea%  # /// script}"
   if [ -n "$gea" ]; then
     echo " = $gea"
   else
@@ -77,6 +77,8 @@ export -f lookup_name
 if [ -n "$verbose" ]; then
   echo "$adds new completions:"
 
+  # Precompute alias/builtin caches to avoid per-call subprocess spawns
+  _gea_precompute
   # Enable extdebug for the whole loop so git_expand_alias doesn't toggle it per-call
   shopt -s extdebug 2>/dev/null
   _comm -13 \
