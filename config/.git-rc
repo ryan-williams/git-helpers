@@ -213,7 +213,27 @@ git_expand_alias() {
       fi
       log "got fline: $fline"
       if [ -z "$fline" ]; then
-        # type "$1" | perl -ne 'print if s/^    //' | tr '\n' ';'
+        # Multi-line function: try to read a comment from the source file
+        # (extdebug makes declare -F include file/line info)
+        shopt -s extdebug 2>/dev/null
+        local decl
+        decl="$(declare -F "$1" 2>/dev/null)"
+        shopt -u extdebug 2>/dev/null
+        if [ -n "$decl" ]; then
+          local src_line src_file
+          src_line="$(echo "$decl" | awk '{print $2}')"
+          src_file="$(echo "$decl" | awk '{for(i=3;i<=NF;i++) printf "%s%s",$i,(i<NF?" ":"")}')"
+          if [ -n "$src_file" ] && [ -f "$src_file" ] && [ -n "$src_line" ]; then
+            local next_line
+            next_line="$(sed -n "$((src_line + 1))p" "$src_file")"
+            local src_comment
+            src_comment="$(echo "$next_line" | perl -ne 'print if s/^\s*# (.*)$/$1/')"
+            if [ -n "$src_comment" ]; then
+              echo "# $src_comment"
+              return 0
+            fi
+          fi
+        fi
         return 1
       fi
       set -- $(echo "$fline" | perl -pe 's/^(.*?)(?: "\$@")?$/$1/')
