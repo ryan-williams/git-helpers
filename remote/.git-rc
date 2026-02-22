@@ -52,6 +52,8 @@ defn glrt g lrt
 
 defn grdb g rdb
 
+alias goj="g oj"
+
 alias gob="g ob"
 alias gobn="g obn"
 alias gobnu="g obnu"

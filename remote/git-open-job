@@ -1,0 +1,120 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "click",
+#     "utz",
+# ]
+# ///
+# Detect GitHub/GitLab from remotes, open CI jobs page.
+from __future__ import annotations
+
+import os
+import re
+import sys
+
+from click import command, argument, option
+from utz import err, proc
+
+GH_RGX = re.compile(r'(?:git@|https://)github\.com[:/]')
+GL_RGX = re.compile(r'(?:git@|https://)gitlab\.com[:/]')
+
+
+def get_remotes() -> list[tuple[str, str]]:
+    """Return [(name, url), ...] for all remotes."""
+    seen = set()
+    remotes = []
+    for line in proc.lines('git', 'remote', '-v', err_ok=True):
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        name, url = parts[0], parts[1]
+        if name not in seen:
+            seen.add(name)
+            remotes.append((name, url))
+    return remotes
+
+
+def classify_url(url: str) -> str | None:
+    """Return 'github', 'gitlab', or None."""
+    if GH_RGX.search(url):
+        return 'github'
+    if GL_RGX.search(url):
+        return 'gitlab'
+    return None
+
+
+def detect_platform(remote: str | None) -> str:
+    """Detect whether the repo is GitHub or GitLab.
+
+    Priority:
+    1. Explicit -r remote
+    2. Current branch's tracking remote
+    3. Sole remote
+    4. Sole platform among all remotes
+    """
+    remotes = get_remotes()
+    if not remotes:
+        err("No remotes found")
+        sys.exit(1)
+
+    # If explicit remote given, use it
+    if remote:
+        for name, url in remotes:
+            if name == remote:
+                platform = classify_url(url)
+                if platform:
+                    return platform
+                err(f"Remote '{remote}' URL doesn't match GitHub or GitLab: {url}")
+                sys.exit(1)
+        err(f"Remote '{remote}' not found")
+        sys.exit(1)
+
+    # Try tracking remote
+    upstream = proc.line('git', 'rev-parse', '--abbrev-ref', '@{u}', err_ok=True, log=False)
+    if upstream and '/' in upstream:
+        tracking_remote = upstream.split('/', 1)[0]
+        for name, url in remotes:
+            if name == tracking_remote:
+                platform = classify_url(url)
+                if platform:
+                    return platform
+
+    # Sole remote
+    if len(remotes) == 1:
+        platform = classify_url(remotes[0][1])
+        if platform:
+            return platform
+
+    # Multiple remotes: check if all agree on platform
+    platforms = set()
+    for _, url in remotes:
+        p = classify_url(url)
+        if p:
+            platforms.add(p)
+    if len(platforms) == 1:
+        return platforms.pop()
+    if len(platforms) > 1:
+        err(f"Ambiguous: found both GitHub and GitLab remotes. Use -r <remote> to specify.")
+        sys.exit(1)
+
+    err("No GitHub or GitLab remotes found")
+    sys.exit(1)
+
+
+@command
+@option('-r', '--remote', help='Use this remote to determine platform')
+@argument('args', nargs=-1)
+def main(remote: str | None, args: tuple[str, ...]):
+    """Open CI/CD jobs page (auto-detects GitHub Actions vs GitLab CI)."""
+    platform = detect_platform(remote)
+    if platform == 'github':
+        # gh_open_job is an exported bash function
+        os.execvp('bash', ['bash', '-c', 'gh_open_job "$@"', '--', *args])
+    else:
+        # gitlab_open_jobs is an exported bash function
+        os.execvp('bash', ['bash', '-c', 'gitlab_open_jobs "$@"', '--', *args])
+
+
+if __name__ == '__main__':
+    main()

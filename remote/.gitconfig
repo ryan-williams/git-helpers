@@ -64,6 +64,8 @@
 
   fnr       = find-only-remote
 
+  oj        = open-job
+
   ob        = !git_open_web_branch.py
   obn       = !git_open_web_branch.py -n
   obnu      = !git_open_web_branch.py -nu
