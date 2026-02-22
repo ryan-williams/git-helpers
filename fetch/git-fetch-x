@@ -3,12 +3,22 @@
 # Wrapper around `git fetch` that interprets the last argument as a comma-delimited list of remote names, and fetches
 # from each one
 
-# pop last arg
+# If the last arg looks like a remote (not a flag), pop it as the remote list.
+# Otherwise, resolve the remote from the tracking branch.
 last=${!#}
-set -- "${@:1:$(($#-1))}"
-
-# split last arg by commas
-IFS=',' read -r -a remotes <<< "$last"
+if [[ $# -gt 0 && "$last" != -* ]]; then
+  set -- "${@:1:$(($#-1))}"
+  IFS=',' read -r -a remotes <<< "$last"
+else
+  # No explicit remote; use tracking branch's remote
+  upstream="$(git rev-parse --abbrev-ref "@{u}" 2>/dev/null)"
+  if [ -n "$upstream" ]; then
+    remotes=("${upstream%%/*}")
+  else
+    echo "fetch-x: no remote specified and no tracking branch found" >&2
+    exit 1
+  fi
+fi
 
 # Check if --tags is in the arguments
 has_tags=false
