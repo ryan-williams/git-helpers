@@ -75,11 +75,11 @@ alias gdnpgt="g dnpgt"
 alias gdnpgu="g dnpgu"
 alias gdnpu="g dnpu"
 alias gdnpt="g dnpt"
+alias gdpt="g dpt"
+alias gdpu="g dpu"
 alias gdpg="g dpg"
 alias gdptg="g dptg"
 alias gdpug="g dpug"
-alias gdpt="g dpt"
-alias gdpu="g dpu"
 alias gdsm="g dsm"
 alias gdsml="g dsml"
 alias ge="g e"
@@ -176,7 +176,12 @@ git_expand_alias() {
     local pre=()
     if alias "$1" &>/dev/null; then
       log "found alias $1" >&2
-      set -- $(alias "$1" | perl -pe "s/alias [^=]+='(.*)'$/\1/")
+      # Extract alias value using bash builtins (avoid perl)
+      local _aval
+      _aval="$(alias "$1" 2>/dev/null)"
+      _aval="${_aval#*=\'}"
+      _aval="${_aval%\'}"
+      set -- $_aval
       log "$# new args: $*"
       if [ "$1" = g ] || [ "$1" = git ] || [ "$1" = gn ]; then
         pre+=("$1")
@@ -191,15 +196,15 @@ git_expand_alias() {
       local multiline=
       while read -r line; do
         log "function line: $line"
-        local usage="$(echo "$line" | perl -ne 'print if s/^.*Usage: \S+ (.*)["'"'"'] 1?>&2;?$/$1/')"
-        if [ -n "$usage" ]; then
-          echo "$usage"
-          return 0
-        fi
-        local comment="$(echo "$line" | perl -ne 'print if s/^\s*# (.*)$/$1/')"
-        if [ -n "$comment" ]; then
-          echo "# $comment"
-          return 0
+        # Check for Usage string
+        if [[ "$line" == *"Usage: "* ]] && [[ "$line" == *'>&2'* || "$line" == *'1>&2'* ]]; then
+          local _usage="${line#*Usage: }"
+          _usage="${_usage#* }"  # skip script/function name
+          _usage="${_usage%%[\"\']*}"
+          if [ -n "$_usage" ]; then
+            echo "$_usage"
+            return 0
+          fi
         fi
         if [ -z "$fline" ]; then
           fline="$line"
@@ -207,36 +212,34 @@ git_expand_alias() {
         elif [ -n "$fline" ]; then
           multiline=1
         fi
-      done < <(type "$1" | perl -ne 'print if s/^    //')
+      done < <(type "$1" 2>/dev/null | sed -n 's/^    //p')
       if [ -n "$multiline" ]; then
         fline=
       fi
       log "got fline: $fline"
       if [ -z "$fline" ]; then
-        # Multi-line function: try to read a comment from the source file
-        # (extdebug makes declare -F include file/line info)
-        shopt -s extdebug 2>/dev/null
-        local decl
-        decl="$(declare -F "$1" 2>/dev/null)"
-        shopt -u extdebug 2>/dev/null
-        if [ -n "$decl" ]; then
-          local src_line src_file
-          src_line="$(echo "$decl" | awk '{print $2}')"
-          src_file="$(echo "$decl" | awk '{for(i=3;i<=NF;i++) printf "%s%s",$i,(i<NF?" ":"")}')"
-          if [ -n "$src_file" ] && [ -f "$src_file" ] && [ -n "$src_line" ]; then
-            local next_line
-            next_line="$(sed -n "$((src_line + 1))p" "$src_file")"
-            local src_comment
-            src_comment="$(echo "$next_line" | perl -ne 'print if s/^\s*# (.*)$/$1/')"
-            if [ -n "$src_comment" ]; then
-              echo "# $src_comment"
+        # Multi-line function: try to read a description comment from the source file.
+        # Uses extdebug to get file/line from declare -F. Callers can pre-enable
+        # extdebug to avoid the per-call shopt toggle overhead.
+        if shopt -q extdebug 2>/dev/null; then
+          local _fn _src_line _src_file
+          read -r _fn _src_line _src_file <<< "$(declare -F "$1" 2>/dev/null)"
+          if [ -n "$_src_file" ] && [ -f "$_src_file" ] && [ -n "$_src_line" ]; then
+            local _next_line
+            _next_line="$(sed -n "$((${_src_line} + 1))p" "$_src_file")"
+            local _trimmed="${_next_line#"${_next_line%%[! ]*}"}"
+            if [[ "$_trimmed" == "# "* ]]; then
+              echo "# ${_trimmed#\# }"
               return 0
             fi
           fi
         fi
         return 1
       fi
-      set -- $(echo "$fline" | perl -pe 's/^(.*?)(?: "\$@")?$/$1/')
+      # Strip trailing "$@" from one-liner function body using bash builtins
+      local _fline="$fline"
+      _fline="${_fline% \"\$@\"}"
+      set -- $_fline
       log "$# new args: $*"
       if [ "$1" = g ] || [ "$1" = git ]; then
         if [ $# -eq 1 ]; then
@@ -275,13 +278,14 @@ git_expand_alias() {
     if [ $# -gt 0 ]; then
       local git_alias="$1"; shift
       post=("$@")
-      local git_alias2="$(git help "$git_alias" | head -n1 | perl -ne "print if s/.* is aliased to '(.*)'.*/\$1/")"
+      # Use git config instead of git help | head | perl (3 processes → 1)
+      local git_alias2="$(git config --get "alias.$git_alias" 2>/dev/null)"
       log "$git_alias -> $git_alias2"
       if [ -n "$git_alias2" ]; then
         git_alias="$git_alias2"
       fi
       set -- $git_alias
-      log "$# new args via git help: $*"
+      log "$# new args via git config: $*"
       if [[ $1 == "!"* ]]; then
         log "git shell config: $*"
         echo "$@"

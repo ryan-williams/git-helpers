@@ -4,4 +4,5 @@
 # Wraps the function for ease of accessing Bash aliases; `bash -i` shebang enables that above, but slows down
 # invocation time.
 
+shopt -s extdebug 2>/dev/null
 git_expand_alias "$@"

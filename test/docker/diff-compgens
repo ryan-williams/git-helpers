@@ -77,6 +77,8 @@ export -f lookup_name
 if [ -n "$verbose" ]; then
   echo "$adds new completions:"
 
+  # Enable extdebug for the whole loop so git_expand_alias doesn't toggle it per-call
+  shopt -s extdebug 2>/dev/null
   _comm -13 \
   | p 'echo -n "{} "; echo {} | wc -c' \
   | sort -nk2 \
@@ -85,6 +87,7 @@ if [ -n "$verbose" ]; then
   | while read -r name; do
     lookup_name "$name"
   done
+  shopt -u extdebug 2>/dev/null
   echo "$boths completions present before and after installing git-helpers"
   echo "$adds completions added by installing git-helpers ($rms removed, $afters total)"
 else
