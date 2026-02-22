@@ -81,6 +81,8 @@
   dxwr = diff-x -wR
   dxwrr = diff-x -wr
 
+  wdf  = webdiff
+
   has-changes = is-dirty
   has-no-changes = is-clean
   hc = has-changes

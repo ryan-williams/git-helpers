@@ -72,6 +72,8 @@ if command -v dffs-shell-integration &>/dev/null; then
     eval "$(dffs-shell-integration bash git-diff-x)"
 fi
 
+alias gwdf="g wdf"
+
 alias gd-="g d-"
 alias gdw-="g dw-"
 alias gdc-="g dc-"
