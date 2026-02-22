@@ -1900,7 +1900,7 @@ gh_job_url = gh_job "$@" | jq -r .url
 github_url = gh repo view --json url "$@" | jq -r .url
 gitlab_api
 gitlab_url = gh repo view --json url | jq -r .url
-gh_open_job
+gh_open_job = # Open the last (or specified) GHA job in browser
 gh_run_open
 gist-upload = git-helpers/gist/gist-upload  # Upload files to GitHub Gist preserving their filenames
 git_set_sha = export sha="$(git sha)"
@@ -1925,7 +1925,7 @@ git_clone_and_cd
 git_expand_alias = [-v] <alias>
 github_maybe_api
 gitlab_maybe_api
-gitlab_open_jobs
+gitlab_open_jobs = # Open GitLab CI/CD jobs page in browser
 parse-github-url = git-helpers/github/parse-github-url
 gh_variables_eval = ghv --json name,value | jr '.[] | .name+"="+.value'
 github-open-pr.py = git-helpers/github/github-open-pr.py  # Add parent directory to path for local imports

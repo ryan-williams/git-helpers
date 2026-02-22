@@ -27,6 +27,7 @@ alias glow="glab repo view --web"
 alias glowb="glab repo view --web -b"
 
 gitlab_open_jobs() {
+    # Open GitLab CI/CD jobs page in browser
     local web_url
     web_url="$(glab repo view -F json | jq -r .web_url)" || return
     if [ -z "$web_url" ] || [ "$web_url" = "null" ]; then

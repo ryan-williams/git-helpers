@@ -464,6 +464,7 @@ export -f gh_job_url
 defn ghju gh_job_url
 
 gh_open_job() {
+    # Open the last (or specified) GHA job in browser
     local url
     url="$(gh_job_url "$@")" || return
     if [ -z "$url" ] || [ "$url" = "null" ]; then
