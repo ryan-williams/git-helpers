@@ -131,6 +131,17 @@ def github_open_web(branch, default, remote, repo, gist, ref_arg, branch_arg):
     if not remote:
         if resolved_remote_ref and '/' in resolved_remote_ref:
             check_remote = resolved_remote_ref.split('/', 1)[0]
+        else:
+            # Fallback to tracking remote
+            try:
+                upstream = check_output(
+                    ['git', 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'],
+                    stderr=DEVNULL,
+                ).decode().strip()
+                if '/' in upstream:
+                    check_remote = upstream.split('/')[0]
+            except:
+                pass
     else:
         check_remote = remote
 
@@ -206,25 +217,25 @@ def github_open_web(branch, default, remote, repo, gist, ref_arg, branch_arg):
                 # Get current branch
                 current_branch = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip()
 
-                # If we're on the default branch, no need to specify
-                if current_branch == default_branch:
-                    stderr.write(f"Opening default branch: {default_branch}\n")
-                else:
-                    # Use the already-resolved remote ref
-                    ref = resolved_ref
-                    remote_ref = resolved_remote_ref
+                # Use the already-resolved remote ref
+                ref = resolved_ref
+                remote_ref = resolved_remote_ref
 
-                    if ref:
-                        # We found a matching remote ref
-                        stderr.write(f"Opening branch: {ref}")
-                        if remote_ref:
-                            stderr.write(f" (from remote {remote_ref})")
-                        stderr.write("\n")
-                        cmd.extend(['-b', ref])
-                    else:
-                        # No remote ref found, use current branch name
-                        stderr.write(f"Opening branch: {current_branch} (local branch, no remote match)\n")
-                        cmd.extend(['-b', current_branch])
+                # Compare resolved ref (not local branch) against default branch
+                ref_to_check = ref or current_branch
+                if ref_to_check == default_branch:
+                    stderr.write(f"Opening default branch: {default_branch}\n")
+                elif ref:
+                    # We found a matching remote ref
+                    stderr.write(f"Opening branch: {ref}")
+                    if remote_ref:
+                        stderr.write(f" (from remote {remote_ref})")
+                    stderr.write("\n")
+                    cmd.extend(['-b', ref])
+                else:
+                    # No remote ref found, use current branch name
+                    stderr.write(f"Opening branch: {current_branch} (local branch, no remote match)\n")
+                    cmd.extend(['-b', current_branch])
 
             except CalledProcessError as e:
                 stderr.write(f"Warning: Failed to determine branch: {e}\n")
