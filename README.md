@@ -1,5 +1,5 @@
 # git-helpers
-[1,873](#count-completions) Git aliases and scripts.
+[1,876](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,11 +359,11 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1873 completions added by installing git-helpers
+# 1876 completions added by installing git-helpers
 # By length:
 # - 2 chars: 22
-# - 3 chars: 274
-# - 4 chars: 736
+# - 3 chars: 275
+# - 4 chars: 737
 # - 5 chars: 396
 ```
 
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1873 new completions:
+1876 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -414,6 +414,7 @@ gan        = g add -n
 gap        = g add -p
 gar        = g add-rebase-continue
 gau        = g add -u
+gax        = g add-info-exclude
 gbb        = !git-branches.py -b
 gbc        = g branch-reset -c
 gbd        = g branch-delete -f
@@ -704,6 +705,7 @@ gaup       = g add -u -p
 gaus       = !git add -u && git status
 gaut       = g author
 gawt       = g amend-worktree
+gaxe       = g add-info-exclude
 gb1c       = !git-blob-first-commit
 gbcc       = g copy-branch-checkout
 gbds       = g branch-delete
@@ -1983,7 +1985,7 @@ github_org_open_settings_variables
 github_open_settings_secrets_actions = open "$(github_url "$@")/settings/secrets/actions"
 github_open_settings_variables_actions = open "$(github_url "$@")/settings/variables/actions"
 1635 completions present before and after installing git-helpers
-1873 completions added by installing git-helpers (0 removed, 3508 total)
+1876 completions added by installing git-helpers (0 removed, 3511 total)
 ```
 </details>
 

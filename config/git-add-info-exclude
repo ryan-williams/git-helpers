@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Append patterns to .git/info/exclude, deduplicating and resolving relative paths from subdirs.
+
+set -eo pipefail
+
+exclude_file="$(git rev-parse --git-dir)/info/exclude"
+
+# Get relative path from repo root to CWD (e.g. "src/lib/" or "")
+prefix="$(git rev-parse --show-prefix)"
+
+args=()
+for arg in "$@"; do
+    # Prepend subdir prefix for relative paths
+    # Skip: root-relative (/), negations (!), comments (#)
+    if [ -n "$prefix" ] && [[ "$arg" != /* ]] && [[ "$arg" != \!* ]] && [[ "$arg" != \#* ]]; then
+        args+=("${prefix}${arg}")
+    else
+        args+=("$arg")
+    fi
+done
+
+if [ ${#args[@]} -eq 0 ]; then
+    echo "Usage: git add-info-exclude <pattern> [...]" >&2
+    exit 1
+fi
+
+# Ensure the exclude file exists
+mkdir -p "$(dirname "$exclude_file")"
+touch "$exclude_file"
+
+# Deduplicate: find patterns not already in the exclude file
+mapfile -t new_excludes < <(comm -13 <(sort "$exclude_file") <(printf '%s\n' "${args[@]}" | sort))
+
+for pattern in "${new_excludes[@]}"; do
+    echo "$exclude_file: appending $pattern" >&2
+    echo "$pattern" >> "$exclude_file"
+done

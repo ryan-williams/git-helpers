@@ -15,8 +15,10 @@
         atd = attr-diff-type
         ae   = add-core-excludes -g
         aeg  = add-core-excludes -g
-        ael   = add-core-excludes
+        ael  = add-core-excludes
         age  = add-core-excludes -g
+        ax   = add-info-exclude
+        axe  = add-info-exclude
         cdc  = config-diff-command
         cdcg = config-diff-command -g
         cdg  = config-diff-command -g
