@@ -18,8 +18,31 @@ defn ghpx gh api -X
 defn ghx gh api -X
 defn ghw github-workflows.py
 
+_github_resolve_remote_args() {
+    # Resolve remote names to owner/repo in an args array
+    local -n _out="$1"
+    shift
+    local arg
+    for arg in "$@"; do
+        if [[ "$arg" != -* ]] && git remote get-url "$arg" &>/dev/null; then
+            local repo
+            repo="$(git remote get-url "$arg")"
+            repo="${repo##*github.com/}"
+            repo="${repo##*github.com:}"
+            repo="${repo%.git}"
+            _out+=("$repo")
+        else
+            _out+=("$arg")
+        fi
+    done
+}
+export -f _github_resolve_remote_args
+
 github_url() {
-    gh repo view --json url "$@" | jq -r .url
+    # gh repo view --json url [remote|repo] (resolves remote names)
+    local args=()
+    _github_resolve_remote_args args "$@"
+    gh repo view --json url "${args[@]}" | jq -r .url
 }
 export -f github_url
 defn ghu github_url
@@ -50,14 +73,17 @@ export -f github_open_branches_yours
 defn ghoby github_open_branches_yours
 
 github_url_ssh() {
-    gh repo view --json sshUrl | jq -r .sshUrl
+    # gh repo view --json sshUrl [remote|repo] (resolves remote names)
+    local args=()
+    _github_resolve_remote_args args "$@"
+    gh repo view --json sshUrl "${args[@]}" | jq -r .sshUrl
 }
 export -f github_url_ssh
 defn ghus github_url_ssh
 defn ghsu github_url_ssh
 
 github_open_actions() {
-    open "$(github_url)/actions"
+    open "$(github_url "$@")/actions"
 }
 export -f github_open_actions
 defn ghoa github_open_actions
@@ -77,49 +103,51 @@ defn oghp github_open_pages
 defn ghohp github_open_pages
 
 github_open_settings() {
-    open "$(github_url)/settings"
+    open "$(github_url "$@")/settings"
 }
 export -f github_open_settings
 defn ghos github_open_settings
 
 github_open_settings_secrets_actions() {
-    open "$(github_url)/settings/secrets/actions"
+    open "$(github_url "$@")/settings/secrets/actions"
 }
 export -f github_open_settings_secrets_actions
 defn ghossa github_open_settings_secrets_actions
 defn ghoss github_open_settings_secrets_actions
 
 github_open_settings_variables_actions() {
-    open "$(github_url)/settings/variables/actions"
+    open "$(github_url "$@")/settings/variables/actions"
 }
 export -f github_open_settings_variables_actions
 defn ghosva github_open_settings_variables_actions
 defn ghosv github_open_settings_variables_actions
 
 github_org_open_settings_secrets() {
-    local org
-    org="$(gh repo view --json owner -q .owner.login)"
+    local owner_repo
+    owner_repo="$(github_owner_name "$@")" || return
+    local org="${owner_repo%%/*}"
     open "https://github.com/organizations/$org/settings/secrets/actions"
 }
 export -f github_org_open_settings_secrets
 defn ghoos github_org_open_settings_secrets
 
 github_org_open_settings_variables() {
-    local org
-    org="$(gh repo view --json owner -q .owner.login)"
+    local owner_repo
+    owner_repo="$(github_owner_name "$@")" || return
+    local org="${owner_repo%%/*}"
     open "https://github.com/organizations/$org/settings/variables/actions"
 }
 export -f github_org_open_settings_variables
 defn ghoov github_org_open_settings_variables
 
 github_open_settings_runners() {
-    open "$(github_url)/settings/actions/runners"
+    open "$(github_url "$@")/settings/actions/runners"
 }
 export -f github_open_settings_runners
 defn ghosr github_open_settings_runners
 
 github_open_releases() {
-    open "$(github_url)/releases"
+    open "$(github_url "$@")/releases"
 }
 export -f github_open_releases
 defn ghorl github_open_releases
@@ -465,6 +493,14 @@ defn ghju gh_job_url
 
 gh_open_job() {
     # Open the last (or specified) GHA job in browser
+    # If first arg is a remote name, set GH_REPO for downstream `gh` commands
+    if [ $# -gt 0 ] && [[ "$1" != -* ]] && git remote get-url "$1" &>/dev/null; then
+        local _args=()
+        _github_resolve_remote_args _args "$1"
+        local GH_REPO="${_args[0]}"
+        export GH_REPO
+        shift
+    fi
     local url
     url="$(gh_job_url "$@")" || return
     if [ -z "$url" ] || [ "$url" = "null" ]; then

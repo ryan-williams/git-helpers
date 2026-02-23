@@ -102,12 +102,32 @@ def detect_platform(remote: str | None) -> str:
     sys.exit(1)
 
 
+def resolve_remote_repo(remote: str) -> str | None:
+    """Resolve a remote name to owner/repo."""
+    url = proc.line('git', 'remote', 'get-url', remote, err_ok=True, log=False)
+    if not url:
+        return None
+    for rgx in [GH_RGX, GL_RGX]:
+        if rgx.search(url):
+            repo = rgx.sub('', url)
+            return repo.removesuffix('.git')
+    return None
+
+
 @command
-@option('-r', '--remote', help='Use this remote to determine platform')
+@option('-r', '--remote', help='Use this remote to determine platform (and repo)')
 @argument('args', nargs=-1)
 def main(remote: str | None, args: tuple[str, ...]):
     """Open CI/CD jobs page (auto-detects GitHub Actions vs GitLab CI)."""
     platform = detect_platform(remote)
+    # Set GH_REPO / GL_REPO so downstream `gh`/`glab` commands target the right repo
+    if remote:
+        repo = resolve_remote_repo(remote)
+        if repo:
+            if platform == 'github':
+                os.environ['GH_REPO'] = repo
+            else:
+                os.environ['GITLAB_REPO'] = repo
     if platform == 'github':
         # gh_open_job is an exported bash function
         os.execvp('bash', ['bash', '-c', 'gh_open_job "$@"', '--', *args])

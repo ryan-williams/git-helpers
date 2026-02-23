@@ -1899,7 +1899,7 @@ gh_job_id  = gh_last_job "$@" | jq -r .databaseId
 ls-remote  = git-helpers/remote/ls-remote
 gh_job_ids = [run_id [job_idx]]
 gh_job_url = gh_job "$@" | jq -r .url
-github_url = gh repo view --json url "$@" | jq -r .url
+github_url = # gh repo view --json url [remote|repo] (resolves remote names)
 gitlab_api
 gitlab_url = gh repo view --json url | jq -r .url
 gh_open_job = # Open the last (or specified) GHA job in browser
@@ -1918,7 +1918,7 @@ gh_last_run_id = gh run list -L 1 --json databaseId | jq -r .[0].databaseId
 gh_run_and_job = [run_id [job_idx]]
 github-api-url = git-helpers/submodule/github-api-url
 github-web-url = git-helpers/submodule/github-web-url
-github_url_ssh = gh repo view --json sshUrl | jq -r .sshUrl
+github_url_ssh = # gh repo view --json sshUrl [remote|repo] (resolves remote names)
 gitlab_url_ssh = gh repo view --json sshUrl | jq -r .sshUrl
 gh_run_view_url = ghrv "$@" --json url | jr .url
 gh-upload-img.py = git-helpers/github/gh-upload-img.py  # Add current directory to path for local imports
@@ -1941,7 +1941,7 @@ init-mirror-remote = git-helpers/remote/init-mirror-remote
 gh_repo_description = gh repo view --json description "$@" | jq -r .description
 github-gist-file.py = git-helpers/github/github-gist-file.py
 github-workflows.py = git-helpers/github/github-workflows.py  # Add parent directory to path for local imports
-github_open_actions = open "$(github_url)/actions"
+github_open_actions = open "$(github_url "$@")/actions"
 github_open_profile
 github_open_web_ref = [ref]
 test-gddp-colors.sh = git-helpers/diff/test-gddp-colors.sh  # Test script to display gddp color swatches for all 6 nested diff patterns
@@ -1949,8 +1949,8 @@ gh_last_workflow_run = gh run list -L 1 --json databaseId | jq -r .[0].databaseI
 gist-get-description = git-helpers/gist/gist-get-description  # Get a GitHub Gist's description
 gist-set-description = git-helpers/gist/gist-set-description  # Set or update a GitHub Gist's description
 github-docs-snapshot = git-helpers/github/github-docs-snapshot
-github_open_releases = open "$(github_url)/releases"
-github_open_settings = open "$(github_url)/settings"
+github_open_releases = open "$(github_url "$@")/releases"
+github_open_settings = open "$(github_url "$@")/settings"
 pop_commit_from_file = git-helpers/cherry-pick/pop_commit_from_file  # Cherry-pick a commit from a file; if successful, remove it from the file.
 github_branches_yours
 github_default_remote
@@ -1972,7 +1972,7 @@ github_set_default_remote = [remote name]
 gitlab_set_default_branch
 github-placeholder-main.py = git-helpers/github/github-placeholder-main.py
 github_open_branches_yours
-github_open_settings_runners = open "$(github_url)/settings/actions/runners"
+github_open_settings_runners = open "$(github_url "$@")/settings/actions/runners"
 gh_workflow_run_current_branch
 github-submodule-check-commits = git-helpers/submodule/github-submodule-check-commits
 github_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
@@ -1980,8 +1980,8 @@ gitlab_list_protected_branches
 gitlab_parse_remote_and_branch = <caller name> [-n] [remote] <branch>
 github_org_open_settings_secrets
 github_org_open_settings_variables
-github_open_settings_secrets_actions = open "$(github_url)/settings/secrets/actions"
-github_open_settings_variables_actions = open "$(github_url)/settings/variables/actions"
+github_open_settings_secrets_actions = open "$(github_url "$@")/settings/secrets/actions"
+github_open_settings_variables_actions = open "$(github_url "$@")/settings/variables/actions"
 1635 completions present before and after installing git-helpers
 1873 completions added by installing git-helpers (0 removed, 3508 total)
 ```

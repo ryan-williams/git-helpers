@@ -29,7 +29,18 @@ alias glowb="glab repo view --web -b"
 gitlab_open_jobs() {
     # Open GitLab CI/CD jobs page in browser
     local web_url
-    web_url="$(glab repo view -F json | jq -r .web_url)" || return
+    if [ $# -gt 0 ] && [[ "$1" != -* ]] && git remote get-url "$1" &>/dev/null; then
+        local remote_url
+        remote_url="$(git remote get-url "$1")"
+        local repo="$remote_url"
+        repo="${repo##*gitlab.com:}"
+        repo="${repo##*gitlab.com/}"
+        repo="${repo%.git}"
+        web_url="https://gitlab.com/$repo"
+        shift
+    else
+        web_url="$(glab repo view -F json | jq -r .web_url)" || return
+    fi
     if [ -z "$web_url" ] || [ "$web_url" = "null" ]; then
         echo "gitlab_open_jobs: couldn't get repo URL" >&2
         return 1
