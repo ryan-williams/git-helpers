@@ -1,74 +1,192 @@
 #!/usr/bin/env bash
+# Force-create/move a version tag to HEAD, with status reporting.
 
 set -e
 
-# Function to preserve tag message if it exists
+err() { echo "$@" >&2; }
+
+# Preserve annotated tag message when force-updating
 preserve_tag() {
   local tag="$1"
   shift
   if git rev-parse "$tag" >/dev/null 2>&1; then
-    # Tag exists, check if it's annotated
     if git cat-file -p "$tag" 2>/dev/null | grep -q "^tag "; then
-      # It's an annotated tag, preserve the message
       tag_msg=$(git tag -l --format='%(contents)' "$tag")
-      git tag -f -a "$tag" -m "$tag_msg" "$@"
+      git tag -f -a "$tag" -m "$tag_msg" "$@" >/dev/null
     else
-      # It's a lightweight tag, just force update
-      git tag -f "$tag" "$@"
+      git tag -f "$tag" "$@" >/dev/null
     fi
   else
-    # Tag doesn't exist, create normally
-    git tag -f "$tag" "$@"
+    git tag "$tag" "$@"
   fi
-  echo "$tag"
 }
 
 # Extract version from commit diff (pyproject.toml or package.json)
-# Supports semver with optional pre-release suffix (e.g., 1.2.3, 1.2.3rc1, 1.2.3-alpha.1)
 version_from_diff() {
   local commit="${1:-HEAD}"
   local version=""
 
-  # Check pyproject.toml for version = "X.Y.Z" changes (with optional pre-release suffix)
   version=$(git show "$commit" -- pyproject.toml 2>/dev/null | \
     grep -E '^\+.*version\s*=' | \
     grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9._-]*' | head -1)
-
   if [ -n "$version" ]; then
     echo "$version"
     return
   fi
 
-  # Check package.json for "version": "X.Y.Z" changes (with optional pre-release suffix)
   version=$(git show "$commit" -- package.json 2>/dev/null | \
     grep -E '^\+.*"version"' | \
     grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9._-]*' | head -1)
-
   if [ -n "$version" ]; then
     echo "$version"
     return
   fi
 }
 
-if [ $# -eq 0 ]; then
-  # Use commit subject (first line)
-  msg="$(git subject)"
-  # Match semver with optional pre-release suffix (e.g., v1.2.3, 1.2.3rc1, v1.2.3-alpha.1)
-  if [[ $msg =~ ^v?[0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9._-]*$ ]]; then
-    preserve_tag "$msg"
-  else
-    # Try to extract version from the commit diff
-    version="$(version_from_diff)"
+# Read version directly from project files (not diff)
+version_from_file() {
+  local version=""
+
+  if [ -f pyproject.toml ]; then
+    version=$(grep -E '^version\s*=' pyproject.toml | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9._-]*' | head -1)
     if [ -n "$version" ]; then
-      echo "Detected version bump to $version in commit" >&2
-      preserve_tag "$version"
-    else
-      echo "Usage: $0 [tag]" >&2
-      echo "If no [tag] is provided, the current commit message is used as the tag (expected to match /^v?[0-9]+\.[0-9]+\.[0-9]+$/)," >&2
-      echo "or the version is extracted from pyproject.toml/package.json changes in the commit." >&2
-      exit 1
+      echo "$version"
+      return
     fi
   fi
+
+  if [ -f package.json ]; then
+    version=$(grep -E '"version"' package.json | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9._-]*' | head -1)
+    if [ -n "$version" ]; then
+      echo "$version"
+      return
+    fi
+  fi
+}
+
+# Detect v-prefix convention from existing tags
+detect_prefix() {
+  local version="$1"
+  # If a v-prefixed tag already exists for this version, use v
+  if git rev-parse "v$version" >/dev/null 2>&1; then
+    echo "v"
+    return
+  fi
+  # If a bare tag exists, use no prefix
+  if git rev-parse "$version" >/dev/null 2>&1; then
+    echo ""
+    return
+  fi
+  # Check convention from most recent semver tags
+  local v_count=0 bare_count=0
+  while IFS= read -r t; do
+    case "$t" in
+      v[0-9]*) v_count=$((v_count + 1)) ;;
+      [0-9]*)  bare_count=$((bare_count + 1)) ;;
+    esac
+  done < <(git tag --sort=-version:refname | head -20)
+  if [ "$v_count" -ge "$bare_count" ]; then
+    echo "v"
+  else
+    echo ""
+  fi
+}
+
+# Report tag status: old location, commits, remote
+report_tag() {
+  local tag="$1"
+  local head_sha
+  head_sha="$(git rev-parse --short HEAD)"
+
+  # Check if tag already existed
+  local old_sha=""
+  if git rev-parse "$tag" >/dev/null 2>&1; then
+    old_sha="$(git rev-parse --short "$tag")"
+    if [ "$old_sha" = "$head_sha" ]; then
+      err "$tag: already at $head_sha (HEAD)"
+      return 1  # signal no-op
+    fi
+    local behind ahead
+    behind="$(git rev-list --count "$tag"..HEAD)"
+    ahead="$(git rev-list --count "HEAD..$tag")"
+    err "$tag: $old_sha → $head_sha (+$behind/-$ahead commits)"
+  else
+    err "$tag: (new) → $head_sha"
+  fi
+
+  # Check remote tag status
+  local remote=""
+  remote="$(git rev-parse --abbrev-ref '@{u}' 2>/dev/null | cut -d/ -f1)" || true
+  if [ -z "$remote" ]; then
+    remote="$(git remote | head -1)"
+  fi
+  if [ -n "$remote" ]; then
+    local remote_sha=""
+    remote_sha="$(git ls-remote --tags "$remote" "refs/tags/$tag" 2>/dev/null | cut -f1 | head -1)" || true
+    if [ -n "$remote_sha" ]; then
+      local remote_short="${remote_sha:0:7}"
+      if [ "$remote_short" = "$old_sha" ]; then
+        err "$tag: on $remote at $old_sha (will need push)"
+      elif [ "$remote_short" = "$head_sha" ]; then
+        err "$tag: on $remote already at $head_sha"
+      else
+        err "$tag: on $remote at $remote_short (diverged, will need force push)"
+      fi
+    else
+      err "$tag: not on $remote"
+    fi
+  fi
+}
+
+# Determine version and tag name
+resolve_tag() {
+  local version="" source=""
+
+  # 1. Commit message matches version pattern
+  local msg
+  msg="$(git subject)"
+  if [[ $msg =~ ^v?[0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9._-]*$ ]]; then
+    echo "$msg"
+    err "tag from commit message: $msg"
+    return
+  fi
+
+  # 2. Version bump detected in commit diff
+  version="$(version_from_diff)"
+  if [ -n "$version" ]; then
+    source="commit diff"
+  fi
+
+  # 3. Version from project file
+  if [ -z "$version" ]; then
+    version="$(version_from_file)"
+    if [ -n "$version" ]; then
+      source="project file"
+    fi
+  fi
+
+  if [ -z "$version" ]; then
+    return 1
+  fi
+
+  local prefix
+  prefix="$(detect_prefix "$version")"
+  local tag="${prefix}${version}"
+  err "tag from $source: $tag"
+  echo "$tag"
+}
+
+if [ $# -eq 0 ]; then
+  tag="$(resolve_tag)" || {
+    err "Usage: $0 [tag]"
+    err "Could not determine version from commit message, diff, pyproject.toml, or package.json."
+    exit 1
+  }
+  report_tag "$tag" || exit 0  # exit 0 if already at HEAD
+  preserve_tag "$tag"
+  echo "$tag"
 else
+  report_tag "$1" || exit 0
   preserve_tag "$@"
+  echo "$1"
 fi
