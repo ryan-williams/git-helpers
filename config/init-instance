@@ -31,12 +31,12 @@ git global-gitignore \
   "*.egg-info" \
   "*.iml" \
   ".claude" \
+  ".envrc" \
   ".idea" \
   ".ipynb_checkpoints" \
   ".jupyter" \
+  ".pds.json" \
   ".python-version" \
-  ".vite" \
-  "node_modules" \
   ".venv" \
-  ".envrc"
-
+  ".vite" \
+  "node_modules"
