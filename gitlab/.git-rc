@@ -27,25 +27,29 @@ alias glow="glab repo view --web"
 alias glowb="glab repo view --web -b"
 
 gitlab_open_jobs() {
-    # Open GitLab CI/CD jobs page in browser
-    local web_url
+    # Open latest GitLab CI/CD job in browser (or jobs listing as fallback)
+    local project_id
     if [ $# -gt 0 ] && [[ "$1" != -* ]] && git remote get-url "$1" &>/dev/null; then
-        local remote_url
-        remote_url="$(git remote get-url "$1")"
-        local repo="$remote_url"
-        repo="${repo##*gitlab.com:}"
-        repo="${repo##*gitlab.com/}"
-        repo="${repo%.git}"
-        web_url="https://gitlab.com/$repo"
+        project_id="$(git remote-path -e "$1")"
         shift
     else
+        local remote
+        remote="$(gitlab_remote)" || return
+        project_id="$(git remote-path -e "$remote")"
+    fi
+    local job_url
+    job_url="$(glab api "projects/$project_id/jobs?per_page=1" 2>/dev/null | jq -r '.[0].web_url // empty')"
+    if [ -n "$job_url" ]; then
+        open "$job_url"
+    else
+        local web_url
         web_url="$(glab repo view -F json | jq -r .web_url)" || return
+        if [ -z "$web_url" ] || [ "$web_url" = "null" ]; then
+            echo "gitlab_open_jobs: couldn't get repo URL" >&2
+            return 1
+        fi
+        open "$web_url/-/jobs"
     fi
-    if [ -z "$web_url" ] || [ "$web_url" = "null" ]; then
-        echo "gitlab_open_jobs: couldn't get repo URL" >&2
-        return 1
-    fi
-    open "$web_url/-/jobs"
 }
 export -f gitlab_open_jobs
 defn globj gitlab_open_jobs
