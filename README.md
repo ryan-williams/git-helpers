@@ -1,5 +1,5 @@
 # git-helpers
-[1,876](#count-completions) Git aliases and scripts.
+[1,877](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,10 +359,10 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1876 completions added by installing git-helpers
+# 1877 completions added by installing git-helpers
 # By length:
 # - 2 chars: 22
-# - 3 chars: 275
+# - 3 chars: 276
 # - 4 chars: 737
 # - 5 chars: 396
 ```
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1876 new completions:
+1877 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -566,11 +566,12 @@ gob        = !git_open_web_branch.py
 goc        = g original-commit
 gof        = gh gist create --web -f
 goh        = g original-head
-goj        = g open-job
+goj        = g open job
 gom        = g octomerge
 gop        = gh gist create --web -p
 gos        = gh gist create --web
 got        = g rebase-onto
+gow        = g open web
 gpb        = g previous-branch
 gpd        = g push --delete
 gpf        = g push -f
@@ -1929,7 +1930,7 @@ git_clone_and_cd
 git_expand_alias = [-v] <alias>
 github_maybe_api
 gitlab_maybe_api
-gitlab_open_jobs = # Open GitLab CI/CD jobs page in browser
+gitlab_open_jobs = # Open latest GitLab CI/CD job in browser (or jobs listing as fallback)
 parse-github-url = git-helpers/github/parse-github-url
 gh_variables_eval = ghv --json name,value | jr '.[] | .name+"="+.value'
 github-open-pr.py = git-helpers/github/github-open-pr.py  # Add parent directory to path for local imports
@@ -1985,7 +1986,7 @@ github_org_open_settings_variables
 github_open_settings_secrets_actions = open "$(github_url "$@")/settings/secrets/actions"
 github_open_settings_variables_actions = open "$(github_url "$@")/settings/variables/actions"
 1635 completions present before and after installing git-helpers
-1876 completions added by installing git-helpers (0 removed, 3511 total)
+1877 completions added by installing git-helpers (0 removed, 3512 total)
 ```
 </details>
 

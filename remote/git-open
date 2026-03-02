@@ -1,0 +1,207 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "click",
+#     "utz",
+# ]
+# ///
+"""Unified git-open: auto-detect GitHub/GitLab, open web pages or CI jobs."""
+from __future__ import annotations
+
+import os
+import re
+import sys
+from dataclasses import dataclass
+from urllib.parse import quote
+
+from click import group, argument, option, pass_context, UNPROCESSED
+from utz import err, proc
+
+GH_RGX = re.compile(r'(?:git@|https://)github\.com[:/]')
+GL_RGX = re.compile(r'(?:git@|https://)gitlab\.com[:/]')
+
+
+@dataclass
+class PlatformInfo:
+    platform: str       # "github" or "gitlab"
+    remote: str | None  # resolved remote name
+    repo: str | None    # "owner/repo" if resolvable
+
+
+def get_remotes() -> list[tuple[str, str]]:
+    """Return [(name, url), ...] for all remotes."""
+    seen = set()
+    remotes = []
+    for line in proc.lines('git', 'remote', '-v', err_ok=True):
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        name, url = parts[0], parts[1]
+        if name not in seen:
+            seen.add(name)
+            remotes.append((name, url))
+    return remotes
+
+
+def classify_url(url: str) -> str | None:
+    """Return 'github', 'gitlab', or None."""
+    if GH_RGX.search(url):
+        return 'github'
+    if GL_RGX.search(url):
+        return 'gitlab'
+    return None
+
+
+def resolve_remote_repo(remote: str) -> str | None:
+    """Resolve a remote name to owner/repo."""
+    url = proc.line('git', 'remote', 'get-url', remote, err_ok=True, log=False)
+    if not url:
+        return None
+    for rgx in [GH_RGX, GL_RGX]:
+        if rgx.search(url):
+            repo = rgx.sub('', url)
+            return repo.removesuffix('.git')
+    return None
+
+
+def make_info(platform: str, remote_name: str | None) -> PlatformInfo:
+    repo = resolve_remote_repo(remote_name) if remote_name else None
+    return PlatformInfo(platform=platform, remote=remote_name, repo=repo)
+
+
+def detect_platform(remote: str | None) -> PlatformInfo:
+    """Detect whether the repo is GitHub or GitLab.
+
+    Priority:
+    1. Explicit -r remote
+    2. Current branch's tracking remote
+    3. Sole remote
+    4. Sole platform among all remotes
+    """
+    remotes = get_remotes()
+    if not remotes:
+        err("No remotes found")
+        sys.exit(1)
+
+    # If explicit remote given, use it
+    if remote:
+        for name, url in remotes:
+            if name == remote:
+                platform = classify_url(url)
+                if platform:
+                    return make_info(platform, name)
+                err(f"Remote '{remote}' URL doesn't match GitHub or GitLab: {url}")
+                sys.exit(1)
+        err(f"Remote '{remote}' not found")
+        sys.exit(1)
+
+    # Try tracking remote
+    upstream = proc.line('git', 'rev-parse', '--abbrev-ref', '@{u}', err_ok=True, log=False)
+    if upstream and '/' in upstream:
+        tracking_remote = upstream.split('/', 1)[0]
+        for name, url in remotes:
+            if name == tracking_remote:
+                platform = classify_url(url)
+                if platform:
+                    return make_info(platform, name)
+
+    # Sole remote
+    if len(remotes) == 1:
+        name, url = remotes[0]
+        platform = classify_url(url)
+        if platform:
+            return make_info(platform, name)
+
+    # Multiple remotes: check if all agree on platform
+    platforms: dict[str, str] = {}
+    for name, url in remotes:
+        p = classify_url(url)
+        if p:
+            platforms.setdefault(p, name)
+    if len(platforms) == 1:
+        platform, name = next(iter(platforms.items()))
+        return make_info(platform, name)
+    if len(platforms) > 1:
+        err("Ambiguous: found both GitHub and GitLab remotes. Use -r <remote> to specify.")
+        sys.exit(1)
+
+    err("No GitHub or GitLab remotes found")
+    sys.exit(1)
+
+
+@group('git-open')
+@option('-r', '--remote', help='Use this remote to determine platform')
+@pass_context
+def main(ctx, remote):
+    """Auto-detect GitHub/GitLab and open web pages or CI jobs."""
+    ctx.ensure_object(dict)
+    ctx.obj['info'] = detect_platform(remote)
+
+
+@main.command(
+    context_settings=dict(
+        ignore_unknown_options=True,
+        allow_extra_args=True,
+    ),
+)
+@pass_context
+def web(ctx):
+    """Open repo web page."""
+    info: PlatformInfo = ctx.obj['info']
+    args = ctx.args
+    if info.platform == 'github':
+        cmd = ['gh', 'repo', 'view']
+        if info.repo:
+            cmd.append(info.repo)
+        cmd.append('--web')
+    else:
+        cmd = ['glab', 'repo', 'view']
+        if info.repo:
+            cmd.append(info.repo)
+        cmd.append('--web')
+    cmd.extend(args)
+    os.execvp(cmd[0], cmd)
+
+
+@main.command()
+@argument('run_id', required=False)
+@argument('job_idx', required=False, type=int, default=-1)
+@pass_context
+def job(ctx, run_id, job_idx):
+    """Open latest CI/CD job in browser."""
+    info: PlatformInfo = ctx.obj['info']
+    if info.platform == 'github':
+        repo_args = ['-R', info.repo] if info.repo else []
+        if not run_id:
+            runs = proc.json('gh', 'run', 'list', *repo_args, '-L1', '--json', 'databaseId')
+            if not runs:
+                err("No workflow runs found")
+                sys.exit(1)
+            run_id = str(runs[0]['databaseId'])
+        run_data = proc.json('gh', 'run', 'view', run_id, *repo_args, '--json', 'jobs')
+        jobs = run_data.get('jobs', [])
+        if not jobs:
+            err(f"No jobs found for run {run_id}")
+            sys.exit(1)
+        url = jobs[job_idx]['url']
+        proc.run('open', url)
+    else:
+        if info.repo:
+            project_id = quote(info.repo, safe='')
+        else:
+            err("Couldn't determine GitLab repo path")
+            sys.exit(1)
+        jobs = proc.json('glab', 'api', f'projects/{project_id}/jobs?per_page=1')
+        if jobs:
+            job_url = jobs[0].get('web_url')
+            if job_url:
+                proc.run('open', job_url)
+                return
+        # Fallback: open jobs listing page
+        web_url = f"https://gitlab.com/{info.repo}"
+        proc.run('open', f"{web_url}/-/jobs")
+
+
+if __name__ == '__main__':
+    main()
