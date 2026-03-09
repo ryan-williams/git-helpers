@@ -1,5 +1,5 @@
 # git-helpers
-[1,877](#count-completions) Git aliases and scripts.
+[1,882](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,12 +359,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1877 completions added by installing git-helpers
+# 1882 completions added by installing git-helpers
 # By length:
 # - 2 chars: 22
 # - 3 chars: 276
 # - 4 chars: 737
-# - 5 chars: 396
+# - 5 chars: 401
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1877 new completions:
+1882 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -995,6 +995,7 @@ ghor       = github_open_web_ref
 ghos       = github_open_settings
 ghow       = github-open-web.py
 ghpb       = github_protected_branches
+ghpg       = github-pages url
 ghpj       = gh api -H "Accept: application/vnd.github+json"
 ghpm       = github-placeholder-main.py
 ghpx       = gh api -X
@@ -1411,7 +1412,6 @@ mboh       = g mb-to-oh
 mbot       = g mb-to-ot
 mbrh       = g mb-to-rh
 mbrp       = g mb-to-rhp
-oghp       = github_open_pages
 rprh       = g rh-parent-to-rh
 gaafp      = g amend-force-push -a
 gaapf      = g amend-force-push -a
@@ -1590,7 +1590,6 @@ ghgsd      = gist-set-description
 ghjis      = gh_job_ids
 ghlwr      = gh_last_workflow_run
 ghoby      = github_open_branches_yours
-ghohp      = github_open_pages
 ghoos      = github_org_open_settings_secrets
 ghoov      = github_org_open_settings_variables
 ghopr      = github-open-pr.py
@@ -1603,6 +1602,12 @@ ghowd      = github-open-web.py -d
 ghowg      = github-open-web.py -g
 ghowr      = github-open-web.py -r
 ghpbs      = github_protected_branches
+ghpgc      = github-pages cname
+ghpgd      = github-pages disable
+ghpge      = github-pages enable
+ghpgh      = github-pages https
+ghpgj      = github-pages url -j
+ghpgo      = github-pages open
 ghpom      = github-placeholder-main.py
 ghprc      = ghpr clone
 ghprd      = ghpr diff
@@ -1911,6 +1916,7 @@ gist-upload = git-helpers/gist/gist-upload  # Upload files to GitHub Gist preser
 git_set_sha = export sha="$(git sha)"
 clone_org.py = git-helpers/github/clone_org.py  # Add current directory to path for local imports
 gh_open_last
+github-pages = git-helpers/github/github-pages
 gh_runners_ls
 gh_runners_rm
 git_dir_curry = <exported_function_name> <git-git-dir_param1> <git-git-dir_param2> ...
@@ -1934,7 +1940,6 @@ gitlab_open_jobs = # Open latest GitLab CI/CD job in browser (or jobs listing as
 parse-github-url = git-helpers/github/parse-github-url
 gh_variables_eval = ghv --json name,value | jr '.[] | .name+"="+.value'
 github-open-pr.py = git-helpers/github/github-open-pr.py  # Add parent directory to path for local imports
-github_open_pages
 github_owner_name = [remote name]
 github-open-web.py = git-helpers/github/github-open-web.py  # Add parent directory to path to import util modules
 github_remote_path = git remote-path "$@" "$(github_default_remote)"
@@ -1986,7 +1991,7 @@ github_org_open_settings_variables
 github_open_settings_secrets_actions = open "$(github_url "$@")/settings/secrets/actions"
 github_open_settings_variables_actions = open "$(github_url "$@")/settings/variables/actions"
 1635 completions present before and after installing git-helpers
-1877 completions added by installing git-helpers (0 removed, 3512 total)
+1882 completions added by installing git-helpers (0 removed, 3517 total)
 ```
 </details>
 

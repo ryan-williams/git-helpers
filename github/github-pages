@@ -1,0 +1,155 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "click",
+#     "utz",
+# ]
+# ///
+"""Print, open, or configure GitHub Pages for a repo."""
+from __future__ import annotations
+
+import json
+import sys
+from subprocess import DEVNULL
+
+from click import argument, group, option, pass_context
+from utz import err, proc
+
+
+def pages_endpoint(repo: str | None) -> str:
+    if repo:
+        return f'repos/{repo}/pages'
+    return 'repos/{owner}/{repo}/pages'
+
+
+def get_pages(repo: str | None) -> dict | None:
+    """Fetch GitHub Pages config via API, or None if not enabled."""
+    try:
+        return proc.json('gh', 'api', pages_endpoint(repo), log=False, stderr=DEVNULL)
+    except Exception:
+        return None
+
+
+@group('github-pages')
+@option('-R', '--repo', help='Repository (owner/repo)')
+@pass_context
+def main(ctx, repo):
+    """GitHub Pages: print, open, or configure."""
+    ctx.ensure_object(dict)
+    ctx.obj['repo'] = repo
+
+
+@main.command()
+@option('-j', '--json-output', 'as_json', is_flag=True, help='Print full JSON response')
+@pass_context
+def url(ctx, as_json):
+    """Print the GitHub Pages URL."""
+    pages = get_pages(ctx.obj['repo'])
+    if not pages:
+        err("GitHub Pages not enabled for this repo")
+        sys.exit(1)
+    if as_json:
+        json.dump(pages, sys.stdout, indent=2)
+        print()
+    else:
+        print(pages['html_url'])
+
+
+@main.command(name='open')
+@pass_context
+def open_cmd(ctx):
+    """Open GitHub Pages site in browser."""
+    pages = get_pages(ctx.obj['repo'])
+    if not pages:
+        err("GitHub Pages not enabled for this repo")
+        sys.exit(1)
+    proc.run('open', pages['html_url'])
+
+
+@main.command()
+@option('-b', '--branch', default='gh-pages', help='Source branch (default: gh-pages)')
+@option('-p', '--path', 'source_path', default='/', help='Source path (default: /)')
+@option('-w', '--workflow', 'build_type', flag_value='workflow', help='Use GitHub Actions workflow for builds')
+@option('-l', '--legacy', 'build_type', flag_value='legacy', default=True, help='Use legacy branch deploy (default)')
+@pass_context
+def enable(ctx, branch, source_path, build_type):
+    """Enable GitHub Pages for this repo."""
+    endpoint = pages_endpoint(ctx.obj['repo'])
+    try:
+        result = proc.json('gh', 'api', '-X', 'POST', endpoint, '-f', f'source[branch]={branch}', '-f', f'source[path]={source_path}', '-f', f'build_type={build_type}')
+        print(result.get('html_url', 'Pages enabled'))
+    except Exception as e:
+        err(f"Failed to enable Pages: {e}")
+        sys.exit(1)
+
+
+@main.command()
+@pass_context
+def disable(ctx):
+    """Disable GitHub Pages for this repo."""
+    endpoint = pages_endpoint(ctx.obj['repo'])
+    try:
+        proc.run('gh', 'api', '-X', 'DELETE', endpoint)
+        err("Pages disabled")
+    except Exception as e:
+        err(f"Failed to disable Pages: {e}")
+        sys.exit(1)
+
+
+@main.command()
+@argument('domain', required=False)
+@option('-D', '--delete', 'remove', is_flag=True, help='Remove custom domain')
+@pass_context
+def cname(ctx, domain, remove):
+    """Get or set the custom domain (CNAME).
+
+    With no args, prints current custom domain. Pass DOMAIN to set, or -D to remove.
+    """
+    repo = ctx.obj['repo']
+    if remove:
+        proc.run('gh', 'api', '-X', 'PUT', pages_endpoint(repo), '-f', 'cname=')
+        err("Custom domain removed")
+    elif domain:
+        proc.run('gh', 'api', '-X', 'PUT', pages_endpoint(repo), '-f', f'cname={domain}')
+        err(f"Custom domain set to {domain}")
+    else:
+        pages = get_pages(repo)
+        if not pages:
+            err("GitHub Pages not enabled for this repo")
+            sys.exit(1)
+        if pages.get('cname'):
+            print(pages['cname'])
+        else:
+            err("No custom domain configured")
+            sys.exit(1)
+
+
+@main.command()
+@option('-d', '--disable-https', 'enforce', flag_value='false', help='Disable HTTPS enforcement')
+@option('-e', '--enable-https', 'enforce', flag_value='true', help='Enable HTTPS enforcement')
+@pass_context
+def https(ctx, enforce):
+    """Get or set HTTPS enforcement.
+
+    With no args, prints current HTTPS status. Use -e/--enable-https or -d/--disable-https to change.
+    """
+    repo = ctx.obj['repo']
+    if enforce:
+        proc.run('gh', 'api', '-X', 'PUT', pages_endpoint(repo), '-F', f'https_enforced={enforce}')
+        state = 'enabled' if enforce == 'true' else 'disabled'
+        err(f"HTTPS enforcement {state}")
+    else:
+        pages = get_pages(repo)
+        if not pages:
+            err("GitHub Pages not enabled for this repo")
+            sys.exit(1)
+        enforced = pages.get('https_enforced', False)
+        print(f"https_enforced: {enforced}")
+        cert = pages.get('https_certificate')
+        if cert:
+            print(f"certificate: {cert['state']} (expires {cert.get('expires_at', '?')})")
+
+
+if __name__ == '__main__':
+    main()
