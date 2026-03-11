@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+alias gwta="g wta"
+alias gwtl="g wtl"
+alias gwl="g wtl"
+alias gwtlk="g wtlk"
+alias gwtmv="g wtmv"
+alias gwtp="g wtp"
+alias gwtrm="g wtrm"
+alias gwtrp="g wtrp"
+alias gwts="g wts"
+alias gwtsl="g wtsl"
+alias gws="g wts"
+alias gwtul="g wtul"

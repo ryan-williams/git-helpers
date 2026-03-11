@@ -79,7 +79,8 @@ append_subdir_to_path \
   rebase reflog remote reset rev-list revert rm_ \
   show stash status submodule \
   tag \
-  version
+  version \
+  worktree
 
 export o="origin"
 export oh="origin/HEAD"

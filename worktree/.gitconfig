@@ -1,0 +1,11 @@
+[alias]
+  wta  = worktree add
+  wtl  = worktree list
+  wtlk = worktree lock
+  wtmv = worktree move
+  wtp  = worktree prune
+  wtrm = worktree remove
+  wtrp = worktree repair
+  wts  = worktree-statuses
+  wtsl = worktree-statuses -l
+  wtul = worktree unlock

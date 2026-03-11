@@ -1,5 +1,5 @@
 # git-helpers
-[1,884](#count-completions) Git aliases and scripts.
+[1,897](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,12 +359,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1884 completions added by installing git-helpers
+# 1897 completions added by installing git-helpers
 # By length:
 # - 2 chars: 22
-# - 3 chars: 276
-# - 4 chars: 738
-# - 5 chars: 402
+# - 3 chars: 278
+# - 4 chars: 742
+# - 5 chars: 408
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1884 new completions:
+1897 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -654,6 +654,8 @@ gus        = g upstream
 guu        = !git --no-pager conflicting
 gwd        = g working-dir
 gwh        = g l1t
+gwl        = g worktree list
+gws        = g worktree-statuses
 gwt        = g l1t
 gxb        = <git repo dir> ['git b' args...]
 gxc        = <git repo dir> ['git c' args...]
@@ -1405,6 +1407,10 @@ gurb       = g undo-rebase
 gusi       = g update-server-info
 gusr       = g user
 gwdf       = g webdiff
+gwta       = g worktree add
+gwtl       = g worktree list
+gwtp       = g worktree prune
+gwts       = g worktree-statuses
 gxca       = <git repo dir> ['git ca' args...]
 gxfa       = g config --global --add core.excludesfile
 hdss       = github-docs-snapshot -s
@@ -1813,6 +1819,12 @@ gtwap      = g throw.py -a HEAD^
 gtwhn      = g throw-head -n
 gtwp2      = g throw.py HEAD~2
 gtwp3      = g throw.py HEAD~3
+gwtlk      = g worktree lock
+gwtmv      = g worktree move
+gwtrm      = g worktree remove
+gwtrp      = g worktree repair
+gwtsl      = g worktree-statuses -l
+gwtul      = g worktree unlock
 gxcam      = <git repo dir> ['git cam' args...]
 gxcap      = <git repo dir> ['git cap' args...]
 mbrhp      = g mb-to-rhp
@@ -1993,7 +2005,7 @@ github_org_open_settings_variables
 github_open_settings_secrets_actions = open "$(github_url "$@")/settings/secrets/actions"
 github_open_settings_variables_actions = open "$(github_url "$@")/settings/variables/actions"
 1635 completions present before and after installing git-helpers
-1884 completions added by installing git-helpers (0 removed, 3519 total)
+1897 completions added by installing git-helpers (0 removed, 3532 total)
 ```
 </details>
 
