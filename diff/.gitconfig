@@ -34,6 +34,8 @@
   dh2  = diff HEAD^2..HEAD
   dhw  = diff -w HEAD
   dn   = diff --name-status
+  dnx  = diff --no-ext-diff
+  dnxc = diff --no-ext-diff --cached
   dno  = diff --name-only
   dnoa = diff-name-only-all
   dcno = diff --name-only --cached
