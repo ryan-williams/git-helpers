@@ -3,7 +3,7 @@
 
 set -eo pipefail
 
-exclude_file="$(git rev-parse --git-dir)/info/exclude"
+exclude_file="$(git rev-parse --git-common-dir)/info/exclude"
 
 # Get relative path from repo root to CWD (e.g. "src/lib/" or "")
 prefix="$(git rev-parse --show-prefix)"
