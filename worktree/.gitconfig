@@ -7,5 +7,4 @@
   wtrm = worktree remove
   wtrp = worktree repair
   wts  = worktree-statuses
-  wtsl = worktree-statuses -l
   wtul = worktree unlock
