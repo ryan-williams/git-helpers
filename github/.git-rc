@@ -176,6 +176,25 @@ export -f github_default_remote
 defn ghdr github_default_remote
 defn ghrn github_default_remote
 
+_github_ensure_repo() {
+  # Export GH_REPO if not already set, using the default GitHub remote.
+  # Prevents "multiple remotes detected" errors from `gh` subcommands.
+  if [ -z "$GH_REPO" ]; then
+    local remote
+    remote="$(github_default_remote)" || return
+    export GH_REPO
+    GH_REPO="$(github_owner_name "$remote")"
+  fi
+}
+export -f _github_ensure_repo
+
+_gh() {
+  # Run a `gh` subcommand after ensuring GH_REPO is set.
+  _github_ensure_repo || return
+  gh "$@"
+}
+export -f _gh
+
 defn ghgdr gh repo set-default --view
 
 github_set_default_remote() {
@@ -613,26 +632,27 @@ export -f github_protected_branches
 defn ghpb github_protected_branches
 defn ghpbs github_protected_branches
 
-defn ghv gh variable list
-defn ghvd gh variable delete
-defn ghvg gh variable get
-defn ghvs gh variable set
+defn ghv _gh variable list
+defn ghvd _gh variable delete
+defn ghvg _gh variable get
+defn ghvs _gh variable set
 
 gh_variables_eval() {
-  ghv --json name,value | jr '.[] | .name+"="+.value'
+  _gh variable list --json name,value | jr '.[] | .name+"="+.value'
 }
 export -f gh_variables_eval
 defn ghve gh_variables_eval
 
-defn ghs gh secret list
-defn ghsd gh secret delete
-defn ghss gh secret set
+defn ghs _gh secret list
+defn ghsd _gh secret delete
+defn ghss _gh secret set
 
 github_set_secret_env() {
+    _github_ensure_repo || return
     local org_flags=()
     while [ $# -gt 0 ]; do
         case "$1" in
-            -o) org_flags+=(-o "$(gh repo view --json owner -q .owner.login)"); shift ;;
+            -o) org_flags+=(-o "$(_gh repo view --json owner -q .owner.login)"); shift ;;
             *) break ;;
         esac
     done
@@ -642,7 +662,7 @@ github_set_secret_env() {
             echo "ghse: \$$name is empty or unset" >&2
             return 1
         fi
-        echo "$val" | gh secret set "$name" "${org_flags[@]}"
+        echo "$val" | _gh secret set "$name" "${org_flags[@]}"
     done
 }
 export -f github_set_secret_env

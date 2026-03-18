@@ -508,9 +508,9 @@ ghm        = !git --no-pager log -1 '--format=%h %s'
 gho        = g hash-object
 ghq        = gh run list -s queued
 ghr        = gh run
-ghs        = gh secret list
+ghs        = _gh secret list
 ghu        = github_url
-ghv        = gh variable list
+ghv        = _gh variable list
 ghw        = github-workflows.py
 ghx        = gh api -X
 gib        = g is-branch
@@ -1016,19 +1016,19 @@ ghro       = gh_run_open
 ghrp       = github_remote_path
 ghrv       = gh run view
 ghrw       = github_run_list.py -w
-ghsd       = gh secret delete
+ghsd       = _gh secret delete
 ghse       = github_set_secret_env
 ghsh       = g full-hash
-ghss       = gh secret set
+ghss       = _gh secret set
 ghsu       = github_url_ssh
 ghub       = github_unprotect_branch
 ghui       = gh-upload-img.py
 ghus       = github_url_ssh
 ghuw       = github_url
-ghvd       = gh variable delete
+ghvd       = _gh variable delete
 ghve       = gh_variables_eval
-ghvg       = gh variable get
-ghvs       = gh variable set
+ghvg       = _gh variable get
+ghvs       = _gh variable set
 ghwl       = gh workflow list
 ghwr       = github-workflows.py run
 gicc       = g is-clean-cached
@@ -1951,7 +1951,7 @@ github_maybe_api
 gitlab_maybe_api
 gitlab_open_jobs = # Open latest GitLab CI/CD job in browser (or jobs listing as fallback)
 parse-github-url = git-helpers/github/parse-github-url
-gh_variables_eval = ghv --json name,value | jr '.[] | .name+"="+.value'
+gh_variables_eval = _gh variable list --json name,value | jr '.[] | .name+"="+.value'
 github-open-pr.py = git-helpers/github/github-open-pr.py  # Add parent directory to path for local imports
 github_owner_name = [remote name]
 github-open-web.py = git-helpers/github/github-open-web.py  # Add parent directory to path to import util modules
