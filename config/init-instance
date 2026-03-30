@@ -40,4 +40,5 @@ git global-gitignore \
   ".python-version" \
   ".venv" \
   ".vite" \
+  ".wrangler" \
   "node_modules"
