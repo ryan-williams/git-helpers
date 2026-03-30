@@ -635,7 +635,20 @@ defn ghpbs github_protected_branches
 defn ghv _gh variable list
 defn ghvd _gh variable delete
 defn ghvg _gh variable get
-defn ghvs _gh variable set
+ghvs() {
+  # `ghvs NAME VALUE` → gh variable set NAME -b VALUE
+  # `ghvs NAME` or `echo val | ghvs NAME` → reads from stdin
+  local args=("$@")
+  local n=${#args[@]}
+  if [ "$n" -ge 2 ] && [[ "${args[$n-1]}" != -* ]] && [[ "${args[$n-2]}" != -* ]]; then
+    local body="${args[$n-1]}"
+    unset 'args[$n-1]'
+    _gh variable set "${args[@]}" -b "$body"
+  else
+    _gh variable set "$@"
+  fi
+}
+export -f ghvs
 
 gh_variables_eval() {
   _gh variable list --json name,value | jr '.[] | .name+"="+.value'
@@ -645,7 +658,20 @@ defn ghve gh_variables_eval
 
 defn ghs _gh secret list
 defn ghsd _gh secret delete
-defn ghss _gh secret set
+ghss() {
+  # `ghss NAME VALUE` → gh secret set NAME -b VALUE
+  # `ghss NAME` or `echo val | ghss NAME` → reads from stdin
+  local args=("$@")
+  local n=${#args[@]}
+  if [ "$n" -ge 2 ] && [[ "${args[$n-1]}" != -* ]] && [[ "${args[$n-2]}" != -* ]]; then
+    local body="${args[$n-1]}"
+    unset 'args[$n-1]'
+    _gh secret set "${args[@]}" -b "$body"
+  else
+    _gh secret set "$@"
+  fi
+}
+export -f ghss
 
 github_set_secret_env() {
     _github_ensure_repo || return
