@@ -23,6 +23,8 @@ export -f gitlab_url_ssh
 defn glus gitlab_url_ssh
 
 alias glob="glab repo view --web -b"
+glou() { git open -r "$(git-find-only-remote gitlab\.com)" url; }
+export -f glou
 alias glow="glab repo view --web"
 alias glowb="glab repo view --web -b"
 

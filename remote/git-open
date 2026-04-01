@@ -203,5 +203,51 @@ def job(ctx, run_id, job_idx):
         proc.run('open', f"{web_url}/-/jobs")
 
 
+@main.command(name='url')
+@pass_context
+def url_cmd(ctx):
+    """Open the repo's site URL (Pages or homepage)."""
+    info: PlatformInfo = ctx.obj['info']
+    if info.platform == 'github':
+        site_url = _github_site_url(info.repo)
+    else:
+        site_url = _gitlab_site_url(info.repo)
+    if not site_url:
+        err("No site URL found for this repo")
+        sys.exit(1)
+    proc.run('open', site_url)
+
+
+def _github_site_url(repo: str | None) -> str | None:
+    """GitHub Pages URL, falling back to repo homepageUrl."""
+    from subprocess import DEVNULL
+    try:
+        endpoint = f'repos/{repo}/pages' if repo else 'repos/{owner}/{repo}/pages'
+        pages = proc.json('gh', 'api', endpoint, log=False, stderr=DEVNULL)
+        if pages.get('html_url'):
+            return pages['html_url']
+    except Exception:
+        pass
+    try:
+        args = [repo] if repo else []
+        data = proc.json('gh', 'repo', 'view', *args, '--json', 'homepageUrl', log=False, stderr=DEVNULL)
+        return data.get('homepageUrl') or None
+    except Exception:
+        return None
+
+
+def _gitlab_site_url(repo: str | None) -> str | None:
+    """GitLab Pages URL (owner.gitlab.io/project)."""
+    if not repo:
+        return None
+    # GitLab Pages follow a predictable URL pattern
+    parts = repo.split('/')
+    if len(parts) >= 2:
+        owner = parts[0]
+        project = '/'.join(parts[1:])
+        return f"https://{owner}.gitlab.io/{project}"
+    return None
+
+
 if __name__ == '__main__':
     main()

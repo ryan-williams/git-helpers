@@ -1,5 +1,5 @@
 # git-helpers
-[1,895](#count-completions) Git aliases and scripts.
+[1,899](#count-completions) Git aliases and scripts.
 
 <!-- toc -->
 - [Setup](#setup)
@@ -359,12 +359,12 @@ Most aliases in this repo begin with `g` (for Git). [count-completions.sh](scrip
 <!-- `bmdf -I -- scripts/count-completions.sh -c` -->
 ```bash
 scripts/count-completions.sh -c
-# 1895 completions added by installing git-helpers
+# 1899 completions added by installing git-helpers
 # By length:
 # - 2 chars: 22
-# - 3 chars: 277
-# - 4 chars: 742
-# - 5 chars: 407
+# - 3 chars: 278
+# - 4 chars: 744
+# - 5 chars: 408
 ```
 
 A goal of this repo is to help me always be within a couple keystrokes of common Git commands.
@@ -375,7 +375,7 @@ Here's a full list of the aliases and scripts provided by `source`ing [`.git-rc`
 <details><summary><code>scripts/count-completions.sh -v</code></summary>
 
 ```
-1895 new completions:
+1899 new completions:
 g          = git
 p          = parallel -k -j+0 --env PATH
 g1         = !git --no-pager log -1
@@ -571,6 +571,7 @@ gom        = g octomerge
 gop        = gh gist create --web -p
 gos        = gh gist create --web
 got        = g rebase-onto
+gou        = g open url
 gow        = g open web
 gpb        = g previous-branch
 gpd        = g push --delete
@@ -995,6 +996,7 @@ ghon       = github_owner_name
 ghop       = github_open_profile
 ghor       = github_open_web_ref
 ghos       = github_open_settings
+ghou       = github-pages open
 ghow       = github-open-web.py
 ghpb       = github_protected_branches
 ghpg       = github-pages url
@@ -1081,6 +1083,7 @@ glnw       = g log --no-walk
 glob       = glab repo view --web -b
 gloj       = gitlab_open_jobs
 glol       = g log --oneline
+glou       = git open -r "$(git-find-only-remote gitlab\.com)" url
 glow       = glab repo view --web
 gloz       = g ls-files --other --exclude-standard --directory --no-empty-directory -z
 glp1       = g log -p -1
@@ -1599,6 +1602,7 @@ ghlwr      = gh_last_workflow_run
 ghoby      = github_open_branches_yours
 ghoos      = github_org_open_settings_secrets
 ghoov      = github_org_open_settings_variables
+ghopg      = github-pages open
 ghopr      = github-open-pr.py
 ghorl      = github_open_releases
 ghosr      = github_open_settings_runners
@@ -2003,7 +2007,7 @@ github_org_open_settings_variables
 github_open_settings_secrets_actions = open "$(github_url "$@")/settings/secrets/actions"
 github_open_settings_variables_actions = open "$(github_url "$@")/settings/variables/actions"
 1635 completions present before and after installing git-helpers
-1895 completions added by installing git-helpers (0 removed, 3530 total)
+1899 completions added by installing git-helpers (0 removed, 3534 total)
 ```
 </details>
 

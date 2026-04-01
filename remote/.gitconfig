@@ -65,6 +65,7 @@
   fnr       = find-only-remote
 
   oj        = open job
+  ou        = open url
   ow        = open web
 
   ob        = !git_open_web_branch.py
