@@ -31,6 +31,24 @@ def get_pages(repo: str | None) -> dict | None:
         return None
 
 
+def get_homepage(repo: str | None) -> str | None:
+    """Fetch the repo's homepageUrl (set in repo settings, e.g. for CF Pages, Vercel, etc.)."""
+    try:
+        args = [repo] if repo else []
+        data = proc.json('gh', 'repo', 'view', *args, '--json', 'homepageUrl', log=False, stderr=DEVNULL)
+        return data.get('homepageUrl') or None
+    except Exception:
+        return None
+
+
+def get_site_url(repo: str | None) -> str | None:
+    """Get the site URL: GitHub Pages first, then homepageUrl fallback."""
+    pages = get_pages(repo)
+    if pages:
+        return pages['html_url']
+    return get_homepage(repo)
+
+
 @group('github-pages')
 @option('-R', '--repo', help='Repository (owner/repo)')
 @pass_context
@@ -44,27 +62,32 @@ def main(ctx, repo):
 @option('-j', '--json-output', 'as_json', is_flag=True, help='Print full JSON response')
 @pass_context
 def url(ctx, as_json):
-    """Print the GitHub Pages URL."""
-    pages = get_pages(ctx.obj['repo'])
-    if not pages:
-        err("GitHub Pages not enabled for this repo")
-        sys.exit(1)
+    """Print the site URL (GitHub Pages, or repo homepage as fallback)."""
+    repo = ctx.obj['repo']
     if as_json:
+        pages = get_pages(repo)
+        if not pages:
+            err("GitHub Pages not enabled for this repo")
+            sys.exit(1)
         json.dump(pages, sys.stdout, indent=2)
         print()
     else:
-        print(pages['html_url'])
+        site_url = get_site_url(repo)
+        if not site_url:
+            err("No GitHub Pages or homepage URL found for this repo")
+            sys.exit(1)
+        print(site_url)
 
 
 @main.command(name='open')
 @pass_context
 def open_cmd(ctx):
-    """Open GitHub Pages site in browser."""
-    pages = get_pages(ctx.obj['repo'])
-    if not pages:
-        err("GitHub Pages not enabled for this repo")
+    """Open site in browser (GitHub Pages, or repo homepage as fallback)."""
+    site_url = get_site_url(ctx.obj['repo'])
+    if not site_url:
+        err("No GitHub Pages or homepage URL found for this repo")
         sys.exit(1)
-    proc.run('open', pages['html_url'])
+    proc.run('open', site_url)
 
 
 @main.command()

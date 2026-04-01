@@ -95,6 +95,8 @@ alias ghpge="github-pages enable"
 alias ghpgh="github-pages https"
 alias ghpgj="github-pages url -j"
 alias ghpgo="github-pages open"
+alias ghopg="github-pages open"
+alias ghou="github-pages open"
 
 github_open_settings() {
     open "$(github_url "$@")/settings"
