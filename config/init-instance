@@ -5,40 +5,47 @@
 # . .rc/git/config/init-instance
 # ```
 
-mkdir -p git
-if ! [ -L "$HOME/.gitconfig" ]; then
-   if [ -f "$HOME/.gitconfig" ]; then
-      mv "$HOME/.gitconfig" "$HOME/git/config"
-   else
-      touch "$HOME/git/config"
+_rc_init_instance() {
+   set -e
+   mkdir -p "$HOME/git"
+   if ! [ -L "$HOME/.gitconfig" ]; then
+      if [ -f "$HOME/.gitconfig" ]; then
+         mv "$HOME/.gitconfig" "$HOME/git/config"
+      else
+         touch "$HOME/git/config"
+      fi
+      ln -s git/config "$HOME/.gitconfig"
    fi
-   ln -s git/config ~/.gitconfig
-fi
-touch "$HOME"/git/{attributes,ignore}
-. "$HOME/.bashrc"  # Reload shell, pick up new `~/git/{attributes,ignore}` files
+   touch "$HOME"/git/{attributes,ignore}
+   . "$HOME/.bashrc"  # Reload shell, pick up new `~/git/{attributes,ignore}` files
 
-# Set default Git configs
-git config --global init.defaultBranch main           # a.k.a. `gdbm`
-git config --global clone.defaultRemoteName u         # a.k.a. `gcdr u`
-git config --global push.default current              # a.k.a. `gpdc`
-git config --global receive.denyCurrentBranch ignore  # a.k.a. `gaps`
-git config --global diff.noprefix true                # a.k.a. `gdnpgt`
-git config --global diff.submodule log                # a.k.a. `gcdsl`
+   # Set default Git configs
+   git config --global init.defaultBranch main           # a.k.a. `gdbm`
+   git config --global clone.defaultRemoteName u         # a.k.a. `gcdr u`
+   git config --global push.default current              # a.k.a. `gpdc`
+   git config --global receive.denyCurrentBranch ignore  # a.k.a. `gaps`
+   git config --global diff.noprefix true                # a.k.a. `gdnpgt`
+   git config --global diff.submodule log                # a.k.a. `gcdsl`
+   git config --global core.excludesfile "$HOME/git/ignore"
+   git config --global core.attributesFile "$HOME/git/attributes"
 
-# Set some globally-gitignored patterns
-git global-gitignore \
-  "__pycache__" \
-  "*.egg-info" \
-  "*.iml" \
-  ".claude" \
-  ".env" \
-  ".envrc" \
-  ".idea" \
-  ".ipynb_checkpoints" \
-  ".jupyter" \
-  ".pds.json" \
-  ".python-version" \
-  ".venv" \
-  ".vite" \
-  ".wrangler" \
-  "node_modules"
+   # Set some globally-gitignored patterns
+   git global-gitignore \
+     "__pycache__" \
+     "*.egg-info" \
+     "*.iml" \
+     ".claude" \
+     ".env" \
+     ".envrc" \
+     ".idea" \
+     ".ipynb_checkpoints" \
+     ".jupyter" \
+     ".pds.json" \
+     ".python-version" \
+     ".venv" \
+     ".vite" \
+     ".wrangler" \
+     "node_modules"
+}
+_rc_init_instance
+unset -f _rc_init_instance
