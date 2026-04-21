@@ -32,6 +32,7 @@ _rc_init_instance() {
    # Set some globally-gitignored patterns
    git global-gitignore \
      "__pycache__" \
+     "*~" \
      "*.egg-info" \
      "*.iml" \
      ".claude" \
@@ -45,7 +46,8 @@ _rc_init_instance() {
      ".venv" \
      ".vite" \
      ".wrangler" \
-     "node_modules"
+     "node_modules" \
+     "tmp"
 }
 _rc_init_instance
 unset -f _rc_init_instance
