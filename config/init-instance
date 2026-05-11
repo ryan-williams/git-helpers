@@ -35,6 +35,8 @@ _rc_init_instance() {
      "*~" \
      "*.egg-info" \
      "*.iml" \
+     "*.log" \
+     "*.vars" \
      ".claude" \
      ".env" \
      ".envrc" \
