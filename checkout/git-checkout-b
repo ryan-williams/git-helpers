@@ -35,13 +35,12 @@ if [ $# -eq 0 ]; then
 else
   ref="$1"; shift
   if [ $# -eq 0 ]; then
-    if [ -z "$track" ]; then
-      if git branch-exists "$ref"; then
-        copy_upstream="$ref"
-      else
-        copy_upstream=
-      fi
-      track="$(git rev-parse --abbrev-ref "$copy_upstream@{u}")"
+    if [ -z "$track" ] && git branch-exists "$ref"; then
+      # If `ref` is a local branch, copy its upstream. If it has no upstream,
+      # leave `track` empty (no `--set-upstream-to`). For non-local refs (e.g.
+      # remote-tracking branches, SHAs), let `git checkout -b`'s DWIM handle
+      # tracking.
+      track="$(git rev-parse --abbrev-ref "$ref@{u}" 2>/dev/null || true)"
     fi
   elif [ -n "$track" ] && [ "$track" != "$1" ]; then
     usage
