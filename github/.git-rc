@@ -357,6 +357,8 @@ defn ghwrc gh_workflow_run_current_branch
 
 defn ghwl gh workflow list
 
+defn ghws github-run-watch
+
 defn ghq gh run list -s queued
 defn ghip gh run list -s in_progress
 defn ghwip gh run list -s in_progress

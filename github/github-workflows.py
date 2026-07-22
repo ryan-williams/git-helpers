@@ -8,6 +8,7 @@
 # ]
 # ///
 from datetime import timezone, datetime
+from os import execvp
 from os.path import basename, splitext, abspath, dirname
 from pathlib import Path
 import re
@@ -125,9 +126,10 @@ def github_workflows_delete(ctx, dry_run, workflow):
 @opt('-r', '--ref', help='Git reference (branch, tag, or SHA) to run workflow from')
 @opt('-F', '--field', multiple=True, help='Add a field with a JSON value')
 @opt('-f', '--raw-field', multiple=True, help='Add a field with a raw string value')
+@flag('-W', '--watch', help='Watch the run to completion in the terminal (exp-backoff, via `github-run-watch`) instead of opening the browser')
 @arg('workflow')
 @arg('args', nargs=-1)
-def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
+def github_workflows_run(ctx, no_open, ref, field, raw_field, watch, workflow, args):
     """Trigger a workflow and optionally open the job when it starts."""
     repo = ctx.obj
 
@@ -307,6 +309,14 @@ def github_workflows_run(ctx, no_open, ref, field, raw_field, workflow, args):
     if not new_run_id:
         err("\nTimed out waiting for workflow to start")
         exit(1)
+
+    if watch:
+        # Terminal watch (exp-backoff, RL-gentle) instead of browser.
+        cmd = ['github-run-watch']
+        if repo:
+            cmd += ['-R', repo]
+        cmd.append(str(new_run_id))
+        execvp(cmd[0], cmd)
 
     # Poll for job to start
     err("Waiting for job to start", end="")

@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# Watch the GHA run(s) for a commit SHA, rate-limit-gently (exp-backoff).
+#
+# `gh run watch` polls every 3s (~2-3 API calls/poll) with no backoff —
+# trips GitHub secondary rate limits on long runs — and can't wait for a
+# run that doesn't exist yet (the usual case right after a push). This:
+# exp-backoff-polls `gh run list` for the SHA's run(s) until they appear
+# (3s → ×1.5 → cap 15s), then exp-backoff-polls each run's status
+# (5s → ×1.5 → cap 60s; 1 API call/poll) — fast failures surface in
+# seconds, hour-long runs cost ~1 call/min. On failure, prints the
+# failed-job summary.
+#
+# Usage: github-run-watch [-w workflow.yml] [-R owner/repo] [-t find-timeout] [sha|run-id]
+#   Defaults to HEAD's sha. An all-digits argument is a run id — the
+#   find phase is skipped (how `ghwr -W` chains in post-dispatch).
+#   Watches all matched runs; exits nonzero if any failed.
+set -euo pipefail
+
+find_timeout=300
+workflow=()
+repo=()
+while getopts "w:R:t:h" opt; do
+  case "$opt" in
+    w) workflow=(-w "$OPTARG") ;;
+    R) repo=(-R "$OPTARG") ;;
+    t) find_timeout="$OPTARG" ;;
+    h) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) exit 2 ;;
+  esac
+done
+shift $((OPTIND - 1))
+sha="${1:-$(git rev-parse HEAD)}"
+
+if [[ "$sha" =~ ^[0-9]+$ ]]; then
+  ids=("$sha")
+else
+start=$(date +%s)
+delay=3
+ids=()
+while true; do
+  mapfile -t ids < <(
+    gh run list "${repo[@]}" "${workflow[@]}" -L 30 --json databaseId,headSha \
+      -q ".[] | select(.headSha == \"$sha\") | .databaseId"
+  )
+  [ ${#ids[@]} -gt 0 ] && break
+  if [ $(($(date +%s) - start)) -ge "$find_timeout" ]; then
+    echo "no run found for $sha after ${find_timeout}s" >&2
+    exit 1
+  fi
+  sleep "$delay"
+  delay=$(( delay * 3 / 2 )); [ "$delay" -gt 15 ] && delay=15
+done
+fi
+
+watch_run() {
+  local id="$1" delay=5 last='' t0 line status conclusion name
+  t0=$(date +%s)
+  while true; do
+    line=$(gh run view "${repo[@]}" "$id" --json status,conclusion,workflowName \
+      -q '[.workflowName, .status, .conclusion // ""] | join("\t")')
+    IFS=$'\t' read -r name status conclusion <<< "$line"
+    if [ "$status" != "$last" ]; then
+      printf '%s #%s: %s%s (%ss)\n' "$name" "$id" "$status" \
+        "${conclusion:+ → $conclusion}" "$(( $(date +%s) - t0 ))"
+      last="$status"
+    fi
+    if [ "$status" = "completed" ]; then
+      [ "$conclusion" = "success" ] && return 0
+      gh run view "${repo[@]}" "$id" | sed -n '/JOBS/,$p' | head -40
+      return 1
+    fi
+    sleep "$delay"
+    delay=$(( delay * 3 / 2 )); [ "$delay" -gt 60 ] && delay=60
+  done
+}
+
+rc=0
+for id in "${ids[@]}"; do
+  watch_run "$id" || rc=1
+done
+exit $rc
