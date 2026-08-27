@@ -34,6 +34,11 @@ sha="${1:-$(git rev-parse HEAD)}"
 if [[ "$sha" =~ ^[0-9]+$ ]]; then
   ids=("$sha")
 else
+# `gh` reports the full 40-char headSha and the match below is exact, so a short sha — or
+# any other rev, like `HEAD~1` — selects nothing and the find phase just times out with
+# "no run found". Expand locally; keep the argument as given when we can't (`-R` may point
+# at a repo this clone knows nothing about).
+sha=$(git rev-parse "$sha" 2>/dev/null || echo "$sha")
 start=$(date +%s)
 delay=3
 ids=()
