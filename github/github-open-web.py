@@ -7,7 +7,6 @@
 # ///
 """Open GitHub repository or gist in web browser."""
 
-import json
 import os
 import re
 import sys
@@ -18,7 +17,30 @@ from sys import stderr
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from git_helpers.util.branch_resolution import resolve_remote_ref, get_default_branch
 
-import click
+from click import argument, command, option
+
+
+def get_remote_url(remote: str) -> str:
+    """Accept a named remote or a URL stored directly in branch configuration."""
+    if re.match(r'(?:git@|https://|ssh://)', remote):
+        return remote
+    return check_output(['git', 'remote', 'get-url', remote], stderr=DEVNULL).decode().strip()
+
+
+def get_branch_upstream(branch: str) -> tuple[str | None, str | None]:
+    """Read the upstream even when Git has no corresponding remote-tracking ref."""
+    try:
+        remote = check_output(['git', 'config', '--get', f'branch.{branch}.remote'], stderr=DEVNULL).decode().strip()
+        merge = check_output(['git', 'config', '--get', f'branch.{branch}.merge'], stderr=DEVNULL).decode().strip()
+    except CalledProcessError as e:
+        if e.returncode == 1:
+            # An unconfigured branch can still match a fetched remote ref.
+            return None, None
+        raise
+    if remote == '.' or not merge.startswith('refs/heads/'):
+        # Local upstreams and non-branch refs do not identify a hosted branch.
+        return None, None
+    return remote, merge.removeprefix('refs/heads/')
 
 
 def is_gist_repo():
@@ -88,14 +110,14 @@ def parse_ref_arg(ref_arg):
         return None, ref_arg
 
 
-@click.command('github-open-web')
-@click.option('-b', '--branch', help='Branch to open (defaults to current branch)')
-@click.option('-d', '--default', is_flag=True, help='Open default branch')
-@click.option('-r', '--remote', help='Git remote name to use (e.g. origin, upstream)')
-@click.option('-R', '--repo', help='Repository (owner/name format) or gist ID')
-@click.option('-g', '--gist', is_flag=True, help='Force gist mode')
-@click.argument('ref_arg', required=False)
-@click.argument('branch_arg', required=False)
+@command('github-open-web')
+@option('-b', '--branch', help='Branch to open (defaults to current branch)')
+@option('-d', '--default', is_flag=True, help='Open default branch')
+@option('-g', '--gist', is_flag=True, help='Force gist mode')
+@option('-r', '--remote', help='Git remote name to use (e.g. origin, upstream)')
+@option('-R', '--repo', help='Repository (owner/name format) or gist ID')
+@argument('ref_arg', required=False)
+@argument('branch_arg', required=False)
 def github_open_web(branch, default, remote, repo, gist, ref_arg, branch_arg):
     """Open GitHub repository or gist in web browser.
 
@@ -123,12 +145,19 @@ def github_open_web(branch, default, remote, repo, gist, ref_arg, branch_arg):
     # Resolve remote ref once and reuse for both gist detection and branch resolution
     resolved_ref = None
     resolved_remote_ref = None
+    configured_remote = None
+    if not (remote or repo or default or gist):
+        target_branch = branch or check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip()
+        configured_remote, resolved_ref = get_branch_upstream(target_branch)
+        if configured_remote and branch:
+            branch = resolved_ref
     if not remote:
-        resolved_ref, resolved_remote_ref = resolve_remote_ref(verbose=False)
+        if not configured_remote:
+            resolved_ref, resolved_remote_ref = resolve_remote_ref(verbose=False)
 
     # Determine which remote to check for gist detection
-    check_remote = None
-    if not remote:
+    check_remote = configured_remote
+    if not remote and not check_remote:
         if resolved_remote_ref and '/' in resolved_remote_ref:
             check_remote = resolved_remote_ref.split('/', 1)[0]
         else:
@@ -142,14 +171,14 @@ def github_open_web(branch, default, remote, repo, gist, ref_arg, branch_arg):
                     check_remote = upstream.split('/')[0]
             except:
                 pass
-    else:
+    elif remote:
         check_remote = remote
 
     is_gist = False
     if check_remote:
         # Check if this specific remote is a gist
         try:
-            url = check_output(['git', 'remote', 'get-url', check_remote], stderr=DEVNULL).decode().strip()
+            url = get_remote_url(check_remote)
             is_gist = 'gist.github.com' in url
         except:
             pass
@@ -175,11 +204,11 @@ def github_open_web(branch, default, remote, repo, gist, ref_arg, branch_arg):
     else:
         # Regular repository mode
         # Handle remote option (use check_remote if remote was not explicitly provided)
-        effective_remote = remote or check_remote
+        effective_remote = None if repo else remote or check_remote
         if effective_remote:
             # Get the repository path from the specified remote
             try:
-                remote_url = check_output(['git', 'remote', 'get-url', effective_remote], stderr=DEVNULL).decode().strip()
+                remote_url = get_remote_url(effective_remote)
                 # Parse GitHub owner/repo from the URL
                 # Handle both SSH and HTTPS URLs
                 match = re.match(r'(?:git@github\.com:|https://github\.com/)([^/]+/[^/]+?)(?:\.git)?$', remote_url)
